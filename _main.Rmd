@@ -26,8 +26,8 @@ documentclass: book
 
 ```{r, out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "Epi R Handbook banner beige 1500x500.png"))
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <meta name="description" content="The Epi R Handbook is an R reference manual for applied epidemiology and public health.">
@@ -134,7 +134,7 @@ This handbook is **not** an approved product of any specific organization. Altho
 
 ### Contributors {-}  
 
-**Editor-in-Chief:** [Neale Batra](https://www.linkedin.com/in/neale-batra/) 
+**Editor:** [Neale Batra](https://www.linkedin.com/in/neale-batra/) 
 
 **Project core team:** [Neale Batra](https://www.linkedin.com/in/neale-batra/), [Alex Spina](https://github.com/aspina7), [Amrish Baidjoe](https://twitter.com/Ammer_B), Pat Keating, [Henry Laurenson-Schafer](https://github.com/henryls1), [Finlay Campbell](https://github.com/finlaycampbell)  
 
@@ -196,7 +196,7 @@ Academic courses and epidemiologist training programs are welcome to use this ha
 
 ### Citation {.unnumbered}
 
-The Epidemiologist R Handbook. <a rel="license" href="https://zenodo.org/badge/231610102.svg"><img alt="DOI" style="border-width:0" src="https://zenodo.org/badge/231610102.svg" /></a><br />
+Batra, Neale, et al. (2021), The Epidemiologist R Handbook. <a rel="license" href="https://zenodo.org/badge/231610102.svg"><img alt="DOI" style="border-width:0" src="https://zenodo.org/badge/231610102.svg" /></a><br />
 
 ### Contribution {.unnumbered}  
 
@@ -242,8 +242,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:index.Rmd-->
@@ -286,8 +286,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/cat_about_book.Rmd-->
@@ -470,8 +470,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/editorial_style.Rmd-->
@@ -881,8 +881,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/data_used.Rmd-->
@@ -925,8 +925,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/cat_basics.Rmd-->
@@ -2662,8 +2662,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/basics.Rmd-->
@@ -2977,8 +2977,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/transition_to_R.Rmd-->
@@ -3186,8 +3186,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/packages_suggested.Rmd-->
@@ -3342,8 +3342,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/r_projects.Rmd-->
@@ -4291,8 +4291,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/importing.Rmd-->
@@ -4335,8 +4335,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/cat_data_management.Rmd-->
@@ -6288,8 +6288,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/cleaning.Rmd-->
@@ -7050,8 +7050,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/dates.Rmd-->
@@ -8191,8 +8191,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/characters_strings.Rmd-->
@@ -8761,8 +8761,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/factors.Rmd-->
@@ -9343,8 +9343,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/pivoting.Rmd-->
@@ -9927,8 +9927,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/grouping.Rmd-->
@@ -10896,8 +10896,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/joining_matching.Rmd-->
@@ -11562,8 +11562,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/deduplication.Rmd-->
@@ -12530,8 +12530,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/iteration.Rmd-->
@@ -12575,8 +12575,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/cat_analysis.Rmd-->
@@ -13629,8 +13629,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/tables_descriptive.Rmd-->
@@ -14175,8 +14175,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/stat_tests.Rmd-->
@@ -14918,8 +14918,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/regression.Rmd-->
@@ -15611,8 +15611,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/missing_data.Rmd-->
@@ -16147,8 +16147,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/standardization.Rmd-->
@@ -16584,8 +16584,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/moving_average.Rmd-->
@@ -18274,8 +18274,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/time_series.Rmd-->
@@ -19293,8 +19293,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/epidemic_models.Rmd-->
@@ -19952,8 +19952,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/contact_tracing.Rmd-->
@@ -21128,8 +21128,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/survey_analysis.Rmd-->
@@ -21901,8 +21901,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/survival_analysis.Rmd-->
@@ -22999,8 +22999,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/gis.Rmd-->
@@ -23043,8 +23043,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/cat_data_viz.Rmd-->
@@ -23629,8 +23629,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/tables_presentation.Rmd-->
@@ -24840,8 +24840,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/ggplot_basics.Rmd-->
@@ -26080,8 +26080,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/ggplot_tips.Rmd-->
@@ -28344,8 +28344,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/epicurves.Rmd-->
@@ -29125,8 +29125,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/age_pyramid.Rmd-->
@@ -29780,8 +29780,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/heatmaps.Rmd-->
@@ -30575,8 +30575,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/diagrams.Rmd-->
@@ -30901,8 +30901,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/combination_analysis.Rmd-->
@@ -31678,8 +31678,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/transmission_chains.Rmd-->
@@ -32385,8 +32385,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/phylogenetic_trees.Rmd-->
@@ -32762,8 +32762,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/interactive_plots.Rmd-->
@@ -32806,8 +32806,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/cat_reports_dashboards.Rmd-->
@@ -33651,8 +33651,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/rmarkdown.Rmd-->
@@ -33966,8 +33966,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/reportfactory.Rmd-->
@@ -34485,8 +34485,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/flexdashboard.Rmd-->
@@ -35929,8 +35929,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/shiny_basics.Rmd-->
@@ -35973,8 +35973,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/cat_misc.Rmd-->
@@ -36594,8 +36594,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/writing_functions.Rmd-->
@@ -36906,8 +36906,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/directories.Rmd-->
@@ -38100,8 +38100,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/collaboration.Rmd-->
@@ -38280,8 +38280,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/errors.Rmd-->
@@ -38473,8 +38473,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/help.Rmd-->
@@ -38693,8 +38693,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/network_drives.Rmd-->
@@ -38965,8 +38965,8 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 options(scipen=1, digits=7)
 
 # print only text (not code)
-#library(knitr)
-#opts_chunk$set(list(echo = FALSE, eval = FALSE))
+# library(knitr)
+# opts_chunk$set(list(echo = FALSE, eval = FALSE))
 ```
 
 <!--chapter:end:new_pages/data_table.Rmd-->
