@@ -110,7 +110,7 @@ Nous sommes une équipe d'épidémiologistes venant du monde entier. Nous travai
 
 * Naviguez dans la table des matières ou utilisez le formulaire de recherche  
 * Cliquez sur le bouton "Copy" pour copier le code
-* Utilisez les [données fournies avec le manuel [Download handbook and data] pour excécuter le code sur votre ordinateur
+* Utilisez les [données fournies avec le manuel](#download_book_data) pour exécuter le code sur votre ordinateur
 * utilisez la section "Ressources" de chaque page pour aller plus loin
  
 
@@ -128,7 +128,7 @@ Ce livre a été originellement publié en Anglais puis traduit bénévolement p
 
 Cet ouvrage est le fruit du travail d'une équipe internationale d'épidémiologistes, qui se sont appuyés sur leur expérience auprès d'organisations telles que les agences sanitaires locales, régionales, provinciales et nationales de divers pays, l'Organisation mondiale de la santé (OMS), Médecins Sans Frontières (MSF), les systèmes hospitaliers et les institutions universitaires.
 
-Ce manuel n'est **pas** un produit approuvé par une organisation spécifique. Bien que nous nous sommes efforcés à précis, nous ne pouvons fournir aucune garantie quant au contenu de ce livre.  
+Ce guide n'est **pas** un produit approuvé par une organisation spécifique. Bien que nous nous soyons efforcés à être précis, nous ne pouvons fournir aucune garantie quant au contenu de ce livre.  
 
 
 ### Auteurs et contributeurs {-}  
@@ -167,7 +167,7 @@ Nous remercions tout particulièrement le Centre Opérationnel d'Amsterdam de M�
 
 ### Inspirations {-}  
 
-Nous nous sommes inspiré de mutliples tutoriaux, livres et vignettes développés par la communauté pour développer ce manuel. Ces ressources, sont crédités dans les chapitres respectifs, mais nous souhaitons citer quelques sources d'inspiration générales que nous utilisons de manière récurrente :  
+Nous nous sommes inspiré de multiples tutoriels, livres et vignettes développés par la communauté pour développer ce manuel. Ces ressources, sont crédités dans les chapitres respectifs, mais nous souhaitons citer quelques sources d'inspiration générales que nous utilisons de manière récurrente :  
 
 [The "R4Epis" project](https://r4epis.netlify.app/) (une collaboration entre MSF et RECON)  
 [R Epidemics Consortium (RECON)](https://www.repidemicsconsortium.org/)  
@@ -196,7 +196,7 @@ Batra, Neale, et al. The Epidemiologist R Handbook. 2021.  <a rel="license" href
 
 ### Contribuer {.unnumbered}  
 
-Si vous souhaitez contribuer à cet ouvrage, veuillez d'abord nous contacter via les tickets (_issues_) Github ou par courriel. Nous sommes en train de mdévelopper un calendrier de mise à jour et un guide du contributeur.  
+Si vous souhaitez contribuer à cet ouvrage, veuillez d'abord nous contacter via les tickets (_issues_) Github ou par courriel. Nous sommes en train de développer un calendrier de mise à jour et un guide du contributeur.  
 
 Veuillez noter que le projet epiRhandbook est publié avec un [code de conduite du contributeur](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). En contribuant à ce projet, vous acceptez de vous conformer à ses conditions.
 
