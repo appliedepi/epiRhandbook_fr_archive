@@ -1,4 +1,4 @@
-# Download handbook and data  
+# Download handbook and data  {#download_book_data}
 
 
 <!-- Note to self: If you want to create a download link to Github, right-click the "View Raw" button on Github, copy the address, and use that in the HTML below. -->
@@ -6,7 +6,7 @@
 
 
 
-## Download offline handbook  
+## Download offline handbook  {#download_offline}
 
 You can download the offline version of this handbook as an HTML file so that you can view the file in your web browser even if you no longer have internet access. If you are considering offline use of the Epi R Handbook here are a few things to consider:  
 

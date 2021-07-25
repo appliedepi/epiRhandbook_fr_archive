@@ -55,9 +55,9 @@ knitr::include_graphics(here::here("images", "Epi R Handbook banner beige 1500x5
 **Ce manuel a pour objectifs :**  
 
 * Établir une base de code de référence
-* Illustrer comment utiliser R pour effectuer des tâches classiques et récurentes en épidémiologie
+* Illustrer comment utiliser R pour effectuer des tâches classiques et récurrentes en épidémiologie
 * Aider les épidémiologistes à faire la transition vers R 
-* Être facilement accessible, y compris dans les endroits ayant une mauvaise connexion internet, grâce à une **[version hors-ligne][Download handbook and data]**  
+* Être facilement accessible, y compris dans les endroits ayant une mauvaise connexion internet, grâce à une **[version hors-ligne](#download_offline)**  
 
 
 <!-- * Use practical epi examples - cleaning case linelists, making transmission chains and epidemic curves, automated reports and dashboards, modeling incidence and making projections, demographic pyramids and rate standardization, record matching, outbreak detection, survey analysis, survival analysis, GIS basics, contact tracing, phylogenetic trees...   -->
@@ -116,7 +116,7 @@ Nous sommes une équipe d'épidémiologistes venant du monde entier. Nous travai
 
 **Version hors-ligne**  
 
-Voir les instructions dans le chapitre [Download handbook and data] pour télécharger le livre.  
+Voir les instructions dans le chapitre [Téléchargement du livre et données](#download_book_data) pour télécharger le livre.  
 
 **Langues**  
 
