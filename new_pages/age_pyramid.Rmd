@@ -1,5 +1,5 @@
 
-# Demographic pyramids and Likert-scales {}  
+# Demographic pyramids and Likert-scales {#age_pyramid}  
 
 
 

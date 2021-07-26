@@ -1,5 +1,5 @@
 
-# Contact tracing { }
+# Contact tracing {#contact_tracing}
 
 
 This page demonstrates descriptive analysis of contact tracing data, addessing some key considerations and approaches unique to these kinds of data.  

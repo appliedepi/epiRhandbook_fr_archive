@@ -1,5 +1,5 @@
 
-# Dashboards with Shiny { }  
+# Dashboards with Shiny {#shiny}  
 
 Dashboards are often a great way to share results from analyses with others. Producing a dashboard with **shiny** requires a relatively advanced knowledge of the R language, but offers incredible customization and possibilities.  
 

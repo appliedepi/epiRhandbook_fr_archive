@@ -1,4 +1,4 @@
-# Suggested packages
+# Paquets conseillés {#suggested_packages}
 
 Below is a long list of suggested packages for common epidemiological work in R. You can copy this code, run it, and all of these packages will install from CRAN and load for use in the current R session. If a package is already installed, it will be loaded for use only.  
 
