@@ -91,7 +91,7 @@ Si vous le souhaitez, vous pouvez consulter toutes les données utilisées dans 
 Vous pouvez télécharger les données fichier par fichier à partir de notre dépôt Github via un lien ou une commande R spécifique au fichier. Certains types de fichiers ont un bouton de téléchargement, tandis que d'autres peuvent être téléchargés via une commande R. 
 
 
-#### Linelist de cas {.unnumbered}
+#### Liste de cas (linelist) {.unnumbered}
 
 Il s'agit d'une linelist pour une épidémie d'Ebola fictive, développée par notre équipe à partir du jeu de données d'exemple `ebola_sim` du paquet **outbreaks**.  
 
@@ -244,86 +244,88 @@ standard_pop_data <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/
 
 
 
-#### Time series and outbreak detection {#data_outbreak .unnumbered}  
+#### Séries temporelles et détection des épidémies {#data_outbreak .unnumbered}  
 
-See the page on [Time series and outbreak detection](#time_series). We use campylobacter cases reported in Germany 2002-2011, as available from the **surveillance** R package. (*nb.* this dataset has been adapted from the original, in that 3 months of data have been deleted from the end of 2011 for demonstration purposes)
+Voir la page sur [les séries temporelles et la détection des épidémies](#time_series). Nous utilisons les cas de campylobacter rapportés en Allemagne de 2002 à 2011, tels que disponibles dans le paquet R **surveillance**. (*note* cet ensemble de données a été adapté de l'original, en ce sens que 3 mois de données ont été supprimés à partir de la fin de 2011 à des fins de démonstration).
+
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/campylobacter_germany.xlsx' class='download-button'>
-	Click to download
-	<span> Campylobacter in Germany (.xlsx)</span>
+	Cliquer pour télécharger
+	<span> Campylobacter en Allemagne (.xlsx)</span>
 </a>
 
-We also use climate data from Germany 2002-2011 (temperature in degrees celsius and rain fail in millimetres) . These were downloaded from the EU Copernicus satellite reanalysis dataset using the **ecmwfr** package. You will need to download all of these and import them with `stars::read_stars()` as explained in the time series page.  
+Nous utilisons également les données climatiques de l'Allemagne entre 2002 et 2011 (température en degrés Celsius et précipitations en millimètres). Ces données ont été téléchargées à partir d'un jeu de données dérivé des données produites par le satellite Copernicus (UE) à l'aide du paquet **ecmwfr**. Vous devrez télécharger toutes ces données et les importer avec `stars::read_stars()` comme expliqué dans la page sur les séries temporelles.  
+
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2002.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2002 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2002 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2003.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2003 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2003 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2004.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2004 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2004 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2005.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2005 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2005 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2006.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2006 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2006 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2007.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2007 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2007 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2008.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2008 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2008 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2009.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2009 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2009 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2010.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2010 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2010 (.nc file)</span>
 </a> 
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2011.nc' class='download-button'>
-	Click to download
-	<span> Germany weather 2011 (.nc file)</span>
+	Cliquer pour télécharger
+	<span> Climat Allemagne 2011 (.nc file)</span>
 </a>
 
 
 
-#### Survey analysis {#data_survey .unnumbered}  
+#### Analyse d'enquêtes {#data_survey .unnumbered}  
 
-For the [survey analysis](#survey_analysis) page we use fictional mortality survey data based off MSF OCA survey templates. This fictional data was generated as part of the ["R4Epis" project](https://r4epis.netlify.app/).
+Pour la page [analyse d'enquête](#survey_analysis), nous utilisons des données d'enquêtes de mortalité fictives basées sur les modèles d'enquête MSF OCA. Ces données fictives ont été générées dans le cadre du projet ["R4Epis"](https://r4epis.netlify.app/).
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/surveys/survey_data.xlsx' class='download-button'>
-	Click to download
-	<span> Fictional survey data (.xlsx)</span>
+	Cliquer pour télécharger
+	<span> Données d'enquête fictives (.xlsx)</span>
 </a>
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/surveys/survey_dict.xlsx' class='download-button'>
-	Click to download
-	<span> Fictional survey data dictionary (.xlsx)</span>
+	Cliquer pour télécharger
+	<span> Données d'enquête fictives (dictionnaire) (.xlsx)</span>
 </a>
 
 <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/surveys/population.xlsx' class='download-button'>
-	Click to download
-	<span> Fictional survey population data (.xlsx)</span>
+	Cliquer pour télécharger
+	<span> Données d'enquête fictives (données de population) (.xlsx)</span>
 </a>
 
 
