@@ -188,16 +188,17 @@ knitr::include_graphics(here::here("images", "download_shp.png"))
 ```
 
 
-#### Phylogenetic trees {.unnumbered}  
+#### Arbres phylogénétiques {.unnumbered}  
 
-See the page on [Phylogenetic trees](phylogenetic_trees). Newick file of phylogenetic tree constructed from whole genome sequencing of 299 Shigella sonnei samples and corresponding sample data (converted to a text file). The Belgian samples and resulting data are kindly provided by the Belgian NRC for Salmonella and Shigella in the scope of a project conducted by an ECDC EUPHEM Fellow, and will also be published in a manuscript. The international data are openly available on public databases (ncbi) and have been previously published.  
-
-* To download the "Shigella_tree.txt" phylogenetic tree file, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/Shigella_tree.txt) (Cmd+click for Mac) and select "Save link as".  
-* To download the "sample_data_Shigella_tree.csv" with additional information on each sample, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/sample_data_Shigella_tree.csv) (Cmd+click for Mac) and select "Save link as".  
-* To see the new, created subset-tree, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/Shigella_subtree_2.txt) (Cmd+click for Mac) and select "Save link as". The .txt file will download to your computer.  
+La page sur les [arbres phylogénétiques](phylogenetic_trees) utilise un fichier Newick pour l'arbre phylogénétique construit à partir du séquençage du génome entier de 299 échantillons de Shigella sonnei et des données d'échantillons correspondantes (converties en fichier texte). Les échantillons belges et les données résultantes sont aimablement fournis par le CNR belge pour Salmonella et Shigella dans le cadre d'un projet mené par un boursier EUPHEM de l'ECDC, et seront également publiés dans un manuscrit. Les données internationales sont disponibles sur des bases de données publiques (ncbi) et ont déjà été publiées.  
 
 
-You can then import the .txt files with `read.tree()` from the **ape** package, as explained in the page.
+* Pour télécharger le fichier de l'arbre phylogénétique "Shigella_tree.txt", cliquez avec le bouton droit de la souris sur ce [lien](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/Shigella_tree.txt) (Cmd+click for Mac) et sélectionnez "Enregistrer le lien sous". 
+* Pour télécharger le fichier "sample_data_Shigella_tree.csv" contenant des informations supplémentaires sur chaque échantillon, cliquez avec le bouton droit de la souris sur ce [lien](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/sample_data_Shigella_tree.csv) (Cmd+clic pour Mac) et sélectionnez "Enregistrer le lien sous".  
+* Pour voir le nouveau sous-arbre créé, cliquez avec le bouton droit de la souris sur ce [lien](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/Shigella_subtree_2.txt) (Cmd+clic pour Mac) et sélectionnez "Enregistrer le lien sous". Le fichier .txt sera téléchargé sur votre ordinateur.  
+
+Vous pouvez ensuite importer les fichiers .txt avec `read.tree()` du paquet **ape**, comme expliqué dans le chapitre concerné.
+
 
 ```{r, eval=F}
 ape::read.tree("Shigella_tree.txt")
