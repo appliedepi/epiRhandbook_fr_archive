@@ -1,4 +1,4 @@
-# Download handbook and data  {#download_book_data}
+# Télécharger le manuel et les données  {#download_book_data}
 
 
 <!-- Note to self: If you want to create a download link to Github, right-click the "View Raw" button on Github, copy the address, and use that in the HTML below. -->
@@ -6,132 +6,109 @@
 
 
 
-## Download offline handbook  {#download_offline}
+## Télécharger le manuel hors-ligne  {#download_offline}
 
-You can download the offline version of this handbook as an HTML file so that you can view the file in your web browser even if you no longer have internet access. If you are considering offline use of the Epi R Handbook here are a few things to consider:  
+Vous pouvez télécharger la version hors-ligne de ce manuel en tant que fichier HTML afin de pouvoir le visualiser dans votre navigateur Web même si vous n'avez plus accès à Internet. Si vous envisagez d'utiliser le manuel Epi R hors ligne, voici quelques éléments à prendre en compte :  
 
-* When you open the file it may take a minute or two for the images and the Table of Contents to load  
-* The offline handbook has a slightly different layout - one very long page with Table of Contents on the left. To search for specific terms use Ctrl+f (Cmd-f)  
-* See the [Suggested packages] page to assist you with installing appropriate R packages before you lose internet connectivity  
-* Install our R package **epirhandbook** that contains all the example data (install process described below)  
+* Lorsque vous ouvrez le fichier, le chargement des images et de la table des matières peut prendre une minute ou deux.  
+* Le manuel hors ligne a une mise en page légèrement différente : une très longue page avec la table des matières à gauche. Pour rechercher des termes spécifiques, utilisez Ctrl + F (Cmd + F).  
+* Consultez la page [Paquets conseillés](#suggested_packages) pour vous aider à installer les paquets R appropriés avant de perdre votre connexion à Internet.  
+* Installez notre paquet R **epirhandbook** qui contient toutes les données utilisées dans les exemples (le processus d'installation est décrit ci-dessous).  
 
-**There are two ways you can download the handbook:**  
-
-
-
-### Use download link {.unnumbered}  
-
-For quick access, **right-click** [this link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/offline_long/Epi_R_Handbook_offline.html) **and select "Save link as"**.  
-
-If on a Mac, use Cmd+click. If on a mobile, press and hold the link and select "Save link". The handbook will download to your device. If a screen with raw HTML code appears, ensure you have followed the above instructions or try Option 2.  
+**Il y a deux façons de télécharger le manuel :**  
 
 
 
+### Utiliser le lien de téléchargement {.unnumbered}  
 
-### Use our R package {.unnumbered}  
+Pour un accès rapide, **cliquez à droite** [ce lien](https://github.com/epirhandbook/Epi_R_handbook/raw/master/offline_long/Epi_R_Handbook_offline.html) **et sélectionnez "Enregistrer le lien sous"**.  
 
-We offer an R package called **epirhandbook**. It includes a function `download_book()` that downloads the handbook file from our Github repository to your computer.  
+Si vous êtes sur un Mac, utilisez Cmd + clic. Si vous êtes sur un téléphone portable, appuyez sur le lien et maintenez-le enfoncé, puis sélectionnez "Enregistrer le lien". Le manuel sera téléchargé sur votre appareil. Si un écran contenant un code HTML brut apparaît, assurez-vous d'avoir suivi les instructions ci-dessus ou essayez l'option 2.  
 
 
-This package also contains a function `get_data()` that downloads all the example data to your computer.  
 
-Run the following code to install our R package **epirhandbook** from the [Github repository *appliedepi*](https://github.com/appliedepi/epirhandbook). This package is not on CRAN, so use the special function `p_install_gh()` to install it from Github.  
+### Utiliser notre paquet R {.unnumbered}  
+
+Nous avons développé un paquet R appelé **epirhandbook**. Il comprend une fonction `download_book()` qui télécharge le fichier du guide depuis notre dépôt Github sur votre ordinateur.  
+
+
+Ce package contient également une fonction `get_data()` qui télécharge toutes les données utilisées dans les chapitres sur votre ordinateur.  
+
+
+Exécutez le code suivant pour installer notre paquet R **epirhandbook** à partir du [dépôt Github *appliedepi*](https://github.com/appliedepi/epirhandbook). Ce paquet n'est pas sur le CRAN, donc utilisez la fonction spéciale `p_install_gh()` du paquet **pacman** pour l'installer depuis Github.  
 
 
 ```{r, eval=F}
-# install the latest version of the Epi R Handbook package
+# installer la dernière version du paquet epirhandbook
 pacman::p_install_gh("appliedepi/epirhandbook")
 ```
 
-Now, load the package for use in your current R session:  
+Maintenant, importer le paquet pour l'utiliser dans votre session R actuelle :  
 
 ```{r, eval=F}
-# load the package for use
+# Importer le paquet pour pouvoir l'utiliser dans la session ouverte
 pacman::p_load(epirhandbook)
 ```
 
-Next, run the package's function `download_book()` (with empty parentheses) to download the handbook to your computer. Assuming you are in RStudio, a window will appear allowing you to select a save location.  
+Ensuite, exécutez la fonction du paquet `download_book()` (avec des parenthèses vides) pour télécharger le manuel sur votre ordinateur. En supposant que vous êtes dans RStudio, une fenêtre apparaîtra pour vous permettre de sélectionner un emplacement de sauvegarde.  
+
 
 ```{r, eval=F}
-# download the offline handbook to your computer
+# télécharger la version html du manuel localement
 download_book()
 ```
 
 
 
+## Télécharger les données
 
+Pour pouvoir reproduire les exemples au fur et à mesure sur votre ordinateur, vous pouvez télécharger les données et les fichiers générés. 
 
-## Download data to follow along  
+### Utiliser notre paquet R {.unnumbered}  
 
-To "follow along" with the handbook pages, you can download the example data and outputs.  
+Une fois le paquet téléchargé et importé dans votre session R (voir section au-dessus) utilisez la fonction `get_data()` du paquet pour obtenir les données d'exemple sur votre ordinateur. Exécutez `get_data("all")` pour obtenir *toutes* les données d'exemple, ou fournissez un nom de fichier spécifique et une extension entre guillemets pour récupérer un seul fichier.  
 
-### Use our R package {.unnumbered}  
+Techniquement, toutes les données ont déjà été téléchargées avec le paquet, et doivent simplement être transférées dans un dossier de votre ordinateur. Une fenêtre pop-up apparaîtra, vous permettant de sélectionner un emplacement de dossier de sauvegarde. Nous vous suggérons de créer un nouveau dossier "data" car il y a environ 30 fichiers (y compris les données d'exemple et les sorties générées par les exemples).  
 
-The easiest approach to download all the data is to install our R package **epirhandbook**. It contains a function `get_data()` that saves all the example data to a folder of your choice on your computer.  
-
-To install our R package **epirhandbook**, run the following code. This package is not on CRAN, so use the function `p_install_gh()` to install it. The input is referencing our Github organisation ("*appliedepi*") and the **epirhandbook** package.  
 
 ```{r, eval=F}
-# install the latest version of the Epi R Handbook package
-pacman::p_install_gh("appliedepi/epirhandbook")
-```
-
-
-Now, load the package for use in your current R session:  
-
-```{r, eval=F}
-# load the package for use
-pacman::p_load(epirhandbook)
-```
-
-Next, use the package's function `get_data()` to download the example data to your computer. Run `get_data("all")` to get *all* the example data, or provide a specific file name and extension within the quotes to retrieve only one file.  
-
-The data have already been downloaded with the package, and simply need to be transferred out to a folder on your computer. A pop-up window will appear, allowing you to select a save folder location. We suggest you create a new "data" folder as there are about 30 files (including example data and example outputs).  
-
-```{r, eval=F}
-# download all the example data into a folder on your computer
+# enregistrer toutes les données dans un dossier sur votre ordinateur
 get_data("all")
 
-# download only the linelist example data into a folder on your computer
+# enregistrer les données linelist dans un dossiet sur votre ordinateur
 get_data(file = "linelist_cleaned.rds")
 
 ```
 
 
-```{r, eval=F}
-# download a specific file into a folder on your computer
-get_data("linelist_cleaned.rds")
-```
+Une fois que vous avez utilisé `get_data()` pour enregistrer un fichier sur votre ordinateur, vous devrez encore l'importer dans R. Voir la page [Importer et exporter des données](#import_export) pour plus de détails.  
 
-Once you have used `get_data()` to save a file to your computer, you will still need to import it into R. See the [Import and export] page for details.  
-
-If you wish, you can review all the data used in this handbook in the **["data" folder](https://github.com/epirhandbook/Epi_R_handbook/tree/master/data)** of our Github repository.  
+Si vous le souhaitez, vous pouvez consulter toutes les données utilisées dans ce manuel dans le **["dossier données"](https://github.com/epirhandbook/Epi_R_handbook/tree/master/data)** de notre dépôt Github.  
 
 
+### Téléchargement manuel {.unnumbered}  
 
-### Download one-by-one {.unnumbered}  
-
-This option involves downloading the data file-by-file from our Github repository via either a link or an R command specific to the file. Some file types allow a download button, while others can be downloaded via an R command.  
+Vous pouvez télécharger les données fichier par fichier à partir de notre dépôt Github via un lien ou une commande R spécifique au fichier. Certains types de fichiers ont un bouton de téléchargement, tandis que d'autres peuvent être téléchargés via une commande R. 
 
 
-#### Case linelist {.unnumbered}
+#### Linelist de cas {.unnumbered}
 
-This is a fictional Ebola outbreak, expanded by the handbook team from the `ebola_sim` practice dataset in the **outbreaks** package.  
+Il s'agit d'une linelist pour une épidémie d'Ebola fictive, développée par notre équipe à partir du jeu de données d'exemple `ebola_sim` du paquet **outbreaks**.  
 
-* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_raw.xlsx' class='download-button'>Click to download the "raw" linelist (.xlsx)</span></a>. The "raw" case linelist is an Excel spreadsheet with messy data. Use this to follow-along with the [Cleaning data and core functions] page.  
+* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_raw.xlsx' class='download-button'>Cliquer pour télécharger les données brutes (.xlsx)</span></a>. La liste de cas "brute" est une feuille de calcul Excel contenant des données désordonnées. Utilisez-la pour suivre la page [Nettoyer les données et fonctions essentielles](#cleaning_data).  
 
-* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>Click to download the "clean" linelist (.rds)</a>. Use this file for all other pages of this handbook that use the linelist. A .rds file is an R-specific file type that preserves column classes. This ensures you will have only minimal cleaning to do after importing the data into R.  
+* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>Cliquer pour télécharger la linelist nettoyée (.rds)</a>. Utilisez ce fichier pour toutes les autres pages de ce manuel qui utilisent la linelist. Un fichier .rds est un type de fichier spécifique à R qui préserve les classes de colonnes. Cela garantit que vous n'aurez qu'un nettoyage minimal à faire après avoir importé les données dans R.  
 
-*Other related files:*  
+*Autres fichiers linelist :*  
 
-* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.xlsx' class='download-button'>Click to download the "clean" linelist as an Excel file</a>
+* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.xlsx' class='download-button'>Cliquer pour télécharger la version nettoyée de la linelist sous format Excel</a>
 
-* Part of the cleaning page uses a "cleaning dictionary" (.csv file). You can load it directly into R by running the following commands:   
+* Une partie de la page sur le nettoyage des données utilise un "dictionnaire de nettoyage" (fichier .csv). Vous pouvez le charger directement dans R en exécutant les commandes suivantes :  
 
 ```{r, eval=F}
-pacman::p_load(rio) # install/load the rio package
+pacman::p_load(rio) # installer/importer le paquet **rio**
 
-# import the file directly from Github
+# importer le fichier directement depuis github
 cleaning_dict <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/cleaning_dict.csv")
 ```
 
@@ -148,7 +125,7 @@ These data are fictional counts of malaria cases by age group, facility, and day
 
 #### Likert-scale data {.unnumbered}  
 
-These are fictional data from a Likert-style survey, used in the page on [Demographic pyramids and Likert-scales]. You can load these data directly into R by running the following commands:    
+These are fictional data from a Likert-style survey, used in the page on [Demographic pyramids and Likert-scales](#age_pyramid). You can load these data directly into R by running the following commands:    
 
 ```{r, eval=F}
 pacman::p_load(rio) # install/load the rio package
@@ -160,14 +137,14 @@ likert_data <- import("https://raw.githubusercontent.com/nsbatra/Epi_R_handbook/
 
 #### Flexdashboard {.unnumbered}  
 
-Below are links to the file associated with the page on [Dashboards with R Markdown]:  
+Below are links to the file associated with the page on [Dashboards with R Markdown](#dashboards):  
 
 * To download the R Markdown for the outbreak dashboard, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/flexdashboard/outbreak_dashboard.Rmd) (Cmd+click for Mac) and select "Save link as".  
 * To download the HTML dashboard, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/flexdashboard/outbreak_dashboard_test.html) (Cmd+click for Mac) and select "Save link as".  
 
 #### Contact Tracing {.unnumbered} 
 
-The [Contact Tracing] page demonstrated analysis of contact tracing data, using example data from [Go.Data](https://github.com/WorldHealthOrganization/godata/tree/master/analytics/r-reporting). The data used in the page can be downloaded as .rds files by clicking the following links:  
+The [Contact Tracing](#contact_tracing) page demonstrated analysis of contact tracing data, using example data from [Go.Data](https://github.com/WorldHealthOrganization/godata/tree/master/analytics/r-reporting). The data used in the page can be downloaded as .rds files by clicking the following links:  
 
 <a href='https://github.com/WorldHealthOrganization/godata/blob/master/analytics/r-reporting/data/cases_clean.rds?raw=true' class='download-button'>
 	Click to download
@@ -195,7 +172,7 @@ The [Contact Tracing] page demonstrated analysis of contact tracing data, using 
 
 Shapefiles have many sub-component files, each with a different file extention. One file will have the ".shp" extension, but others may have ".dbf", ".prj", etc.  
 
-The [GIS basics] page provides links to the *Humanitarian Data Exchange* website where you can download the shapefiles directly as zipped files.  
+The [GIS basics](#gis) page provides links to the *Humanitarian Data Exchange* website where you can download the shapefiles directly as zipped files.  
 
 For example, the health facility points data can be downloaded [here](https://data.humdata.org/dataset/hotosm_sierra_leone_health_facilities). Download "hotosm_sierra_leone_health_facilities_points_shp.zip". Once saved to your computer, "unzip" the folder. You will see several files with different extensions (e.g. ".shp", ".prj", ".shx") - all these must be saved to the same folder on your computer. Then to import into R, provide the file path and name of the ".shp" file to `st_read()` from the **sf** package (as described in the [GIS basics] page).  
 
@@ -211,7 +188,7 @@ knitr::include_graphics(here::here("images", "download_shp.png"))
 
 #### Phylogenetic trees {.unnumbered}  
 
-See the page on [Phylogenetic trees]. Newick file of phylogenetic tree constructed from whole genome sequencing of 299 Shigella sonnei samples and corresponding sample data (converted to a text file). The Belgian samples and resulting data are kindly provided by the Belgian NRC for Salmonella and Shigella in the scope of a project conducted by an ECDC EUPHEM Fellow, and will also be published in a manuscript. The international data are openly available on public databases (ncbi) and have been previously published.  
+See the page on [Phylogenetic trees](phylogenetic_trees). Newick file of phylogenetic tree constructed from whole genome sequencing of 299 Shigella sonnei samples and corresponding sample data (converted to a text file). The Belgian samples and resulting data are kindly provided by the Belgian NRC for Salmonella and Shigella in the scope of a project conducted by an ECDC EUPHEM Fellow, and will also be published in a manuscript. The international data are openly available on public databases (ncbi) and have been previously published.  
 
 * To download the "Shigella_tree.txt" phylogenetic tree file, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/phylo/Shigella_tree.txt) (Cmd+click for Mac) and select "Save link as".  
 * To download the "sample_data_Shigella_tree.csv" with additional information on each sample, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/phylo/sample_data_Shigella_tree.csv) (Cmd+click for Mac) and select "Save link as".  
@@ -227,7 +204,7 @@ ape::read.tree("Shigella_tree.txt")
 
 #### Standardization {.unnumbered}  
 
-See the page on [Standardised rates]. You can load the data directly from our Github repository on the internet into your R session with the following commands:  
+See the page on [Standardised rates](#standardisation). You can load the data directly from our Github repository on the internet into your R session with the following commands:  
 
 
 ```{r, eval=F}
@@ -264,7 +241,7 @@ standard_pop_data <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/
 
 #### Time series and outbreak detection {#data_outbreak .unnumbered}  
 
-See the page on [Time series and outbreak detection]. We use campylobacter cases reported in Germany 2002-2011, as available from the **surveillance** R package. (*nb.* this dataset has been adapted from the original, in that 3 months of data have been deleted from the end of 2011 for demonstration purposes)
+See the page on [Time series and outbreak detection](#time_series). We use campylobacter cases reported in Germany 2002-2011, as available from the **surveillance** R package. (*nb.* this dataset has been adapted from the original, in that 3 months of data have been deleted from the end of 2011 for demonstration purposes)
 
 <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/campylobacter_germany.xlsx' class='download-button'>
 	Click to download
@@ -327,7 +304,7 @@ We also use climate data from Germany 2002-2011 (temperature in degrees celsius 
 
 #### Survey analysis {#data_survey .unnumbered}  
 
-For the [survey analysis](https://epirhandbook.com/survey-analysis.html) page we use fictional mortality survey data based off MSF OCA survey templates. This fictional data was generated as part of the ["R4Epis" project](https://r4epis.netlify.app/).
+For the [survey analysis](#survey_analysis) page we use fictional mortality survey data based off MSF OCA survey templates. This fictional data was generated as part of the ["R4Epis" project](https://r4epis.netlify.app/).
 
 <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/surveys/survey_data.xlsx' class='download-button'>
 	Click to download
@@ -349,7 +326,7 @@ For the [survey analysis](https://epirhandbook.com/survey-analysis.html) page we
 
 #### Shiny {#data_shiny .unnumbered}  
 
-The page on [Dashboards with Shiny] demonstrates the construction of a simple app to display malaria data.  
+The page on [Dashboards with Shiny](#shiny) demonstrates the construction of a simple app to display malaria data.  
 
 To download the R files that produce the Shiny app:  
 
