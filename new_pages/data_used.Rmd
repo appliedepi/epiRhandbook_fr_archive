@@ -205,38 +205,40 @@ ape::read.tree("Shigella_tree.txt")
 ```
 
 
-#### Standardization {.unnumbered}  
+#### Standardization {.unnumbered} 
 
-See the page on [Standardised rates](#standardisation). You can load the data directly from our Github repository on the internet into your R session with the following commands:  
+Pour la page sur la [standardisation des données](#standardisation), vous pouvez charger les données directement depuis notre dépôt Github sur internet dans votre session R avec les commandes suivantes :  
 
 
 ```{r, eval=F}
-# install/load the rio package
+# installer/importer le paquet **rio**
 pacman::p_load(rio) 
 
 ##############
-# Country A
+# Pays A
 ##############
-# import demographics for country A directly from Github
+# import des données démographiques du pays depuis github
 A_demo <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/country_demographics.csv")
 
-# import deaths for country A directly from Github
+# import des données de mortalité du pays depuis github
 A_deaths <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/deaths_countryA.csv")
 
+
+
 ##############
-# Country B
+# Pays B
 ##############
-# import demographics for country B directly from Github
+# import des données démographiques du pays depuis github
 B_demo <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/country_demographics_2.csv")
 
-# import deaths for country B directly from Github
+# import des données de mortalité du pays depuis github
 B_deaths <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/deaths_countryB.csv")
 
 
 ###############
-# Reference Pop
+# Population de référence
 ###############
-# import demographics for country B directly from Github
+# import depuis Github
 standard_pop_data <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/world_standard_population_by_sex.csv")
 ```
 
