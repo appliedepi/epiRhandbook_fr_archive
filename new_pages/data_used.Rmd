@@ -170,18 +170,18 @@ La page [Recherche des contacts](#contact_tracing) présente une analyse des don
 <span style="color: darkgreen;">**_TIP:_** Si vous déployez Go.Data et souhaitez vous connecter à l'API de votre instance, consultez la page Importation et exportation, [(section API)](#import_api) et la [Communauté de pratique Go.Data](https://community-godata.who.int/).</span>
 
 
-#### GIS {.unnumbered}  
 
-Shapefiles have many sub-component files, each with a different file extention. One file will have the ".shp" extension, but others may have ".dbf", ".prj", etc.  
+#### SIG {.unnumbered}  
 
-The [GIS basics](#gis) page provides links to the *Humanitarian Data Exchange* website where you can download the shapefiles directly as zipped files.  
+Les fichiers Shapefiles comportent de nombreux sous-fichiers, chacun avec une extension de fichier différente. Un fichier aura l'extension ".shp", mais d'autres peuvent avoir ".dbf", ".prj", etc.  
 
-For example, the health facility points data can be downloaded [here](https://data.humdata.org/dataset/hotosm_sierra_leone_health_facilities). Download "hotosm_sierra_leone_health_facilities_points_shp.zip". Once saved to your computer, "unzip" the folder. You will see several files with different extensions (e.g. ".shp", ".prj", ".shx") - all these must be saved to the same folder on your computer. Then to import into R, provide the file path and name of the ".shp" file to `st_read()` from the **sf** package (as described in the [GIS basics] page).  
+La page [Notions de base sur les SIG](#gis) fournit des liens vers le site Web *Humanitarian Data Exchange* où vous pouvez télécharger les fichiers de forme directement sous forme de fichiers zippés.  
 
-If you follow Option 1 to download all the example data (via our R package **epirhandbook**), all the shapefiles are included.  
+Par exemple, les données des locations des établissements de santé peuvent être téléchargées [ici](https://data.humdata.org/dataset/hotosm_sierra_leone_health_facilities). Téléchargez "hotosm_sierra_leone_health_facilities_points_shp.zip". Une fois enregistré sur votre ordinateur, décompressez le dossier. Vous verrez plusieurs fichiers avec des extensions différentes (par exemple, ".shp", ".prj", ".shx"); tous ces fichiers doivent être enregistrés dans le même dossier sur votre ordinateur. Ensuite, pour importer dans R, fournissez le chemin et le nom du fichier ".shp" à `st_read()` du paquet **sf** (comme décrit dans la page [Notions de base sur les SIG](#gis)).  
 
+Si vous suivez l'option 1 pour télécharger toutes les données de l'exemple (via notre paquet R **epirhandbook**), tous les shapefiles sont inclus.  
 
-Alternatively, you can download the shapefiles from the R Handbook Github "data" folder (see the "gis" sub-folder). However, be aware that you will need to download *each* sub-file individually to your computer. In Github, click on each file individually and download them by clicking on the "Download" button. Below, you can see how the shapefile "sle_adm3" consists of many files - each of which would need to be downloaded from Github.  
+Vous pouvez également télécharger les fichiers Shapefile à partir du dossier "data" du manuel R sur Github (voir le sous-dossier "gis"). Cependant, sachez que vous devrez télécharger *chaque* sous-fichier individuellement sur votre ordinateur. Dans Github, cliquez sur chaque fichier et téléchargez-les en cliquant sur le bouton "Télécharger". Ci-dessous, vous pouvez voir comment le fichier de forme "sle_adm3" se compose de plusieurs fichiers, chacun devant être téléchargé depuis Github. 
 
 ```{r out.height = "50%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "download_shp.png"))
