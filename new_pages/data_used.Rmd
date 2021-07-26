@@ -138,10 +138,11 @@ likert_data <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master
 
 #### Flexdashboard {.unnumbered}  
 
-Below are links to the file associated with the page on [Dashboards with R Markdown](#dashboards):  
+Vous trouverez ci-dessous des liens vers le fichier associé à la page [Tableaux de bord avec R Markdown].(#dashboards): 
 
-* To download the R Markdown for the outbreak dashboard, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/flexdashboard/outbreak_dashboard.Rmd) (Cmd+click for Mac) and select "Save link as".  
-* To download the HTML dashboard, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/flexdashboard/outbreak_dashboard_test.html) (Cmd+click for Mac) and select "Save link as".  
+* Pour télécharger le fichier  RMarkdown (.Rmd) du tableau de bord sur les épidémies, faites un clic droit sur ce [lien](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/flexdashboard/outbreak_dashboard.Rmd) (Cmd+clic pour Mac) et sélectionnez "Enregistrer le lien sous".  
+* Pour télécharger le tableau de bord HTML, cliquez avec le bouton droit de la souris sur ce [lien](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/flexdashboard/outbreak_dashboard_test.html). (Cmd + clic pour Mac) et sélectionnez "Enregistrer le lien sous".  
+
 
 #### Contact Tracing {.unnumbered} 
 
