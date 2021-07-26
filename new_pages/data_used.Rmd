@@ -21,7 +21,7 @@ Vous pouvez télécharger la version hors-ligne de ce manuel en tant que fichier
 
 ### Utiliser le lien de téléchargement {.unnumbered}  
 
-Pour un accès rapide, **cliquez à droite** [ce lien](https://github.com/epirhandbook/Epi_R_handbook/raw/master/offline_long/Epi_R_Handbook_offline.html) **et sélectionnez "Enregistrer le lien sous"**.  
+Pour un accès rapide, **cliquez à droite** [ce lien](https://github.com/appliedepi/epiRhandbook_fr/blob/master/offline_long/Epi_R_Handbook_offline.html) **et sélectionnez "Enregistrer le lien sous"**.  
 
 Si vous êtes sur un Mac, utilisez Cmd + clic. Si vous êtes sur un téléphone portable, appuyez sur le lien et maintenez-le enfoncé, puis sélectionnez "Enregistrer le lien". Le manuel sera téléchargé sur votre appareil. Si un écran contenant un code HTML brut apparaît, assurez-vous d'avoir suivi les instructions ci-dessus ou essayez l'option 2.  
 
@@ -95,13 +95,13 @@ Vous pouvez télécharger les données fichier par fichier à partir de notre d�
 
 Il s'agit d'une linelist pour une épidémie d'Ebola fictive, développée par notre équipe à partir du jeu de données d'exemple `ebola_sim` du paquet **outbreaks**.  
 
-* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_raw.xlsx' class='download-button'>Cliquer pour télécharger les données brutes (.xlsx)</span></a>. La liste de cas "brute" est une feuille de calcul Excel contenant des données désordonnées. Utilisez-la pour suivre la page [Nettoyer les données et fonctions essentielles](#cleaning_data).  
+* <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/case_linelists/linelist_raw.xlsx' class='download-button'>Cliquer pour télécharger les données brutes (.xlsx)</span></a>. La liste de cas "brute" est une feuille de calcul Excel contenant des données désordonnées. Utilisez-la pour suivre la page [Nettoyer les données et fonctions essentielles](#cleaning_data).  
 
-* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>Cliquer pour télécharger la linelist nettoyée (.rds)</a>. Utilisez ce fichier pour toutes les autres pages de ce manuel qui utilisent la linelist. Un fichier .rds est un type de fichier spécifique à R qui préserve les classes de colonnes. Cela garantit que vous n'aurez qu'un nettoyage minimal à faire après avoir importé les données dans R.  
+* <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>Cliquer pour télécharger la linelist nettoyée (.rds)</a>. Utilisez ce fichier pour toutes les autres pages de ce manuel qui utilisent la linelist. Un fichier .rds est un type de fichier spécifique à R qui préserve les classes de colonnes. Cela garantit que vous n'aurez qu'un nettoyage minimal à faire après avoir importé les données dans R.  
 
 *Autres fichiers linelist :*  
 
-* <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.xlsx' class='download-button'>Cliquer pour télécharger la version nettoyée de la linelist sous format Excel</a>
+* <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/case_linelists/linelist_cleaned.xlsx' class='download-button'>Cliquer pour télécharger la version nettoyée de la linelist sous format Excel</a>
 
 * Une partie de la page sur le nettoyage des données utilise un "dictionnaire de nettoyage" (fichier .csv). Vous pouvez le charger directement dans R en exécutant les commandes suivantes :  
 
@@ -109,29 +109,30 @@ Il s'agit d'une linelist pour une épidémie d'Ebola fictive, développée par n
 pacman::p_load(rio) # installer/importer le paquet **rio**
 
 # importer le fichier directement depuis github
-cleaning_dict <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/cleaning_dict.csv")
+cleaning_dict <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/case_linelists/cleaning_dict.csv")
 ```
 
 
-#### Malaria count data {#data_malaria .unnumbered}  
+#### Cas de paludisme {#data_malaria .unnumbered}  
 
-These data are fictional counts of malaria cases by age group, facility, and day. A .rds file is an R-specific file type that preserves column classes. This ensures you will have only minimal cleaning to do after importing the data into R.  
+Ces données sont des comptages fictifs de cas de paludisme par groupe d'âge, établissement et jour. Un fichier .rds est un type de fichier spécifique à R qui préserve les classes de colonnes. Cela garantit que vous n'aurez qu'un nettoyage minimal à faire après avoir importé les données dans R.  
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/malaria_facility_count_data.rds' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/malaria_facility_count_data.rds' class='download-button'>
 	Click to download
-	<span>the malaria count data (.rds file)</span>
+	<span>les comptages de de cas de paludisme (.rds file)</span>
 </a>
 
 
-#### Likert-scale data {.unnumbered}  
+#### Données sur l'échelle de Likert {.unnumbered}  
 
-These are fictional data from a Likert-style survey, used in the page on [Demographic pyramids and Likert-scales](#age_pyramid). You can load these data directly into R by running the following commands:    
+Il s'agit de données fictives issues d'une enquête de type Likert, utilisées dans la page [Pyramides démographiques et échelles de Likert](#age_pyramid). Vous pouvez charger ces données directement dans R en exécutant les commandes suivantes :    
+
 
 ```{r, eval=F}
-pacman::p_load(rio) # install/load the rio package
+pacman::p_load(rio)  # installer/importer le paquet **rio**
 
-# import the file directly from Github
-likert_data <- import("https://raw.githubusercontent.com/nsbatra/Epi_R_handbook/master/data/likert_data.csv")
+# importer le fichier directement depuis github
+likert_data <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/likert_data.csv")
 ```
 
 
@@ -139,8 +140,8 @@ likert_data <- import("https://raw.githubusercontent.com/nsbatra/Epi_R_handbook/
 
 Below are links to the file associated with the page on [Dashboards with R Markdown](#dashboards):  
 
-* To download the R Markdown for the outbreak dashboard, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/flexdashboard/outbreak_dashboard.Rmd) (Cmd+click for Mac) and select "Save link as".  
-* To download the HTML dashboard, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/flexdashboard/outbreak_dashboard_test.html) (Cmd+click for Mac) and select "Save link as".  
+* To download the R Markdown for the outbreak dashboard, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/flexdashboard/outbreak_dashboard.Rmd) (Cmd+click for Mac) and select "Save link as".  
+* To download the HTML dashboard, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/flexdashboard/outbreak_dashboard_test.html) (Cmd+click for Mac) and select "Save link as".  
 
 #### Contact Tracing {.unnumbered} 
 
@@ -190,9 +191,9 @@ knitr::include_graphics(here::here("images", "download_shp.png"))
 
 See the page on [Phylogenetic trees](phylogenetic_trees). Newick file of phylogenetic tree constructed from whole genome sequencing of 299 Shigella sonnei samples and corresponding sample data (converted to a text file). The Belgian samples and resulting data are kindly provided by the Belgian NRC for Salmonella and Shigella in the scope of a project conducted by an ECDC EUPHEM Fellow, and will also be published in a manuscript. The international data are openly available on public databases (ncbi) and have been previously published.  
 
-* To download the "Shigella_tree.txt" phylogenetic tree file, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/phylo/Shigella_tree.txt) (Cmd+click for Mac) and select "Save link as".  
-* To download the "sample_data_Shigella_tree.csv" with additional information on each sample, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/phylo/sample_data_Shigella_tree.csv) (Cmd+click for Mac) and select "Save link as".  
-* To see the new, created subset-tree, right-click this [link](https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/phylo/Shigella_subtree_2.txt) (Cmd+click for Mac) and select "Save link as". The .txt file will download to your computer.  
+* To download the "Shigella_tree.txt" phylogenetic tree file, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/Shigella_tree.txt) (Cmd+click for Mac) and select "Save link as".  
+* To download the "sample_data_Shigella_tree.csv" with additional information on each sample, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/sample_data_Shigella_tree.csv) (Cmd+click for Mac) and select "Save link as".  
+* To see the new, created subset-tree, right-click this [link](https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/phylo/Shigella_subtree_2.txt) (Cmd+click for Mac) and select "Save link as". The .txt file will download to your computer.  
 
 
 You can then import the .txt files with `read.tree()` from the **ape** package, as explained in the page.
@@ -215,26 +216,26 @@ pacman::p_load(rio)
 # Country A
 ##############
 # import demographics for country A directly from Github
-A_demo <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/standardization/country_demographics.csv")
+A_demo <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/country_demographics.csv")
 
 # import deaths for country A directly from Github
-A_deaths <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/standardization/deaths_countryA.csv")
+A_deaths <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/deaths_countryA.csv")
 
 ##############
 # Country B
 ##############
 # import demographics for country B directly from Github
-B_demo <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/standardization/country_demographics_2.csv")
+B_demo <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/country_demographics_2.csv")
 
 # import deaths for country B directly from Github
-B_deaths <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/standardization/deaths_countryB.csv")
+B_deaths <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/deaths_countryB.csv")
 
 
 ###############
 # Reference Pop
 ###############
 # import demographics for country B directly from Github
-standard_pop_data <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/standardization/world_standard_population_by_sex.csv")
+standard_pop_data <- import("https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/standardization/world_standard_population_by_sex.csv")
 ```
 
 
@@ -243,59 +244,59 @@ standard_pop_data <- import("https://github.com/epirhandbook/Epi_R_handbook/raw/
 
 See the page on [Time series and outbreak detection](#time_series). We use campylobacter cases reported in Germany 2002-2011, as available from the **surveillance** R package. (*nb.* this dataset has been adapted from the original, in that 3 months of data have been deleted from the end of 2011 for demonstration purposes)
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/campylobacter_germany.xlsx' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/campylobacter_germany.xlsx' class='download-button'>
 	Click to download
 	<span> Campylobacter in Germany (.xlsx)</span>
 </a>
 
 We also use climate data from Germany 2002-2011 (temperature in degrees celsius and rain fail in millimetres) . These were downloaded from the EU Copernicus satellite reanalysis dataset using the **ecmwfr** package. You will need to download all of these and import them with `stars::read_stars()` as explained in the time series page.  
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2002.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2002.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2002 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2003.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2003.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2003 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2004.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2004.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2004 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2005.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2005.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2005 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2006.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2006.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2006 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2007.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2007.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2007 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2008.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2008.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2008 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2009.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2009.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2009 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2010.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2010.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2010 (.nc file)</span>
 </a> 
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/weather/germany_weather2011.nc' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/time_series/weather/germany_weather2011.nc' class='download-button'>
 	Click to download
 	<span> Germany weather 2011 (.nc file)</span>
 </a>
@@ -306,17 +307,17 @@ We also use climate data from Germany 2002-2011 (temperature in degrees celsius 
 
 For the [survey analysis](#survey_analysis) page we use fictional mortality survey data based off MSF OCA survey templates. This fictional data was generated as part of the ["R4Epis" project](https://r4epis.netlify.app/).
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/surveys/survey_data.xlsx' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/surveys/survey_data.xlsx' class='download-button'>
 	Click to download
 	<span> Fictional survey data (.xlsx)</span>
 </a>
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/surveys/survey_dict.xlsx' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/surveys/survey_dict.xlsx' class='download-button'>
 	Click to download
 	<span> Fictional survey data dictionary (.xlsx)</span>
 </a>
 
-<a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/surveys/population.xlsx' class='download-button'>
+<a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/surveys/population.xlsx' class='download-button'>
 	Click to download
 	<span> Fictional survey population data (.xlsx)</span>
 </a>
@@ -330,7 +331,7 @@ The page on [Dashboards with Shiny](#shiny) demonstrates the construction of a s
 
 To download the R files that produce the Shiny app:  
 
-You can <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/malaria_app/app.R' class='download-button'>
+You can <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/malaria_app/app.R' class='download-button'>
 	click here to download the app.R file<span> that contains both the UI and Server code for the Shiny app.</span></a>
 
 You can <a href='https://github.com/epirhandbook/Epi_R_handbook/blob/master/data/malaria_app/data/facility_count_data.rds' class='download-button'>
@@ -339,7 +340,7 @@ You can <a href='https://github.com/epirhandbook/Epi_R_handbook/blob/master/data
 You can <a href='https://github.com/epirhandbook/Epi_R_handbook/blob/master/data/malaria_app/global.R' class='download-button'>
 	click here to download the global.R file<span></a> that should run prior to the app opening, as explained in the page.
 	
-You can <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/malaria_app/funcs/plot_epicurve.R' class='download-button'>
+You can <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/malaria_app/funcs/plot_epicurve.R' class='download-button'>
 	click here to download the plot_epicurve.R file<span></a> that is sourced by global.R. Note that you may need to store it within a "funcs" folder for the here() file paths to work correctly.
 
 
