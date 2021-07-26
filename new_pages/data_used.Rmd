@@ -331,20 +331,21 @@ For the [survey analysis](#survey_analysis) page we use fictional mortality surv
 
 #### Shiny {#data_shiny .unnumbered}  
 
-The page on [Dashboards with Shiny](#shiny) demonstrates the construction of a simple app to display malaria data.  
+La page sur les [tableaux de bord avec Shiny](#shiny) illustre la construction d'une application simple pour afficher les données sur le paludisme.  
 
-To download the R files that produce the Shiny app:  
+Pour télécharger les fichiers R qui produisent l'app Shiny :  
 
-You can <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/malaria_app/app.R' class='download-button'>
-	click here to download the app.R file<span> that contains both the UI and Server code for the Shiny app.</span></a>
+Vous pouvez <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/malaria_app/app.R' class='download-button'>
+	cliquer ici pour télécharger le fichier app.R<span> qui contient à la fois le code de l'interface utilisateur et du serveur pour l'application Shiny.</span></a>.
 
-You can <a href='https://github.com/epirhandbook/Epi_R_handbook/blob/master/data/malaria_app/data/facility_count_data.rds' class='download-button'>
-	click here to download the facility_count_data.rds file<span></a> that contains malaria data for the Shiny app. Note that you may need to store it within a "data" folder for the here() file paths to work correctly.  
+Vous pouvez <a href='https://github.com/epirhandbook/Epi_R_handbook/blob/master/data/malaria_app/data/facility_count_data.rds' class='download-button'>
+	cliquer ici pour télécharger le fichier facility_count_data.rds<span></a> qui contient les données sur le paludisme pour l'application Shiny. Notez que vous devrez peut-être l'enregistrer dans un dossier "data" pour que les chemins de fichier here() fonctionnent correctement.  
 
-You can <a href='https://github.com/epirhandbook/Epi_R_handbook/blob/master/data/malaria_app/global.R' class='download-button'>
-	click here to download the global.R file<span></a> that should run prior to the app opening, as explained in the page.
+Vous pouvez <a href='https://github.com/epirhandbook/Epi_R_handbook/blob/master/data/malaria_app/global.R' class='download-button'>
+	cliquer ici pour télécharger le fichier global.R<span></a> qui doit être exécuté avant l'ouverture de l'app, comme expliqué dans la page.
 	
-You can <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/malaria_app/funcs/plot_epicurve.R' class='download-button'>
-	click here to download the plot_epicurve.R file<span></a> that is sourced by global.R. Note that you may need to store it within a "funcs" folder for the here() file paths to work correctly.
+Vous pouvez <a href='https://github.com/appliedepi/epiRhandbook_fr/tree/master/data/malaria_app/funcs/plot_epicurve.R' class='download-button'>
+	cliquer ici pour télécharger le fichier plot_epicurve.R<span></a> dont l'exécution est lancée par le script global.R. Notez que vous devrez peut-être le stocker dans un dossier "funcs" pour que les chemins de fichier here() fonctionnent correctement.
+
 
 
