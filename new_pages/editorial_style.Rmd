@@ -1,17 +1,17 @@
-# Notes d'édition et techniques { }
+# Notes techniques et choix éditoriaux { }
 
-Nous décrivons ici les choix pédagogiques, le style et les décisions éditoriales spécifiques prises lors de la création de ce guide.  
+Nous décrivons ici les choix pédagogiques, le style et les décisions éditoriales spécifiques prises lors de l'écriture de ce guide.  
 
 
 ## Approche et style
 
-Le public visé par ce guide est vaste. Nous espérons qu'il sera utile aux épidémiologistes novices en R, mais aussi aux utilisateurs expérimentés à la recherche de bonnes pratiques et d'astuces. L'ouvrage doit donc être à la fois accessible et succinct. Notre approche vise à fournir *juste assez* d'explications textuelles pour qu'une personne très novice en R puisse appliquer le code et comprendre ce qu'il fait.  
+Le public visé par ce manuel est large. Nous espérons qu'il sera utile aux épidémiologistes novices en R, mais aussi aux utilisateurs expérimentés à la recherche de bonnes pratiques et d'astuces. L'ouvrage doit donc être à la fois accessible et succinct. Notre cherchons à fournir *juste assez* d'explications textuelles pour qu'une personne débutante en R puisse appliquer le code et comprendre ce qu'il fait.  
 
 
 En conséquences de quoi, ce guide est :  
 
-* un ouvrage de référence de code, accompagné d'exemples relativement brefs *et non* un manuel complet sur R ou la science des données  
-* un *manuel R* à utiliser dans le cadre de l'épidémiologie appliquée, *et non* un manuel sur les méthodes ou la science de l'épidémiologie appliquée  
+* un ouvrage de référence de code, accompagné d'exemples relativement brefs, *et non* un manuel complet sur R ou la science des données  
+* un *guide R* à utiliser dans le cadre de l'épidémiologie appliquée, *et non* un manuel sur les méthodes ou la science de l'épidémiologie appliquée  
 * un document évolutif : les paquets R optimaux pour une tâche donnée changent souvent et nous sommes ouverts à toute discussion sur les paquets à privilégier dans ce manuel.  
 
 
@@ -20,25 +20,25 @@ En conséquences de quoi, ce guide est :
 
 **Tellement de possibilités...**  
 
-Un aspect difficile de l'apprentissage de R est de savoir quel paquet R utiliser pour une tâche donnée. Il n'est pas rare que l'on sue pour écrire vingt (cent ?) lignes de code, pour se rendre compte plus tard qu'il existe un paquet R qui fait tout cela en une seule ligne de commande !  
+Un aspect difficile de l'apprentissage de R est de savoir quel paquet R utiliser pour une tâche donnée. Il n'est pas rare que l'on se décarcasse à écrire vingt (cent ?) lignes de code, pour se rendre compte plus tard qu'il existe un paquet R qui donne le même résultat recheré en une seule ligne de commande !  
 
 
-Dans ce guide, nous essayons de vous proposer au moins deux façons de réaliser chaque tâche : une méthode éprouvée (probablement dans **base** R ou **tidyverse**) et un paquet R spécialement conçu à cet effet. Nous voulons que vous ayez les deux options, au cas où vous ne pourriez pas télécharger un paquet donné ou si celui-ci ne vous convient pas.  
+Dans ce guide, nous essayons de vous proposer au moins deux façons de réaliser chaque tâche : une méthode éprouvée (probablement dans R de **base** ou utilisant le **tidyverse**) et un paquet R spécialement conçu à cet effet. Nous voulons que vous ayez les deux options, au cas où vous ne pourriez pas télécharger un paquet donné ou si celui-ci ne vous convient pas.  
  
 Pour choisir les paquets à utiliser, nous avons donné la priorité aux paquets R et aux approches qui ont été testés et approuvés par la communauté, qui minimisent le nombre de paquets utilisés dans une session de travail typique, qui sont stables (ne changent pas très souvent) et qui accomplissent la tâche simplement et proprement.  
 
 
-Ce manuel donne généralement la priorité aux paquets et fonctions R du méta-paquet **tidyverse**. Tidyverse est une *collection de paquets R* conçus pour la science des données, et qui partagent une grammaire et des structures de données sous-jacentes. Tous les paquets du Tidyverse peuvent être installés ou chargés séparéments, ou en masse via le paquet **tidyverse**. Pour en savoir plus, consultez le [site Web du tidyverse](https://www.tidyverse.org/). 
+Ce manuel donne généralement la priorité aux paquets et fonctions R du méta-paquet **tidyverse**. Tidyverse est une *collection de paquets R* conçus pour la science des données, et qui partagent une grammaire et des structures de données sous-jacentes. Tous les paquets du Tidyverse peuvent être installés ou chargés séparément, ou en masse via le paquet **tidyverse**. Pour en savoir plus, consultez le [site Web du tidyverse](https://www.tidyverse.org/). 
 
 
-Nous proposons également souvent des options de code utilisant R de **base** (les paquets et fonctions fournis avec R à l'installation). Nous sommes conscients que certains lecteurs de ce livre ne disposent pas d'un accès Internet fiable pour télécharger des paquets supplémentaires. 
+Nous proposons également souvent des options de code utilisant R de **base** (les paquets et fonctions fournis avec R à l'installation). En effet, nous sommes conscients que certains lecteurs de ce livre ne disposent pas d'un accès Internet fiable pour télécharger des paquets supplémentaires. 
 
 
 **Expliciter quelle fonction appartient à quel paquet**
 
-Il est souvent frustrant lorsque l'on suit un tutoriel R de ne pas savoir de quel paquet vient une fonction (et donc de ne pas pouvoir l'utiliser immédiatement dans notre code) ! Nous allons éviter cette situation dans cet ouvrage.  
+Il est souvent frustrant lorsque l'on suit un tutoriel R de ne pas savoir de quel paquet provient une fonction (et donc de ne pas pouvoir l'utiliser immédiatement dans notre code) ! 
 
-Dans ce guide, les noms des paquets seront écrits en gras (par exemple **dplyr**) et les fonctions sont écrites comme ceci : `mutate()`. Nous nous efforçons d'être explicites quant au paquet dont provient une fonction, soit en faisant référence au paquetage dans le texte voisin, soit en spécifiant le paquet explicitement dans le code, comme ceci : `dplyr::mutate()`. Cela alourdit le code, mais rend plus facile la réutilisation du code.  
+Dans ce guide, les noms des paquets seront écrits en gras (par exemple **dplyr**) et les fonctions sont écrites comme ceci : `mutate()`. Nous nous efforçons d'être explicites quant au paquet dont provient une fonction, soit en faisant référence au paquet dans le texte voisin, soit en spécifiant le paquet explicitement dans le code, comme ceci : `dplyr::mutate()`. Cela alourdit un petit peu le code, mais rend plus facile la réutilisation du code chez vous.  
 
 Consultez la page sur les [Bases de R](#rbasics) pour en savoir plus sur les paquets et les fonctions.
 
@@ -46,22 +46,21 @@ Consultez la page sur les [Bases de R](#rbasics) pour en savoir plus sur les paq
 
 ### Choix d'yn style de code {.unnumbered}
 
-Dans le manuel, nous allons fréquemment à la ligne, ce rend notre code "long". Nous faisons cela pour plusieurs raisons :  
+Dans le manuel, nous allons fréquemment à la ligne, ce qui rend notre code "long". Nous faisons cela pour plusieurs raisons :  
 
-* cela permet d'écrire des commentaires explicatifs avec `#` adjacents à la commande qu'ils décrivent  
-* généralement, un code plus long (vertical) est plus facile à lire,  
+* cela permet d'écrire des commentaires explicatifs avec `#` adjacents à la commande qu'ils décrivent,  
+* généralement, un code plus long (vertical) est plus facile à lire,   
 * il est plus facile à lire sur un écran étroit (pas de défilement latéral nécessaire),  
 * il est plus facile de savoir quels arguments appartiennent à quelle fonction grâce aux indentations.  
 
 Par conséquent, un bout de code code qui *pourrait* être écrit comme ceci : 
 
 ```{r, eval=F}
-linelist %>% 
-  group_by(hospital) %>%  # groupe les lignes par hopital
+linelist %>% group_by(hospital) %>%  # groupe les lignes par hopital
   slice_max(date, n = 1, with_ties = F) # s'il y a égalité de date, prendre la première
 ```
 
-...est écrit comme celà :  
+...est écrit comme cela :  
 
 ```{r, eval=F}
 linelist %>% 
@@ -80,7 +79,7 @@ Nous utilisons beaucoup d'espaces (par exemple `n = 1` au lieu de `n=1`) parce q
 
 ### Nomenclature {.unnumbered}  
 
-Dans ce manuel, nous faisons généralement référence aux "colonnes" et aux "lignes" au lieu des "variables" et des "observations". Comme l'explique cette introduction aux ["données ordonnées"](https://tidyr.tidyverse.org/articles/tidy-data.html), la plupart des jeux de données statistiques épidémiologiques se composent structurellement de lignes, de colonnes et de valeurs.  
+Dans ce manuel, nous faisons généralement référence aux "colonnes" et aux "lignes" plutôt qu'aux "variables" et "observations". Comme l'explique cette introduction aux ["données ordonnées"](https://tidyr.tidyverse.org/articles/tidy-data.html), la plupart des jeux de données statistiques épidémiologiques se composent structurellement de lignes, de colonnes et de valeurs.  
 
 Les *variables* contiennent les valeurs qui mesurent le même attribut sous-jacent (comme le groupe d'âge, le résultat ou la date d'apparition des symptomes). Les *observations* contiennent toutes les valeurs mesurées sur la même unité (par exemple, une personne, un site ou un échantillon de laboratoire). Ces aspects peuvent donc être plus difficiles à définir de manière tangible.  
 
