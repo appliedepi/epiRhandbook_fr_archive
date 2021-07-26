@@ -1,5 +1,5 @@
 
-# Dashboards with R Markdown { }
+# Dashboards with R Markdown {#dashboards}
 
 ```{r out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "flexdashboard_output.png"))

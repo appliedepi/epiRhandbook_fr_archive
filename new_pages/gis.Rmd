@@ -1,4 +1,4 @@
-# GIS basics { }  
+# GIS basics {#gis}  
 
 ```{r, out.width=c('100%', '100%'), echo=F}
 knitr::include_graphics(here::here("images", "gis_head_image.png"))
