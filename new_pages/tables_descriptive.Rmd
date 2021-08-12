@@ -1,4 +1,4 @@
-# Descriptive tables { }
+# Descriptive tables {#descriptive_tables}
 
 ```{r out.width = c('75%'), fig.align='center', fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "descriptive_tables.png"))
