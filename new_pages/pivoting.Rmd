@@ -2,7 +2,7 @@
 <!-- ======================================================= -->
 <!-- ======================================================= -->
 <!-- ======================================================= -->
-# Pivoting data {#pivoting_data}
+# Restructurer les données {#pivoting_data}
 
 ```{r, warning=F, message=F, out.height = c('50%'), fig.align="center", fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "pivoting", "Pivoting_500x500.png"))
@@ -12,64 +12,67 @@ knitr::include_graphics(here::here("images", "pivoting", "Pivoting_500x500.png")
 #knitr::include_graphics(here::here("images", "pivoting", "pivot_wider_new.png"))
 ```
 
+Dans le contexte de la gestion des données, le *pivot des données* réferer à l'un des deux processus suivants :  
+
+1. La création de *tableaux croisés*, qui sont des tableaux de statistiques résumant les données d'un tableau plus étendu.  
+
+2. La restructuration d'un tableau du format **long** au format **large**, ou vice versa. 
+
+Dans ce chapitre, nous allons nous focaliser sur le second processus. Résumer ses données dans des tableau est une étape cruciale de l'analyse des données et est traitée dans les chapitres sur [le regroupement des données](#grouping_data) et les [tableaux descriptifs](#descriptive_tables). 
+
+Ce chapitre traite des formats de données. Il est utile de connaître l'idée de "données rangées", dans laquelle chaque variable a sa propre colonne, chaque observation a sa propre ligne et chaque valeur a sa propre cellule. Vous trouverez plus d'informations sur ce sujet [dans ce chapitre en ligne de R for Data Science](https://r4ds.had.co.nz/tidy-data.html). 
 
 
-When managing data, *pivoting* can be understood to refer to one of two processes:  
+## Étapes préliminaires  
 
-1. The creation of *pivot tables*, which are tables of statistics that summarise the data of a more extensive table  
-2. The conversion of a table from **long** to **wide** format, or vice versa. 
+### Importation des paquets {.unnumbered}  
 
-**In this page, we will focus on the latter definition.** The former is a crucial step in data analysis, and is covered elsewhere in the [Grouping data] and [Descriptive tables] pages. 
+Ces lignes de code chargent les paquets nécessaires aux analyses. Dans ce guide, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *puis* l'importe pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets R.  
 
-This page discusses the formats of data. It is useful to be aware of the idea of "tidy data", in which each variable has it's own column, each observation has it's own row, and each value has it's own cell. More about this topic can be found [at this online chapter in R for Data Science](https://r4ds.had.co.nz/tidy-data.html). 
-
-
-
-
-
-## Preparation  
-
-### Load packages {.unnumbered}  
-
-This code chunk shows the loading of packages required for the analyses. In this handbook we emphasize `p_load()` from **pacman**, which installs the package if necessary *and* loads it for use. You can also load installed packages with  `library()` from **base** R. See the page on [R basics] for more information on R packages.  
 
 ```{r}
 pacman::p_load(
-  rio,          # File import
-  here,         # File locator
-  tidyverse)    # data management + ggplot2 graphics
+  rio,          # import des fichiers
+  here,         # gestion des chemins d'accès
+  tidyverse)    # gestion des données + graphiques (ggplot2)
 ```
 
 
 
-### Import data {.unnumbered}
+### Importation des données {.unnumbered}
 
 
-### Malaria count data {-}  
+### Cas de Malaria {-}  
 
-In this page, we will use a fictional dataset of daily malaria cases, by facility and age group. If you want to follow along, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/malaria_facility_count_data.rds' class='download-button'>click here to download (as .rds file)<span></a>. Import data with the `import()` function from the **rio** package (it handles many file types like .xlsx, .csv, .rds - see the [Import and export] page for details).  
+Dans ce chapitre, nous utiliserons un jeu de données fictif de cas quotidiens de paludisme, par établissement et par groupe d'âge. Pour reproduire les étapes, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/malaria_facility_count_data.rds' class='download-button'>cliquez ici pour télécharger les données (en tant que fichier .rds)<span></a>. Ou importez des données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation des données](import_export) pour plus de détails).  
+
 
 ```{r, echo=F}
-count_data <- rio::import(here::here("data", "malaria_facility_count_data.rds")) %>% 
+count_data <- rio::import(
+  here::here("data", "malaria_facility_count_data.rds")) %>% 
   as_tibble()
 ```
 
 ```{r, eval=F}
-# Import data
+# Importation des données
 count_data <- import("malaria_facility_count_data.rds")
 ```
 
-The first 50 rows are displayed below.
+Les premières cinquantes lignes sont affichées ci-dessous.  
 
 ```{r, message=FALSE, echo=F}
 # display the linelist data as a table
-DT::datatable(head(count_data, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+DT::datatable(head(count_data, 50), 
+              rownames = FALSE, 
+              options = list(pageLength = 5, scrollX = T), 
+              class = 'white-space: nowrap' )
 ```
 
 
-### Linelist case data {-}  
+### Linelist des cas {-}  
 
-In the later part of this page, we will also use the dataset of cases from a simulated Ebola epidemic. If you want to follow along, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>click to download the "clean" linelist</a> (as .rds file). Import your data with the `import()` function from the **rio** package (it accepts many file types like .xlsx, .rds, .csv - see the [Import and export] page for details).  
+A la fin de ce chapitre, nous utiliserons également une liste des cas d'une épidémie d'Ebola simulée. Pour reproduire les étapes, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (en tant que fichier .rds). Importez vos données avec la fonction `import()` du paquet **rio** (elle accepte de nombreux types de fichiers comme .xlsx, .rds, .csv - voir la page [Importation et exportation des données](import_export) pour plus de détails).  
+
 
 ```{r, echo=F}
 # import the linelist into R
@@ -78,18 +81,14 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 
 
 ```{r, eval=F}
-# import your dataset
+# Importer la linelist
 linelist <- import("linelist_cleaned.xlsx")
 ```
 
 
 
-
-
-
-
 <!-- ======================================================= -->
-## Wide-to-long {}
+## Transformation du format larger vers long {}
 
 ```{r, warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "pivoting", "pivot_longer_new.png"))
@@ -97,90 +96,95 @@ knitr::include_graphics(here::here("images", "pivoting", "pivot_longer_new.png")
 
 
 <!-- ======================================================= -->
-### "Wide" format {.unnumbered}
+### Le format "large" {.unnumbered}
 
-Data are often entered and stored in a "wide" format - where a subject's characteristics or responses are stored in a single row. While this may be useful for presentation, it is not ideal for some types of analysis.  
+Les données sont souvent saisies et stockées dans un format "large", où les caractéristiques ou les réponses d'un sujet/d'un item sont entrées dans une même ligne. Cette structure de données est utile pour la saisie et la présentation des données, mais elle n'est pas appropriée pour de nombreuses analyses.  
 
-Let us take the `count_data` dataset imported in the Preparation section above as an example. You can see that each row represents a "facility-day". The actual case counts (the right-most columns) are stored in a "wide" format such that the information for every age group on a given facility-day is stored in a single row.  
+Par exemple, dans le jeu de données `count_data` importé auparavant, chaque ligne représente un établissement à une date donnée. Les nombres de cas 
+sont contenus dans les colonnes les plus à droites, avec une colonne par classe d'age, et une colonne pour le nombre total de cas ce jour là dans cet établissement. L'information "nombre de cas" est donc contenues sur plusieurs colonnes, au lieu d'une seule, d'où la structure dite "large".
+
 
 ```{r, echo=F}
-DT::datatable(count_data, rownames = FALSE, options = list(pageLength = 5, scrollX=T) )
+DT::datatable(count_data, 
+              rownames = FALSE, 
+              options = list(pageLength = 10, 
+                             scrollX = T) )
 ```
 
-Each observation in this dataset refers to the malaria counts at one of 65 facilities on a given date, ranging from ` count_data$data_date %>% min()` to ` count_data$data_date %>% max()`. These facilities are located in one `Province` (North) and four `District`s (Spring, Bolo, Dingo, and Barnard). The dataset provides the overall counts of malaria, as well as age-specific counts in each of three age groups - <4 years, 5-14 years, and 15 years and older.
+Plus précisément, chaque ligne dans ce tableau se réfère aux nombre de cas de paludisme dans l'un des 65 établissements à une date donnée, dans la période allant de ` count_data$data_date %>% min()` à ` count_data$data_date %>% max()`. Ces établissements sont situés dans une `province` (Nord) et quatre `districts` (Spring, Bolo, Dingo, et Barnard). L'ensemble de données fournit les totaux globaux des cas de paludisme, ainsi que les totaux pour chaque classe d'age (<4 ans, 5-14 ans, et 15 ans et plus).
 
-"Wide" data like this are not adhering to "tidy data" standards, because the column headers do not actually represent "variables" - they represent *values* of a hypothetical "age group" variable. 
+Les données sous format "large" comme celle-ci ne respectent pas les normes de "données rangées", car les en-têtes de colonne ne représentent pas réellement des "variables": ils contiennent les *valeurs* d'une hypothétique variable "groupe d'âge".
+
+Ce format est utile pour présenter les informations dans un tableau, ou pour saisir des données (dans Excel par exemple) à partir de formulaires de notification des cas. Cependant, au stade de l'analyse, ces données doivent généralement être restructurées et rangées en un format plus long. Le paquet de visualisations **ggplot2**, fonctionne également mieux lorsque les données sont dans un format "long".  
 
 
-This format can be useful for presenting the information in a table, or for entering data (e.g. in Excel) from case report forms. However, in the analysis stage, these data typically should be transformed to a "longer" format more aligned with "tidy data" standards. The plotting R package **ggplot2** in particular works best when data are in a "long" format.  
-
-
-Visualising the *total* malaria counts over time poses no difficulty with the data in it's current format:
+La visualisation du nombre *total* de cas de paludisme dans le temps ne pose aucun problème avec les données dans leur format actuel :  
 
 ```{r, warning=F, message=F}
 ggplot(count_data) +
   geom_col(aes(x = data_date, y = malaria_tot), width = 1)
 ```
 
-However, what if we wanted to display the relative contributions of each age group to this total count? In this case, we need to ensure that the variable of interest (age group), appears in the dataset in a single column that can be passed to `{ggplot2}`'s "mapping aesthetics" `aes()` argument.
-
-
+Cependant, les choses se compliquent si l'on veut visualiser les contributions relatives de chaque groupe d'âge au total des cas ? Nous devons alors nous assurer que la variable d'intérêt (le groupe d'âge) ait sa propre colonne dans le dataframe, colonne qui peut être passée à l'argument "mapping aesthetics" `aes()` de `{ggplot2}`.
 
 
 <!-- ======================================================= -->
 ### `pivot_longer()` {.unnumbered}
 
-The **tidyr** function `pivot_longer()` makes data "longer". **tidyr** is part of the **tidyverse** of R packages.  
+La fonction **tidyr** `pivot_longer()` transforme un jeu de données au format "large" en un jeu de données "plus long". **tidyr** fait partie du méta-paquet **tidyverse**.   
 
-It accepts a range of columns to transform (specified to `cols = `). Therefore, it can operate on only a part of a dataset. This is useful for the malaria data, as we only want to pivot the case count columns.  
+Elle accepte une ou plusieurs colonnes à transformer (argument `cols = `), ce qui donne un contrôle fin sur les colonnes à restructurer.Par exemple, pour les données sur le paludisme, nous ne voulons faire pivoter que les colonnes contenant des nombre de cas.  
 
-In this process, you will end up with two "new" columns - one with the categories (the former column names), and one with the corresponding values (e.g. case counts). You can accept the default names for these new columns, or you can specify your own to `names_to = ` and `values_to = ` respectively.  
+Suite à ce processus, vous obtenez deux "nouvelles" colonnes: l'une contenant les catégories (anciennement sotckées dans les noms de colonnes), et l'autre avec les valeurs correspondantes (ici, le nombre de cas). Vous pouvez accepter les noms par défaut pour ces nouvelles colonnes, ou spécifier les vôtres dans `names_to = ` et `values_to = ` respectivement.  
 
-Let's see `pivot_longer()` in action... 
+Voyons comment utiliser `pivot_longer()`... 
 
 
 
-### Standard pivoting {.unnumbered}  
+### Transformation simple {.unnumbered}  
 
-We want to use **tidyr**'s `pivot_longer()` function to convert the "wide" data to a "long" format. Specifically, to convert the four numeric columns with data on malaria counts to two new columns: one which holds the *age groups* and one which holds the corresponding *values*.  
+Nous utilisons la fonction `pivot_longer()` de **tidyr** pour convertir les données d'un format "large" à un format "long". Plus précisément, il s'agit de convertir les quatre colonnes numériques contenant des nombre de cas de paludisme en deux nouvelles colonnes : une qui contient les *groupes d'âge* et une qui contient les *valeurs* correspondantes. 
 
 ```{r, eval=F}
 df_long <- count_data %>% 
   pivot_longer(
-    cols = c(`malaria_rdt_0-4`, `malaria_rdt_5-14`, `malaria_rdt_15`, `malaria_tot`)
+    cols = c(`malaria_rdt_0-4`, `malaria_rdt_5-14`, 
+             `malaria_rdt_15`, `malaria_tot`)
   )
 
 df_long
 ```
 
-Notice that the newly created data frame (`df_long`) has more rows (12,152 vs 3,038); it has become *longer*. In fact, it is precisely four times as long, because each row in the original dataset now represents four rows in df_long, one for each of the malaria count observations (<4y, 5-14y, 15y+, and total).
+Notons que le dataframe nouvellement crée (`df_long`) a plus de lignes (12 152 contre 3 038) : il est devenu *plus long*. En fait, il est précisément quatre fois plus long, car chaque ligne du tableau d'origine a donné quatre lignes dans `df_long``, une pour chacun des colonnes restructurées (<4 ans, 5-14 ans, 15 ans et plus, et total).  
 
-In addition to becoming longer, the new dataset has fewer columns (8 vs 10), as the data previously stored in four columns (those beginning with the prefix `malaria_`) is now stored in two. 
+En plus d'être plus long, le nouveau tableau a moins de colonnes (8 contre 10), car les données précédemment stockées dans quatre colonnes (celles qui commencent par le préfixe `malaria_`) sont maintenant stockées dans deux colonnes.  
 
-Since the names of these four columns all begin with the prefix `malaria_`, we could have made use of the handy "tidyselect" function `starts_with()` to achieve the same result (see the page [Cleaning data and core functions] for more of these helper functions).  
+
+*Note :* puisque les noms de quatre colonnes transformées commencent tous par le préfixe `malaria_`, nous aurions pu sélectionner les colonnes à transformer en utilisant la fonction `starts_with()` pour obtenir le même résultat (voir la page sur [le nettoyage des données et les fonctions de base](#cleaning_data) pour plus de ces fonctions d'aide de type "tidyselect").   
+
 
 ```{r}
-# provide column with a tidyselect helper function
+# choisir les colonnes avec l'aide d'une fonction "tidyselect"
 count_data %>% 
   pivot_longer(
     cols = starts_with("malaria_")
   )
 ```
 
-or by position: 
+ou par position :   
 
 ```{r, eval=F}
-# provide columns by position
+# Choisir les colonnes à partir de leur position dans le tableau
 count_data %>% 
   pivot_longer(
     cols = 6:9
   )
 ```
 
-or by named range:
+ou dans le cas de colonnes consécutives, avec la première et la dernière colonne :  
 
 ```{r, eval=F}
-# provide range of consecutive columns
+# Choisir les colonnes avec un "intervalle"
 count_data %>% 
   pivot_longer(
     cols = `malaria_rdt_0-4`:malaria_tot
