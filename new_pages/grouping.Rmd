@@ -1,5 +1,5 @@
 
-# Grouping data { }  
+# Grouping data {#grouping_data}  
 
 
 ```{r, out.width=c('100%'), echo=F, message=F}
