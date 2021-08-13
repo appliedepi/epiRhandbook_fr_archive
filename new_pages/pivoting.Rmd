@@ -191,49 +191,52 @@ count_data %>%
   )
 ```
 
-
-
-These two new columns are given the default names of `name` and `value`, but we can override these defaults to provide more meaningful names, which can help remember what is stored within, using the `names_to` and `values_to` arguments. Let's use the names `age_group` and `counts`:
+Les deux nouvelles colonnes crées lors de la restructuration reçoivent les noms par défaut de `name` et `value`, mais nous pouvons remplacer ces valeurs par défaut par des nomsqui décrivent mieux le contenu des colonnes en utilisant les arguments `names_to` et `values_to`. Par exemple, si nous voulons renomer les colonnes `age_group` et `counts` :  
 
 ```{r}
-df_long <- 
-  count_data %>% 
+df_long <- count_data %>% 
   pivot_longer(
-    cols = starts_with("malaria_"),
-    names_to = "age_group",
+    cols      = starts_with("malaria_"),
+    names_to  = "age_group",
     values_to = "counts"
   )
 
 df_long
 ```
 
-We can now pass this new dataset to `{ggplot2}`, and map the new column `count` to the y-axis and new column `age_group` to the `fill = ` argument (the column internal color). This will display the malaria counts in a stacked bar chart, by age group:
+
+Nous pouvons maintenant passer ce nouveau jeu de données à `{ggplot2}`, et placer la nouvelle colonne `count` dans l'axe des y et colorer les barres en fonction des valeurs de la colonne `age_group` grace à l'argument `fill = `. Nous obtenons alors un diagrame en baton des cas  de paludisme par groupe d'âge :  
 
 ```{r, warning=F, message=F}
 ggplot(data = df_long) +
   geom_col(
-    mapping = aes(x = data_date, y = counts, fill = age_group),
+    mapping = aes(x = data_date,
+                  y = counts, 
+                  fill = age_group),
     width = 1
   )
 ```
 
-Examine this new plot, and compare it with the plot we created earlier - *what has gone wrong?*  
+Examinez ce nouveau tracé et comparez-le avec le tracé que nous avons créé précédemment : *qu'est-ce qui ne va pas ?*  
 
-We have encountered a common problem when wrangling surveillance data - we have also included the total counts from the `malaria_tot` column, so the magnitude of each bar in the plot is twice as high as it should be. 
+Nous fait une erreur classique du traitement des données de surveillance et inclus le nombre de cas totaux de la colonne `malaria_tot`. La conséquence est que chaque barre du graphique est deux fois plus élevée qu'elle ne devrait l'être. 
 
-We can handle this in a number of ways. We could simply filter these totals from the dataset before we pass it to `ggplot()`:
+Nous pouvons résoudre ce problème de plusieurs façons. Tout d'abord nous pouvons simplement filtrer les données avant de les passer à `ggplot()` :  
+
 
 ```{r, warning=F, message=F}
 df_long %>% 
   filter(age_group != "malaria_tot") %>% 
   ggplot() +
   geom_col(
-    aes(x = data_date, y = counts, fill = age_group),
+    aes(x = data_date, 
+        y = counts, 
+        fill = age_group),
     width = 1
   )
 ```
 
-Alternatively, we could have excluded this variable when we ran `pivot_longer()`, thereby maintaining it in the dataset as a separate variable. See how its values "expand" to fill the new rows. 
+Autrement, nous aurions pu exclure cette variable lors du `pivot_longer()`, la conservant comme une variable séparée dans le tableau :   
 
 ```{r, warning=F, message=F}
 count_data %>% 
@@ -244,19 +247,20 @@ count_data %>%
   )
 ```
 
+Les valeurs sont alors répetées dans les lignes des groupes d'age.
 
 
 
+### Transformer les données de plusieurs classes {.unnumbered}
 
-### Pivoting data of multiple classes {.unnumbered}
+L'exemple ci-dessus fonctionne bien dans les situations où toutes les colonnes que vous voulez faire *pivoter* sont de la même classe (chaîne de caractère, numérique, logique...). 
 
-The above example works well in situations in which all the columns you want to "pivot longer" are of the same class (character, numeric, logical...). 
+Cependant, en tant qu'épidémiologiste de terrain, vous serez amenés à travailler avec des données qui ont été préparées par des non-spécialistes, appliquant leur propre logique, ce qui parfois aboutit à des jeux de données *non-standard*, voire totalement désorganisés. Comme Hadley Wickham l'a noté (en faisant référence à Tolstoï) dans son [article séminal](https://vita.had.co.nz/papers/tidy-data.pdf) sur les principes des **données rangées, organisées (tidy data)** : "Comme les familles, les données rangées et organisées se ressemblent toutes, mais chaque tableau désorganisé / mal rangé l'est à sa manière."   
 
-However, there will be many cases when, as a field epidemiologist, you will be working with data that was prepared by non-specialists and which follow their own non-standard logic - as Hadley Wickham noted (referencing Tolstoy) in his [seminal article](https://vita.had.co.nz/papers/tidy-data.pdf) on **Tidy Data** principles: "Like families, tidy datasets are all alike but every messy dataset is messy in its own way."
 
-One particularly common problem you will encounter will be the need to pivot columns that contain different classes of data. This pivot will result in storing these different data types in a single column, which is not a good situation. There are various approaches one can take to separate out the mess this creates, but there is an important step you can take using `pivot_longer()` to avoid creating such a situation yourself.
+Un problème particulièrement courant est la nécessité de restructurer des colonnes qui contiennent différentes types de données. Cette transformation aurait pour conséquence de stocker différents types de données dans une seule colonne, ce qui est déconseillé Il y a plusieurs manière de gérer les problèmes associés à ce type de données mais la restructuration avec `pivot_longer()` est une étape importante. 
 
-Take a situation in which there have been a series of observations at different time steps for each of three items A, B and C. Examples of such items could be individuals (e.g. contacts of an Ebola case being traced each day for 21 days) or remote village health posts being monitored once per year to ensure they are still functional. Let's use the contact tracing example. Imagine that the data are stored as follows:
+Imaginons cette situation : une série d'observations a été effectuée à différents pas de temps pour chacun des trois éléments A, B et C. Il peut s'agir d'individus (par exemple, les contacts d'un cas d'Ebola sont suivis chaque jour pendant 21 jours) ou de postes de santé de villages éloignés qui sont contrôlés une fois par an pour s'assurer qu'ils sont toujours fonctionnels. Reprenons l'exemple de la recherche des contacts. Imaginons que les données soient stockées comme suit :
 
 
 ```{r, message=FALSE, echo=F}
