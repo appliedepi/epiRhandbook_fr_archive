@@ -220,13 +220,14 @@ linelist %>%
 
 
 
-## Counts and tallies  
+## Comptes et additions  
 
-`count()` and `tally()` provide similar functionality but are different. Read more about the distinction between `tally()` and `count()` [here](https://dplyr.tidyverse.org/reference/tally.html)    
+Les fonctions `count()` et `tally()` fournissent des fonctionnalités similaires mais légèrement différentes. Pour plus de détails sur la distinction entre les deux, voir [ici](https://dplyr.tidyverse.org/reference/tally.html).    
 
 ### `tally()` {.unnumbered}  
 
-`tally()` is shorthand for `summarise(n = n())`, and *does not* group data. Thus, to achieve grouped tallys it must follow a `group_by()` command. You can add `sort = TRUE` to see the largest groups first.    
+`tally()` est un raccourci pour `summarise(n = n())`, et *ne regroupe pas* les données. Ainsi, pour obtenir des totaux groupés, il d'abord exécuter la commande `group_by()` avant la commande `tally()`. On peut ajouter `sort = TRUE` pour voir les plus grands groupes en premier.   
+
 
 ```{r}
 linelist %>% 
@@ -243,71 +244,70 @@ linelist %>%
 
 ### `count()`  {.unnumbered}  
 
-In contrast, `count()` does the following:  
+En revanche, `count()` effectue les actions suivantes :  
 
-1) applies `group_by()` on the specified column(s)  
-2) applies `summarise()` and returns column `n` with the number of rows per group  
-3) applies `ungroup()`  
+1) applique `group_by()` sur la ou les colonnes spécifiées  
+2) applique `summarise()` et retourne la colonne `n` avec le nombre de lignes par groupe  
+3) puis applique la fonction `ungroup()`.  
+  
 
 ```{r}
 linelist %>% 
   count(outcome)
 ```
 
-Just like with `group_by()` you can create a new column within the `count()` command:  
+Tout comme avec `group_by()` il est possible de créer une nouvelle colonne directement dans la commande `count()` :  
 
 ```{r}
 linelist %>% 
-  count(age_class = ifelse(age >= 18, "adult", "child"), sort = T)
+  count(age_class = ifelse(age >= 18, "adult", "child"), 
+        sort = T)
 ```
 
-
-`count()` can be called multiple times, with the functionality "rolling up". For example, to summarise the number of hospitals present for each gender, run the following. Note, the name of the final column is changed from default "n" for clarity (with `name  = `).  
+`count()` peut être utilisé plusieurs successivement pour résumer des données de manière plus en plus compacte. Par exemple, pour résumer le nombre d'hôpitaux présents pour chaque sexe, exécutez ce qui suit. Notez que le nom de la dernière colonne est changé de la valeur par défaut "n" pour plus de clarté (avec `name = `).  
 
 ```{r}
 linelist %>% 
-  # produce counts by unique outcome-gender groups
+  # compte le nombre de lignes pour chaque combinaison gender x hospital
   count(gender, hospital) %>% 
-  # gather rows by gender (3) and count number of hospitals per gender (6)
+  # en utilisant le jeu de données aggrégées, compte le nombre d'hopitaux pour chaque genre.
   count(gender, name = "hospitals per gender" ) 
 ```
 
 
-### Add counts {.unnumbered}  
+### Ajouter des colonnes contenant les décomptes {.unnumbered}  
 
-In contrast to `count()` and `summarise()`, you can use `add_count()` to *add* a new column `n` with the counts of rows per group *while retaining all the other data frame columns*.   
+Construites sur des principes similaires à `count()` et `summarise()`, vous pouvez utiliser les fonctions `add_count()` et `add_tally()` pour *ajouter une nouvelle colonne* `n` avec le nombre de lignes par groupe *tout en conservant toutes les autres colonnes* du dataframe. Cela signifie que le nombre de lignes total d'un groupe est ajouté pour chaque ligne du groupe dans une nouvelle colonne `n`.
 
-This means that a group's count number, in the new column `n`, will be printed in each row of the group. For demonstration purposes, we add this column and then re-arrange the columns for easier viewing. See the section below on [filter on group size](#group_filter_grp_size) for another example.  
-
+Dans l'exemple suivant, nous ajoutons cette colonne et ré-arrangeons ensuite les colonnes pour une lecture plus aisée du tableau. Pour un autre exemple, voir la section plus bas sur comment [filtrer sur la taille du groupe](#group_filter_grp_size).   
 
 ```{r}
 linelist %>% 
-  as_tibble() %>%                   # convert to tibble for nicer printing 
-  add_count(hospital) %>%           # add column n with counts by hospital
-  select(hospital, n, everything()) # re-arrange for demo purposes
+  as_tibble() %>%             # conversion en tibble pour un meilleur affichage
+  add_count(hospital) %>%           # ajoute la colonne n avec les totaux par hopitaux
+  select(hospital, n, everything()) # trie les colonnes
 ```
 
 
 
-### Add totals {.unnumbered} 
+### Ajouter les totaux {.unnumbered} 
 
-To easily add total *sum* rows or columns after using `tally()` or `count()`, see the **janitor** section of the [Descriptive tables](#tbl_janitor) page. This package offers functions like `adorn_totals()` and `adorn_percentages()` to add totals and convert to show percentages. Below is a brief example:  
+Pour facilement ajouter les totaux par lignes ou colonnes d'un tableau après avoir utilisé `tally()` ou `count()`, consultez la section **janitor** de la page [sur les tables descriptives](#tbl_janitor). Ce paquet offre des fonctions telles que `adorn_totals()` et `adorn_percentages()` pour ajouter des totaux et pourcentages. Par exemple :   
 
 ```{r}
-linelist %>%                                  # case linelist
-  tabyl(age_cat, gender) %>%                  # cross-tabulate counts of two columns
-  adorn_totals(where = "row") %>%             # add a total row
-  adorn_percentages(denominator = "col") %>%  # convert to proportions with column denominator
-  adorn_pct_formatting() %>%                  # convert proportions to percents
-  adorn_ns(position = "front") %>%            # display as: "count (percent)"
-  adorn_title(                                # adjust titles
+linelist %>%                                  
+  tabyl(age_cat, gender) %>%                  # décomptes croisés de deux colonnes
+  adorn_totals(where = "row") %>%             # ajoute ligne de totaux
+  adorn_percentages(denominator = "col") %>%  # ajoute proportions (dénominateur colonne)
+  adorn_pct_formatting() %>%                  # formate en %
+  adorn_ns(position = "front") %>%            # formate en : "N (%)"
+  adorn_title(                                # ajuste les titres
     row_name = "Age Category",
     col_name = "Gender")
 ```
 
 
-To add more complex totals rows that involve summary statistics other than *sums*, see [this section of the Descriptive Tables page](#tbl_dplyr_totals).  
-
+Pour ajouter des lignes de totaux plus complexes qui impliquent des statistiques récapitulatives autres que les *sommes*, voir [cette section de la page Tables descriptives](#tbl_dplyr_totals).  
 
 
 ## Grouping by date  
