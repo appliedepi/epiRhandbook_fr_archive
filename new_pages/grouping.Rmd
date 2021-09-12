@@ -310,13 +310,14 @@ linelist %>%
 Pour ajouter des lignes de totaux plus complexes qui impliquent des statistiques récapitulatives autres que les *sommes*, voir [cette section de la page Tables descriptives](#tbl_dplyr_totals).  
 
 
-## Grouping by date  
+## Grouper par date 
 
-When grouping data by date, you must have (or create) a column for the date unit of interest - for example "day", "epiweek", "month", etc. You can make this column using `floor_date()` from **lubridate**, as explained in the [Epidemiological weeks section](#dates_epi_wks) of the [Working with dates] page. Once you have this column, you can use `count()` from **dplyr** to group the rows by those unique date values and achieve aggregate counts. 
+Pour grouper des données par date, il faut avoir ou créer une colonne contenant l'unité de temps qui vous intéresse (par exemple : "jour", "semaine épidémiologique", "mois", etc). Vous pouvez créer cette colonne en utilisant `floor_date()` du paquet **lubridate**, tel qu'expliqué dans la section sur les [Semaines épidémiologiques](#dates_epi_wks) du chapitre sur les [dates](#working_dates). Cette colonne peut être passée à `group_by()` ou `count()` de **dplyr** pour grouper les lignes par les valeurs uniques de date ou obtenir le nombre de lignes par date. 
 
-One additional step common for date situations, is to "fill-in" any dates in the sequence that are not present in the data. Use `complete()` from **tidyr** so that the aggregated date series is *complete* including *all possible date units* within the range. Without this step, a week with no cases reported might not appear in your data!  
+Un besoin spécifique à la gestion et l'analyse de donées par date consiste à compléter les dates de la séquence qui ne sont pas présentes dans les données. Pour celà, on peut utiliser `complete()` du paquet **tidyr** pour que la série de dates agrégées comprenne *toutes les unités de dates possibles* dans la plage. Sans cette étape, une semaine où aucun cas n'a été signalé pourrait ne pas apparaître dans vos données...  
 
-Within `complete()` you *re-define* your date column as a *sequence* of dates `seq.Date()` from the minimum to the maximum  - thus the dates are expanded. By default, the case count values in any new "expanded" rows will be `NA`. You can set them to 0 using the `fill = ` argument of `complete()`, which expects a named list (if your counts column is named `n`, provide `fill = list(n = 0)`. See `?complete` for details and the [Working with dates](#dates_epi_wks) page for an example.  
+ 
+La fonction `complete()`, *redéfinit* la colonne contenant les dates comme une *séquence* de dates (en passant `seq.Date()` du minimum au maximum comme argument). Par défaut, les valeurs du nombre de cas (et autres colonnes) dans les nouvelles lignes "développées" contiennet des "NA". Mais l'on peut modifier ce comportement. par exemple, on peut mettre le nombre de cas à 0 en utilisant l'argument `fill = ` de `complete()`, qui prend en entrée une liste nommée (si votre colonne de nombre de cas est nommée `n`, fournissez `fill = list(n = 0)`. Voir `?complete` pour plus de détails et la page [Manipuler les dates](#dates_epi_wks) pour un exemple.  
 
 
 
