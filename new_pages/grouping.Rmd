@@ -312,7 +312,7 @@ Pour ajouter des lignes de totaux plus complexes qui impliquent des statistiques
 
 ## Grouper par date 
 
-Pour grouper des données par date, il faut avoir ou créer une colonne contenant l'unité de temps qui vous intéresse (par exemple : "jour", "semaine épidémiologique", "mois", etc). Vous pouvez créer cette colonne en utilisant `floor_date()` du paquet **lubridate**, tel qu'expliqué dans la section sur les [Semaines épidémiologiques](#dates_epi_wks) du chapitre sur les [dates](#working_dates). Cette colonne peut être passée à `group_by()` ou `count()` de **dplyr** pour grouper les lignes par les valeurs uniques de date ou obtenir le nombre de lignes par date. 
+Pour grouper des données par date, il faut avoir ou créer une colonne contenant l'unité de temps qui vous intéresse (par exemple : "jour", "semaine épidémiologique", "mois", etc). Vous pouvez créer cette colonne en utilisant `floor_date()` du paquet **lubridate**, tel qu'expliqué dans la section sur les [Semaines épidémiologiques](#dates_epi_wks) du chapitre sur les [dates](#working_dates). Cette colonne peut être passée à `group_by()` ou `count()` de **dplyr** pour grouper les lignes par les valeurs uniques de date ou obtenir le nombre de lignes par date.  
 
 Un besoin spécifique à la gestion et l'analyse de donées par date consiste à compléter les dates de la séquence qui ne sont pas présentes dans les données. Pour celà, on peut utiliser `complete()` du paquet **tidyr** pour que la série de dates agrégées comprenne *toutes les unités de dates possibles* dans la plage. Sans cette étape, une semaine où aucun cas n'a été signalé pourrait ne pas apparaître dans vos données...  
 
@@ -321,77 +321,80 @@ La fonction `complete()`, *redéfinit* la colonne contenant les dates comme une 
 
 
 
-### Linelist cases into days  {.unnumbered}  
+### Grouper par jours (linelist) {.unnumbered}  
 
-Here is an example of grouping cases into days *without* using `complete()`. Note the first rows skip over dates with no cases.  
+Voici un exemple où l'on va grouper le nombre de cas de la linelist par jour, *sans utiliser* la fonction `complete()`. Note : la première ligne permet d'ignorer les cas où il n'y a pas eu de date de rentrée.  
 
 ```{r}
 daily_counts <- linelist %>% 
-  drop_na(date_onset) %>%        # remove that were missing date_onset
-  count(date_onset)              # count number of rows per unique date
+  drop_na(date_onset) %>%        # Exclut les cas où date_onset est vide
+  count(date_onset)              # Compte le nombre de lignes par date
 ```
 
 ```{r message=FALSE, echo=F}
-DT::datatable(daily_counts, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+DT::datatable(daily_counts, 
+              rownames = FALSE, 
+              options = list(pageLength = 5, scrollX = T), 
+              class = 'white-space: nowrap' )
 ```
 
-Below we add the `complete()` command to ensure every day in the range is represented.
+Maintenant, le même exemple en utilisant la commande `complete()` pour s'assurer que tous les jours dans la fourchette temporelle seront représentés dans les données.  
 
 ```{r, eval=F}
 daily_counts <- linelist %>% 
-  drop_na(date_onset) %>%                 # remove case missing date_onset
-  count(date_onset) %>%                   # count number of rows per unique date
-  complete(                               # ensure all days appear even if no cases
-    date_onset = seq.Date(                # re-define date colume as daily sequence of dates
+  drop_na(date_onset) %>%                 # Exclut les cas où date_onset est vide
+  count(date_onset) %>%                   # Compte le nombre de lignes par jour
+  complete(                               # Ajoute les jours manquants (sans cas)
+    date_onset = seq.Date(                  # redéfinit la colonne comme une séquence de dates
       from = min(date_onset, na.rm=T), 
-      to = max(date_onset, na.rm=T),
-      by = "day"),
-    fill = list(n = 0))                   # set new filled-in rows to display 0 in column n (not NA as default) 
+      to   = max(date_onset, na.rm=T),
+      by   = "day"),
+    fill   = list(n = 0))                   # remplit les nouvelles dates ajoutées de 0 (aurait été des NA par défaut) 
 ```
 
 ```{r message=FALSE, echo=F}
 DT::datatable(daily_counts, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-### Linelist cases into weeks {.unnumbered}  
+### Grouper par semaines (linelist) {.unnumbered}  
 
+Le même principe peut être appliqué au groupement par semaine. Dans cet exemple, on va d'abord créer une nouvelle colonne contenant la semaine à l'aide de la fonction `floor_date()` du package **lubridate** (avec `unit = "week"`). Celà arrondit chaque date au premier jour de la semaine correspondante. Ensuite, on utilise la fonction `count()` pour obtenir le nombre de cas hebdomadaires. On termine enfin avec  un `complete()` pour compléter toutes les semaines dans le jeu de données agrégées, même il n'y a pas eu de cas cette semaine là.
 
-The same principle can be applied for weeks. First create a new column that is the week of the case using `floor_date()` with `unit = "week"`. Then, use `count()` as above to achieve weekly case counts. Finish with `complete()` to ensure that all weeks are represented, even if they contain no cases.
 
 ```{r}
-# Make dataset of weekly case counts
 weekly_counts <- linelist %>% 
-  drop_na(date_onset) %>%                 # remove cases missing date_onset
-  mutate(week = lubridate::floor_date(date_onset, unit = "week")) %>%  # new column of week of onset
-  count(week) %>%                         # group data by week and count rows per group
-  complete(                               # ensure all days appear even if no cases
-    week = seq.Date(                      # re-define date colume as daily sequence of dates
+  drop_na(date_onset) %>%                 # Exclut les cas où date_onset est vide
+  mutate(week = lubridate::floor_date(date_onset, 
+                                      unit = "week")) %>%  # Crée colonne avec la date de début des symptomes
+  count(week) %>%                         # Compte le nombre de lignes par semaine
+  complete(                               # Ajoute les semaines non représentées (sans cas)
+    week = seq.Date(                      # redéfinit la colonne comme une séquence de dates
       from = min(week, na.rm=T), 
       to = max(week, na.rm=T),
       by = "week"),
-    fill = list(n = 0))                   # set new filled-in rows to display 0 in column n (not NA as default) 
+    fill = list(n = 0))                   # remplit les nouvelles dates ajoutées de 0 (aurait été des NA par 
 ```
 
-Here are the first 50 rows of the resulting data frame:  
+Voici les 50 premières lignes du jeu de données crée :   
 
 ```{r message=FALSE, echo=F}
 DT::datatable(weekly_counts, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-### Linelist cases into months {.unnumbered}
+### Grouper par mois (linelist){.unnumbered}
 
-To aggregate cases into months, again use `floor_date()` from the **lubridate** package, but with the argument `unit = "months"`. This rounds each date down to the 1st of its month. The output will be class Date. Note that in the `complete()` step we also use `by = "months"`.  
+Pour agréger les cas par mois, nous utiliserons à nouveau `floor_date()`, avec l'argument `unit = "months"`. Cette commande arrondit chaque date au 1er de son mois. La sortie sera donc de la classe Date. Notez que dans l'étape `complete()`, nous utilisons également `by = "months"`.  
 
 
 ```{r}
-# Make dataset of monthly case counts
 monthly_counts <- linelist %>% 
   drop_na(date_onset) %>% 
-  mutate(month = lubridate::floor_date(date_onset, unit = "months")) %>%  # new column, 1st of month of onset
-  count(month) %>%                          # count cases by month
+  mutate(month = lubridate::floor_date(date_onset, 
+                                       unit = "months")) %>%  # nouvelle colonne, 1st du mois de début des symptomes
+  count(month) %>%                          # Compte le nombre de cas par mois
   complete(
     month = seq.Date(
-      min(month, na.rm=T),     # include all months with no cases reported
+      min(month, na.rm=T),     # Ajoute les mois non représentées (sans cas)
       max(month, na.rm=T),
       by="month"),
     fill = list(n = 0))
@@ -402,23 +405,19 @@ DT::datatable(monthly_counts, rownames = FALSE, options = list(pageLength = 5, s
 ```
 
 
-### Daily counts into weeks {.unnumbered}
+### Comptes journaliers en semaines (données agrégées) {.unnumbered}
 
-To aggregate daily counts into weekly counts, use `floor_date()` as above. However, use `group_by()` and `summarize()` instead of `count()` because you need to `sum()` daily case counts instead of just counting the number of rows per week.
-
-
-
-#### Daily counts into months {.unnumbered}
-
-To aggregate daily counts into months counts, use `floor_date()` with `unit = "month"` as above. However, use `group_by()` and `summarize()` instead of `count()` because you need to `sum()` daily case counts instead of just counting the number of rows per month.  
+Pour agréger les nombres de cas quotidiens (données déjà agrégées par jour, donc) en nombre de cas hebdomadaires, utilisez `floor_date()` de la même manière que dans les exemples précédents. Cependant, il faut ensuite utiliser les fonctions `group_by()` et `summarize()` au lieu de `count()` car il faut faire la somme des nombres de cas quotidiens au lieu de simplement compter le nombre de lignes par semaine.  
 
 
+#### Comptes journaliers en mois (données agrégées) {.unnumbered}
+
+Pour agréger les nombres de cas journaliers par mois, utilisez `floor_date()` de la même manière que dans les exemples précédents (avec `unit = "month"`). Cependant, il faut ensuite utiliser les fonctions `group_by()` et `summarize()` au lieu de `count()` car vous devez additioner le nombre de cas quotidiens au lieu de simplement compter le nombre de lignes par mois.  
 
 
 ## Arranging grouped data
 
-Using the **dplyr** verb `arrange()` to order the rows in a data frame behaves the same when the data are grouped, *unless* you set the argument `.by_group =TRUE`. In this case the rows are ordered first by the grouping columns and then by any other columns you specify to `arrange()`.   
-
+La fonction `arrange()` de  **dplyr** qui permet d'ordonner les lignes d'un dataframe se comporte de la même manière lorsque les données sont groupées, *sauf* si vous définissez l'argument `.by_group = TRUE`. Dans ce cas, les lignes sont d'abord ordonnées par les colonnes de regroupement, puis par toutes les autres colonnes que vous spécifiez à `arrange()`.   
 
 
 ## Filter on grouped data
@@ -535,16 +534,17 @@ The verb `select()` works on grouped data, but the grouping columns are always i
 <!-- ======================================================= -->
 ## Resources {  }
 
-Here are some useful resources for more information:  
+Pour plus d'information, voici quelques resources utiles :  
 
-You can perform any summary function on grouped data; see the [RStudio data transformation cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)  
+Vous pouvez utiliser n'importe quelle fonction agrégeante sur des données groupées ; Voir l'antisèche sur [la transformation des données avec Rstudio](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)  
 
-The Data Carpentry page on [**dplyr**](https://datacarpentry.org/R-genomics/04-dplyr.html)  
-The **tidyverse** reference pages on [group_by()](https://dplyr.tidyverse.org/reference/group_by.html) and [grouping](https://dplyr.tidyverse.org/articles/grouping.html)  
+La page de The Data Carpentry sur [**dplyr**](https://datacarpentry.org/R-genomics/04-dplyr.html)  
 
-This page on [Data manipulation](https://itsalocke.com/files/DataManipulationinR.pdf)  
+La page de référence de l'aide du **tidyverse** sur [group_by()](https://dplyr.tidyverse.org/reference/group_by.html) et [grouping](https://dplyr.tidyverse.org/articles/grouping.html)  
 
-[Summarize with conditions in dplyr](https://stackoverflow.com/questions/23528862/summarize-with-conditions-in-dplyr)  
+Cette page sur la [manipulation des données](https://itsalocke.com/files/DataManipulationinR.pdf)  
+
+[Résummer les données avec des conditions avec dplyr](https://stackoverflow.com/questions/23528862/summarize-with-conditions-in-dplyr)  
 
 
 
