@@ -415,66 +415,63 @@ Pour agréger les nombres de cas quotidiens (données déjà agrégées par jour
 Pour agréger les nombres de cas journaliers par mois, utilisez `floor_date()` de la même manière que dans les exemples précédents (avec `unit = "month"`). Cependant, il faut ensuite utiliser les fonctions `group_by()` et `summarize()` au lieu de `count()` car vous devez additioner le nombre de cas quotidiens au lieu de simplement compter le nombre de lignes par mois.  
 
 
-## Arranging grouped data
+## Trier les données groupées
 
 La fonction `arrange()` de  **dplyr** qui permet d'ordonner les lignes d'un dataframe se comporte de la même manière lorsque les données sont groupées, *sauf* si vous définissez l'argument `.by_group = TRUE`. Dans ce cas, les lignes sont d'abord ordonnées par les colonnes de regroupement, puis par toutes les autres colonnes que vous spécifiez à `arrange()`.   
 
 
-## Filter on grouped data
+## Filtrer les données groupées
 
 ### `filter()` {.unnumbered}
 
-When applied in conjunction with functions that evaluate the data frame (like `max()`, `min()`, `mean()`), these functions will now be applied to the groups. For example, if you want to filter and keep rows where patients are above the median age, this will now apply per group - filtering to keep rows above the *group's* median age. 
+Lorsque l'on utilise la fonction `filter` en conjonction avec des fonctions qui évaluent le dataframe (`max()`, `min()` ou `mean()` par exemple), la commande est désormais appliquée à chaque groupe indépendamment. Par exemple, pour filtrer et conserver les lignes où les patients ont un âge supérieur à l'âge médian, le filtre s'appliquera désormais à l'intérieur de chaque groupe, pour pour conserver les lignes où l'age des patients est supérieur à l'âge médian *du groupe*.  
 
 
+### `slice()` {.unnumbered} 
 
+La fonction **dplyr** `slice()`, qui [filtre les lignes en fonction de leur position dans les données](https://dplyr.tidyverse.org/reference/slice.html), peut également être appliquée par groupe. N'oubliez pas de trier les données au sein de chaque groupe pour obtenir la "tranche" souhaitée.  
 
-### Slice rows per group {.unnumbered} 
+Par exemple, pour extraire uniquement les 5 dernières admissions de chaque hôpital :  
 
-The **dplyr** function `slice()`, which [filters rows based on their position](https://dplyr.tidyverse.org/reference/slice.html) in the data, can also be applied per group. Remember to account for sorting the data within each group to get the desired "slice".  
-
-For example, to retrieve only the latest 5 admissions from each hospital:  
-
-1) Group the linelist by column `hospital`  
-2) Arrange the records from latest to earliest `date_hospitalisation` *within each hospital group*  
-3) Slice to retrieve the first 5 rows from each hospital  
+1) Groupez les données de la linelist par la colonne `hospital`.   
+2) Triez les enregistrements du plus récent au plus ancien grâce à la colonne `date_hospitalisation` *dans chaque groupe d'hôpitaux*.   
+3) Tranchez pour récupérer les 5 premières lignes de chaque hôpital   
 
 ```{r,}
 linelist %>%
   group_by(hospital) %>%
   arrange(hospital, date_hospitalisation) %>%
   slice_head(n = 5) %>% 
-  arrange(hospital) %>%                            # for display
-  select(case_id, hospital, date_hospitalisation)  # for display
+  arrange(hospital) %>%                            # (pour l'affichage)
+  select(case_id, hospital, date_hospitalisation)  # (pour l'affichage)
 ```
 
-`slice_head()` - selects n rows from the top  
-`slice_tail()` - selects n rows from the end  
-`slice_sample()` - randomly selects n rows  
-`slice_min()` - selects n rows with highest values in `order_by = ` column, use `with_ties = TRUE` to keep ties  
-`slice_max()` - selects n rows with lowest values in `order_by = ` column, use `with_ties = TRUE` to keep ties  
+`slice_head()` : sélectionne les n premières lignes ("par le haut")  
+`slice_tail()` : sélectionne les n dernières lignes ("par le bas")  
+`slice_sample()` : sélectionne n lignes aléatoirement. Utiliser `replace = TRUE` pour un échantillonnage avec remplacement    
+`slice_min()` : sélectionne les n lignes avec les plus petites valeurs dans une colonne donnée (argument `order_by = `). Utiliser `with_ties = TRUE` pour garder les ex aequo   
+`slice_max()` : sélectionne les n lignes avec les plus grandes valeurs dans une colonne donnée (argument `order_by = `)
 
-See the [De-duplication] page for more examples and detail on `slice()`.  
-
-
+Voir le chapitre sur la [dé-duplication](#deduplication) pour plus d'exemples et de d&tails sur la fonction `slice()`.  
 
 
-### Filter on group size {#group_filter_grp_size .unnumbered} 
 
-The function `add_count()` adds a column `n` to the original data giving the number of rows in that row's group. 
+### Filtrer sur la taille des groupes {#group_filter_grp_size .unnumbered} 
 
-Shown below, `add_count()` is applied to the column `hospital`, so the values in the new column `n` reflect the number of rows in that row's hospital group. Note how values in column `n` are repeated. In the example below, the column name `n` could be changed using `name = ` within `add_count()`. For demonstration purposes we re-arrange the columns with `select()`.  
+La fonction `add_count()` ajoute une colonne `n` aux données originales, ajoutant ainsi, pour chaque ligne, le nombre de lignes du  groupe à laquel cette ligne appartient.  
 
+Dans l'exemple ci-dessous, `add_count()` est appliqué à la colonne `hospital`, de sorte que les valeurs de la nouvelle colonne `n` reflètent le nombre de lignes dans le groupe hospitalier de cette ligne. Bien sûr, celà veut dire que la valeur de la colonne "n" est répetée pour chaque ligne du groupe.  
+
+Dans l'exemple ci-dessous, le nom de la colonne `n` pourrait être modifié en utilisant `name = ` dans `add_count()`.
 
 ```{r}
 linelist %>% 
   as_tibble() %>% 
-  add_count(hospital) %>%          # add "number of rows admitted to same hospital as this row" 
-  select(hospital, n, everything())
+  add_count(hospital) %>%          # ajoute le nombre de patients admis dans cette hôpital, pour chaque groupe
+  select(hospital, n, everything()) # Pour un meilleur affichage
 ```
 
-It then becomes easy to filter for case rows who were hospitalized at a "small" hospital, say, a hospital that admitted fewer than 500 patients:  
-
+Il est alors facile de filtrer les lignes de cas qui ont été hospitalisés dans un "petit" hôpital. Par exemple un hôpital qui a admis moins de 500 patients :    
 ```{r, eval=F}
 linelist %>% 
   add_count(hospital) %>% 
@@ -483,50 +480,41 @@ linelist %>%
 
 
 
+## `mutate()` 
 
+Pour conserver toutes les colonnes et lignes (sans les résumer) et *ajouter une nouvelle colonne contenant des statistiques de groupe*, utilisez `mutate()` après `group_by()` au lieu de `summarise()`. 
 
-## Mutate on grouped data  
+Ceci est utile si vous voulez les statistiques de groupe dans le jeu de données original *avec toutes les autres colonnes présentes* - par exemple pour les calculs qui comparent une ligne à son groupe.  
 
-To retain all columns and rows (not summarise) and *add a new column containing group statistics*, use `mutate()` after `group_by()` instead of `summarise()`. 
+Par exemple, le code ci-dessous calcule la différence entre le délai d'admission d'une ligne et le délai d'admission médian pour son hôpital. Les étapes sont les suivantes :  
 
-This is useful if you want group statistics in the original dataset *with all other columns present* - e.g. for calculations that compare one row to its group.  
-
-For example, this code below calculates the difference between a row's delay-to-admission and the median delay for their hospital. The steps are:  
-
-1) Group the data by hospital  
-2) Use the column `days_onset_hosp` (delay to hospitalisation) to create a new column containing the mean delay at the hospital of *that row*  
-3) Calculate the difference between the two columns  
-
-We `select()` only certain columns to display, for demonstration purposes.  
+1) Groupez les données par hôpital  
+2) Utilisez la colonne `days_onset_hosp` (délai à l'hospitalisation) pour créer une nouvelle colonne contenant le délai moyen de l'hôpital pour chaque patient de cet hôpital  
+3) Calculez la différence entre les deux colonnes  
+  
 
 ```{r}
 linelist %>% 
-  # group data by hospital (no change to linelist yet)
+  # grouper les données par hôpital
   group_by(hospital) %>% 
   
-  # new columns
+  # Ajoute de nouvelles colonnes (conserve toutes lies lignes)
   mutate(
-    # mean days to admission per hospital (rounded to 1 decimal)
+    # Délai moyen d'admission pour chaque hôpital (arrondi à la 1re décimale)
     group_delay_admit = round(mean(days_onset_hosp, na.rm=T), 1),
     
-    # difference between row's delay and mean delay at their hospital (rounded to 1 decimal)
-    diff_to_group     = round(days_onset_hosp - group_delay_admit, 1)) %>%
+    # Différence entre le délai de chaque patient et le délai moyen de son hôpital
+    diff_to_group = round(days_onset_hosp - group_delay_admit, 1)) %>%
   
-  # select certain rows only - for demonstration/viewing purposes
+  # Sélectionne colonnes (pour l'affichage)
   select(case_id, hospital, days_onset_hosp, group_delay_admit, diff_to_group)
 ```
 
 
 
-## Select on grouped data  
+## `select()` sur les données groupées
 
-The verb `select()` works on grouped data, but the grouping columns are always included (even if not mentioned in `select()`). If you do not want these grouping columns, use `ungroup()` first.  
-
-
-
-
-
-
+La fonction `select()` fonctionne sur les données groupées, à ce détail près que les colonnes utilisées pour les groupes sont toujours inclues, même si elles n'ont pas été mentionnées dans les colonnes à conserver. Pour se débarrasser de ces colonnes, il faut utiliser `ungroup()` avant de dégrouper.  
 
 
 
