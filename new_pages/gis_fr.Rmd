@@ -1,0 +1,72 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+# BA-BA du SIG { }  
+
+<!-- ======================================================= -->
+
+## Présentation {  }
+
+Les caracteristiques geospatiales de vos données peuvent fournir  des informations capitales en situation de pandemie.En effet, ils permettent de repondent à des questions tels que:
+
+* Ou se trouve les zones à risques de la maladie
+
+* Comment les zones à risques evoluent dans le temps
+
+* L’accessibilité du plateau medical et la nécessité d’apporter des améliorations
+
+L’accent mis sur le SIG à travers ces pages rend accessible toutes les compétences  pertinentes pouvant être utilisées en  cas de reponse pandemique.On va voir les methodes simples pour visualiser les donnees spatiales grace aux packages **tmap** et **ggplot**.Nous allons aussi passer en revue le package  **sf**  qui permet une manipulation des donnees de types vecteurs. Enfin on va aborder brievement les statistiques spatiales à travers les notions  de dependance spatiale, l’autocorrelation spatiale et la regression spatiale en utilisant le package **spdep**
+
+## Mots clés {}
+
+Quelques mots clés sont definis en bas.Pour une bonne initiation au SIG nous suggérons de suivre l’un des tutoriels proposés dans les références.
+
+**Systeme d'Information Geographique(SIG)** - Un SIG est un outil informatique ou un  environnement  qui permet de regrouper, de manipuler, d'analyser et de visualiser les données spatiales
+
+## Logiciels SIG {.unnumbered}
+
+Les logiciels populaires de SIG  qui existent, fonctionnent sur la base d'une interface graphique  qui interagit apres un clic de l’utlisateur.Ces outils peuvent etre utlisés sans aucun prerequis en programmation et ont comme avantage de pouvoir selectionner et placer des icones et des elements sur une carte manuellement.Les logiciels de SIG les plus connus sont :
+
+**ARCGIS** -  un logiciel commercial developpé par la compagnie ESRI.A ce jour il reste le logiciel de SIG le plus populaire.
+
+**QGIS** -   un logiciel de SIG libre d’utilisation  qui fait pratiquement la meme choses que ARCGIS. On peut [Telecharger QGIS par ici](https://qgis.org/en/site/forusers/download.html) 
+
+Faire du SIG en utilisant R peut  sembler frustant  pour  les premiers pas  parce qu'à la place de pointer et cliquer , il faut maintenant ecrire des lignes de commande dans une interface (on a besoin de coder pour obtenir un resultat ).Mais  ce changement de paradigme présente des avantages tels que  l'automatisation et  la reproductibilité dans la conception des carte et les analyses realisées. 
+
+### Données spatiales {.unnumbered}
+
+Les types de données utilisées en SIG sont de deux natures: les rasters et les vecteurs
+
+**Données vecteurs** - Les données vecteurs dont l’utilisation est la plus courante dans l’environnement  SIG sont dotés de proprietes géometriques par  les sommets et les lignes reliant les sommets. Les données  vecteurs  largement utilisées peuvent être divisées en trois :
+
+  * *Points* - le point  est constitué d’un pair de coordonnnées (x,y) qui marque un lieu précis dans l’espace à travers le systeme de coordonnées. Il est la forme simple de représentation des donnees spatiales  et peuvent etre utilisé pour situer le lieu d'apparition d'une maladie lors d'une pandémie (la maison du patient) ou un endroit (exemple :  hôpital) sur une carte .
+  
+  * *Lignes* - 	Une ligne est composée de deux points reliés.Elle a  une longueur et peut etre utilisée pour representer les routes ou les cours d’eaux
+  
+  * *Polygones* - Un polygones est  une association minimum de 3 points reliés les uns aux autres .Les caractéristiques d’un polygone sont : le périmètre et l'aire.En pratique ils sont utilisés pour delmiter les contours d'une zone (village) ou une infractructures(hopital)
+
+**Données Rasters** - A coté des données vecteurs on a des rasters qui sont des matrix constitués par des cellules contenant chacunes des informations par exemple l'altitude, la temperature, la pente, la couverture forestière etc. les rasters peuvent servir de fond de carte pour les donnees vecteurs
+
+### Visualisation des données spatiales {.unnumbered}
+
+Pour afficher  sur une carte des donnnées spatiales à partir d'un logiciel de SIG il est  nécessaire de la part de l’utilisateur de connaitre l'emplacement des donnees .Lors qu’il nous arrive de manipuler des données vecteurs ce qui est d’ailleurs le plus frequents, les données sont stocker dans des fichiers shapefiles
+
+**Shapefiles** - Un shapefile est un format de données vecteurs tres repandus dans le monde du SIG et il permet de stocker des donnees pouvant etre des points des lignes et des polygones.C'est en realite une collection ou un ensemnble de fichiers   se terminant avec les extensions .shp,.shx et .dbf.Tout ces fichiers doivent etre presents dans un et unique dossiers pour obtenir une donnée shapefile fiable.
+L’ensemble de ces fichiers shapefile peuvent être comprimer en format zip pour un envoi à travers un mail ou un telechargement à partir d’un site web
+
+Le shapefile contient des information sur un objet de la surface terreste modelisé et sa localisation géographique .Cela est important parce que bien que la terre est une geoide le système de coordonnées  bidimentionnel au niveau des shapefiles permet de situer un objet sur la surface de la terre
+
+**Systéme de réference de coordonnées ** - Un CRS est un système de coordonnées utilisé pour localiser géographiquement un objet sur la surface de la terre .Il a quelques composantes clés:
+
+  * *Systeme de Coordonnées* - Plusieurs systèmes de coordonnées existent mais il est important de savoir les coodonnées géographiques  utilisées sont adossées  à quel système.Les degres pour le longitude/latitude sont fréquents  mais on note aussi l'usage des coordonnées [UTM](https://www.maptools.com/tutorials/utm/quick_guide) 
+  
+  * *Unités* - Connaitre l'unité du système de coordonnées(degres ou decimal) est primordiale pour faire certaines analyses spatiales
+  
+  * *Datum* - C'est une modélisation de la terre revue au fil des annees, il est important de vérifier  que les cartes utilisées ont le meme datum ou systeme geodesique
+  
+  * *Projection* - C'est l'utilisation d'équation mathematique pour projeter la forme geoide de la terre sur une surface plane
+  
+Rappellons que  les données spatiales peuvent être manipulées  sans avoir recours aux  outils  cartographiques ci-dessous
+
