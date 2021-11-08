@@ -6,10 +6,11 @@
 knitr::include_graphics(here::here("images", "Grouping_1500x500.png"))
 ```
 
-Ce chapitre explique comment grouper et agréger des données lors une analyse descriptive. Elle utilise des fonctions du méta-paquet  **tidyverse** pour des fonctions communes et faciles à utiliser. 
+Ce chapitre explique comment grouper et agréger des données lors une analyse descriptive. Il utilise les fonctions du méta-paquet  **tidyverse** pour des fonctions communes et faciles à utiliser. 
 
 
-Grouper les données est une étape essentielle de la gestion et de l'analyse de données. Par exemple, il est souvent nécessaire de créer des résumés statistiques ou des figures par "groupe". Les fonctions du paquet **dplyr** (qui fait partie de **tidyverse**) facilitent le groupement et les opérations ultérieures.  
+Grouper les données est une étape essentielle de la gestion et de l'analyse de données. Par exemple, il est souvent nécessaire de créer des résumés statistiques ou des figures "par groupe". Les fonctions du paquet **dplyr** (qui fait partie de **tidyverse**) permettent de grouper les données et d'effectuer de nombreuses 
+actions "par groupes très facilement.  
 
 
 Ce chapitre aborde les sujets suivants :  
@@ -18,10 +19,10 @@ Ce chapitre aborde les sujets suivants :
 * Dé-grouper des données  
 * Résumer les données groupées avec des statistiques (`summarise()`)  
 * La différence entre `count()` et `tally()`.  
-* `arrange()` appliqué aux données groupées  
-* `filter()` appliqué à des données groupées  
-* `mutate()` appliqué à des données groupées  
-* `select()` appliqué à des données groupées  
+* Trier les données groupées avec la fonction `arrange()`  
+* Filtrer les données groupées avec la fonction `filter()`  
+* Créer de nouvelles  colonnes avec la fonction `mutate()`  
+* Sélectionner les colonnes avec la fonction `select()`  
 * La commande **base** R `aggregate()`, qui est une alternative aux fonctions de **dplyr**.  
 
 
@@ -37,18 +38,18 @@ Ces lignes de code chargent les paquets nécessaires aux analyses. Dans ce guide
 
 ```{r}
 pacman::p_load(
-  rio,       # importaion des fichiers
+  rio,       # import des fichiers
   here,      # gestion des chemins d'accès
   tidyverse, # gestion des données + graphiques (inclus dplyr)
-  janitor)   # Ajout de totaux aux lignes et colonnes
+  janitor)   # ajout de totaux aux lignes et colonnes
 ```
 
 
 
 
-### Importation des données {.unnumbered}
+### Import des données {.unnumbered}
 
-Dans ce chapitre, nous utiliserons un jeu de données fictif d'une épidémie d'Ebola. Pour reproduire les étapes, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la liste de diffusion "nettoyée"</a> (sous forme de fichier .rds). Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. voir la page [Importation et exportation des données](import_export) pour plus de détails).  
+Dans ce chapitre, nous utiliserons un jeu de données fictif pour une épidémie d'Ebola. Pour reproduire les étapes, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la liste "nettoyée"</a> (sous forme de fichier .rds). Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. voir la page [Importation et exportation des données](import_export) pour plus de détails).  
 
 
 ```{r, echo=F}
@@ -71,9 +72,9 @@ DT::datatable(head(linelist,50), rownames = FALSE, filter="top", options = list(
 <!-- ======================================================= -->
 ## Grouper des données {  }
      
-La fonction `group_by()` de **dplyr** permet de définir des groupes de lignes à partir des valeurs d’une ou plusieurs colonnes. Chaque valeur unique (ou combinaison de valeurs unique, dans le cas où plusieurs colonnes sont spécifiées) constitue un groupe. Une fois groupées, de nombreuses fonctions utilisées pour le nettoyage ou des analyses descriptives seront appliquées à chaque groupe.
+La fonction `group_by()` de **dplyr** permet de définir des groupes de lignes à partir des valeurs d’une ou de plusieurs colonnes. Chaque valeur unique (ou combinaison de valeurs unique, dans le cas où plusieurs colonnes sont spécifiées) constitue un groupe. Une fois les données groupées, de nombreuses fonctions utilisées pour le nettoyage ou des analyses descriptives seront appliquées _à chaque groupe_.
 
-Par exemple, le code ci-dessous groupe la `linelist` en fonction des valeurs uniques de la colonne `outcome`. La ou les colonnes de selon lesquelles grouper les données sont placées entre parenthèses dans la fonction `group_by()`. La fonction génère un nouveau tableau de données, que nous nommons `ll_by_outcome`.  
+Par exemple, le code ci-dessous groupe la `linelist` en fonction des valeurs uniques de la colonne `outcome`. La ou les colonnes selon lesquelles grouper les données sont placées entre parenthèses dans la fonction `group_by()`. La fonction génère un nouveau tableau de données, que nous nommons `ll_by_outcome`.  
 
 
 ```{r}
@@ -81,13 +82,13 @@ ll_by_outcome <- linelist %>%
   group_by(outcome)
 ```
 
-**Notez que les données elles mêmes n'ont pas été modifiées** après avoir exécuté `group_by()`. Le fait que le dataframe soit "groupé" se verra lorsqu'une autre fonction du paquet **dplyr** tel que `mutate()`, `summarise()`, ou `arrange()` soit appliqué sur le dataframe "groupé".  
+**Notez que les données elles mêmes n'ont pas été modifiées** après avoir exécuté `group_by()`. Le fait que le dataframe soit "groupé" se verra lorsqu'une autre fonction du paquet **dplyr** tel que `mutate()`, `summarise()`, ou `arrange()` sera appliquée sur le dataframe "groupé".  
 
-Vous pouvez cependant savoir qu'un dataframe est groupé en l'affichant / l'imprimant dans la console. Vous verrez alors qu'il a été transformé en un [objet de classe `tibble`](https://tibble.tidyverse.org/) qui, lorsqu'il est affiché, indique les groupements présents et le nombre de groupes qu'il y a juste au-dessus de la ligne d'en-tête.  
+Vous pouvez cependant savoir qu'un dataframe est groupé en l'imprimant dans la console. Vous verrez alors qu'il a été transformé en un [objet de classe `tibble`](https://tibble.tidyverse.org/) qui, lorsqu'il est affiché, indique les groupements présents et le nombre de groupes qu'il y a juste au-dessus de la ligne d'en-tête.  
 
 
 ```{r}
-# print to see which groups are active
+# Faire afficher pour voir le schéma de groupement
 ll_by_outcome
 ```
 
@@ -96,7 +97,7 @@ ll_by_outcome
 
 **Les groupes sont basés sur les combinaisons uniques de valeurs dans les colonnes de groupement**. 
 
-Pour afficher les groupes *et le nombre de lignes de chaque groupe*, passez les données groupées à la fonction `tally()`. Pour afficher les groupes présents sans nombre de lignes, passez les données à la fonction `group_keys()`.  
+Pour afficher les groupes *et le nombre de lignes de chaque groupe*, passez les données groupées à la fonction `tally()`. Pour afficher les groupes présents mais pas le nombre de lignes, passez les données à la fonction `group_keys()`.  
 
 Dans l'exemple ci-dessous, il y a **trois** valeurs uniques dans la colonne de groupement `outcome` : "Death", "Recover", et "NA". Vous voyez qu'il y avait ` nrow(linelist %>% filter(outcome == "Death"))` morts, ` nrow(linelist %>% filter(outcome == "Recover"))` guéris, et ` nrow(linelist %>% filter(is.na(outcome)))` individus sans information renseignée.  
 
@@ -107,7 +108,7 @@ linelist %>%
   tally()
 ```
 
-Vous pouvez regrouper par plus d'une colonne. Ci-dessous, nous groupons le dataframe par `outcome` et `gender`, puis comptons le nombre de lignes dans chaque groupe. Chaque combinaison unique de `outcome` et `gender` est crée un groupe différent, y compris les valeurs manquantes pour chaque colonne.  
+Vous pouvez regrouper par plus d'une colonne. Ci-dessous, nous groupons le dataframe par `outcome` et `gender`, puis comptons le nombre de lignes dans chaque groupe. Chaque combinaison unique de `outcome` et `gender` crée un groupe différent, y compris les valeurs manquantes pour chaque colonne.  
 
 
 ```{r}
@@ -126,7 +127,7 @@ Vous pouvez également grouper selon une colonne crée *directement dans* la fon
 linelist %>% 
   group_by(
     age_class = ifelse(age >= 18, "adult", "child")) %>% 
-  tally(sort = T)
+  tally(sort = TRUE)
 ```
 
 
@@ -149,11 +150,12 @@ by_outcome_gender <- by_outcome %>%
 ### Garder tous les groupes {.unnumbered} 
 
 
-Si vous groupez les données sur la base d'une colonne de type "facteur", il se peut que des niveaux du facteur ne soient pas présents dans le jeu de données actuel. Dans ce cas, ces niveaux non présents seront abandonnés par défaut et donc n'apparaitront pas dans les groupes. Pour prendre en compte tous les niveaux de facteur, y compris lorsqu'ils ne contiennent pas de données, utilisez l'argument `.drop = FALSE` dans votre commande `group_by()`.  
+Si vous groupez les données sur la base d'une colonne de type "facteur", il se peut que des niveaux du facteur ne soient pas présents dans le jeu de données actuel. Dans ce cas, ces niveaux non présents seront abandonnés par défaut et n'apparaitront pas dans les groupes. Pour prendre en compte tous les niveaux de facteur, _y compris lorsqu'ils ne contiennent pas de données_, utilisez l'argument `.drop = FALSE` dans votre commande `group_by()`.  
 
 ## Dégrouper les données
 
-Les données qui ont été groupées le resteront jusqu'à ce qu'elles soient spécifiquement dégroupées grâce à la fonction `ungroup()`. 
+Les dataframes qui ont été groupés le resteront jusqu'à ce qu'ils soient spécifiquement dégroupés grâce à la fonction `ungroup()`.  
+
 Attention à ne pas oublier de dégrouper les données avant de passer aux étapes qui necessitent le jeu de données complet et non groupé.  
 
 ```{r, eval=F}
