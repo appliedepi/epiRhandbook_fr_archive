@@ -1,124 +1,124 @@
 
-# Missing data { }
+# Données manquantes { }
 
 ```{r, out.width=c("50%"), echo=F}
 knitr::include_graphics(here::here("images", "missingness.png"))
 knitr::include_graphics(here::here("images", "missingness_overview.png"))
 ```
 
-This page will cover how to:  
-
-1) Assess missingness  
-2) Filter out rows by missingness  
-3) Plot missingness over time  
-4) Handle how `NA` is displayed in plots  
-5) Perform missing value imputation: MCAR, MAR, MNAR  
+Dans ce chapitre nous allons :  
+1) Evaluer l'ampleur des données manquantes  
+2) Filtrer les lignes en fonction des données manquantes  
+3) Faire des graphiques des données manquantes au cours du temps  
+4) Gérer comment les `NA` apparaissent dans les graphes  
+5) Imputer des données manquantes : MCAR, MAR, MNAR  
 
 
 
 <!-- ======================================================= -->
-## Preparation { }
+## Étapes préliminaires { }
 
-### Load packages {.unnumbered}  
+### Importation des paquets {.unnumbered}  
 
-This code chunk shows the loading of packages required for the analyses. In this handbook we emphasize `p_load()` from **pacman**, which installs the package if necessary *and* loads it for use. You can also load installed packages with  `library()` from **base** R. See the page on [R basics] for more information on R packages.  
+Ces lignes de code chargent les paquets nécessaires aux analyses. Dans ce guide, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *puis* l'importe pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets R.  
 
 ```{r}
 pacman::p_load(
-  rio,           # import/export
-  tidyverse,     # data mgmt and viz
-  naniar,        # assess and visualize missingness
-  mice           # missing data imputation
+  rio,           # import des fichiers
+  tidyverse,     # gestion des données + graphiques (ggplot2)
+  naniar,        # bilan des données manquantes
+  mice           # imputation
 )
 ```
 
 
-### Import data {.unnumbered}
+### Importation des données {.unnumbered}
 
-We import the dataset of cases from a simulated Ebola epidemic. If you want to follow along, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>click to download the "clean" linelist</a> (as .rds file). Import your data with the `import()` function from the **rio** package (it accepts many file types like .xlsx, .rds, .csv - see the [Import and export] page for details).  
+Nous importons un jeu de données de cas d'une épidémie d'ébola fictive. WPour reproduire les étapes, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (as .rds file). Importez vos données avec la fonction `import()` du paquet **rio** (elle accepte de nombreux types de fichiers comme .xlsx, .rds, .csv - voir la page [Importation et exportation des données](import_export) pour plus de détails).  
 
 ```{r, echo=F}
-# import the linelist into R
+# importer la linelist dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
 
 ```{r, eval=F}
-# import the linelist
+# importer la linelist dans R
 linelist <- import("linelist_cleaned.rds")
 ```
 
-The first 50 rows of the linelist are displayed below.
+Les cinquantes premières lignes sont affichées ci-dessous :  
 
 ```{r, message=FALSE, echo=F}
 # display the linelist data as a table
-DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+DT::datatable(head(linelist, 50), rownames = FALSE, filter = "top",
+              options = list(pageLength = 5, scrollX = T), 
+              class = 'white-space: nowrap' )
 ```
 
 
-### Convert missing on import {.unnumbered}  
+### Conversion des données manquantes lors de l'import {.unnumbered}  
 
-When importing your data, be aware of values that should be classified as missing. For example, 99, 999, "Missing", blank cells (""), or cells with an empty space (" "). You can convert these to `NA` (R's version of missing data) during the data import command.  
-See the page on importing page section on [Missing data](#import_missing) for details, as the exact syntax varies by file type.  
+Il faut être particulièrement attentif aux valeurs qui doivent être classifiées comme "manquantes" lors de l'import des données. Des données manquantes peuvent par exemple être indiquées par 99, 999, "Manquant", un espace vide (" ") ou des cellules vides (""). Vous pouvez les convertir en `NA` (la ma,ière dont R code les données manquantes, pour _"Non available"_) via la fonction d'importation des données.  
+Pour plus de détails, consultez la page sur l'importation des [Données manquantes](#import_missing), car la syntaxe exacte varie selon le type de fichier.  
 
 
 <!-- ======================================================= -->
-## Missing values in R { }
+## Valeurs manquantes dans R { }
 
-Below we explore ways that missingness is presented and assessed in R, along with some adjacent values and functions.  
+Nous explorons ci-dessous les façons dont les données manquantes sont représentées et évaluées dans R.  
 
 ### `NA` {.unnumbered}  
 
-In R, missing values are represented by a reserved (special) value - `NA`. Note that this is typed *without* quotes. "NA" is different and is just a normal character value (also a Beatles lyric from the song Hey Jude).  
+En R, les valeurs manquantes sont représentées par un mot réservé (spécial) : `NA`. Notez que ce mot est tapée *sans* guillemets, et ne doit pas être confondue avec une chaîne de caractères "NA" (également une parole des Beatles de la chanson _Hey Jude_).  
 
-Your data may have other ways of representing missingness, such as "99", or "Missing", or "Unknown" - you may even have empty character value "" which looks "blank", or a single space " ". Be aware of these and consider whether to [convert them to `NA` during import](#import_missing) or during data cleaning with `na_if()`.  
-
-In your data cleaning, you may also want to convert the other way - changing all `NA` to "Missing" or similar with `replace_na()` or with `fct_explicit_na()` for factors.  
+Les données butes peuvent avoir utilisés d'autre codes pour représenter les données manquantes, comme "99", "Manquant", "Inconnu", une valeur de caractère vide "" qui ressemble à un "blanc", ou un espace simple " ". Tenez-en compte et réfléchissez à l'opportunité de [les convertir en `NA` pendant l'importation](#import_missing) ou pendant le nettoyage des données avec `na_if()`.  
 
 
+A l'inverse, lors du nettoyage des données, il peut également être pertinent de convertir des `NA` en "Manquante" (ou autre) avec les fonctions `replace_na()` ou `fct_explicit_na()` dans le cas des facteurs.    
 
 
-### Versions of `NA` {.unnumbered}  
+### `NA` et ses dérivés {.unnumbered}  
 
-Most of the time, `NA` represents a missing value and everything works fine. However, in some circumstances you may encounter the need for *variations* of `NA` specific to an object class (character, numeric, etc). This will be rare, but you should be aware.    
-The typical scenario for this is when creating a new column with the **dplyr** function `case_when()`. As described in the [Cleaning data and core functions](#clean_case_when) page, this function evaluates every row in the data frame, assess whether the rows meets specified logical criteria (right side of the code), and assigns the correct new value (left side of the code). *Importantly: all values on the right side must be the same class*.  
+La plupart du temps, `NA` représente une valeur manquante et il n'y a pas besoin de se poser plus de questions que ça. Cependant, dans certaines circonstances, il peut y avaoit besoin de *variations* de `NA` spécifiques à une classe d'objet (caractère, numérique, etc.). C'est rare, mais il faut en être conscient.  
+
+Parmis ces cas rares, la création d'une nouvelle colonne avec la fonction **dplyr** `case_when()` est le plus commun. Comme décrit dans la page [Nettoyage des données et fonctions de base](#clean_case_when), cette fonction évalue chaque ligne du dataframe, détermine si les lignes répondent à des critères logiques spécifiés (partie droite du code), et attribue la nouvelle valeur correcte (partie gauche du code). *Important : toutes les valeurs du côté droit doivent être de la même classe*.  
 
 ```{r, eval=F}
 linelist <- linelist %>% 
   
-  # Create new "age_years" column from "age" column
+  # Créer une nouvelle colonne "age_years" à partir de la colonne "age"
   mutate(age_years = case_when(
-    age_unit == "years"  ~ age,       # if age is given in years, assign original value
-    age_unit == "months" ~ age/12,    # if age is given in months, divide by 12
-    is.na(age_unit)      ~ age,       # if age UNIT is missing, assume years
-    TRUE                 ~ NA_real_)) # any other circumstance, assign missing
+    age_unit == "years"  ~ age,    # si l'unité est années => garder la valeur originale
+    age_unit == "months" ~ age/12, # l'unité est en mois, diviser par 12
+    is.na(age_unit)      ~ age,    # si l'unité est manquante, supposer que l'age est en années
+    TRUE                 ~ NA_real_)) # sinon, définir age comme valeur manquante
 ```
 
-If you want `NA` on the right side, you may need to specify one of the special `NA` options listed below. If the other right side values are character, consider using "Missing" instead or otherwise use `NA_character_`. If they are all numeric, use `NA_real_`. If they are all dates or logical, you can use `NA`.  
+Afin que toutes les valeurs spécifiées du côté droit des équations aient le même type, il faut utiliser des dérivés de `NA` avec un type connu (voir ci dessous). Si les autres valeurs de droite sont des chaines de caractères, on peut utiliser `NA_character_` ou envisager d'utiliser "Manquant" à la place. Si les valeurs sont toutes numériques, utiliser `NA_real_`. S'il s'agit de dates ou de valeurs logiques, on peut conserver `NA`.  
 
-* `NA` - use for dates or logical TRUE/FALSE 
-* `NA_character_` - use for characters  
-* `NA_real_`  - use for numeric
-
-Again, it is not likely you will encounter these variations *unless* you are using `case_when()` to create a new column. See the [R documentation on NA](https://stat.ethz.ch/R-manual/R-devel/library/base/html/NA.html) for more information. 
+* `NA` - à utiliser pour les dates ou les booléens VRAI/FAUX  
+* `NA_character_` - à utiliser pour les chaines de caractères   
+* `NA_real_` - pour les valeurs numériques  
 
 
+
+Encore une fois, il est peu probable que vous rencontriez ces variations, hors utilisation de `case_when()` pour créer une nouvelle colonne. Consultez la [documentation R sur NA](https://stat.ethz.ch/R-manual/R-devel/library/base/html/NA.html) pour plus d'informations. 
 
 
 
 ### `NULL` {.unnumbered}  
 
-`NULL` is another reserved value in R. It is the logical representation of a statement that is neither true nor false. It is returned by expressions or functions whose values are undefined. Generally do not assign NULL as a value, unless writing functions or perhaps writing a [**shiny** app][Dashboards with Shiny] to return `NULL` in specific scenarios.  
+`NULL` est un autre mot réservée en R. C'est la représentation logique d'une déclaration qui n'est ni vraie ni fausse. Elle est retournée par des expressions ou des fonctions dont les valeurs sont indéfinies. En général, n'assignez pas NULL comme valeur, à moins d'écrire des fonctions ou peut-être une [**shiny** app](#shiny) pour retourner `NULL` dans des scénarios spécifiques.  
 
-Null-ness can be assessed using `is.null()` and conversion can made with `as.null()`.  
+La nullité peut être évaluée avec `is.null()` et la conversion peut être faite avec `as.null()`.  
 
-See this [blog post](https://www.r-bloggers.com/2010/04/r-na-vs-null/) on the difference between `NULL` and `NA`.  
-
+Voir cet [article de blog](https://www.r-bloggers.com/2010/04/r-na-vs-null/) sur la différence entre `NULL` et `NA`. 
 
 
 
 ### `NaN` {.unnumbered}  
 
-Impossible values are represented by the special value `NaN`. An example of this is when you force R to divide 0 by 0. You can assess this with `is.nan()`. You may also encounter complementary functions including `is.infinite()` and `is.finite()`.  
+Les valeurs impossibles sont représentées par le mot spécial `NaN`. Par exemple, R renvoit `NaN` si vous ui demandez de diviser 0 par 0. `NaN` peut être évalué avec `is.nan()`. Il existe également des fonctions complémentaires comme `is.infinite()` et `is.finite()`. 
 
 
 ### `Inf` {.unnumbered}  

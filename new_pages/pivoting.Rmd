@@ -80,7 +80,7 @@ A la fin de ce chapitre, nous utiliserons également une liste des cas d'une ép
 
 
 ```{r, echo=F}
-# import the linelist into R
+# importer la linelist dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
 
