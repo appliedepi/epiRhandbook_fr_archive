@@ -118,29 +118,30 @@ Voir cet [article de blog](https://www.r-bloggers.com/2010/04/r-na-vs-null/) sur
 
 ### `NaN` {.unnumbered}  
 
-Les valeurs impossibles sont représentées par le mot spécial `NaN`. Par exemple, R renvoit `NaN` si vous ui demandez de diviser 0 par 0. `NaN` peut être évalué avec `is.nan()`. Il existe également des fonctions complémentaires comme `is.infinite()` et `is.finite()`. 
+Les valeurs impossibles sont représentées par le mot spécial `NaN`. Par exemple, R renvoi `NaN` si vous lui demandez de diviser 0 par 0. `NaN` peut être évalué avec `is.nan()`. Il existe également des fonctions complémentaires comme `is.infinite()` et `is.finite()`. 
 
 
 ### `Inf` {.unnumbered}  
 
-`Inf` represents an infinite value, such as when you divide a number by 0.  
+`Inf` représente une valeur infinie, telle que l'on peut parexemple obtenir en divisant un nombre par zéro.  
 
-As an example of how this might impact your work: let's say you have a vector/column `z` that contains these values: `z <- c(1, 22, NA, Inf, NaN, 5)`
+Pour comprendre comment ce type de valeurs peuvent affecter vos analyses, imaginons que vous avez un vecteur `z` qui contient ces valeurs : `z <- c(1, 22, NA, Inf, NaN, 5)`.  
 
-If you want to use `max()` on the column to find the highest value, you can use the `na.rm = TRUE` to remove the `NA` from the calculation, but the `Inf` and `NaN` remain and `Inf` will be returned. To resolve this, you can use brackets `[ ]` and `is.finite()` to subset such that only finite values are used for the calculation: `max(z[is.finite(z)])`.  
+Si vous voulez utiliser la fonction `max()` sur la colonne pour trouver la valeur la plus élevée, vous pouvez utiliser le `na.rm = TRUE` pour omettre le `NA` du calcul. Mais celà n’enlèvera pas les `Inf` et `NaN`, ce qui fait que le résultat retourné sera `Inf`. Pour résoudre ce problème, vous pouvez utiliser les crochets `[ ]` et `is.finite()` pour effectuer un sous-ensemble de sorte que seules les valeurs finies soient utilisées pour le calcul : `max(z[is.finite(z)])`.  
+
 
 ```{r, eval=F}
 z <- c(1, 22, NA, Inf, NaN, 5)
-max(z)                           # returns NA
-max(z, na.rm=T)                  # returns Inf
-max(z[is.finite(z)])             # returns 22
+max(z)                           # retourne NA
+max(z, na.rm=T)                  # retourne Inf
+max(z[is.finite(z)])             # retourne 22
 ```
 
 
-### Examples {.unnumbered}  
+### Exemples {.unnumbered}  
 
 
-R command | Outcome
+Instruction R | Sortie
 ----------|--------------
 `5 / 0` | `Inf`  
 `0 / 0` | `NaN`  
@@ -153,21 +154,21 @@ R command | Outcome
 `class(Inf)` | "numeric"  
 `class(NULL)` | "NULL"  
 
-"NAs introduced by coercion" is a common warning message. This can happen if you attempt to make an illegal conversion like inserting a character value into a vector that is otherwise numeric.  
+Un message d'avertissement que vous rencontrerez certainement est "NAs introduits par coercition". Cela peut se produire si vous tentez d'effectuer une conversion illégale, par exemple en insérant une chaîne caractère dans un vecteur qui contient des valeurs numérique.   
 
 ```{r}
 as.numeric(c("10", "20", "thirty", "40"))
 ```
 
-`NULL` is ignored in a vector.  
+Note : `NULL` est ignoré dans un vecteur.  
 
 ```{r}
-my_vector <- c(25, NA, 10, NULL)  # define
-my_vector                         # print
+my_vector <- c(25, NA, 10, NULL)  # définit
+my_vector                         # affiche
 ```
 
 
-Variance of one number results in `NA`.  
+Note : tenter de calculer la variance sur une valeur unique retourne également un `NA`.  
 
 ```{r}
 var(22)
@@ -175,14 +176,15 @@ var(22)
 
 
 <!-- ======================================================= -->
-## Useful functions { }
+## Fonctions utiles { }
 
-The following are useful **base** R functions when assessing or handling missing values:  
+Voici quelques fonctions utiles en **base** R pour détecter et gérer les valeurs manquantes.
 
 
-### `is.na()` and `!is.na()` {.unnumbered}  
+### `is.na()` et `!is.na()` {.unnumbered}  
 
-Use `is.na()`to identify missing values, or use its opposite (with `!` in front) to identify non-missing values. These both return a logical value (`TRUE` or `FALSE`). Remember that you can `sum()` the resulting vector to count the number `TRUE`, e.g. `sum(is.na(linelist$date_outcome))`.    
+`is.na()` permet d'identifier les valeurs manquantes. Pour identifier les valeurs non manquantes il suffit d'utiliser son opposé en ajoutant `!` devant. Ces deux méthodes retournent une valeur logique (`TRUE` ou `FALSE`). Pour rappel, il est possible de sommer le vecteur résultant avec `sum()` pour compter le nombre de `TRUE`. Par exemple :  `sum(is.na(linelist$date_outcome))`.    
+
 
 ```{r}
 my_vector <- c(1, 4, 56, NA, 5, NA, 22)
@@ -194,8 +196,8 @@ sum(is.na(my_vector))
 
 ### `na.omit()` {.unnumbered}  
 
-This function, if applied to a data frame, will remove rows with *any* missing values. It is also from **base** R.  
-If applied to a vector, it will remove `NA` values from the vector it is applied to. For example:  
+Appliquée à un dataframe, cette fonction de **base** R supprimera les lignes dont  *toutes* les valeurs sont manquantes. Appliquée à un vecteur, elle supprimera les valeurs `NA` de ce vecteur. Par exemple :   
+
 
 ```{r}
 na.omit(my_vector)
@@ -203,19 +205,22 @@ na.omit(my_vector)
 
 ### `drop_na()` {.unnumbered}  
 
-This is a **tidyr** function that is useful in a [data cleaning pipeline][Cleaning data and core functions]. If run with the parentheses empty, it removes rows with *any* missing values. If column names are specified in the parentheses, rows with missing values in those columns will be dropped. You can also use "tidyselect" syntax to specify the columns.  
+Il s'agit d'une fonction de **tidyr** utile pour [nettoyer des données dans un pipeline](#cleaning_pipeline). Si elle est exécutée sans argument, elle supprime également les lignes dont *toutes* les valeurs sont manquantes. Mais si des noms de colonnes sont spécifiés comme arguments, seules les lignes avec des valeurs manquantes dans ces colonnes seront supprimées.   
+
+Note : on peut utiliser la syntaxe "tidyselect" pour spécifier les colonnes.  
+
 
 ```{r, eval=F}
 linelist %>% 
-  drop_na(case_id, date_onset, age) # drops rows missing values for any of these columns
+  drop_na(case_id, date_onset, age) # omet les lignes contenant des valeurs manquantes dans une de ces colonnes au moins
 ```
 
 
 ### `na.rm = TRUE` {.unnumbered}  
 
-When you run a mathematical function such as `max()`, `min()`, `sum()` or `mean()`, if there are any `NA` values present the returned value will be `NA`. This default behavior is intentional, so that you are alerted if any of your data are missing.  
+Lorsque vous exécutez une fonction mathématique telle que `max()`, `min()`, `sum()` ou `mean()`, la valeur retournée sera `NA` si des valeurs `NA` sont présentes dans les données. Ce comportement par défaut est intentionnel, afin que vous soyez alerté si l'une de vos données est manquante.  
 
-You can avoid this by removing missing values from the calculation. To do this, include the argument `na.rm = TRUE` ("na.rm" stands for "remove `NA`").  
+Vous pouvez éviter cela en supprimant les valeurs manquantes du calcul. Pour ce faire, incluez l'argument `na.rm = TRUE` (le "rm" étant une abréviation de "remove").  
 
 
 ```{r}
@@ -229,52 +234,57 @@ mean(my_vector, na.rm = TRUE)
 
 
 <!-- ======================================================= -->
-## Assess missingness in a data frame { }
+## Identifier les valeurs manquantes dans un dataframe { }
 
-You can use the package **naniar** to assess and visualize missingness in the data frame `linelist`.  
+Le package **naniar** permet de détecter et de visualiser l'ampleur de la complétude des données (et donc de leur non-complétude) dans un tableau de données.  
 
 ```{r}
-# install and/or load package
+# installer et charger le paquet
 pacman::p_load(naniar)
 ```
 
-### Quantifying missingness {.unnumbered}
+### Quantifier les données manquantes {.unnumbered}
 
-To find the percent of all values that are missing use `pct_miss()`. Use `n_miss()` to get the number of missing values.  
+La fonction `pct_miss()` permet de calculer le pourcentage de toutes les valeurs manquantes. La fonction `n_miss()` renvoi le nombre de valeurs manquantes.  
+
 
 ```{r}
-# percent of ALL data frame values that are missing
+# pourcentage de données manquantes sur TOUTES les valeurs du dataframe
 pct_miss(linelist)
 ```
 
-The two functions below return the percent of rows with any missing value, or that are entirely complete, respectively. Remember that `NA` means missing, and that ``""` or `" "` will not be counted as missing.  
+Les deux fonctions ci-dessous renvoient le pourcentage de lignes dont une valeur est manquante ou qui sont entièrement complètes.  
+
+Note : `NA` signifie manquant, mais que ``""` ou `""` ne sont pas considérées comme des valeurs manquantes.  
+
 
 ```{r}
-# Percent of rows with any value missing
-pct_miss_case(linelist)   # use n_complete() for counts
+# Pourcentage des lignes avec au moins une valeur manquante
+pct_miss_case(linelist)   # utiliser n_miss() pour le nombre de lignes
 ```
 
 ```{r}
-# Percent of rows that are complete (no values missing)  
-pct_complete_case(linelist) # use n_complete() for counts
+# Pourcentage des lignes sans valeur manquante
+pct_complete_case(linelist) # utiliser n_complete() pour le nombre
 ```
 
 
+### Visualiser les données manquantes {.unnumbered}  
 
-### Visualizing missingness {.unnumbered}  
+La fonction `gg_miss_var()` renvoi le nombre (ou %) de valeurs manquantes dans chaque colonne. Quelques notes :  
 
-The `gg_miss_var()` function will show you the number (or %) of missing values in each column. A few nuances:  
+* Vous pouvez ajouter un nom de colonne (pas entre guillemets) à l'argument `facet = ` pour voir le graphique par groupes.  
 
-* You can add a column name (not in quote) to the argument `facet = ` to see the plot by groups  
-* By default, counts are shown instead of percents, change this with `show_pct = TRUE`  
-* You can add axis and title labels as for a normal `ggplot()` with `+ labs(...)`  
+* Les nombres sont affichés par défault. Pour voir les pourcentages, utilisez `show_pct = TRUE`.  
+
+* Vous pouvez ajouter des étiquettes d'axe et de titre comme pour un `ggplot()` normal avec `+ labs(...)`.  
 
 
 ```{r}
 gg_miss_var(linelist, show_pct = TRUE)
 ```
 
-Here the data are piped `%>%` into the function. The `facet = ` argument is also used to split the data.  
+Ici, les données sont passée à la fonction à l'aide d'un pipe `%>%`. L'argument `facet = ` est utilisé pour séparer les données par outcome.   
 
 ```{r}
 linelist %>% 
@@ -282,22 +292,21 @@ linelist %>%
 ```
 
 
-You can use `vis_miss()` to visualize the data frame as a heatmap, showing whether each value is missing or not. You can also `select()` certain columns from the data frame and provide only those columns to the function.    
+La fonction `vis_miss()` permet de visualiser le dataframe sous forme de carte thermique qui indique quelle valeur est manquante. Vous pouvez également `select()` certaines colonnes du cadre de données et ne fournir que ces colonnes à la fonction.  
 
 ```{r}
-# Heatplot of missingness across the entire data frame  
+# Carte thermique de la complétude des données à l'échelle du dataframe
 vis_miss(linelist)
 ```
 
 
-### Explore and visualize missingness relationships {.unnumbered} 
+### Explorer et visualiser les relations entre données manquantes{.unnumbered} 
 
-How do you visualize something that is not there??? By default, `ggplot()` removes points with missing values from plots.  
+Comment visualiser quelque chose qui n'existe pas ??? Par défaut, `ggplot()` n'affiche pas les points avec des valeurs manquantes dans les graphiques.  
 
-**naniar** offers a solution via `geom_miss_point()`. When creating a scatterplot of two columns, records with one of the values missing and the other value present are shown by setting the missing values to 10% lower than the lowest value in the column, and coloring them distinctly.  
+Le package **naniar** propose une solution via la fonction `geom_miss_point()`. Lors de la création d'un nuage de points à partir de deux variables, les paires de valeurs dont l'une est manquante sont montrés en fixant les valeurs manquante à 10% plus bas que la valeur minimale de la colonne, et en les colorant differement.  
 
-In the scatterplot below, the red dots are records where the value for one column is present but the value for the other column is missing. This allows you to see the distribution of missing values in relation to the non-missing values.  
-
+Dans le nuage de points ci-dessous, les points rouges sont des enregistrements où la valeur d'une des deux colonne est présente mais où l'autre est manquante. Cela permet de visualiser la distribution des valeurs manquantes par rapport à celle des valeurs non manquantes. 
 
 
 ```{r}
@@ -307,14 +316,14 @@ ggplot(
   geom_miss_point()
 ```
 
-To assess missingness in the data frame *stratified by another column*, consider `gg_miss_fct()`, which returns a heatmap of percent missingness in the data frame *by a factor/categorical (or date) column*:  
+Pour évaluer les données manquantes dans un dataframe en *stratifiant par une autre colonne*, on peut utiliser la fonction `gg_miss_fct()`, qui retourne une carte thermique du pourcentage de valeurs manquantes dans le dataframe *par un facteur/colonne catégorique (ou date)* :  
+
 
 ```{r}
 gg_miss_fct(linelist, age_cat5)
 ```
 
-
-This function can also be used with a date column to see how missingness has changed over time:  
+Cette fonction peut aussi être utilisée sur une colonne contenant des dates pour voir comment la complétude des données change au cours du temps :  
 
 ```{r}
 gg_miss_fct(linelist, date_onset)

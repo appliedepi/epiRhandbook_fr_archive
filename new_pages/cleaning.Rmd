@@ -59,7 +59,7 @@ Most of this handbook is about managing and transforming data, so referring to t
 <!-- ======================================================= -->
 <!-- ======================================================= -->
 <!-- ======================================================= -->
-## Cleaning pipeline
+## Cleaning pipeline {#cleaning_pipeline}
 
 **This page proceeds through typical cleaning steps, adding them sequentially to a cleaning pipe chain.**
 
