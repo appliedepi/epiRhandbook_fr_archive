@@ -316,7 +316,7 @@ ggplot(
   geom_miss_point()
 ```
 
-Pour évaluer les données manquantes dans un dataframe en *stratifiant par une autre colonne*, on peut utiliser la fonction `gg_miss_fct()`, qui retourne une carte thermique du pourcentage de valeurs manquantes dans le dataframe *par un facteur/colonne catégorique (ou date)* :  
+Pour évaluer les données manquantes dans un dataframe en *stratifiant par une autre colonne*, on peut utiliser la fonction `gg_miss_fct()`, qui retourne une carte thermique du pourcentage de valeurs manquantes dans le dataframe *pour chaque catégorie d'une autre variable* :  
 
 
 ```{r}
@@ -332,10 +332,9 @@ gg_miss_fct(linelist, date_onset)
 
 
 
-### "Shadow" columns {.unnumbered}
+### Colonnes "fantômes" {.unnumbered}
 
-Another way to visualize missingness in one column by values in a second column is using the "shadow" that **naniar** can create. `bind_shadow()` creates a binary `NA`/not `NA` column for every existing column, and binds all these new columns to the original dataset with the appendix "_NA". This doubles the number of columns - see below:  
-
+**naniar** donne la possibilité de créer un jeu de données "fantôme" ("shadow matrix" en Anglais) pour aller plus loin dans l'étude de la distribution des données manquantes. Essentiellement, pour chaque colonne existante la fonction `bind_shadow()` crée une nouvelle colonne binaire contenant soit  `NA`, soit `!NA` (pour "non `NA`"), et lie toutes ces nouvelles colonnes au jeu de données original avec l'appendice "_NA". Cela double le nombre de colonnes - voir ci-dessous :  
 
 ```{r}
 shadowed_linelist <- linelist %>% 
@@ -344,75 +343,81 @@ shadowed_linelist <- linelist %>%
 names(shadowed_linelist)
 ```
 
-These "shadow" columns can be used to plot the proportion of values that are missing, by any another column.  
+Ces colonnes "fantômes" peuvent être utilisées pour visualiser la proportion de valeurs manquantes dans une colonne en fonction d'une autre colonne.  
 
-For example, the plot below shows the proportion of records missing `days_onset_hosp` (number of days from symptom onset to hospitalisation), by that record's value in `date_hospitalisation`. Essentially, you are plotting the density of the x-axis column, but stratifying the results (`color = `) by a shadow column of interest. This analysis works best if the x-axis is a numeric or date column.  
+Par exemple, le graphique ci-dessous montre la proportion de données manquantes dans la colonne `days_onset_hosp` (le nombre de jours entre l'apparition des symptômes et l'hospitalisation), en fonction de la `date_hospitalisation`. Ici on trace la densité de données manquantes et non manquantes (`color = `) en fonction de la date d'hospitalisation.  
+
+Ce type de visualisation fonctionne mieux si la variable tracée en sur l'axe des abcisses est numérique ou temporelle.   
 
 
 ```{r, message = F}
-ggplot(data = shadowed_linelist,          # data frame with shadow columns
-  mapping = aes(x = date_hospitalisation, # numeric or date column
-                colour = age_years_NA)) + # shadow column of interest
-  geom_density()                          # plots the density curves
+ggplot(data = shadowed_linelist,   # dataframe augmenté avec les colonnes fantômes
+  mapping = aes(x = date_hospitalisation, # colonne numérique ou date
+                colour = age_years_NA)) + # colonne fantôme d'intérêt
+  geom_density()                          # trace les courbes de densité
 ```
 
-You can also use these "shadow" columns to stratify a statistical summary, as shown below:
+Les colonnes fantômes peuvent aussi être utilisé comme stratification dans des statistiques descriptives :  
 
 ```{r}
 linelist %>%
-  bind_shadow() %>%                # create the shows cols
-  group_by(date_outcome_NA) %>%    # shadow col for stratifying
+  bind_shadow() %>%                # creation des colonnes fantôme
+  group_by(date_outcome_NA) %>%    # groupe par la colonne fantôme de date_outcome
   summarise(across(
-    .cols = age_years,             # variable of interest for calculations
-    .fns = list("mean" = mean,     # stats to calculate
+    .cols = age_years,             # variable d'intérêt à résumer
+    .fns = list("mean" = mean,     # statistiques
                 "sd" = sd,
                 "var" = var,
                 "min" = min,
                 "max" = max),  
-    na.rm = TRUE))                 # other arguments for the stat calculations
+    na.rm = TRUE))                 # autres arguments des fonctions statistiques
 ```
 
+**naniar** n'est pas la seule méthode pour représenter la proportion de valeurs manquantes dans une colonne en fonction du temps :   
 
-An alternative way to plot the proportion of a column's values that are missing over time is shown below. It does *not* involve **naniar**. This example shows percent of weekly observations that are missing).  
+1) Agréger les données dans une unité de temps pertinente (jours, semaines, etc.), en résumant la proportion d'observations avec `NA` (et toute autre valeur d'intérêt). 
 
-1) Aggregate the data into a useful time unit (days, weeks, etc.), summarizing the proportion of observations with `NA` (and any other values of interest)  
-2) Plot the proportion missing as a line using `ggplot()`  
+2) Tracez la proportion de données manquantes comme une ligne en utilisant `ggplot()`.  
 
-Below, we take the linelist, add a new column for week, group the data by week, and then calculate the percent of that week's records where the value is missing. (note: if you want % of 7 days the calculation would be slightly different).  
+Dans l'exemple ci-dessous, nous ajoutons une nouvelle colonne pour la semaine à la linelist, regroupons les données par semaine, puis calculons le pourcentage des enregistrements de cette semaine où la valeur est manquante. (note : si vous voulez le % de 7 jours, le calcul sera légèrement différent).  
+
 
 ```{r}
 outcome_missing <- linelist %>%
-  mutate(week = lubridate::floor_date(date_onset, "week")) %>%   # create new week column
-  group_by(week) %>%                                             # group the rows by week
-  summarise(                                                     # summarize each week
-    n_obs = n(),                                                  # number of records
-    
-    outcome_missing = sum(is.na(outcome) | outcome == ""),        # number of records missing the value
-    outcome_p_miss  = outcome_missing / n_obs,                    # proportion of records missing the value
+  mutate(week = lubridate::floor_date(date_onset, "week")) %>%   # crée colonne semaine
+  group_by(week) %>%      # groupe les lignes par semaine
+  summarise(              # pour chaque semaine, résumme : 
+    n_obs = n(),          # nombre total d'observations
+    outcome_missing = sum(is.na(outcome) | outcome == ""),  # nombre d'obs avec valeur manquante
+    outcome_p_miss  = outcome_missing / n_obs,    # proportion d'obs avec valeur manquante
   
-    outcome_dead    = sum(outcome == "Death", na.rm=T),           # number of records as dead
-    outcome_p_dead  = outcome_dead / n_obs) %>%                   # proportion of records as dead
+    outcome_dead    = sum(outcome == "Death", na.rm=T),     # nb de morts
+    outcome_p_dead  = outcome_dead / n_obs) %>%             # prop morts
   
-  tidyr::pivot_longer(-week, names_to = "statistic") %>%         # pivot all columns except week, to long format for ggplot
-  filter(stringr::str_detect(statistic, "_p_"))                  # keep only the proportion values
+  tidyr::pivot_longer(-week, names_to = "statistic") %>%    # pivote toutes les colonnes sauf la semaine en format long
+  filter(stringr::str_detect(statistic, "_p_"))   # garde uniquement les proportions
 ```
 
-Then we plot the proportion missing as a line, by week. The [ggplot basics] page if you are unfamiliar with the **ggplot2** plotting package.  
+Ensuite, nous traçons la proportion de données manquantes par semaine, sous forme de ligne.  
+Référez vous à la page [bases de ggplot](#ggplot_basics) si vous n'êtes pas familier avec le package **ggplot2**.  
 
 ```{r, message=F, warning=F}
-ggplot(data = outcome_missing)+
+ggplot(data = outcome_missing) +
     geom_line(
-      mapping = aes(x = week, y = value, group = statistic, color = statistic),
+      mapping = aes(x = week, 
+                    y = value, 
+                    group = statistic, 
+                    color = statistic),
       size = 2,
-      stat = "identity")+
+      stat = "identity") +
     labs(title = "Weekly outcomes",
          x = "Week",
          y = "Proportion of weekly records") + 
      scale_color_discrete(
        name = "",
-       labels = c("Died", "Missing outcome"))+
-    scale_y_continuous(breaks = c(seq(0,1,0.1)))+
-  theme_minimal()+
+       labels = c("Died", "Missing outcome")) +
+    scale_y_continuous(breaks = c(seq(0, 1, 0.1))) +
+  theme_minimal() +
   theme(legend.position = "bottom")
 ```
 
@@ -622,7 +627,7 @@ In this example, LOCF and BOCF are clearly the right things to do, but in more c
 
 ### Multiple Imputation {.unnumbered}
 
-The online book we mentioned earlier by the author of the mice package (https://stefvanbuuren.name/fimd/) contains a detailed explanation of multiple imputation and why you'd want to use it. But, here is a basic explanation of the method:
+The online book we mentioned earlier by the author of the **mice** package (https://stefvanbuuren.name/fimd/) contains a detailed explanation of multiple imputation and why you'd want to use it. But, here is a basic explanation of the method:
 
 When you do multiple imputation, you create multiple datasets with the missing values imputed to plausible data values (depending on your research data you might want to create more or less of these imputed datasets, but the mice package sets the default number to 5). The difference is that rather than a single, specific value each imputed value is drawn from an estimated distribution (so it includes some randomness). As a result, each of these datasets will have slightly different different imputed values (however, the non-missing data will be the same in each of these imputed datasets). You still use some sort of predictive model to do the imputation in each of these new datasets (mice has many options for prediction methods including *Predictive Mean Matching*, *logistic regression*, and *random forest*) but the mice package can take care of many of the modeling details. 
 

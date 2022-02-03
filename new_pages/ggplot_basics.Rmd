@@ -1,5 +1,5 @@
 
-# ggplot basics {}
+# ggplot basics {#ggplot_basics}
 
 ```{r, out.width=c('100%', '100%'), fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "ggplot_basics_top.png"))
