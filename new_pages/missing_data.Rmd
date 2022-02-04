@@ -426,48 +426,46 @@ ggplot(data = outcome_missing) +
 
 
 <!-- ======================================================= -->
-## Using data with missing values  
+## Utiliser des données avec des valeurs manquantes  
 
 
-### Filter out rows with missing values {.unnumbered}
+### Filtrer les lignes avec valeurs manquantes {.unnumbered}
 
-To quickly remove rows with missing values, use the **dplyr** function `drop_na()`.  
+La fonction `drop_na()` de **dplyr** permet de se débarrasser rapidement des lignes avec des valeurs manquantes.  
 
-The original `linelist` has ` nrow(linelist)` rows. The adjusted number of rows is shown below:  
+La `linelist` originale contient ` nrow(linelist)` lignes. La linelist sans lignes avec des valeurs manquantes contient moins de lignes :   
 
 ```{r}
 linelist %>% 
-  drop_na() %>%     # remove rows with ANY missing values
+  drop_na() %>%     # filtre les lignes sans aucune valeur manquante
   nrow()
 ```
 
-You can specify to drop rows with missingness in certain columns:  
+On peut choisir de ne se débarrasser des lignes avec des valeurs manquantes que dans certaines colonnes :  
 
 ```{r}
 linelist %>% 
-  drop_na(date_onset) %>% # remove rows missing date_onset 
+  drop_na(date_onset) %>% # omet les lignes avec des valeurs manquantes dans date_onset
   nrow()
 ```
 
-You can list columns one after the other, or use ["tidyselect" helper functions](#clean_tidyselect):  
+On peut passer plusieurs colonnes l'une après l'autre à la fonction, ou utiliser des [fonctions utilitaires de "tidyselect"](#clean_tidyselect):  
 
 ```{r}
 linelist %>% 
-  drop_na(contains("date")) %>% # remove rows missing values in any "date" column 
+  drop_na(contains("date")) %>% # omet lignes avec NA dans n'importe quelle colonne dont le nom contient "date"
   nrow()
 ```
 
 
 
 <!-- ======================================================= -->
-### Handling `NA` in `ggplot()` {.unnumbered}
+### Gérer les `NA` dans `ggplot()` {.unnumbered}
 
-It is often wise to report the number of values excluded from a plot in a caption. Below is an example:  
+Il est souvent judicieux de signaler le nombre de valeurs exclues d'un graphique au lecteur du graphique. 
 
-In `ggplot()`, you can add `labs()` and within it a `caption = `. In the caption, you can use `str_glue()` from **stringr** package to paste values together into a sentence dynamically so they will adjust to the data. An example is below:  
+Dans `ggplot()`, la fonction `labs()`a un argument `caption = ` qui ajoute un texte de légende sous le graphique. Vous pouvez utiliser `str_glue()` du package **stringr** pour concaténer valeurs et chaines de caractères ensemble dans une phrase qui s'ajuste automatiquement aux données (voir exemple ci-dessous).    
 
-* Note the use of `\n` for a new line.  
-* Note that if multiple column would contribute to values not being plotted (e.g. age or sex if those are reflected in the plot), then you must filter on those columns as well to correctly calculate the number not shown.  
 
 ```{r, eval=F}
 labs(
@@ -479,16 +477,20 @@ labs(
   {nrow(central_data %>% filter(is.na(date_onset)))} cases missing date of onset and not shown."))  
 ```
 
-Sometimes, it can be easier to save the string as an object in commands prior to the `ggplot()` command, and simply reference the named string object within the `str_glue()`.  
+
+Notes :   
+* l'utilisation de `\n` pour aller à la ligne.   
+* si plusieurs colonnes contribuent à ce que des valeurs ne soient pas affichées (par exemple, l'âge ou le sexe si ceux-ci sont reflétés dans le graphique), u=il faut également filtrer sur ces colonnes pour calculer correctement le nombre de valeurs non affichées. 
+* on peut sauvegarder la chaîne de caractères en tant qu'objet dans des commandes antérieures à la commande `ggplot()`, et simplement la référencer dans la `str_glue()`.  
 
 
 <!-- ======================================================= -->
-### `NA` in factors {.unnumbered}
+### `NA` dans les facteurs {.unnumbered}
 
-If your column of interest is a factor, use `fct_explicit_na()` from the **forcats** package to convert `NA` values to a character value. See more detail in the [Factors] page. By default, the new value is "(Missing)" but this can be adjusted via the `na_level =` argument.   
+Si votre colonne d'intérêt est un facteur, utilisez `fct_explicit_na()` du package **forcats** pour convertir les valeurs `NA` en une chaine de caractères (plus de détails dans la page [Facteurs](#factors). Par défaut, la nouvelle valeur est "(Missing)" mais cela peut être ajusté via l'argument `na_level =`.   
 
 ```{r}
-pacman::p_load(forcats)   # load package
+pacman::p_load(forcats)   # charge le package
 
 linelist <- linelist %>% 
   mutate(gender = fct_explicit_na(gender, na_level = "Missing"))
