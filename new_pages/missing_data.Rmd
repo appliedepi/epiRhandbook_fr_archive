@@ -504,13 +504,14 @@ levels(linelist$gender)
 ## Imputation { }
 
 
-Sometimes, when analyzing your data, it will be important to "fill in the gaps" and impute missing data While you can always simply analyze a dataset after removing all missing values, this can cause problems in many ways. Here are two examples: 
+Lors de certaines analyses de données, il est nécessaire de "combler les lacunes" et d'imputer les données manquantes. En effet, s'il est souvent possible d'analyser un jeu de données après en avoir supprimé toutes les valeurs manquantes, cela peut néanmoins poser des problèmes à plusieurs égards. Voici deux exemples :  
 
-1) By removing all observations with missing values or variables with a large amount of missing data, you might reduce your power or ability to do some types of analysis. For example, as we discovered earlier, only a small fraction of the observations in our linelist dataset have no missing data across all of our variables. If we removed the majority of our dataset we'd be losing a lot of information! And, most of our variables have some amount of missing data--for most analysis it's probably not reasonable to drop every variable that has a lot of missing data either.
+1) Supprimer toutes les observations avec des valeurs manquantes, ou les variables avec une beaucoup de données manquantes peut réduire considérablement la puissance et la capacité à effectuer certains types d'analyse. Par exemple, nous avons vu que seule une faible fraction des lignes de notre linelist ne comporte *aucune* donnée manquante. Si nous supprimions toutes les lignes contenant au moins une donnée manquante, nous perdrions beaucoup d'informations ! De plus, la plupart de nos variables comportent une certaine quantité de données manquantes - pour la plupart des analyses, il n'est probablement pas raisonnable d'éliminer toutes les variables qui comportent beaucoup de données manquantes.
 
-2) Depending on why your data is missing, analysis of only non-missing data might lead to biased or misleading results. For example, as we learned earlier we are missing data for some patients about whether they've had some important symptoms like fever or cough. But, as one possibility, maybe that information wasn't recorded for people that just obviously weren't very sick. In that case, if we just removed these observations we'd be excluding some of the healthiest people in our dataset and that might really bias any results.
+2) Selon la raison pour laquelle vos données sont manquantes, l'analyse des données non manquantes seules peut conduire à des biais et des résultats trompeurs. Par exemple, nous avons vu que de nombreux patients ont des données manquantes dans les colonnes concernant des symptômes importants, comme la fièvre ou la toux. Il est possible que cette information n'ait pas été enregistrée pour les personnes qui ne paraissaient pas sévèrement malades. Dans ce cas, si nous supprimions simplement ces observations, nous exclurions une partie des patients en meilleure santé de notre analyse, ce qui pourrait vraiment biaiser les résultats.
 
-It's important to think about why your data might be missing in addition to seeing how much is missing. Doing this can help you decide how important it might be to impute missing data, and also which method of imputing missing data might be best in your situation.
+In ne suffit pas seulement d'estimer la quantité des données manquantes, il est également capital de réfléchir à la *raison pour laquelle vos données peuvent être manquantes*. Cela va guider vos choix quant à l'importance de l'imputation des données manquantes, ainsi que de la méthode d'imputation la plus appropriée à votre situation.
+
 
 ### Types of missing data {.unnumbered}
 
