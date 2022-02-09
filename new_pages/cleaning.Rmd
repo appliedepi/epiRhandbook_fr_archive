@@ -8,14 +8,14 @@ knitr::include_graphics(here::here("images", "cleaning.png"))
 
 Cette page présente les étapes courantes du processus de "nettoyage" d'un jeu de données, et apporte également des explications sur l'utilisation de nombreuses fonctions essentielles dans le traitement des données R.  
 
-Pour expliquer le nettoyage des données, cette page commence par l'importation d'un jeu de données brutes  de cas denommé linelist, et procède étape par étape dans le processus de nettoyage. Dans le code R, cela se manifeste par une chaîne "pipe", qui fait référence à l'opérateur "pipe" ` %>%` qui fait passer un jeu de données d'une opération à l'autre.  
+Pour expliquer le nettoyage des données, cette page commence par l'importation d'un jeu de données brutes de cas dénommé linelist, et présente le processus de nettoyage étape par étape. Dans le code R, cela se manifeste par une chaîne "pipe", qui fait référence à l'opérateur "pipe" ` %>%` qui fait passer un jeu de données d'une opération à l'autre.  
 
 
 ### Fonctions principales {.unnumbered}  
 
-Ce manuel met l'accent sur l'utilisation des fonctions  provenant  du package [**tidyverse**](https://www.tidyverse.org/) appartenant à la famille des packages de R. L'essentiel des fonctions de R  présentées dans cette page sont listées ci-dessous.  
+Ce manuel met l'accent sur l'utilisation des fonctions  provenant  du package [**tidyverse**](https://www.tidyverse.org/), appartenant à la famille des packages de R. L'essentiel des fonctions de R présentées dans cette page sont listées ci-dessous.  
 
-Beaucoup de ces fonctions appartiennent au package R [**dplyr**](https://dplyr.tidyverse.org/), qui fournit des fonctions "verbes" pour résoudre les problèmes de manipulation des données (le nom fait référence à un "dataframe-[plier](https://www.thefreedictionary.com/plier#:~:text=also%20ply%C2%B7er%20(pl%C4%AB%E2%80%B2,holding%2C%20bending%2C%20or%20cutting.)"). **dplyr** fait partie de la famille de package R   **tidyverse** (qui comprend également **ggplot2**, **tidyr**, **stringr**, **tibble**, **purrr**, **magrittr**, et **forcats** entre autres).  
+Beaucoup de ces fonctions appartiennent au package R [**dplyr**](https://dplyr.tidyverse.org/), qui fournit des fonctions "verbes" pour résoudre les problèmes de manipulation des données (le nom fait référence à un "dataframe-[plier](https://www.thefreedictionary.com/plier#:~:text=also%20ply%C2%B7er%20(pl%C4%AB%E2%80%B2,holding%2C%20bending%2C%20or%20cutting.)"). **dplyr** fait partie de la famille de packages R **tidyverse** (qui comprend également **ggplot2**, **tidyr**, **stringr**, **tibble**, **purrr**, **magrittr**, et **forcats** entre autres).  
 
 
 
@@ -28,11 +28,11 @@ Fonction       | Utilité                               | Package
 `rename()`|renommer des colonnes|**dplyr** 
 `clean_names()`|standardiser la syntaxe des noms de colonnes|**janitor**
 `as.character()`, `as.numeric()`, `as.Date()`, etc. |convertir la classe d'une colonne|**base** R
-`across()`|transformer plusieurs colonnes en meme temps|**dplyr** 
+`across()`|transformer plusieurs colonnes en même temps|**dplyr** 
 Fonctions **tidyselect**|utiliser la logique pour sélectionner des colonnes|**tidyselect**.   
-`filter()`|conservation de certaines lignes|**dplyr** 
-`distinct()`|déduplication des lignes|**dplyr***. 
-`rowwise()`|opérations par/dans chaque ligne|**dplyr**  
+`filter()`|Ne conserver que certaines lignes|**dplyr** 
+`distinct()`|dédupliquer des lignes|**dplyr***. 
+`rowwise()`|effectuer ds opérations par/dans chaque ligne|**dplyr**  
 `add_row()`|ajouter  manuellement des lignes|**tibble** 
 `arrange()`|ordonner des lignes|**dplyr**
 `recode()`|re-coder les valeurs dans une colonne|**dplyr** 
@@ -40,20 +40,20 @@ Fonctions **tidyselect**|utiliser la logique pour sélectionner des colonnes|**t
 `replace_na()`, `na_if()`, `coalesce()`|des fonctions spéciales pour le recodage|**tidyr**  
 `age_categories()` et `cut()`|créer des groupes catégoriels à partir d'une colonne numérique|**epikit** et **base** R
 `clean_variable_spelling()`|re-coder/nettoyer des valeurs en utilisant un dictionnaire de données|**linelist**
-`which()`|application de critères logiques ; retourne  des indices|**base** R
+`which()`|application de critères logiques ; retourne des indices|**base** R
 
-Si vous souhaitez comparer ces fonctions aux commandes de Stata ou de SAS, consultez la page [Transition vers R].  
+Si vous souhaitez comparer ces fonctions aux commandes de Stata ou de SAS, consultez la page [Transition vers R](#transition_to_r).  
 
-Vous pouvez rencontrer une methode alternative de gestion de données à partir du package  R **data.table** avec des opérateurs comme `:=` et l'utilisation fréquente de crochets `[ ]`. Cette approche et cette syntaxe sont brièvement expliquées dans la page [Data Table].  
+Vous pouvez rencontrer une méthode alternative de gestion des données à partir du package  R **data.table** avec des opérateurs comme `:=` et l'utilisation fréquente de crochets `[ ]`. Cette approche et cette syntaxe sont brièvement expliquées dans la page [Data Table](#data_table).  
 
 
 ### Nomenclature {.unnumbered}  
 
-Dans ce manuel, nous faisons généralement référence aux "colonnes" et aux "lignes" au lieu des "variables" et des "observations". Comme l'explique cet introduction sur ["tidy data"] (https://tidyr.tidyverse.org/articles/tidy-data.html), la plupart des jeux de données statistiques épidémiologiques sont sous le format  de lignes, de colonnes et de valeurs.  
+Dans ce manuel, nous faisons généralement référence aux "colonnes" et aux "lignes" au lieu des "variables" et des "observations". Comme l'explique cet introduction sur ["tidy data"] (https://tidyr.tidyverse.org/articles/tidy-data.html), la plupart des jeux de données statistiques épidémiologiques sont sous le format de lignes, de colonnes et de valeurs.  
 
-*Les variables* contiennent les valeurs qui mesurent le même attribut sous-jacent (comme le groupe d'âge, le résultat ou la date d'apparition). *Les observations* contiennent toutes les valeurs mesurées sur la même unité (par exemple, une personne, un site ou un échantillon de laboratoire). Ces aspects peuvent donc être plus difficiles à définir de manière precise.  
+*Les variables* contiennent les valeurs qui mesurent le même attribut sous-jacent (comme le groupe d'âge, le résultat ou la date d'apparition). *Les observations* contiennent toutes les valeurs mesurées sur la même unité (par exemple, une personne, un site ou un échantillon de laboratoire). Ces aspects peuvent donc être plus difficiles à définir de manière précise.  
 
-Dans les jeux de données "tidy", chaque colonne est une variable, chaque ligne est une observation et chaque cellule est une valeur unique. Cependant, certains jeu de données que vous rencontrerez ne correspondront pas à ce format - un jeu de données  "etendu" peut avoir une variable répartie sur plusieurs colonnes (voir un exemple dans la page [Pivoter les données]). De même, les observations peuvent être réparties sur plusieurs lignes.  
+Dans les jeux de données "tidy", chaque colonne est une variable, chaque ligne est une observation et chaque cellule est une valeur unique. Cependant, certains jeu de données que vous rencontrerez ne correspondront pas à ce format - un jeu de données  "étendu" (ou "large") peut avoir une variable répartie sur plusieurs colonnes (voir un exemple dans la page [Pivoter les données](#pivoting_data)). De même, les observations peuvent être réparties sur plusieurs lignes.  
 
 La majeure partie de ce manuel porte sur la gestion et la transformation des données, et il est donc plus pertinent de se référer aux structures de données concrètes que sont les lignes et les colonnes qu'aux observations et aux variables plus abstraites. Les exceptions se produisent principalement dans les pages sur l'analyse des données, où vous verrez davantage de références aux variables et aux observations.  
 
@@ -64,11 +64,11 @@ La majeure partie de ce manuel porte sur la gestion et la transformation des don
 <!-- ======================================================= -->
 <!-- ======================================================= -->
 <!-- ======================================================= -->
-## Nettoyage methodologie
+## Méthodologie de nettoyage 
 
-**Cette page passe en revue les étapes importantes de nettoyage, en les ajoutant séquentiellement à une chaîne de nettoyage.**
+**Cette page passe en revue les étapes importantes du nettoyage, en les ajoutant séquentiellement à une "chaîne de nettoyage".**
 
-Dans l'analyse épidémiologique et le traitement des données, les étapes de nettoyage sont souvent effectuées de manière séquentielle, reliées entre elles. En R, cela se manifeste souvent sous la forme d'un "pipeline" de nettoyage, où *le jeu de données brutes passé ou "pipé" d'une étape de nettoyage à une autre*.  
+Dans l'analyse épidémiologique et le traitement des données, les étapes de nettoyage sont souvent effectuées de manière séquentielle, reliées entre elles. En R, cela se manifeste souvent sous la forme d'un "pipeline" de nettoyage, où *le jeu de données brutes est passé ou "pipé" d'une étape de nettoyage à une autre*.  
 
 De telles chaînes utilisent les fonctions "verbes" de **dplyr** et l'opérateur pipe `%>%` de **magrittr**. Ce pipe commence avec les données "brutes" ("linelist_raw.xlsx") et se termine avec un dataframe "propre" (`linelist`) qui peut être utilisé, enregistré, exporté, etc.  
 
@@ -77,23 +77,24 @@ Dans un pipeline de nettoyage, l'ordre des étapes est important. Les étapes de
 * Importation des données  
 * Nettoyage ou modification des noms de colonnes  
 * Déduplication  
-* Création et transformation de colonnes (par exemple, recodage ou normalisation des valeurs).  
-* Filtrage ou ajout de lignes  
+* Création et transformation de colonnes (par exemple, recodage ou normalisation des valeurs).    
+* Sélection ou ajout de lignes  
 
 
 
 <!-- ======================================================= -->
 <!-- ======================================================= -->
 <!-- ======================================================= -->
-## Charger les  packages  
+## Charger les packages  
 
-Ce morceau de code montre le chargement des packages nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le package si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les packages installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les packages.  
+Ces lignes de code chargent les paquets nécessaires aux analyses. Dans ce guide, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *puis* l'importe pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets R.  
+  
 
 ```{r, message = F}
 pacman::p_load(
-  rio,        # importation donnees  
+  rio,        # importation données  
   here,       # chemins d'accès relatifs aux fichiers  
-  janitor,    # nettoyage des donnees et tables
+  janitor,    # nettoyage des données et tables
   lubridate,  # manipuler les dates
   epikit,     # age_categories() fonction
   tidyverse   # manipulation et visualisation  des donnees 
@@ -110,11 +111,11 @@ pacman::p_load(
 
 ### Import {.unnumbered}  
 
-Ici, nous importons le fichier Excel "brut" de cas linelist en utilisant la fonction `import()` du package **rio**. Cet dernier  gère de manière flexible de nombreux types de fichiers (par exemple, .xlsx, .csv, .tsv, .rds). Consultez la page [Importation et exportation] pour plus d'informations et des conseils sur les situations inhabituelles (par exemple, sauter des lignes, définir des valeurs manquantes, importer des feuilles Google, etc.)  
+Ici, nous importons le fichier Excel "brut" de cas linelist en utilisant la fonction `import()` du package **rio**. Cet dernier gère de manière flexible de nombreux types de fichiers (par exemple, .xlsx, .csv, .tsv, .rds). [Importation et exportation des données](import_export) pour plus d'informations et des conseils sur les situations inhabituelles (par exemple, sauter des lignes, définir des valeurs manquantes, importer des feuilles Google, etc.)  
 
-Si vous voulez continuer, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_raw.xlsx' class='download-button'>cliquer pour telecharger le jeu de données  "brut" linelist</a> (comme fichier .xlsx ).  
+Pour reproduire les étapes, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_raw.xlsx' class='download-button'>cliquer pour télécharger le jeu de données  "brutes" linelist</a> (comme fichier .xlsx ).  
 
-Si votre jeu de données est important et prend beaucoup de temps pour  l'importation, il peut être utile que la commande d'importation soit séparée de la chaîne de pipe et que la donnée "brute" soit enregistré dans un fichier distinct. Cela permet également de comparer facilement les versions originales et nettoyées.  
+Si votre jeu de données est important et prend beaucoup de temps à s'importer, il peut valloir le coup de séparer la commande d'importation des étapes de nettoyage, pour que que la donnée "brute" soit enregistré dans un dataframe distinct. Cela permet également de comparer facilement les versions originales et nettoyées.  
 
 Ci-dessous, nous importons le fichier Excel brut et le sauvegardons dans le dataframe `linelist_raw`. Nous supposons que le fichier est situé dans votre répertoire de travail ou à la racine de votre projet R, et donc aucun sous-dossier n'est spécifié dans le chemin du fichier.  
 
@@ -128,15 +129,17 @@ linelist_raw <- rio::import(here::here("data", "case_linelists", "linelist_raw.x
 linelist_raw <- import("linelist.xlsx")
 ```
 
-Vous pouvez visualiser les 50 premières lignes du dataframe ci-dessous. Remarque :la fonction de **base** de R  `head(n)` vous permet de visualiser uniquement les `n` premières lignes dans la console R.  
+Vous pouvez visualiser les 50 premières lignes du dataframe ci-dessous. Remarque : la fonction de **base** de R `head(n)` vous permet de visualiser uniquement les `n` premières lignes dans la console R.  
 
 ```{r message=FALSE, echo=F}
 # Afficher la donnée linelist comme un tableau
 DT::datatable(head(linelist_raw,50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
+
+
 ### Vue d'ensemble {.unnumbered}  
 
-Vous pouvez utiliser la fonction `skim()` du package **skimr** pour obtenir une vue d'ensemble du dataframe (voir la page sur les [Tableaux descriptifs] pour plus d'informations). Les colonnes sont résumées par classe/type tel que caractère, numérique. Note : "POSIXct" est un type de classe de date brute (voir [Working with dates]).  
+Vous pouvez utiliser la fonction `skim()` du package **skimr** pour obtenir une vue d'ensemble du dataframe (voir la page sur les [Tableaux descriptifs](#descriptive_tables) pour plus d'informations). Les colonnes sont résumées par classe/type, telles que "chaîne de caractère", "numérique"... Note : "POSIXct" est un type de classe de date brute (voir [Working with dates](#working_dates)).  
 
 
 ```{r, eval=F}
@@ -163,20 +166,20 @@ skimr::skim_without_charts(linelist_raw)
 
 En R, les *noms* de colonnes sont la valeur "d'en-tête" ou la "première cellule" d'une colonne. Ils sont utilisés pour faire référence aux colonnes dans le code et servent de labels par défaut dans les figures.  
 
-D'autres logiciels statistiques tels que SAS et STATA utilisent des *"labels "* qui  representent un format  plus longues des noms de colonnes plus courts existants. Bien que R offre la possibilité d'ajouter des étiquettes de colonne aux données, cela n'est pas mis en avant en pratique. Pour rendre les noms de colonne "facilement affichage" pour les figures, on ajuste généralement leur affichage dans les commandes de representation graphique qui créent les sorties (par exemple, les titres des axes ou des légendes d'une graphique, ou les en-têtes de colonne dans un tableau imprimé - voir la section [scales section of the ggplot tips page](#ggplot_tips_scales) et les pages [Tableaux pour la présentation]). Si vous souhaitez attribuer des étiquettes de colonne dans les données, lisez la suite en ligne [ici](https://cran.r-project.org/web/packages/expss/vignettes/labels-support.html) et [ici](https://cran.r-project.org/web/packages/labelled/vignettes/intro_labelled.html).  
+D'autres logiciels statistiques tels que SAS et STATA utilisent des *"labels"* qui représentent un format plus long et détaillé des noms de colonnes plus courts existants. Bien que R offre la possibilité d'ajouter des étiquettes de colonne aux données, cela n'est pas mis en avant en pratique. Pour rendre les noms de colonne explicites et descriptifs pour les figures, on ajuste généralement leur affichage dans les commandes de qui créent les graphiques (par exemple, les titres des axes ou des légendes d'une graphique, ou les en-têtes de colonne dans un tableau imprimé - voir la section [scales section of the ggplot tips page](#ggplot_tips_scales) et les pages [Tableaux pour la présentation](#presentation_tables)). Si vous souhaitez attribuer des étiquettes de colonne dans les données, lisez la suite en ligne [ici](https://cran.r-project.org/web/packages/expss/vignettes/labels-support.html) et [ici](https://cran.r-project.org/web/packages/labelled/vignettes/intro_labelled.html).  
 
-Comme les noms de colonnes sur  R sont utilisés très souvent, ils doivent avoir une syntaxe "propre". Nous suggérons ce qui suit :  
+Comme les noms de colonnes sur R sont utilisés très souvent, ils doivent avoir une syntaxe "propre". Nous suggérons ce qui suit :  
 
-* Noms courts
-* Pas d'espaces (remplacez-les par des traits de soulignement _ ) 
-* Pas de caractères inhabituels (&, #, <, >, ...)  
-* Nomenclature de style similaire (par exemple, toutes les colonnes de date nommées comme **date_**apparition, **date_**rapport, **date_**mort...)  
+* Noms courts  
+* Pas d'espaces (remplacez-les par des traits de soulignement _ )  
+* Pas de caractères inhabituels (&, #, <, >, ...)   
+* Nomenclature homogène (par exemple, toutes les colonnes de date nommées comme **date_**apparition, **date_**rapport, **date_**mort...)  
 
-Les noms des colonnes de `linelist_raw` sont affiché ci-dessous en utilisant `names()` de **base** R. On peut voir qu'initialement :  
+Les noms des colonnes de `linelist_raw` sont affichés ci-dessous en utilisant la fonction `names()` de **base** R. On peut voir qu'initialement :  
 
 * Certains noms contiennent des espaces (par exemple `date d'infection`)  
-* Des patterns de noms différents sont utilisés pour les dates (`date onset` vs. `infection date`).  
-* Il doit y avoir un *même nom* attribué  pour les deux dernières colonnes du fichier .xlsx. Nous le savons parce que le nom de deux colonnes fusionnées ("merged_header") a été attribué par R à la première colonne, et que la deuxième colonne s'est vue attribuer un nom fictif "...28" (puisqu'elle était alors vide et qu'il s'agit de la 28ème colonne).  
+* Des motifs de noms différents sont utilisés pour les dates (`date onset` vs. `infection date`).  
+* Il doit y avoir un *même nom* attribué pour les deux dernières colonnes du fichier .xlsx. Nous le savons parce que le nom de deux colonnes fusionnées ("merged_header") a été attribué par R à la première colonne, et que la deuxième colonne s'est vue attribuer un nom fictif "...28" (puisqu'elle était alors vide et qu'il s'agit de la 28ième colonne).  
 
 ```{r}
 names(linelist_raw)
@@ -194,16 +197,17 @@ D'autres logiciels statistiques tels que SAS ont des *labels* de variables.
 
 La fonction `clean_names()` du package **janitor** normalise les noms de colonnes et les rend uniques en effectuant les opérations suivantes :  
 
-* Convertit tous les noms pour qu'ils ne soient composés que des undercores, de chiffres et de lettres.  
-* Les caractères accentués sont translittérés en ASCII (par exemple, le o allemand avec tréma devient "o", le "enye" espagnol devient "n").  
-* La préférence de capitalisation pour les nouveaux noms de colonnes peut être spécifiée en utilisant l'argument `case = ` ("snake" est le défaut, les alternatives incluent "phrase", "title", "small_camel"...)  
+* Convertit tous les noms pour qu'ils ne soient composés que de underscores (sous-tiret/tiret "bas"/tiret 8), de chiffres et de lettres.  
+* Les caractères accentués sont translittérés en ASCII (par exemple, le o allemand avec tréma devient "o", le "enye" espagnol devient "n").   
+* La préférence de capitalisation pour les nouveaux noms de colonnes peut être spécifiée en utilisant l'argument `case = ` ("snake" est le défaut, les alternatives incluent "phrase", "title", "small_camel"...)   
 * Vous pouvez spécifier des remplacements de noms spécifiques en fournissant un vecteur à l'argument `replace = ` (par exemple, `replace = c(onset = "date_of_onset")`)  
-* Voici une [vignette] en ligne (https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html#cleaning)  
 
-Ci-dessous, le pipeline de nettoyage commence par utiliser `clean_names()` sur la donnée brute linelist.  
+Pour en savoir plus, voici la [vignette](https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html#cleaning) en ligne. .
+
+Ci-dessous, le pipeline de nettoyage commence par utiliser `clean_names()` sur le dataframe contenant les données brutes.  
 
 ```{r clean_names}
-# pipe le jeu de donnée brut à travers  clean_names(), assignons le resultat à "linelist"  
+# pipe le jeu de données brutes à travers clean_names(), puis assigne le resultat à un nouveau dataframe, "linelist"  
 linelist <- linelist_raw %>% 
   janitor::clean_names()
 
