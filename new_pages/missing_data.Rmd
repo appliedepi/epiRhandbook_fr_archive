@@ -7,7 +7,7 @@ knitr::include_graphics(here::here("images", "missingness_overview.png"))
 ```
 
 Dans ce chapitre nous allons :  
-1) Evaluer l'ampleur des données manquantes  
+1) Évaluer l'ampleur des données manquantes  
 2) Filtrer les lignes en fonction des données manquantes  
 3) Faire des graphiques des données manquantes au cours du temps  
 4) Gérer comment les `NA` apparaissent dans les graphes  
@@ -513,38 +513,46 @@ Lors de certaines analyses de données, il est nécessaire de "combler les lacun
 In ne suffit pas seulement d'estimer la quantité des données manquantes, il est également capital de réfléchir à la *raison pour laquelle vos données peuvent être manquantes*. Cela va guider vos choix quant à l'importance de l'imputation des données manquantes, ainsi que de la méthode d'imputation la plus appropriée à votre situation.
 
 
-### Types of missing data {.unnumbered}
+### Types de données manquantes {.unnumbered}
 
-Here are three general types of missing data:
+Voici les trois grands types de données manquantes, qui correspondent à des mécanismes différents de non-réponse :  
 
-1) **Missing Completely at Random** (MCAR). This means that there is no relationship between the probability of data being missing and any of the other variables in your data. The probability of being missing is the same for all cases This is a rare situation. But, if you have strong reason to believe your data is MCAR analyzing only non-missing data without imputing won't bias your results (although you may lose some power). [TODO: consider discussing statistical tests for MCAR]
+1) **Données manquantes de manière complètement aléatoire** (MMCA) (on peut aussi trouver l'acronyme anglais MCAR dans les livres, pour "Missing Completely at Random"). Dans ce cas, il n'y a pas de relation entre la probabilité de manquer et les autres variables de vos données (ou de variables non mesurées). **La probabilité d'être manquante est la même pour tous les cas**. C'est une situation rare. Néanmoins, si vous avez de bonnes raisons de penser que vos données sont MMCA, l'analyse des données non manquantes (sans imputation) ne faussera pas les résultats (malgré une possible perte de puissance).  
 
-2) **Missing at Random** (MAR). This name is actually a bit misleading as MAR means that your data is missing in a systematic, predictable way based on the other information you have. For example, maybe every observation in our dataset with a missing value for fever was actually not recorded because every patient with chills and and aches was just assumed to have a fever so their temperature was never taken. If true, we could easily predict that every missing observation with chills and aches has a fever as well and use this information to impute our missing data. In practice, this is more of a spectrum. Maybe if a patient had both chills and aches they were more likely to have a fever as well if they didn't have their temperature taken, but not always. This is still predictable even if it isn't perfectly predictable. This is a common type of missing data 
 
-3) **Missing not at Random** (MNAR). Sometimes, this is also called **Not Missing at Random** (NMAR). This assumes that the probability of a value being missing is NOT systematic or predictable using the other information we have but also isn't missing randomly. In this situation data is missing for unknown reasons or for reasons you don't have any information about. For example, in our dataset maybe information on age is missing because some very elderly patients either don't know or refuse to say how old they are. In this situation, missing data on age is related to the value itself (and thus isn't random) and isn't predictable based on the other information we have. MNAR is complex and often the best way of dealing with this is to try to collect more data or information about why the data is missing rather than attempt to impute it. 
+2) **Données manquantes aléatoirement** (MA ou MAR en Anglais, pour "Missing at Random". Ce nom est en fait un peu trompeur car MA signifie que vos données sont manquantes de manière systématique et prévisible en fonction des autres variables mesurées. Par exemple, dans notre cas, les docteurs ont pu considérer que les patients présentant des frissons et des courbatures ont nécessairement de la fièvre et n'ont pas pris leur température. Cela aboutit à des observations manquantes dans la colonne fièvre, aisément prévisibles grâce aux colonnes frissons et courbatures. Si c'est vrai, nous pourrions facilement prédire que chaque observation manquante avec des frissons et des courbatures a également de la fièvre et utiliser cette information pour imputer nos données manquantes. Dans la pratique, c'est souvent plus compliqué: si un patient présente à la fois des frissons et des courbatures, il est probable qu'il ait également de la fièvre, mais pas toujours. Les données MA sont prévisibles, mais la prédiction n'est jamais parfaite. Il s'agit d'un type très courant de données manquantes 
 
-In general, imputing MCAR data is often fairly simple, while MNAR is very challenging if not impossible. Many of the common data imputation methods assume MAR. 
 
-### Useful packages {.unnumbered}
+3) **Données manquantes par omission prévisible** (MOP) aussi appelées **Données manquantes non aléatoirement** (MNAR ou NMAR en Anglais, pour "Missing not at Random" ou "Not Missing at Random"). Dans ce cas, la probabilité qu'une valeur soit manquante n'est *PAS* systématique ou prévisible à l'aide des autres informations dont nous disposons, mais elle n'est pas non plus manquante au hasard. Les données manquent pour des raisons inconnues, sur lesquelles vous n'avez aucune information. La valeur de la variable manquante est liée à la raison pour laquelle elle est manquante. Par exemple, dans nos données, l'age du patient peut manquer parce que certains patients très âgés ne savent pas ou refusent de dire quel âge ils ont. Dans cette situation, les données manquantes sur l'âge sont liées à la valeur elle-même, ne sont donc pas aléatoires ni prévisibles sur la base des autres informations dont nous disposons. Ce mécanisme de non-réponse est non ignorable, complexe et souvent, la meilleure façon d'y faire face est d'essayer de collecter plus de données ou d'informations sur la raison pour laquelle les données sont manquantes plutôt que de tenter de les imputer. 
 
-Some useful packages for imputing missing data are Mmisc, missForest (which uses random forests to impute missing data), and mice (Multivariate Imputation by Chained Equations). For this section we'll just use the mice package, which implements a variety of techniques. The maintainer of the mice package has published an online book about imputing missing data that goes into more detail here (https://stefvanbuuren.name/fimd/).  
+ 
+En général, imputer des données MA est relativement simple, mais imputer des données MOP est complexe, difficile et souvent impossible. La plupart des méthodes d'imputation les plus répandues font l'hypothèse que les données sont de type MA.  
 
-Here is the code to load the mice package:
+
+### Packages utiles {.unnumbered}
+
+Voici un certain nombre de packages utiles pour l'imputation des données : **Mmisc**, **missForest** (qui utilise les forêts aléatoires pour imputer les données manquantes) et **mice** (Multivariate Imputation by Chained Equations). Dans cette section, nous nous focaliserons sur le paquet **mice**, qui met en œuvre diverses techniques. Le responsable du paquet **mice** a publié un [livre détaillé accessible en ligne](https://stefvanbuuren.name/fimd/) sur l'imputation des données manquantes.  
+
+Voici le code pour charger le paquetage **mice** :  
 
 ```{r}
 pacman::p_load(mice)
 ```
 
-### Mean Imputation {.unnumbered}
+### Imputation par la moyenne {.unnumbered}
 
-Sometimes if you are doing a simple analysis or you have strong reason to think you can assume MCAR, you can simply set missing numerical values to the mean of that variable. Perhaps we can assume that missing temperature measurements in our dataset were either MCAR or were just normal values. Here is the code to create a new variable that replaces missing temperature values with the mean temperature value in our dataset. However, in many situations replacing data with the mean can lead to bias, so be careful.
+Parfois, dans le cas d'analyses simples ou s'il y a de bonnes raisons de penser que que les données sont de type MA, il est possible de simplement remplacer les valeurs manquantes d'une variable par la moyenne de cette variable. Par exemple, nous pourrions avoir de bonnes raisons de penser que les mesures de température manquantes dans nos données étaient MA ou normales. Voici le code permettant de créer une nouvelle variable qui remplace les valeurs de température manquantes par la valeur de température moyenne de notre ensemble de données. 
+
+Il faut rester prudent, car dans de nombreuses situations, le remplacement des données manquantes par la moyenne peut entraîner un biais.
+
 
 ```{r}
 linelist <- linelist %>%
   mutate(temp_replace_na_with_mean = replace_na(temp, mean(temp, na.rm = T)))
 ```
 
-You could also do a similar process for replacing categorical data with a specific value. For our dataset, imagine you knew that all observations with a missing value for their outcome (which can be "Death" or "Recover") were actually people that died (note: this is not actually true for this dataset):
+On peut procéder de la même manière pour remplacer des données catégoriques par une valeur spécifique. Dans nos données, imaginez que vous sachiez que toutes les observations pour lesquelles il manque une valeur de décharge (qui peut être "Décès" ou "Guéri") sont en fait des personnes décédées (remarque : ce n'est pas réellement vrai pour cet ensemble de données).
+
 
 ```{r}
 linelist <- linelist %>%
