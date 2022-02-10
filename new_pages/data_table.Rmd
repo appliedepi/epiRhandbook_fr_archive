@@ -1,5 +1,5 @@
 
-# Data Table { }  
+# Data Table {#data_table}  
      
 The handbook focusses on the **dplyr** “verb” functions and the **magrittr** pipe operator `%>%` as a method to clean and group data, but the **data.table** package offers an alternative method that you may encounter in your R career.  
 
