@@ -559,19 +559,22 @@ linelist <- linelist %>%
   mutate(outcome_replace_na_with_death = replace_na(outcome, "Death"))
 ```
 
-### Regression imputation {.unnumbered}
+### Imputation par régression {.unnumbered}
 
-A somewhat more advanced method is to use some sort of statistical model to predict what a missing value is likely to be and replace it with the predicted value. Here is an example of creating predicted values for all the observations where temperature is missing, but age and fever are not, using simple linear regression using fever status and age in years as predictors. In practice you'd want to use a better model than this sort of simple approach.
+Une méthode un peu plus avancée consiste à utiliser un modèle statistique pour prédire les valeurs manquantes et les remplacer. Par exemple, on pourrait imaginer utiliser une régression linéaire simple avec l'état de la fièvre et l'age pour prédire la température lorsque celle-ci est manquante. Dans la vie réelle, il vaut mieux utiliser des modèles plus avancés qu'une approche aussi simple.  
+
 
 ```{r, warning=F, message=F}
-simple_temperature_model_fit <- lm(temp ~ fever + age_years, data = linelist)
+simple_temperature_model_fit <- lm(temp ~ fever + age_years, 
+                                   data = linelist)
 
-#using our simple temperature model to predict values just for the observations where temp is missing
+# Nous utilisons un modèle linéaire simple avec la température comme variable réponse pour prédire les valeurs de température manquantes
 predictions_for_missing_temps <- predict(simple_temperature_model_fit,
-                                        newdata = linelist %>% filter(is.na(temp))) 
+                                         newdata = linelist %>%
+                                              filter(is.na(temp))) 
 ```
 
-Or, using the same modeling approach through the mice package to create imputed values for the missing temperature observations:
+On peut utiliser la même approche d'imputation par régression avec le package **mice** pour imputer les les observations de température manquantes :  
 
 ```{r}
 model_dataset <- linelist %>%
@@ -581,23 +584,27 @@ temp_imputed <- mice(model_dataset,
                             method = "norm.predict",
                             seed = 1,
                             m = 1,
-                            print = F)
+                            print = FALSE)
 
 temp_imputed_values <- temp_imputed$imp$temp
-
 ```
 
+Il est possible d'utiliser des modèles plus avancés que la régression linéaire simple pour prédire les valeurs manquantes à l'aide d'autres variables. Par exemple, le package **missForest** utilise les forêts aléatoires pour prédire les valeurs des données manquantes.  
 
-This is the same type of approach by some more advanced methods like using the missForest package to replace missing data with predicted values. In that case, the prediction model is a random forest instead of a linear regression. You can use other types of models to do this as well. However, while this approach works well under MCAR you should be a bit careful if you believe MAR or MNAR more accurately describes your situation. The quality of your imputation will depend on how good your prediction model is and even with a very good model the variability of your imputed data may be underestimated. 
+Quel que soit le modèle statistique utilisé pour modéliser les valeurs manquantes, il faut se rappeler que cette approche fonctionne bien avec des données MMCA, mais il faut être très prudent si vous penssez que vos données sont de type MA ou MOP.  
 
-### LOCF and BOCF {.unnumbered}
+La qualité de l'imputation dépend de la qualité du modèle de prédiction et même avec un très bon modèle, la variabilité de vos données imputées peut être sous-estimée.  
 
-Last observation carried forward (LOCF) and baseline observation carried forward (BOCF) are imputation methods for time series/longitudinal data. The idea is to take the previous observed value as a replacement for the missing data. When multiple values are missing in succession, the method searches for the last observed value.
 
-The `fill()` function from the **tidyr** package can be used for both LOCF and BOCF imputation (however, other packages such as **HMISC**, **zoo**, and **data.table** also include methods for doing this). To show the `fill()` syntax we'll make up a simple time series dataset containing the number of cases of a disease for each quarter of the years 2000 and 2001. However, the year value for subsequent quarters after Q1 are missing so we'll need to impute them. The `fill()` junction is also demonstrated in the [Pivoting data] page.  
+### Report de la dernière observation et baseline {.unnumbered}
+
+Lorsque l'on a des données longitudinales ou des séries temporelles, il est parfois pertinent d'utiliser des méthodes d'imputations basées sur le report de la dernière valeur connue (LOCF, pour "Last Observation Carried Forward") ou le report de la valeur "baseline" (BOCF pour "Baseline Observation Carried Forward"). Concrètement, il s'agit d'utiliser une valeur observée dans le passé et de l'utiliser comme remplacement des données manquantes. Dans le cas de l'imputation LOCF, si plusieurs valeurs sont manquantes à la suite, il faut remonter à la dernière observation non manquante pour ce patient.  
+
+La fonction `fill()` du package **tidyr** peut être utilisée pour l'imputation LOCF et BOCF (mais d'autres package tels que **HMISC**, **zoo**, et **data.table** peuvent aussi être utilisés). Pour illustrer la syntaxe de `fill()`, nous allons créer un simple ensemble de données de séries temporelles contenant le nombre de cas d'une maladie pour chaque trimestre des années 2000 et 2001. Cependant, la valeur de l'année pour les trimestres postérieurs à Q1 est manquante et nous devrons donc les imputer. La jonction `fill()` est également démontrée dans la page [Restructurer les données](pivoting_data).    
+
 
 ```{r}
-#creating our simple dataset
+# Création d'un jeu de données
 disease <- tibble::tribble(
   ~quarter, ~year, ~cases,
   "Q1",    2000,    66013,
@@ -609,15 +616,14 @@ disease <- tibble::tribble(
   "Q3",      NA,    44568,
   "Q4",      NA,    50197)
 
-#imputing the missing year values:
+# Imputation ds données manquantes pour l'année (vers le bas par défaut)
 disease %>% fill(year)
-
 ```
 
-Note: make sure your data are sorted correctly before using the `fill()` function. `fill()`  defaults to filling "down" but you can also impute values in different directions by changing the `.direction` parameter. We can make a similar dataset where the year value is recorded only at the end of the year and missing for earlier quarters: 
+**Note** : il faut que les données soient correctement triées avant d'utiliser la fonction `fill()`! Par défaut, la fonction `fill()` remplit les données _vers le bas_, mais il est possible d'imputer des valeurs dans différentes directions à l'aide du paramètre `.direction`. Si nous créons un jeu de données similaire où la valeur de l'année est enregistrée uniquement à la fin de l'année et manquante pour les trimestres précédents :  
 
 ```{r}
-#creating our slightly different dataset
+# Création d'un jeu de données
 disease <- tibble::tribble(
   ~quarter, ~year, ~cases,
   "Q1",      NA,    66013,
@@ -629,47 +635,50 @@ disease <- tibble::tribble(
   "Q3",      NA,    44568,
   "Q4",    2001,    50197)
 
-#imputing the missing year values in the "up" direction:
+# Imputation des données de l'année "vers le haut"
 disease %>% fill(year, .direction = "up")
-
 ```
-In this example, LOCF and BOCF are clearly the right things to do, but in more complicated situations it may be harder to decide if these methods are appropriate. For example, you may have missing laboratory values for a hospital patient after the first day. Sometimes, this can mean the lab values didn't change...but it could also mean the patient recovered and their values would be very different after the first day! Use these methods with caution.
 
+Dans cet exemple, l'imputation avec les méthodes LOCF et BOCF sont clairement les solutions les plus adaptée. Néanmoins, dans des situations plus complexes, il peut être difficile de décider si ces méthodes sont appropriées ou non. Par exemple, vous pouvez avoir des valeurs de laboratoire manquantes pour un patient hospitalisé après le premier jour. Cela pourrait signifier que les valeurs de laboratoire n'ont pas changé... ou que le patient s'est rétabli et donc que ses valeurs seraient très différentes après le premier jour ! Utilisez ces méthodes avec prudence.  
 
-### Multiple Imputation {.unnumbered}
+### Imputation multiple {.unnumbered}
 
-The online book we mentioned earlier by the author of the **mice** package (https://stefvanbuuren.name/fimd/) contains a detailed explanation of multiple imputation and why you'd want to use it. But, here is a basic explanation of the method:
+Nous n'avons pas la place ici de faire une explication détaillée de l'imputation multiple et de quand l'utiliser. Nous vous réferrons au [livre (en ligne et gratuit)](https://stefvanbuuren.name/fimd/) écrit par l'auteur du paquet **mice**  et ne présentons ici qu'une explication de base de la méthode :  
 
-When you do multiple imputation, you create multiple datasets with the missing values imputed to plausible data values (depending on your research data you might want to create more or less of these imputed datasets, but the mice package sets the default number to 5). The difference is that rather than a single, specific value each imputed value is drawn from an estimated distribution (so it includes some randomness). As a result, each of these datasets will have slightly different different imputed values (however, the non-missing data will be the same in each of these imputed datasets). You still use some sort of predictive model to do the imputation in each of these new datasets (mice has many options for prediction methods including *Predictive Mean Matching*, *logistic regression*, and *random forest*) but the mice package can take care of many of the modeling details. 
+L'imputation multiple consiste à créer plusieurs jeux de données dans lesquels les valeurs manquantes sont imputées à des valeurs de données "plausibles". Dans chacun des jeux de données, chaque valeur imputée est tirée aléatoirement dans une distribution estimée (les données non manquantes restent, elles, intouchées), ce qui crée des jeux de données légèrement différents les uns des autres. La distribution utilisée d'où tirée les valeurs imputées vient ici encore d'un modèle statistique prédictif (**mice** propose de nombreuses options pour les méthodes de prédiction, notamment *Predictive Mean Matching*, *Régression logistique* et *Forêt aléatoire*), mais **mice** prend en charge de nombreux détails de la modélisation. Ensuite, l'analyse que vous aviez planifiée est effectuée sur chacun des jeux de données, et les paramètres estimés par les modèles sont ensuite poolés et leur variance estimée.  
 
-Then, once you have created these new imputed datasets, you can apply then apply whatever statistical model or analysis you were planning to do for each of these new imputed datasets and pool the results of these models together. This works very well to reduce bias in both MCAR and many MAR settings and often results in more accurate standard error estimates.
+Cette méthode fonctionne très bien pour réduire le biais dans les configurations MMCA et MA et permet souvent d'obtenir des estimations plus précises de l'erreur standard.  
 
-Here is an example of applying the Multiple Imputation process to predict temperature in our linelist dataset using a age and fever status (our simplified model_dataset from above):  
+Note : en fonction des données, on peut créer plus ou moins de jeux de données avec les données imputées, mais le package **mice** fixe le nombre par défaut à 5.  
+
+Voici un exemple d'application de l'imputation multiple pour prédire la température dans notre jeu de données de liste linéaire, en utilisant l'age et la présence/absence de fièvre :  
 
 ```{r}
-# imputing missing values for all variables in our model_dataset, and creating 10 new imputed datasets
+# imputation des valurs manquantes pour notre jeu de données modèle, et création de 10 jeux de données imputés : 
 multiple_imputation = mice(
   model_dataset,
   seed = 1,
   m = 10,
   print = FALSE) 
 
-model_fit <- with(multiple_imputation, lm(temp ~ age_years + fever))
+model_fit <- with(multiple_imputation, 
+                  lm(temp ~ age_years + fever))
 
 base::summary(mice::pool(model_fit))
 ```
 
-Here we used the mice default method of imputation, which is Predictive Mean Matching. We then used these imputed datasets to separately estimate and then pool results from simple linear regressions on each of these datasets. There are many details we've glossed over and many settings you can adjust during the Multiple Imputation process while using the mice package. For example, you won't always have numerical data and might need to use other imputation methods (you can still use the mice package for many other types of data and methods). But, for a more robust analysis when missing data is a significant concern, Multiple Imputation is good solution that isn't always much more work than doing a complete case analysis. 
 
+Ici, nous avons utilisé ici la méthode d'imputation par défaut de **mice**, à savoir "Predictive Mean Matching". Nous avons ensuite utilisé ces ensembles de données imputées pour estimer séparément, puis mettre en commun les résultats de régressions linéaires simples sur chacun de ces ensembles de données. 
 
+Il existe de nombreux détails que nous avons survolés et de nombreux paramètres que vous pouvez ajuster pendant le processus d'imputation multiple en utilisant le package **mice**. Par exemple, vous n'aurez pas toujours des données numériques et vous devrez peut-être utiliser d'autres méthodes d'imputation (**mice** permet d'imputer de nombreux types de données, avec de nombreuses méthodes). Mais, pour une analyse plus robuste lorsque les données manquantes constituent un problème important, l'imputation multiple est une bonne solution qui ne demande pas toujours beaucoup plus de travail que l'analyse complète des cas.  
 
 
 
 <!-- ======================================================= -->
 ## Resources { }
 
-Vignette on the [naniar package](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html)
+Vignette sur le [package **naniar**](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html)
 
-Gallery of [missing value visualizations](https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html)
+Galerie de [visualisation de données manquantes](https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html)
 
-[Online book](https://stefvanbuuren.name/fimd/) about multiple imputation in R by the maintainer of the **mice** package 
+[Livre gratuit](https://stefvanbuuren.name/fimd/) sur l'imputation multiple par l'auteur et le gestionnaire du package **mice**
