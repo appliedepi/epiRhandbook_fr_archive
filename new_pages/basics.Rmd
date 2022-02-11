@@ -129,111 +129,123 @@ Le site Web du projet [R4Epis](https://r4epis.netlify.app/) vise à "développer
 
 ## Installation
 
-### R and RStudio {.unnumbered}
+### R et RStudio {.unnumbered}
 
-**How to install R**
+**Comment installer R**
 
-Visit this website <https://www.r-project.org/> and download the latest version of R suitable for your computer.
+Visitez ce site Web <https://www.r-project.org/> et téléchargez la dernière version de R adaptée à votre ordinateur.
 
-**How to install RStudio**
+**Comment installer RStudio**
 
-Visit this website <https://rstudio.com/products/rstudio/download/> and download the latest free Desktop version of RStudio suitable for your computer.
+Visitez ce site Web <https://rstudio.com/products/rstudio/download/> et téléchargez la dernière version de bureau gratuite de RStudio adaptée à votre ordinateur.
 
-**Permissions**\
-Note that you should install R and RStudio to a drive where you have read and write permissions. Otherwise, your ability to install R packages (a frequent occurrence) will be impacted. If you encounter problems, try opening RStudio by right-clicking the icon and selecting "Run as administrator". Other tips can be found in the page \[R on network drives\].
+**Autorisations requises**\
 
-**How to update R and RStudio**
+Notez que vous devez installer R et RStudio sur un lecteur sur lequel vous avez des droits de lecture et d'écriture. Sinon, votre capacité à installer des paquets R (ce qui arrive fréquemment) sera affectée. Si vous rencontrez des problèmes, essayez d'ouvrir RStudio en faisant un clic droit sur l'icône et en sélectionnant "Exécuter en tant qu'administrateur". Vous trouverez d'autres conseils sur la page \[R sur les lecteurs réseau\].
 
-Your version of R is printed to the R Console at start-up. You can also run `sessionInfo()`.
+**Comment mettre à jour R et RStudio**
 
-To update R, go to the website mentioned above and re-install R. Alternatively, you can use the **installr** package (on Windows) by running `installr::updateR()`. This will open dialog boxes to help you download the latest R version and update your packages to the new R version. More details can be found in the **installr** [documentation](https://www.r-project.org/nosvn/pandoc/installr.html).
+Votre version de R est imprimée dans la Console R au démarrage. Vous pouvez également exécuter `sessionInfo()`.
 
-Be aware that the old R version will still exist in your computer. You can temporarily run an older version (older "installation") of R by clicking "Tools" -> "Global Options" in RStudio and choosing an R version. This can be useful if you want to use a package that has not been updated to work on the newest version of R.
+Pour mettre à jour R, allez sur le site web mentionné ci-dessus et réinstallez R. Alternativement, vous pouvez utiliser le paquet **installr** (sous Windows) en exécutant `installr::updateR()`. Cela ouvrira des boîtes de dialogue pour vous aider à télécharger la dernière version de R et à mettre à jour vos paquets vers la nouvelle version de R. Plus de détails peuvent être trouvés dans la [documentation de **installr**](https://www.r-project.org/nosvn/pandoc/installr.html).
 
-To update RStudio, you can go to the website above and re-download RStudio. Another option is to click "Help" -> "Check for Updates" within RStudio, but this may not show the very latest updates.
+Sachez que l'ancienne version de R existera toujours sur votre ordinateur. Vous pouvez temporairement exécuter une ancienne version (ancienne "installation") de R en cliquant sur "Outils" -> "Options globales" dans RStudio et en choisissant une version de R. Cela peut être utile si vous voulez utiliser un paquet qui n'a pas été mis à jour pour fonctionner sur la version la plus récente de R.
 
-To see which versions of R, RStudio, or packages were used when this Handbook as made, see the page on \[Editorial and technical notes\].
+Pour mettre à jour RStudio, vous pouvez aller sur le site Web ci-dessus et retélécharger RStudio. Une autre option consiste à cliquer sur "Aide" -> "Vérifier les mises à jour" dans RStudio, mais cela peut ne pas montrer les toutes dernières mises à jour.
 
-### Other software you *may* need to install {.unnumbered}
+Pour savoir quelles versions de R, RStudio ou des paquets ont été utilisées lors de la réalisation de ce manuel, consultez la page sur \[Notes éditoriales et techniques\].
 
--   TinyTeX (*for compiling an RMarkdown document to PDF*)\
--   Pandoc (*for compiling RMarkdown documents*)\
--   RTools (*for building packages for R*)\
--   phantomjs (*for saving still images of animated networks, such as transmission chains*)
+
+### Autres logiciels que vous *pourriez* avoir besoin d'installer {.unnumbered}
+
+-   TinyTeX (*pour la compilation d'un document RMarkdown au format PDF*)\
+-   Pandoc (*pour compiler des documents RMarkdown*)\
+-   RTools (*pour construire des paquets pour R*)\
+-   phantomjs (*pour enregistrer des images fixes de réseaux animés, tels que des chaînes de transmission*)
+
 
 #### TinyTex {.unnumbered}
 
-TinyTex is a custom LaTeX distribution, useful when trying to produce PDFs from R.\
-See <https://yihui.org/tinytex/> for more informaton.
+TinyTex est une distribution LaTeX personnalisée, utile lorsqu'on essaie de produire des PDF à partir de R.\
+Voir <https://yihui.org/tinytex/> pour plus d'informations.
 
-To install TinyTex from R:
+Pour installer TinyTex à partir de R :
 
 ```{r, eval=F}
+
 install.packages('tinytex')
 tinytex::install_tinytex()
-# to uninstall TinyTeX, run tinytex::uninstall_tinytex()
+
+# pour désinstaller TinyTeX, lancez tinytex::uninstall_tinytex()
 ```
 
 #### Pandoc {.unnumbered}
 
-Pandoc is a document converter, a separate software from R. **It comes bundled with RStudio and should not need to be downloaded.** It helps the process of converting Rmarkdown documents to formats like .pdf and adding complex functionality.
+Pandoc est un convertisseur de document, un logiciel séparé de R. **Il est fourni avec RStudio et ne devrait pas avoir besoin d'être téléchargé.** Il aide le processus de conversion de documents Rmarkdown à des formats comme .pdf et ajoute des fonctionnalités complexes.
 
 #### RTools {.unnumbered}
 
-RTools is a collection of software for building packages for R
+RTools est une collection de logiciels permettant de construire des paquets pour R.
 
-Install from this website: <https://cran.r-project.org/bin/windows/Rtools/>
+Installer à partir de ce site web : <https://cran.r-project.org/bin/windows/Rtools/>
 
 #### phantomjs {.unnumbered}
 
-This is often used to take "screenshots" of webpages. For example when you make a transmission chain with **epicontacts** package, an HTML file is produced that is interactive and dynamic. If you want a static image, it can be useful to use the [**webshot**](https://wch.github.io/webshot/articles/intro.html) package to automate this process. This will require the external program "phantomjs". You can install phantomjs via the **webshot** package with the command `webshot::install_phantomjs()`.
+Cet outil est souvent utilisé pour faire des "captures d'écran" des pages web. Par exemple, lorsque vous faites une chaîne de transmission avec le paquet **epicontacts**, un fichier HTML interactif et dynamique est produit. Si vous voulez une image statique, il peut être utile d'utiliser le paquet [**webshot**](https://wch.github.io/webshot/articles/intro.html) pour automatiser ce processus. Cela nécessite le programme externe "phantomjs". Vous pouvez installer phantomjs via le paquet **webshot** avec la commande `webshot::install_phantomjs()`.
+
 
 <!-- ======================================================= -->
 
-## RStudio {#rstudio}
+### RStudio {#rstudio}
 
-### RStudio orientation {.unnumbered}
+### Orientation de RStudio {.unnumbered}
 
-**First, open RStudio.** As their icons can look very similar, be sure you are opening *RStudio* and not R.
+**D'abord, ouvrez RStudio.** Comme leurs icônes peuvent être très similaires, assurez-vous que vous ouvrez bien *RStudio* et non pas R.
 
-For RStudio to work you must also have R installed on the computer (see above for installation instructions).
+Pour que RStudio fonctionne, vous devez également avoir R installé sur l'ordinateur (voir ci-dessus pour les instructions d'installation).
 
-**RStudio** is an interface (GUI) for easier use of **R**. You can think of R as being the engine of a vehicle, doing the crucial work, and RStudio as the body of the vehicle (with seats, accessories, etc.) that helps you actually use the engine to move forward! You can see the complete RStudio user-interface cheatsheet (PDF) [here](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
+**RStudio** est une interface (GUI) pour une utilisation plus facile de **R**. Vous pouvez considérer R comme le moteur d'un véhicule, qui effectue le travail crucial, et RStudio comme le corps du véhicule (avec les sièges, les accessoires, etc.) qui vous aide à utiliser le moteur pour avancer ! Vous pouvez consulter la fiche technique complète de l'interface utilisateur de RStudio (PDF) [ici](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
 
-By default RStudio displays four rectangle panes.
+Par défaut, RStudio affiche quatre volets rectangulaires.
 
 ```{r out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "RStudio_overview.png"))
 ```
 
-[***TIP:*** If your RStudio displays only one left pane it is because you have no scripts open yet.]{style="color: black;"}
+[***TIP:*** Si votre RStudio n'affiche qu'un seul volet gauche, c'est parce que vous n'avez pas encore de scripts ouverts.]{style="color: black;"}
 
-**The Source Pane**\
-This pane, by default in the upper-left, is a space to edit, run, and save your [scripts](#scripts). Scripts contain the commands you want to run. This pane can also display datasets (data frames) for viewing.
+**Le volet source**
 
-For Stata users, this pane is similar to your Do-file and Data Editor windows.
+Ce volet, par défaut en haut à gauche, est un espace pour éditer, exécuter et enregistrer vos [scripts](#scripts). Les scripts contiennent les commandes que vous souhaitez exécuter. Ce volet peut également afficher des ensembles de données (cadres de données) pour les visualiser.
 
-**The R Console Pane**
+Pour les utilisateurs de Stata, ce volet est similaire aux fenêtres Do-file et Data Editor.
 
-The R Console, by default the left or lower-left pane in R Studio, is the home of the R "engine". This is where the commands are actually run and non-graphic outputs and error/warning messages appear. You can directly enter and run commands in the R Console, but realize that these commands are not saved as they are when running commands from a script.
+**Le volet Console R**
 
-If you are familiar with Stata, the R Console is like the Command Window and also the Results Window.
+La console R, qui est par défaut le volet gauche ou inférieur gauche de R Studio, est le siège du "moteur" R. C'est là que les commandes sont réellement exécutées et que les sorties non graphiques et les messages d'erreur/d'avertissement apparaissent. Vous pouvez saisir et exécuter directement des commandes dans la console R, mais sachez que ces commandes ne sont pas enregistrées comme c'est le cas lorsque vous exécutez des commandes à partir d'un script.
 
-**The Environment Pane**\
-This pane, by default in the upper-right, is most often used to see brief summaries of [objects](#objects) in the R Environment in the current session. These objects could include imported, modified, or created datasets, parameters you have defined (e.g. a specific epi week for the analysis), or vectors or lists you have defined during analysis (e.g. names of regions). You can click on the arrow next to a data frame name to see its variables.
+Si vous êtes familier avec Stata, la console R ressemble à la fenêtre de commande et à la fenêtre des résultats.
 
-In Stata, this is most similar to the Variables Manager window.
+**Le volet Environnement**
 
-This pane also contains *History* where can see commands that you can previously. It also has a "Tutorial" tab where you can complete interactive R tutorials if you have the **learnr** package installed. It also has a "Connections" pane for external connections, and can have a "Git" pane if you choose to interface with Github.
+Ce volet, situé par défaut en haut à droite, est le plus souvent utilisé pour afficher de brefs résumés des [objets](#objets) de l'environnement R dans la session en cours. Ces objets peuvent inclure des ensembles de données importés, modifiés ou créés, des paramètres que vous avez définis (par exemple, une semaine épi spécifique pour l'analyse), ou des vecteurs ou des listes que vous avez définis pendant l'analyse (par exemple, les noms des régions). Vous pouvez cliquer sur la flèche à côté du nom d'un cadre de données pour voir ses variables.
 
-**Plots, Viewer, Packages, and Help Pane**\
-The lower-right pane includes several important tabs. Typical plot graphics including maps will display in the Plot pane. Interactive or HTML outputs will display in the Viewer pane. The Help pane can display documentation and help files. The Files pane is a browser which can be used to open or delete files. The Packages pane allows you to see, install, update, delete, load/unload R packages, and see which version of the package you have. To learn more about packages see the [packages section](#packages) below.
+Dans Stata, cette fenêtre est très similaire à celle du gestionnaire de variables.
 
-This pane contains the Stata equivalents of the Plots Manager and Project Manager windows.
+Ce volet contient également l'onglet "Historique" où vous pouvez voir les commandes que vous avez exécutées précédemment.  Il comporte également un onglet "Tutoriel" où vous pouvez suivre des tutoriels R interactifs si vous avez installé le paquet **learnr**. En outre, il existe un volet "Connexions" pour les connexions aux bases de données externes.  Si vous avez lié le répertoire actif à un dépôt sur Github, il y aura également un volet "Git".
 
-### RStudio settings {.unnumbered}
 
-Change RStudio settings and appearance in the *Tools* drop-down menu, by selecting *Global Options*. There you can change the default settings, including appearance/background color.
+**Volets Graphiques, visionneuse, paquets et aide**
+
+Le volet inférieur droit comprend plusieurs onglets importants. Les graphiques de tracé typiques, y compris les cartes, s'affichent dans le volet Tracé. Les sorties interactives ou HTML s'affichent dans le volet Visionneuse. Le volet Aide permet d'afficher la documentation et les fichiers d'aide. Le volet Fichiers est un navigateur qui peut être utilisé pour ouvrir ou supprimer des fichiers. Le volet Paquets vous permet de voir, d'installer, de mettre à jour, de supprimer, de charger/décharger des paquets R et de voir quelle version du paquet vous avez. Pour en savoir plus sur les paquets, consultez la [section paquets](#packages) ci-dessous.
+
+Ce volet contient les équivalents Stata des fenêtres Plots Manager et Project Manager.
+
+
+### Paramètres RStudio {.unnumbered}
+
+Modifiez les paramètres et l'apparence de RStudio dans le menu déroulant *Outiles*, en sélectionnant *Options globales*. Vous pouvez y modifier les paramètres par défaut, y compris l'apparence/couleur de fond.
+
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "RStudio_tools_options_1.png"))
@@ -241,13 +253,14 @@ knitr::include_graphics(here::here("images", "RStudio_tools_options_1.png"))
 knitr::include_graphics(here::here("images", "RStudio_tools_options.png"))
 ```
 
-**Restart**
+**Redémarrage**
+ 
+Si votre R se fige, vous pouvez redémarrer R en allant dans le menu Session et en cliquant sur "Redémarrer R". Cela vous évite de devoir fermer et ouvrir RStudio. Tout ce qui se trouve dans votre environnement R sera supprimé lorsque vous ferez cela.
 
-If your R freezes, you can re-start R by going to the Session menu and clicking "Restart R". This avoids the hassle of closing and opening RStudio. Everything in your R environment will be removed when you do this.
+### Raccourcis clavier {.unnumbered}
 
-### Keyboard shortcuts {.unnumbered}
+Vous trouverez ci-dessous quelques raccourcis clavier très utiles. Vous trouverez tous les raccourcis clavier pour Windows, Max et Linux sur la deuxième page de ce [fichier technique](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf) par RStudio.
 
-Some very useful keyboard shortcuts are below. See all the keyboard shortcuts for Windows, Max, and Linux in the second page of this RStudio [user interface cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf).
 
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
 | Windows/Linux                    | Mac                    | Action                                                                                                                         |
@@ -289,7 +302,8 @@ Some very useful keyboard shortcuts are below. See all the keyboard shortcuts fo
 | Shift + Alt + l                  | Cmd + Shift + Option+l | Unfold selected code                                                                                                           |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
 
-[***TIP:*** Use your Tab key when typing to engage RStudio's auto-complete functionality. This can prevent spelling errors. Press Tab while typing to produce a drop-down menu of likely functions and objects, based on what you have typed so far.]{style="color: darkgreen;"}
+[***TIP:*** Utilisez votre touche de tabulation lorsque vous tapez pour activer la fonctionnalité de complétion automatique de RStudio. Cela peut éviter les fautes d'orthographe. Appuyez sur la touche Tab pendant la saisie pour produire un menu déroulant de fonctions et d'objets probables, en fonction de ce que vous avez tapé jusqu'à présent.]{style="color: darkgreen;"}
+
 
 <!-- ======================================================= -->
 
