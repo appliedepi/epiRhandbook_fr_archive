@@ -2,15 +2,15 @@
 <!-- ======================================================= -->
 <!-- ======================================================= -->
 <!-- ======================================================= -->
-# Transition to R {#transition_to_r}  
+# Transition vers R {#transition_to_r}  
 
-Below, we provide some advice and resources if you are transitioning to R.  
+Nous vous proposons ci-dessous quelques conseils et ressources si vous êtes en train de passer à R.  
 
-R was introduced in the late 1990s and has since grown dramatically in scope. Its capabilities are so extensive that commercial alternatives have reacted to R developments in order to stay competitive! ([read this article comparing R, SPSS, SAS, STATA, and Python](https://www.inwt-statistics.com/read-blog/comparison-of-r-python-sas-spss-and-stata.html)).  
+R a été introduit à la fin des années 1990 et a depuis pris une ampleur considérable. Ses capacités sont si étendues que les alternatives commerciales ont réagi aux développements de R afin de rester compétitives! ([lire cet article comparant R, SPSS, SAS, STATA et Python](https://www.inwt-statistics.com/read-blog/comparison-of-r-python-sas-spss-and-stata.html)).  
 
-Moreover, R is much easier to learn than it was 10 years ago. Previously, R had a reputation of being difficult for beginners. It is now much easier with friendly user-interfaces like RStudio, intuitive code like the **tidyverse**, and many tutorial resources.  
+En outre, R est beaucoup plus facile à apprendre qu'il y a dix ans. Auparavant, R avait la réputation d'être difficile pour les débutants. C'est désormais beaucoup plus facile grâce à des interfaces utilisateur conviviales comme RStudio, à un code intuitif comme le **tidyverse** et à de nombreuses ressources didactiques.  
 
-<span style="color: darkgreen;">**Do not be intimidated - come discover the world of R!**</span>  
+<span style="color: darkgreen;">**Ne vous sentez pas intimidé - venez découvrir le monde de R!**</span>  
 
   
 
@@ -21,56 +21,56 @@ knitr::include_graphics(here::here("images", "transition_door.png"))
 
 
 
-## From Excel  
+## De Excel  
 
-Transitioning from Excel directly to R is a very achievable goal. It may seem daunting, but you can do it!  
+Passer directement d'Excel à R est un objectif tout à fait réalisable. Cela peut sembler décourageant, mais vous pouvez le faire!  
 
-It is true that someone with strong Excel skills can do very advanced activities in Excel alone - even using scripting tools like VBA. Excel is used across the world and is an essential tool for an epidemiologist. However, complementing it with R can dramatically improve and expand your work flows.  
+Il est vrai qu'une personne ayant de solides compétences en Excel peut effectuer des activités très avancées dans Excel seul - même en utilisant des outils de script comme VBA. Excel est utilisé dans le monde entier et constitue un outil essentiel pour un épidémiologiste. Cependant, le compléter avec R peut améliorer et étendre considérablement vos méthodes de travail.  
 
-### Benefits {.unnumbered}  
+### Bénéfices {.unnumbered}  
 
-You will find that using R offers immense benefits in time saved, more consistent and accurate analysis, reproducibility, shareability, and faster error-correction. Like any new software there is a learning "curve" of time you must invest to become familiar. The dividends will be significant and immense scope of new possibilities will open to you with R.  
+Vous constaterez que l'utilisation de R offre d'immenses avantages en termes de gain de temps, d'analyses plus cohérentes et plus précises, de reproductibilité, de partage et de correction plus rapide des erreurs. Comme tout nouveau logiciel, il y a une "courbe" d'apprentissage dans laquelle vous devez investir du temps pour vous familiariser. Les bénéfices seront significatifs et un immense champ de nouvelles possibilités s'ouvrira à vous avec R.
 
-Excel is a well-known software that can be easy for a beginner to use to produce simple analysis and visualizations with "point-and-click". In comparison, it can take a couple weeks to become comfortable with R functions and interface. However, R has evolved in recent years to become much more friendly to beginners.  
+Excel est un logiciel bien connu qui peut être facile à utiliser pour un débutant afin de produire des analyses et des visualisations simples par "pointer-cliquer". En comparaison, il faut parfois quelques semaines pour se familiariser avec les fonctions et l'interface de R. Cependant, R a évolué au cours des dernières années pour devenir beaucoup plus facile à utiliser pour les débutants.  
 
-Many Excel workflows rely on memory and on repetition - thus, there is much opportunity for error. Furthermore, generally the data cleaning, analysis methodology, and equations used are hidden from view. It can require substantial time for a new colleague to learn what an Excel workbook is doing and how to troubleshoot it. With R, all the steps are explicitly written in the script and can be easily viewed, edited, corrected, and applied to other datasets.   
-
-
-**To begin your transition from Excel to R you must adjust your mindset in a few important ways:**  
+De nombreux flux de travail Excel reposent sur la mémoire et la répétition - les risques d'erreur sont donc nombreux. En outre, le nettoyage des données, la méthodologie d'analyse et les équations utilisées sont généralement cachés. Un nouveau collègue peut avoir besoin de beaucoup de temps pour apprendre ce que fait un classeur Excel et comment le réparer. Avec R, toutes les étapes sont explicitement écrites dans le script et peuvent être facilement visualisées, modifiées, corrigées et appliquées à d'autres ensembles de données.
 
 
-### Tidy data {.unnumbered}  
+**Pour commencer votre transition d'Excel à R, vous devez adapter votre état d'esprit sur quelques points importants:**  
 
-Use machine-readable "tidy" data instead of messy "human-readable" data. These are the three main requirements for "tidy" data, as explained in this tutorial on ["tidy" data in R](https://r4ds.had.co.nz/tidy-data.html):  
 
-* Each variable must have its own column  
-* Each observation must have its own row  
-* Each value must have its own cell  
+### Données ordonnées ("Tidy" data) {.unnumbered}  
 
-To Excel users - think of the role that [Excel "tables"](https://exceljet.net/excel-tables) play in standardizing data and making the format more predictable.  
+Utilisez des données "ordonnées" lisibles par une machine plutôt que des données désordonnées "lisibles par l'homme". Il existe trois exigences principales pour les données "ordonnées", comme l'explique ce tutoriel ["tidy" data avec R](https://r4ds.had.co.nz/tidy-data.html):  
 
-An example of "tidy" data would be the case linelist used throughout this handbook - each variable is contained within one column, each observation (one case) has it's own row, and every value is in just one cell. Below you can view the first 50 rows of the linelist:  
+* Chaque variable doit avoir sa propre colonne  
+* Chaque observation doit avoir sa propre ligne  
+* Chaque valeur doit avoir sa propre cellule  
+
+Aux utilisateurs d'Excel - pensez au rôle que [les tableaux Excel](https://exceljet.net/excel-tables) jouent pour normaliser les données et rendre le format plus compréhensible.  
+
+Un exemple de données "ordonnées" serait la liste linéaire (linelist) utilisée dans ce manuel - chaque variable est contenue dans une colonne, chaque observation (un cas) a sa propre ligne, et chaque valeur est dans une seule cellule. Ci-dessous, vous pouvez visualiser les 50 premières lignes de la liste linéaire.:  
 
 ```{r, echo=F}
-# import the linelist into R
+# importer la liste linéaire dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
 
 ```{r, message=FALSE, echo=F}
-# display the linelist data as a table
+# afficher les données de la liste linéaire sous forme de tableau
 DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-*The main reason one encounters non-tidy data is because many Excel spreadsheets are designed to prioritize easy reading by humans, not easy reading by machines/software.*  
+*La principale raison pour laquelle on rencontre des données non ordonnées est que de nombreuses feuilles de calcul Excel sont conçues pour être lues facilement par des humains et non par des machines/logiciels.*  
 
-To help you see the difference, below are some fictional examples of **non-tidy data** that prioritize *human*-readability over *machine*-readability:  
+Pour vous aider à voir la différence, voici quelques exemples fictifs de **données non ordonnées** qui privilégient la lisibilité *humaine* à la lisibilité *machine*.:  
 
 ```{r, echo=F, out.width = "100%", out.height="75%", fig.align = "center"}
 knitr::include_graphics(here::here("images", "Excel_nonTidy_1.png"))
 ```
 
 
-*Problems:* In the spreadsheet above, there are *merged cells* which are not easily digested by R. Which row should be considered the "header" is not clear. A color-based dictionary is to the right side and cell values are represented by colors - which is also not easily interpreted by R (nor by humans with color-blindness!). Furthermore, different pieces of information are combined into one cell (multiple partner organizations working in one area, or the status "TBC" in the same cell as "Partner D").  
+*Problèmes:* Dans la feuille de calcul ci-dessus, il y a des cellules *fusionnées* qui ne sont pas facilement digérées par R. La ligne qui doit être considérée comme "l'en-tête" n'est pas claire. Un dictionnaire basé sur les couleurs se trouve à droite et les valeurs des cellules sont représentées par des couleurs - ce qui n'est pas non plus facilement interprété par R (ni par les humains atteints de daltonisme !). En outre, différents éléments d'information sont combinés dans une seule cellule (plusieurs organisations partenaires travaillant dans un même domaine, ou le statut " à confirmer " dans la même cellule que " partenaire D ").  
 
 
 ```{r, echo=F, out.width = "100%", out.height="100%", fig.align = "center"}
@@ -78,25 +78,25 @@ knitr::include_graphics(here::here("images", "Excel_nonTidy_2.png"))
 ```
 
 
-*Problems:* In the spreadsheet above, there are numerous extra empty rows and columns within the dataset - this will cause cleaning headaches in R. Furthermore, the GPS coordinates are spread across two rows for a given treatment center. As a side note - the GPS coordinates are in two different formats!  
+*Problèmes:* Dans la feuille de calcul ci-dessus, il y a de nombreuses lignes et colonnes vides supplémentaires dans l'ensemble de données - cela causera des problèmes de nettoyage dans R. De plus, les coordonnées GPS sont réparties sur deux lignes pour un centre de traitement donné. Par ailleurs, les coordonnées GPS sont dans deux formats différents!  
 
-"Tidy" datasets may not be as readable to a human eye, but they make data cleaning and analysis much easier! Tidy data can be stored in various formats, for example "long" or "wide""(see page on [Pivoting data]), but the principles above are still observed.
+Les ensembles de données "ordonnées" ne sont peut-être pas aussi lisibles à l'œil nu, mais ils facilitent grandement le nettoyage et l'analyse des données ! Les données ordonnées peuvent être stockées sous différents formats, par exemple "long" ou "large" (voir la page sur les [Données pivotées]), mais les principes ci-dessus sont toujours respectés.
 
 
 ### Functions {.unnumbered}  
 
-The R word "function" might be new, but the concept exists in Excel too as *formulas*. Formulas in Excel also require precise syntax (e.g. placement of semicolons and parentheses). All you need to do is learn a few new functions and how they work together in R.  
+Le mot "fonction" en R est peut-être nouveau, mais le concept existe aussi dans Excel sous la forme de *formules*. Les formules dans Excel requièrent également une syntaxe précise (par exemple, le placement des points-virgules et des parenthèses). Tout ce que vous avez à faire est d'apprendre quelques nouvelles fonctions et comment elles fonctionnent ensemble dans R.  
 
 
 
 ### Scripts {.unnumbered}  
 
-Instead of clicking buttons and dragging cells you will be writing *every* step and procedure into a "script". 
-Excel users may be familiar with "VBA macros" which also employ a scripting approach.  
+Au lieu de cliquer sur des boutons et de faire glisser des cellules, vous allez écrire *chaque* étape et procédure dans un "script". 
+Les utilisateurs d'Excel connaissent peut-être les "macros VBA" qui utilisent également une approche de script.  
 
-*The R script consists of step-by-step instructions.* This allows any colleague to read the script and easily see the steps you took. This also helps de-bug errors or inaccurate calculations. See the [R basics] section on scripts for examples.  
+*Le script R est constitué d'instructions étape par étape*, ce qui permet à tout collègue de lire le script et de voir facilement les étapes que vous avez suivies. Cela permet également de corriger les erreurs ou les calculs imprécis. Voir la section [Bases de R] sur les scripts pour des exemples.  
 
-Here is an example of an R script:  
+Voici un exemple de script R:  
 
 ```{r, echo=F, out.width = "75%", out.height="75%", fig.align = "center"}
 knitr::include_graphics(here::here("images", "example_script.png"))
@@ -108,50 +108,50 @@ knitr::include_graphics(here::here("images", "example_script.png"))
 
 
 
-### Excel-to-R resources {.unnumbered}
+### Ressources Excel à R {.unnumbered}
 
-Here are some links to tutorials to help you transition to R from Excel:  
+Voici quelques liens vers des tutoriels pour vous aider à passer d'Excel à R:  
 
 * [R vs. Excel](https://www.northeastern.edu/graduate/blog/r-vs-excel/)  
-* [RStudio course in R for Excel users](https://rstudio-conf-2020.github.io/r-for-excel/)  
+* [Cours RStudio en R pour les utilisateurs d'Excel](https://rstudio-conf-2020.github.io/r-for-excel/)  
 
 
-### R-Excel interaction {.unnumbered}  
+### Intéraction R-Excel {.unnumbered}  
 
-R has robust ways to import Excel workbooks, work with the data, export/save Excel files, and work with the nuances of Excel sheets.  
+R dispose de moyens robustes pour importer des classeurs Excel, travailler avec les données, exporter/enregistrer des fichiers Excel et travailler avec les nuances des feuilles Excel.  
 
-It is true that some of the more aesthetic Excel formatting can get lost in translation (e.g. italics, sideways text, etc.). If your work flow requires passing documents back-and-forth between R and Excel while retaining the original Excel formatting, try packages such as **openxlsx**.  
-
-
-
+Il est vrai que certaines des mises en forme Excel les plus esthétiques peuvent se perdre dans la traduction (par exemple, l'italique, le texte latéral, etc.). Si votre flux de travail nécessite le passage de documents entre R et Excel tout en conservant le formatage Excel original, essayez des packages comme **openxlsx**.  
 
 
 
 
-## From Stata  
+
+
+
+## De Stata  
 <!-- ======================================================= -->
 
-**Coming to R from Stata**  
+**Passer de Stata à R**  
 
-Many epidemiologists are first taught how to use Stata, and it can seem daunting to move into R. However, if you are a comfortable Stata user then the jump into R is certainly more manageable than you might think. While there are some key differences between Stata and R in how data can be created and modified, as well as how analysis functions are implemented – after learning these key differences you will be able to translate your skills.
+De nombreux épidémiologistes apprennent d'abord à utiliser Stata, et le passage à R peut sembler intimidant. Cependant, si vous êtes un utilisateur de Stata à l'aise, le passage à R est certainement plus facile à gérer que vous ne le pensez. Bien qu'il existe quelques différences essentielles entre Stata et R dans la façon dont les données peuvent être créées et modifiées, ainsi que dans la façon dont les fonctions d'analyse sont mises en œuvre - après avoir appris ces différences clés, vous serez en mesure de traduire vos compétences.
 
-Below are some key translations between Stata and R, which may be handy as your review this guide.
+Vous trouverez ci-dessous quelques traductions clés entre Stata et R, qui pourront vous être utiles lors de la lecture de ce guide.
 
 
-**General notes**
+**Notes générales**
 
 **STATA**                    | **R**  
 ---------------------------- | ---------------------------------------------    
-You can only view and manipulate one dataset at a time | You can view and manipulate multiple datasets at the same time, therefore you will frequently have to specify your dataset within the code
-Online community available through [https://www.statalist.org/](https://www.statalist.org/) | Online community available through [RStudio](https://community.rstudio.com/), [StackOverFlow](https://stackoverflow.com/questions/tagged/r), and [R-bloggers](https://www.r-bloggers.com/)
-Point and click functionality as an option | Minimal point and click functionality
-Help for commands available by `help [command]` | Help available by `[function]?` or search in the Help pane
-Comment code using * or /// or  /* TEXT */ | Comment code using #
-Almost all commands are built-in to Stata. New/user-written functions can be installed as **ado** files using **ssc install** [package] | R installs with **base** functions, but typical use involves installing other packages from CRAN (see page on [R basics])
-Analysis is usually written in a **do** file | Analysis written in an R script in the RStudio source pane. R markdown scripts are an alternative.
+Vous ne pouvez visualiser et manipuler qu'un seul ensemble de données à la fois | Vous pouvez visualiser et manipuler plusieurs ensembles de données en même temps, vous devrez donc fréquemment spécifier votre ensemble de données dans le code
+Communauté en ligne disponible via [https://www.statalist.org/](https://www.statalist.org/) | Communauté en ligne disponible via [RStudio](https://community.rstudio.com/), [StackOverFlow](https://stackoverflow.com/questions/tagged/r), et [R-bloggers](https://www.r-bloggers.com/)
+Fonctionnalité "pointer et cliquer" en option | Fonctionnalité minimale de type "pointer-cliquer"
+Aide pour les commandes disponibles avec `help [command]` | Aide disponible avec `[function]?` ou effectuer une recherche dans le volet d'aide (Help)
+Commenter le code avec * ou /// ou  /* TEXTE */ | Commenter le code avec #
+Presque toutes les commandes sont intégrées à Stata. Les fonctions nouvelles/écrites par l'utilisateur peuvent être installées en tant que fichiers **ado** en utilisant **ssc install**. [package] | R s'installe avec les fonctions de **base**, mais l'utilisation typique implique l'installation d'autres packages à partir de CRAN (voir la page sur [les bases de R]).
+L'analyse est généralement écrite dans un fichier **do** | Analyse écrite dans un script R dans le panneau source de RStudio. Les scripts R markdown sont une alternative.
 
 
-**Working directory**  
+**Le fichier d'accès au travail**  
 
 **STATA**                        | **R**  
 -------------------------------- | ---------------------------------------------
