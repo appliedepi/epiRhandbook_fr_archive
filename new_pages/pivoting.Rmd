@@ -25,7 +25,7 @@ Dans le contexte de la gestion des données, le *pivot des données* fait réfé
 
 Dans ce chapitre, nous allons nous focaliser sur le second processus. Résumer ses données dans des tableau est une étape cruciale de l'analyse des données et est traitée dans les chapitres sur [le regroupement des données](#grouping_data) et les [tableaux descriptifs](#descriptive_tables). 
 
-Ce chapitre traite des formats de données. Il est utile de connaître l'idée de "données bien rangées / ordonées", dans laquelle chaque variable a sa propre colonne, chaque observation a sa propre ligne et chaque valeur a sa propre cellule. Vous trouverez plus d'informations sur ce sujet [dans ce chapitre en ligne de R for Data Science](https://r4ds.had.co.nz/tidy-data.html)(en Anglais). 
+Ce chapitre traite des formats de données. Il est utile de connaître l'idée de "données bien rangées / ordonnées", dans laquelle chaque variable a sa propre colonne, chaque observation a sa propre ligne et chaque valeur a sa propre cellule. Vous trouverez plus d'informations sur ce sujet [dans ce chapitre en ligne de R for Data Science](https://r4ds.had.co.nz/tidy-data.html)(en Anglais). 
 
 
 ## Étapes préliminaires {#pivot_prep_data}
