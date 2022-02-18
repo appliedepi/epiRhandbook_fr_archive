@@ -265,41 +265,41 @@ Vous trouverez ci-dessous quelques raccourcis clavier très utiles. Vous trouver
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
 | Windows/Linux                    | Mac                    | Action                                                                                                                         |
 +==================================+========================+================================================================================================================================+
-| Esc                              | Esc                    | Interrupt current command (useful if you accidentally ran an incomplete command and cannot escape seeing "+" in the R console) |
+| Esc                              | Esc                    | Interrompre la commande en cours (utile si vous avez accidentellement lancé une commande incomplète et que vous ne pouvez pas éviter de voir "+" dans la console R) |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl+s                           | Cmd+s                  | Save (script)                                                                                                                  |
+| Ctrl+s                           | Cmd+s                  | Sauvegarder (script)                                                                                                                  |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Tab                              | Tab                    | Auto-complete                                                                                                                  |
+| Tab                              | Tab                    | Autocomplétion                                                                                                                  |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + Enter                     | Cmd + Enter            | Run current line(s)/selection of code                                                                                          |
+| Ctrl + Enter                     | Cmd + Enter            | Exécuter la ou les ligne(s) courante(s)/sélection(s) de code                                                                                          |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + Shift + C                 | Cmd + Shift + c        | comment/uncomment the highlighted lines                                                                                        |
+| Ctrl + Shift + C                 | Cmd + Shift + c        | commenter/dé-commenter les lignes souslignées                                                                                        |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Alt + -                          | Option + -             | Insert `<-`                                                                                                                    |
+| Alt + -                          | Option + -             | Insérer `<-`                                                                                                                    |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + Shift + m                 | Cmd + Shift + m        | Insert `%>%`                                                                                                                   |
+| Ctrl + Shift + m                 | Cmd + Shift + m        | Insérer `%>%`                                                                                                                   |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + l                         | Cmd + l                | Clear the R console                                                                                                            |
+| Ctrl + l                         | Cmd + l                | Effacer le contenu de la console R                                                                                                            |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + Alt + b                   | Cmd + Option + b       | Run from start to current line                                                                                                 |
+| Ctrl + Alt + b                   | Cmd + Option + b       | Exécuter du début à la ligne courante                                                                                                 |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + Alt + t                   | Cmd + Option + t       | Run the current code section (R Markdown)                                                                                      |
+| Ctrl + Alt + t                   | Cmd + Option + t       | Exécuter la section de code actuelle (R Markdown)                                                                                      |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + Alt + i                   | Cmd + Shift + r        | Insert code chunk (into R Markdown)                                                                                            |
+| Ctrl + Alt + i                   | Cmd + Shift + r        | Insérer un morceau de code (en R Markdown)                                                                                            |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + Alt + c                   | Cmd + Option + c       | Run current code chunk (R Markdown)                                                                                            |
+| Ctrl + Alt + c                   | Cmd + Option + c       | Exécuter le morceau de code actuel (en R Markdown)                                                                                            |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| up/down arrows in R console      | Same                   | Toggle through recently run commands                                                                                           |
+| Flèches haut/bas dans la console R      | Idem                   | Basculer entre les commandes récemment exécutées                                                                                           |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Shift + up/down arrows in script | Same                   | Select multiple code lines                                                                                                     |
+| Shift + flèches haut/bas dans le script | Idem                   | Sélectionner plusieurs lignes de code                                                                                                     |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + f                         | Cmd + f                | Find and replace in current script                                                                                             |
+| Ctrl + f                         | Cmd + f                | Rechercher et remplacer dans le script actuel                                                                                             |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Ctrl + Shift + f                 | Cmd + Shift + f        | Find in files (search/replace across many scripts)                                                                             |
+| Ctrl + Shift + f                 | Cmd + Shift + f        | Rechercher dans les dossiers (rechercher/remplacer dans plusieurs scripts)                                                                             |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Alt + l                          | Cmd + Option + l       | Fold selected code                                                                                                             |
+| Alt + l                          | Cmd + Option + l       | Plier le code sélectionné                                                                                                             |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| Shift + Alt + l                  | Cmd + Shift + Option+l | Unfold selected code                                                                                                           |
+| Shift + Alt + l                  | Cmd + Shift + Option+l | Déplier le code sélectionné                                                                                                           |
 +----------------------------------+------------------------+--------------------------------------------------------------------------------------------------------------------------------+
 
 [***TIP:*** Utilisez votre touche de tabulation lorsque vous tapez pour activer la fonctionnalité de complétion automatique de RStudio. Cela peut éviter les fautes d'orthographe. Appuyez sur la touche Tab pendant la saisie pour produire un menu déroulant de fonctions et d'objets probables, en fonction de ce que vous avez tapé jusqu'à présent.]{style="color: darkgreen;"}
@@ -307,163 +307,166 @@ Vous trouverez ci-dessous quelques raccourcis clavier très utiles. Vous trouver
 
 <!-- ======================================================= -->
 
-## Functions {#functions}
+## Fonctions {#functions}
 
-Functions are at the core of using R. Functions are how you perform tasks and operations. Many functions come installed with R, many more are available for download in *packages* (explained in the [packages](#packages) section), and you can even write your own custom functions!
+Les fonctions sont au cœur de l'utilisation de R. Les fonctions vous permettent d'effectuer des tâches et des opérations. De nombreuses fonctions sont installées avec R, beaucoup d'autres sont disponibles à télécharger dans des *paquets* (expliqués dans la section [paquets](#packages)), et vous pouvez même écrire vos propres fonctions personnalisées !
 
-This basics section on functions explains:
+Cette section de base sur les fonctions explique :
 
--   What a function is and how they work\
--   What function *arguments* are\
--   How to get help understanding a function
+-   Ce qu'est une fonction et comment elle fonctionne\
+-   Ce que sont les *paramètres* des fonctions\
+-   Comment obtenir de l'aide pour comprendre une fonction
 
-*A quick note on syntax:* In this handbook, functions are written in code-text with open parentheses, like this: `filter()`. As explained in the [packages](#packages) section, functions are downloaded within *packages*. In this handbook, package names are written in **bold**, like **dplyr**. Sometimes in example code you may see the function name linked explicitly to the name of its package with two colons (`::`) like this: `dplyr::filter()`. The purpose of this linkage is explained in the packages section.
+*Une note rapide sur la syntaxe :* Dans ce manuel, les fonctions sont écrites en code-texte avec des parenthèses vides, comme ceci : `filter()`. Comme expliqué dans la section [paquets](#packages), les fonctions sont téléchargées dans des *paquets*. Dans ce manuel, les noms de paquets sont écrits en **gras**, comme **dplyr**. Parfois, dans le code d'exemple, vous pouvez voir le nom de la fonction lié explicitement au nom de son paquet avec deux points de suspension (`::`) comme ceci : `dplyr::filter()`. Le but de ce lien est expliqué dans la section sur les paquets.
 
 <!-- ======================================================= -->
 
-### Simple functions {.unnumbered}
+### Fonctions simples {.unnumbered}
 
-**A function is like a machine that receives inputs, does some action with those inputs, and produces an output.** What the output is depends on the function.
+**Une fonction est comme une machine qui reçoit des entrées, effectue une action avec ces entrées, et produit une sortie.** La nature de la sortie dépend de la fonction.
 
-**Functions typically operate upon some object placed within the function's parentheses**. For example, the function `sqrt()` calculates the square root of a number:
+**Les fonctions opèrent généralement sur un objet placé entre les parenthèses de la fonction**. Par exemple, la fonction `sqrt()` calcule la racine carrée d'un nombre :
 
 ```{r basics_function_sqrt}
 sqrt(49)
 ```
 
-The object provided to a function also can be a column in a dataset (see the [Objects](#objects) section for detail on all the kinds of objects). Because R can store multiple datasets, you will need to specify both the dataset and the column. One way to do this is using the `$` notation to link the name of the dataset and the name of the column (`dataset$column`). In the example below, the function `summary()` is applied to the numeric column `age` in the dataset `linelist`, and the output is a summary of the column's numeric and missing values.
+L'objet fourni à une fonction peut également être une colonne dans un jeu de données (voir la section [Objets](#objects) pour plus de détails sur tous les types d'objets). Comme R peut stocker plusieurs jeux de données, vous devrez spécifier à la fois le jeu de données et la colonne. Une façon de le faire est d'utiliser la notation `$` pour lier le nom du jeu de données et le nom de la colonne (`dataset$column`). Dans l'exemple ci-dessous, la fonction `summary()` est appliquée à la colonne numérique `age` du jeu de données `linelist`, et la sortie est un résumé des valeurs numériques et manquantes de la colonne.
 
 ```{r basics_functions_summary}
-# Print summary statistics of column 'age' in the dataset 'linelist'
+# Imprimez les statistiques sommaires de la colonne 'age' dans le jeu de données 'linelist'.
 summary(linelist$age)
 ```
 
-[***NOTE:*** Behind the scenes, a function represents complex additional code that has been wrapped up for the user into one easy command.]{style="color: black;"}
+[***NOTE:*** En coulisses, une fonction représente un code supplémentaire complexe qui a été regroupé pour l'utilisateur dans une seule commande simple.]{style="color: black;"}
 
 <!-- ======================================================= -->
 
-### Functions with multiple arguments {.unnumbered}
+### Fonctions à paramètres multiples {.unnumbered}
 
-Functions often ask for several inputs, called ***arguments***, located within the parentheses of the function, usually separated by commas.
+Les fonctions demandent souvent plusieurs entrées, appelées ***paramètres***, situées entre les parenthèses de la fonction, généralement séparées par des virgules.
 
--   Some arguments are required for the function to work correctly, others are optional\
--   Optional arguments have default settings\
--   Arguments can take character, numeric, logical (TRUE/FALSE), and other inputs
+-   Certains paramètres sont obligatoires pour que la fonction fonctionne correctement, d'autres sont facultatifs\
+-   Les paramètres facultatifs ont des valeurs par défaut\
+-   Les paramètres peuvent prendre des entrées de type caractère, numérique, logique (VRAI/FAUX) et autres.
 
-Here is a fun fictional function, called `oven_bake()`, as an example of a typical function. It takes an input object (e.g. a dataset, or in this example "dough") and performs operations on it as specified by additional arguments (`minutes =` and `temperature =`). The output can be printed to the console, or saved as an object using the assignment operator `<-`.
+
+Voici une fonction fictive amusante, appelée `oven_bake()` (cuisson au four), comme exemple d'une fonction typique. Elle prend un objet comme entrée (par exemple un jeu de données, ou dans cet exemple "pâte") et effectue des opérations sur celui-ci comme spécifié par des paramètres supplémentaires (`minutes =` et `température =`).  La sortie peut être imprimée sur la console, ou sauvegardée comme un objet en utilisant l'opérateur d'affectation `<-`.
 
 ```{r basics_functions_image, echo=F, out.width = "75%", fig.align = "center"}
 knitr::include_graphics(here::here("images", "Function_Bread_Example.png"))
 ```
 
-**In a more realistic example**, the `age_pyramid()` command below produces an age pyramid plot based on defined age groups and a binary split column, such as `gender`. The function is given three arguments within the parentheses, separated by commas. The values supplied to the arguments establish `linelist` as the dataframe to use, `age_cat5` as the column to count, and `gender` as the binary column to use for splitting the pyramid by color.
+**Dans un exemple plus réaliste**, la commande `age_pyramid()` ci-dessous produit un graphique de pyramide des âges basé sur des groupes d'âge définis et une colonne de division binaire, comme le genre `gender`. La fonction reçoit trois paramètres entre parenthèses, séparés par des virgules. Les valeurs fournies aux paramètres établissent `linelist` comme le cadre de données à utiliser, `age_cat5` comme la colonne à compter, et `gender` comme la colonne binaire à utiliser pour diviser la pyramide par couleur.
 
 ```{r basics_functions_arguments, include=FALSE, results='hide', message=FALSE, warning=FALSE,}
-## create an age group variable by specifying categorical breaks
+## Créer une variable de groupe d'âge en spécifiant des ruptures catégorielles
 linelist$age_group <- cut(linelist$age, breaks = c(0, 5, 10, 15, 20, 30, 45, 60))
 ```
 
 ```{r message=FALSE, warning=FALSE,  out.width = "75%", out.height="75%"}
-# Create an age pyramid
+# Créer une pyramide des âges
 age_pyramid(data = linelist, age_group = "age_cat5", split_by = "gender")
 ```
 
-The above command can be equivalently written as below, in a longer style with a new line for each argument. This style can be easier to read, and easier to write "comments" with `#` to explain each part (commenting extensively is good practice!). To run this longer command you can highlight the entire command and click "Run", or just place your cursor in the first line and then press the Ctrl and Enter keys simultaneously.
+La commande ci-dessus peut être écrite de manière équivalente comme ci-dessous, dans un style plus long avec une nouvelle ligne pour chaque argument. Ce style peut être plus facile à lire, et plus facile d'écrire des "commentaires" avec `#` pour expliquer chaque partie (commenter abondamment est une bonne pratique !). Pour exécuter cette commande plus longue, vous pouvez souligner la commande entière et cliquer sur "Run", ou simplement placer votre curseur sur la première ligne et appuyer simultanément sur les touches `Ctrl` et `Enter`.
 
 ```{r message=FALSE, warning=FALSE,  out.width = "75%", out.height="75%"}
-# Create an age pyramid
+# Créer une pyramide des âges
 age_pyramid(
-  data = linelist,        # use case linelist
-  age_group = "age_cat5", # provide age group column
-  split_by = "gender"     # use gender column for two sides of pyramid
+  data = linelist,        # utiliser la liste linéaire des cas
+  age_group = "age_cat5", # fournir une colonne de groupe d'âge
+  split_by = "gender"     # utiliser la colonne genre pour les deux côtés de la pyramide
   )
 ```
 
-The first half of an argument assignment (e.g. `data =`) does not need to be specified if the arguments are written in a specific order (specified in the function's documentation). The below code produces the exact same pyramid as above, because the function expects the argument order: data frame, `age_group` variable, `split_by` variable.
+La première moitié d'une affectation de paramètre (par exemple `data =`) n'a pas besoin d'être spécifiée si les paramètres sont écrits dans un ordre spécifique (spécifié dans la documentation de la fonction). Le code ci-dessous produit exactement la même pyramide que ci-dessus, parce que la fonction attend l'ordre des paramètres : cadre de données, le variable `age_group`, puis le variable `split_by`.
 
 ```{r, basics_functions_pyramid2, eval = FALSE, warning=FALSE, message=FALSE, , out.width = "75%", out.height="75%", eval=F}
-# This command will produce the exact same graphic as above
+# Cette commande produira exactement le même graphique que ci-dessus
 age_pyramid(linelist, "age_cat5", "gender")
 ```
 
-**A more complex `age_pyramid()` command might include the *optional* arguments to:**
+**Une commande `age_pyramid()` plus complexe pourrait inclure les paramètres *optionnels* pour :**
 
--   Show proportions instead of counts (set `proportional = TRUE` when the default is `FALSE`)\
--   Specify the two colors to use (`pal =` is short for "palette" and is supplied with a vector of two color names. See the [objects](#objectstructure) page for how the function `c()` makes a vector)
+-   Afficher les proportions au lieu des nombres (définissez `proportional = TRUE` (vrai) quand la valeur par défaut est `FALSE` (faux))`\
+-   Spécifier les deux couleurs à utiliser (`pal =` est l'abréviation de "palette" et est fourni avec un vecteur de deux noms de couleurs. Voir la page [objets](#objectstructure) pour savoir comment la fonction `c()` fabrique un vecteur).
 
-[***NOTE:*** For arguments that you specify with both parts of the argument (e.g. `proportional = TRUE`), their order among all the arguments does not matter.]{style="color: black;"}
+[***NOTE:*** Pour les paramètres que vous spécifiez avec les deux parties du paramètre (par exemple `proportional = TRUE`), leur ordre parmi tous les paramètres n'a pas d'importance.]{style="color: black;"}
 
 ```{r message=FALSE, warning=FALSE, out.width = "75%", out.height="75%"}
 age_pyramid(
-  linelist,                    # use case linelist
-  "age_cat5",                  # age group column
-  "gender",                    # split by gender
-  proportional = TRUE,         # percents instead of counts
-  pal = c("orange", "purple")  # colors
+  linelist,                    # utiliser la liste linéaire des cas
+  "age_cat5",                  # colonne de groupe d'âge
+  "gender",                    # répartition par genre
+  proportional = TRUE,         # pourcentage au lieu du nombre
+  pal = c("orange", "purple")  # couleurs
   )
 ```
 
 <!-- ======================================================= -->
 
-### Writing Functions {.unnumbered}
+### Ecrire des fonctions {.unnumbered}
 
-R is a language that is oriented around functions, so you should feel empowered to write your own functions. Creating functions brings several advantages:
+R est un langage orienté autour des fonctions, vous devez donc vous sentir capable d'écrire vos propres fonctions. La création de fonctions présente plusieurs avantages :
 
--   To facilitate modular programming - the separation of code in to independent and manageable pieces\
--   Replace repetitive copy-and-paste, which can be error prone\
--   Give pieces of code memorable names
+-   Faciliter la programmation modulaire - la séparation du code en morceaux indépendants et gérables\
+-   Remplacer le copier-coller répétitif, qui peut être source d'erreurs\
+-   Donner des noms mémorisables aux morceaux de code
 
-How to write a function is covered in-depth in the [Writing functions] page.
+L'écriture d'une fonction est traitée en détail à la page [Écriture de fonctions].
 
-<!-- A function is given a name and defined with the assignment operator `<-` to a special **base** R function called `function()`. Within the parentheses, the arguments that the function will accept are defined. This is followed by curly brackets `{ }`, within which the actual code of the function is written.     -->
+<!-- On donne un nom à une fonction et on la définit avec l'opérateur d'affectation `<-` à une fonction spéciale **base** R appelée `function()`. Entre les parenthèses, les paramètres que la fonction acceptera sont définis. Ils sont suivis par des accolades `{ }`, à l'intérieur desquelles le code de la fonction est écrit.     -->
 
 ```{r, eval=F, echo=F}
-my_function <- function( ARGUMENTS HERE ){ CODE HERE }
+my_function <- function( PARAMÈTRES ICI ){ CODE ICI }
 ```
 
-<!-- The arguments should be provided in the syntax `argument = default`, separated by commas.   -->
+<!-- Les paramètres doivent être fournis dans la syntaxe `paramètre = défaut`, séparés par des virgules.   -->
 
-<!-- Here is an example where we create a function `staff_calc()` to serve as a staffing calculator for COVID-19 case investigation and contact tracing calls.   -->
+<!-- Voici un exemple où nous créons une fonction `staff_calc()` pour servir de calculateur de personnel pour les appels d'investigation sur les cas COVID-19 et de recherche de contacts.   -->
 
-<!-- The arguments (inputs) and their default values will be:   -->
+<!-- Les paramètres (entrées) et leurs valeurs par défaut seront :   -->
 
-<!-- * `daily_cases = NULL` The number of new COVID-19 cases per day   -->
+<!-- * `daily_cases = NULL` Le nombre de nouveaux cas de COVID-19 par jour   -->
 
-<!-- * `contacts_each = 5` The number contacts enumerated for each case   -->
+<!-- * `contacts_each = 5` Le nombre de contacts recensés pour chaque cas   -->
 
-<!-- * `time_case = 0.5`  Number of hours to complete a case investigaton by phone   -->
+<!-- * `time_case = 0.5` Nombre d'heures pour terminer une enquête sur un cas par téléphone   -->
 
-<!-- * `time_contact = 0.25`  Number of hours to complete a contact follow-up by phone   -->
+<!-- * `time_contact = 0.25` Nombre d'heures pour réaliser un suivi de contact par téléphone   -->
 
-<!-- * `time_day = 8` The number of hours one staff works per day   -->
+<!-- * `time_day = 8` Le nombre d'heures qu'un personnel travaille par jour   -->
 
-<!-- Below, the function is created. The code ends with the special function `return()`, which is what the function produces.    -->
+<!-- Ci-dessous, la fonction est créée.Le code se termine par la fonction spéciale `return()`, qui renvoie les résultats ou la sortie que la fonction produit à l'environnement R.    -->
+
 
 <!-- ```{r message=FALSE, warning=FALSE, out.width = "75%", out.height="75%"} -->
 
 <!-- staff_calc <- function(daily_cases = NULL, contacts_each = 5, -->
 
-<!--                        time_case = 0.5, time_contact = 0.25, time_day = 8){ -->
+<!--                       time_case = 0.5, time_contact = 0.25, time_day = 8){ -->
 
-<!--   # Define total daily hours for calling cases -->
 
-<!--   case_hours <- daily_cases * time_case  -->
+<!-- # Définir le total des heures quotidiennes pour l'appel des cas -->
 
-<!--   # Define total daily hours for calling contacts -->
+<!-- case_hours <- daily_cases * time_case -->
 
-<!--   contact_hours <- daily_cases * contacts_each * time_contact -->
+<!-- # Définir le nombre total d'heures quotidiennes pour appeler les contacts -->
 
-<!--   # Calculate number of staff required -->
+<!-- contact_hours <- daily_cases * contacts_each * time_contact -->
 
-<!--   staff_required <- (case_hours + contact_hours)/time_day -->
+<!-- # Calculer le nombre de personnel nécessaire -->
 
-<!--   return(staff_required) -->
+<!-- staff_required <- (case_hours + contact_hours)/time_day -->
+
+<!-- return(staff_required) -->
 
 <!-- } -->
 
 <!-- ``` -->
 
-<!-- Once this code is run, the function will be defined and will appear in the R Environment. We can run the function. Below all the default values are used and the `daily_cases = ` is set to 150.   -->
+<!-- Une fois ce code exécuté, la fonction sera définie et apparaîtra dans l'environnement R. Nous pouvons exécuter la fonction. Ci-dessous, toutes les valeurs par défaut sont utilisées et `daily_cases = ` est fixé à 150.   -->
 
 ```{r eval=F, echo=F, message=FALSE, warning=FALSE, out.width = "75%", out.height="75%"}
 staff_calc(daily_cases = 150)
@@ -481,7 +484,7 @@ ggplot(case_incidence, aes(x = dates))+
   geom_line(aes(y = staff_needed))
 ```
 
-<!-- There are many other nuances to understand when writing functions, as discussed in the page [Writing functions].   -->
+<!-- Il y a beaucoup d'autres nuances à comprendre lors de l'écriture de fonctions, comme discuté dans la page [Écrire des fonctions].   -->
 
 <!-- ======================================================= -->
 
