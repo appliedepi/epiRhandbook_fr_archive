@@ -1,88 +1,87 @@
 
-# Joining data { }  
+# Joindre des données { }  
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "left-join.gif"))
 ```
 
-*Above: an animated example of a left join ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))*  
+*Ci-dessus : animation d'une jointure par la gauche ([source de l'image ](https://github.com/gadenbuie/tidyexplain/tree/master/images))*  
 
+Ce chapitre décrit les méthodes permettant de joindre / fusionner / faire correspondre / lier / "merger" / unir / combiner des tableaux.  
 
-This page describes ways to "join", "match", "link" "bind", and otherwise combine data frames.  
+Il est rare que votre processus de nettoyage des données en vue d'analyses épidémiologiques n'implique pas des sources de données multiples et donc leur mise en relation. Par exemple, vous aurez peut-être à joindre des données de laboratoire aux résultats cliniques des patients, ou des données de mobilité Google aux tendances des maladies infectieuses, ou même un jeu de données à un stade donné de l'analyse et une version transformée de lui-même.  
 
-It is uncommon that your epidemiological analysis or workflow does not involve multiple sources of data, and the linkage of multiple datasets. Perhaps you need to connect laboratory data to patient clinical outcomes, or Google mobility data to infectious disease trends, or even a dataset at one stage of analysis to a transformed version of itself.
+Dans cette page, nous allons :  
 
-In this page we demonstrate code to:  
-
-* Conduct *joins* of two data frames such that rows are matched based on common values in identifier columns  
-* Join two data frames based on *probabilistic* (likely) matches between values  
-* Expand a data frame by directly *binding* or ("appending") rows or columns from another data frame  
+* Réaliser des *jointures* de deux dataframes en faisant correspondre les lignes sur la base d'une clef primaire (dans une ou plusieurs colonnes).  
+* Joindre des jeux de données sur la base de correspondances *probabilistes* (probables) entre les valeurs.  
+* Étendre un jeu de données en *concaténant* des lignes ou des colonnes d'un autre jeu de données.   
 
 
 <!-- ======================================================= -->
-## Preparation { }
+## Étapes préliminaires { }
 
-### Load packages {.unnumbered}
+### Importation des paquets {.unnumbered}  
 
-This code chunk shows the loading of packages required for the analyses. In this handbook we emphasize `p_load()` from **pacman**, which installs the package if necessary *and* loads it for use. You can also load installed packages with  `library()` from **base** R. See the page on [R basics] for more information on R packages.  
+Ces lignes de code chargent les paquets nécessaires aux analyses. Dans ce guide, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *puis* l'importe pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets R.  
 
 ```{r}
 pacman::p_load(
-  rio,            # import and export
-  here,           # locate files 
-  tidyverse,      # data management and visualisation
-  RecordLinkage,  # probabilistic matches
-  fastLink        # probabilistic matches
+  rio,            # import des fichiers
+  here,           # chemins d'accès
+  tidyverse,      # gestion des données + graphiques (ggplot2)
+  RecordLinkage,  # correspondances probabilistes
+  fastLink        # correspondances probabilistes
 )
 ```
 
 
+### Importation des données {.unnumbered}
 
-### Import data {.unnumbered}
+Nous importons un jeu de données de cas d'une épidémie d'ébola fictive. Pour reproduire les étapes, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (as .rds file). Importez vos données avec la fonction `import()` du paquet **rio** (elle accepte de nombreux types de fichiers comme .xlsx, .rds, .csv - voir la page [Importation et exportation des données](import_export) pour plus de détails).  
 
-To begin, we import the cleaned linelist of cases from a simulated Ebola epidemic. If you want to follow along, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>click to download the "clean" linelist</a> (as .rds file). Import data with the `import()` function from the **rio** package (it handles many file types like .xlsx, .csv, .rds - see the [Import and export] page for details).  
 
 ```{r, echo=F}
-# import the linelist into R
+# importer la linelist dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
 
 ```{r, eval=F}
-# import case linelist 
+# importer la linelist dans R
 linelist <- import("linelist_cleaned.rds")
 ```
 
-The first 50 rows of the linelist are displayed below.
+Les cinquantes premières lignes sont affichées ci-dessous :  
 
 ```{r, message=FALSE, echo=F}
 # display the linelist data as a table
-DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+DT::datatable(head(linelist, 50), rownames = FALSE, filter = "top",
+              options = list(pageLength = 5, scrollX = T), 
+              class = 'white-space: nowrap' )
 ```
 
 
-
-
 <!-- ======================================================= -->
-### Example datasets {.unnumbered}
+### Jeux de données simplifiés {.unnumbered}
 
-In the joining section below, we will use the following datasets:  
-
-1) A "miniature" version of the case `linelist`, containing only the columns `case_id`, `date_onset`, and `hospital`, and only the first 10 rows  
-2) A separate data frame named `hosp_info`, which contains more details about each hospital  
-
-In the section on probabilistic matching, we will use two different small datasets. The code to create those datasets is given in that section.  
+Dans les exemples ci-dessous, nous utiliserons des jeux de données simplifiées pour mieux voir ce qui se passe :  
 
 
+1) Une version "miniature" de la linelist (liste des cas), contenant seulement les colonnes `case_id`, `date_onset`, et `hospital`, et seulement les 10 premières lignes.   
+2) Une table nommée `hosp_info`, qui contient des détails sur chaque hôpital.  
+
+Dans la section sur l'appariement probabiliste, nous utiliserons deux petits ensembles de données différents. Le code pour créer ces jeux de données sera donné dans cette section.  
 
 
-#### "Miniature" case linelist {#joins_llmini .unnumbered}  
+#### Linelist miniature {#joins_llmini .unnumbered}  
 
-Below is the the miniature case linelist, which contains only 10 rows and only columns `case_id`, `date_onset`, and `hospital`.  
+Nous générons ici la linelist miniature des cas, qui contient seulement 10 lignes et seulement les colonnes `case_id`, `date_onset`, et `hospital`.  
+
 
 ```{r}
-linelist_mini <- linelist %>%                 # start with original linelist
-  select(case_id, date_onset, hospital) %>%   # select columns
-  head(10)                                    # only take the first 10 rows
+linelist_mini <- linelist %>%                 
+  select(case_id, date_onset, hospital) %>%   # sélectionne les colonnes
+  head(10)                                    # garde les 10 premières lignes
 ```
 
 ```{r message=FALSE, echo=F}
@@ -92,20 +91,22 @@ DT::datatable(linelist_mini, rownames = FALSE, options = list(pageLength = nrow(
 
 
 
-#### Hospital information data frame {#joins_hosp_info .unnumbered}  
+#### Jeu de données des hôpitaux {#joins_hosp_info .unnumbered}  
 
-Below is the code to create a separate data frame with additional information about seven hospitals (the catchment population, and the level of care available). Note that the name "Military Hospital" belongs to two different hospitals - one a primary level serving 10000 residents and the other a secondary level serving 50280 residents.  
-
+Le code ci-dessous permet de créer un jeu de données contenant des informations supplémentaires sur sept hôpitaux (la population desservie et le niveau de soins disponible). Notez que le nom "Hôpital militaire" appartient à deux hôpitaux différents, l'un de niveau primaire desservant 10000 résidents et l'autre de niveau secondaire desservant 50280 résidents.  
 ```{r}
-# Make the hospital information data frame
+# Crée des informations sur les hôpitaux : 
 hosp_info = data.frame(
-  hosp_name     = c("central hospital", "military", "military", "port", "St. Mark's", "ignace", "sisters"),
-  catchment_pop = c(1950280, 40500, 10000, 50280, 12000, 5000, 4200),
-  level         = c("Tertiary", "Secondary", "Primary", "Secondary", "Secondary", "Primary", "Primary")
+  hosp_name     = c("central hospital", "military", "military", 
+                    "port", "St. Mark's", "ignace", "sisters"),
+  catchment_pop = c(1950280, 40500, 10000, 50280, 
+                    12000, 5000, 4200),
+  level         = c("Tertiary", "Secondary", "Primary", "Secondary",
+                    "Secondary", "Primary", "Primary")
 )
 ```
 
-Here is this data frame:  
+Voici le tableau ainsi produit :    
 
 ```{r message=FALSE, echo=F}
 # display the hospital data as a table
@@ -117,41 +118,39 @@ DT::datatable(hosp_info, rownames = FALSE, options = list(pageLength = nrow(hosp
 
 
 <!-- ======================================================= -->
-### Pre-cleaning {.unnumbered}
+### Nettoyage préliminaire {.unnumbered}
 
-Traditional joins (non-probabilistic) are case-sensitive and require exact character matches between values in the two data frames. To demonstrate some of the cleaning steps you might need to do before initiating a join, we will clean and align the `linelist_mini` and `hosp_info` datasets now.  
+Les jointures "traditionnelles" (*i.e.* non-probabilistes) sont sensibles à la casse et nécessitent des correspondances exactes entre les valeurs des colonnes utilisées comme clef/identifiant. Pour démontrer certaines des étapes de nettoyage que vous pourriez avoir besoin de faire avant de joindre vos données, nous allons nettoyer et aligner les ensembles de données `linelist_mini` et `hosp_info` maintenant.  
 
-**Identify differences**  
+**Identifier les différences**  
 
-We need the values of the `hosp_name` column in the `hosp_info` data frame to match the values of the `hospital` column in the `linelist_mini` data frame.  
+Le nom de l'hôpital étant notre identifiant/clef commun aux deux jeux de données, nous avons besoin que les valeurs de la colonne `hosp_name` dans le tableau `hosp_info` correspondent aux valeurs de la colonne `hospital` dans le tableau `linelist_mini`.  
 
-Here are the values in the `linelist_mini` data frame, printed with the **base** R function `unique()`:  
+Voici le dataframe `linelist_mini`, affiché avec la fonction **base** R `unique()` :  
 
 ```{r}
 unique(linelist_mini$hospital)
 ```
 
-and here are the values in the `hosp_info` data frame:  
+... et voici les valeurs dans le dataframe `hosp_info` :    
 
 ```{r}
 unique(hosp_info$hosp_name)
 ```
 
-You can see that while some of the hospitals exist in both data frames, there are many differences in spelling.  
+Il est clair que si certains hôpitaux sont présents dans les deux dataframes, leurs noms ne sont pas toujours orthographiés exactement pareil.  
 
+**Aligner les valeurs**  
 
+Nettoyons les valeurs du jeu de données `hosp_info`. Comme expliqué dans le chapitre sur le [Nettoyage de données et fonctions essentielles](#cleaning_data), il est possible de recoder les valeurs à partir de critères logiques en utilisnt la fonction `case_when()` de **dplyr**. Pour les quatre hôpitaux communs dans les deux dataframes, nous modifions les noms pour les aligner avec les noms dans le tableau `linelist_mini` (en ne touchant pas aux noms des autres hôpitaux grâce à l'argument `TRUE ~ hosp_name`).   
 
-**Align values**  
-
-We begin by cleaning the values in the `hosp_info` data frame. As explained in the [Cleaning data and core functions] page, we can re-code values with logical criteria using **dplyr**'s `case_when()` function. For the four hospitals that exist in both data frames we change the values to align with the values in `linelist_mini`. The other hospitals we leave the values as they are (`TRUE ~ hosp_name`).   
-
-<span style="color: orange;">**_CAUTION:_** Typically when cleaning one should create a new column (e.g. `hosp_name_clean`), but for ease of demonstration we show modification of the old column</span>
+<span style="color: orange;">**_ATTENTION:_** Normallement on devrait créer une nouvelle colonne pour ce type de nettoyage (`hosp_name_clean` par exemple), mais pour mieux comprendre ce qui se passe lors des étapes suivantes, nous modifions directement la colonne contenant les données "brutes"</span>
 
 ```{r}
 hosp_info <- hosp_info %>% 
   mutate(
     hosp_name = case_when(
-      # criteria                         # new value
+      # critère                          # nouvelles valeur
       hosp_name == "military"          ~ "Military Hospital",
       hosp_name == "port"              ~ "Port Hospital",
       hosp_name == "St. Mark's"        ~ "St. Mark's Maternity Hospital (SMMH)",
@@ -161,74 +160,78 @@ hosp_info <- hosp_info %>%
     )
 ```
 
-The hospital names that appear in both data frames are aligned. There are two hospitals in `hosp_info` that are not present in `linelist_mini` - we will deal with these later, in the join.  
+Les noms des hôpitaux qui apparaissent dans les deux bases de données sont désormais identiques. Il y a deux hôpitaux dans `hosp_info` qui ne sont pas présents dans `linelist_mini`, nous les traiterons plus tard, lors de la jointure.  
 
 ```{r}
 unique(hosp_info$hosp_name)
 ```
 
-Prior to a join, it is often easiest to convert a column to all lowercase or all uppercase. If you need to convert all values in a column to UPPER or lower case, use `mutate()` and wrap the column with one of these functions from **stringr**, as shown in the page on [Characters and strings].  
+Avant une jointure, il est souvent plus facile de convertir une colonne tout en minuscules ou majuscules. Pour cela, on peut utiliser `mutate()` et une des colonnes de **stringr** (voir le chapitre [sur les chaînes de caractères](#character_strings)):  
 
 `str_to_upper()`  
-`str_to_upper()`  
+`str_to_lower()`  
 `str_to_title()`  
 
 
 
-
 <!-- ======================================================= -->
-## **dplyr** joins { }
+## Jointures à l'aide de **dplyr** { }
 
-The **dplyr** package offers several different join functions. **dplyr** is included in the **tidyverse** package. These join functions are described below, with simple use cases.  
+Le package **dplyr** offre plusieurs fonctions qui permettent d'effectuer des jointures différentes. **dplyr** est inclus dans le paquet **tidyverse**.  
 
-Many thanks to [https://github.com/gadenbuie](https://github.com/gadenbuie/tidyexplain/tree/master/images) for the informative gifs!  
-
+Un grand merci à [https://github.com/gadenbuie](https://github.com/gadenbuie/tidyexplain/tree/master/images) pour les gifs informatifs !  
 
 
 
 <!-- ======================================================= -->
-### General syntax {.unnumbered}
+### Syntaxe générale {.unnumbered}
 
-The join commands can be run as standalone commands to join two data frames into a new object, or they can be used within a pipe chain (`%>%`) to merge one data frame into another as it is being cleaned or otherwise modified.  
+Les fonctions de jointure peuvent être seules pour unir deux dataframe et créer un nouveau dataframe, mais aussi au sein d'un enchaînement de commandes (pipe avec `%>%`) pour fusionner un dataframe dans un autre à la volée.  
 
-In the example below, the function `left_join()` is used as a standalone command to create the a new `joined_data` data frame. The inputs are data frames 1 and 2 (`df1` and `df2`). The first data frame listed is the baseline data frame, and the second one listed is joined *to* it.  
+Dans l'exemple ci-dessous, la fonction `left_join()` est utilisée de manière autonome pour créer un nouveau jeu de données `joined_data`. Les arguments à l'entrée sont les dataframes à unir/fusionner/joindre (`df1` et `df2`). Le premier cadre de données listé est le cadre de données *de base*, et le deuxième cadre de données listé est joint *à* celui-ci.  
 
-The third argument `by = ` is where you specify the columns in each data frame that will be used to aligns the rows in the two data frames. If the names of these columns are different, provide them within a `c()` vector as shown below, where the rows are matched on the basis of common values between the column `ID` in `df1` and the column `identifier` in `df2`.   
-
-```{r, eval=F}
-# Join based on common values between column "ID" (first data frame) and column "identifier" (second data frame)
-joined_data <- left_join(df1, df2, by = c("ID" = "identifier"))
-```
-
-If the `by` columns in both data frames have the exact same name, you can just provide this one name, within quotes.  
+Le troisième argument `by = ` est précises quelle(s) colonne(s) sera utilisée pour faire la correspondance entre les lignes des deux dataframes (la clef). Si les noms de ces colonnes sont différents, fournissez-les dans un vecteur `c()` comme dans l'exemple ci-dessous, les identifiants communs sont dans la colonne `ID` dans `df1` et dans la colonne `identifier` dans `df2`.  
+ 
 
 ```{r, eval=F}
-# Joint based on common values in column "ID" in both data frames
-joined_data <- left_join(df1, df2, by = "ID")
+# Jointure basée sur les valeurs communes dans la colonne ID (df1) et la colonne "identifier" (df2)
+joined_data <- left_join(df1, df2, 
+                         by = c("ID" = "identifier"))
 ```
 
-If you are joining the data frames based on common values across multiple fields, list these fields within the `c()` vector. This example joins rows if the values in three columns in each dataset align exactly.  
+Si la ou les colonnes "clef" à le même som dans les deux tableaux, alors leur nom peut juste être fourni directement, avec des guillements :  
 
 ```{r, eval=F}
-# join based on same first name, last name, and age
-joined_data <- left_join(df1, df2, by = c("name" = "firstname", "surname" = "lastname", "Age" = "age"))
+# Jointure basée sur les valeurs comunnes dans la colonne ID présente dans df1 et df2
+joined_data <- left_join(df1, df2, 
+                         by = "ID")
+```
+
+S'il y a besoin de plusieurs colonnes pour identifier de manière unique les observations (i.e. créer une clef primaire), on peut lister plusieurs colonnes dans un vecteur et le passer à `by`.
+Dans cet exemple, les lignes des deux dataframes sont unies si les valeurs sont identiques dans les trois colonnes.  
+
+
+```{r, eval=F}
+# Jointure basée sur le prénom, le nom de famille et l'age : les lignes sont fusionnées si les valeurs sont alignées exactement
+joined_data <- left_join(df1, df2, 
+                         by = c("name"    = "firstname", 
+                                "surname" = "lastname", 
+                                "Age"     = "age"))
 ```
 
 
-The join commands can also be run within a pipe chain. This will modify the data frame being piped. 
+Les fonctions de jointure peuvent également être exécutées dans un enchaînement d'instructions (ou _pipe_). Cela modifiera le jeu de données qui est passée dans le pipe.  
 
-In the example below, `df1` is is passed through the pipes, `df2` is joined to it, and `df` is thus modified and re-defined.  
+Dans l'exemple ci-dessous, `df1` est pipé, `df2` lui est joint, et `df1` est ainsi modifié et redéfini.  
 
 ```{r eval=F}
 df1 <- df1 %>%
-  filter(date_onset < as.Date("2020-03-05")) %>% # miscellaneous cleaning 
-  left_join(df2, by = c("ID" = "identifier"))    # join df2 to df1
+  filter(date_onset < as.Date("2020-03-05")) %>% # nettoyage divers
+  left_join(df2, by = c("ID" = "identifier"))    # jointure de df2 à df1
 ```
 
 
-<span style="color: orange;">**_CAUTION:_** Joins are case-specific! Therefore it is useful to convert all values to lowercase or uppercase prior to joining. See the page on characters/strings.</span>
-
-
+<span style="color: orange;">**_ATTENTION:_** Les jointures respectent les majuscules/minuscules ! Il peut donc être utile de convertir les colonnes utilisées comme clefs en minuscules ou majuscules. Voir le chapitre [sur les chaînes de caractères](#character_strings)</span>
 
 
 
