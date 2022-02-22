@@ -155,40 +155,40 @@ L'analyse est généralement écrite dans un fichier **do** | Analyse écrite da
 
 **STATA**                        | **R**  
 -------------------------------- | ---------------------------------------------
-Working directories involve absolute filepaths (e.g. "C:/usename/documents/projects/data/")| Working directories can be either absolute, or relative to a project root folder by using the **here** package (see [Import and export]) 
-See current working directory with **pwd** | Use `getwd()` or `here()` (if using the **here** package), with empty parentheses 
-Set working directory with **cd** “folder location” | Use `setwd(“folder location”)`, or `set_here("folder location)` (if using **here** package)
+Les répertoires d'un travail impliquent des chemins d'accès aux fichiers absolus (e.x. "C:/utilisateur/documents/projets/data/")| Les répertoires d'un travail peuvent être soit absolus, soit relatifs au dossier racine du projet en utilisant le package **here** (voir [Import et export]) 
+Voir le répertoire où se trouve le travail actuel avec **pwd** | Utilisez `getwd()` ou `here()` (si vous utilisez le package **here**), avec des parenthèses vides 
+Définir le répertoire de travail avec **cd** “emplacement du dossier” | Utilisez `setwd(“emplacement du dossier”)`, ou `set_here("emplacement du dossier)` (si le package **here** est utilisé)
 
-**Importing and viewing data**  
-
-**STATA**                    | **R**  
--------------------------------- | ---------------------------------------------
-Specific commands per file type | Use `import()` from **rio** package for almost all filetypes. Specific functions exist as alternatives (see [Import and export])
-Reading in csv files is done by **import delimited** “filename.csv” | Use `import("filename.csv")`
-Reading in xslx files is done by **import excel** “filename.xlsx” | Use `import("filename.xlsx")`
-Browse your data in a new window using the command **browse** | View a dataset in the RStudio source pane using `View(dataset)`. *You need to specify your dataset name to the function in R because multiple datasets can be held at the same time. Note capital "V" in this function*
-Get a high-level overview of your dataset using **summarize**, which provides the variable names and basic information | Get a high-level overview of your dataset using `summary(dataset)`
-
-**Basic data manipulation**  
+**Importation et visualisation des données**  
 
 **STATA**                    | **R**  
 -------------------------------- | ---------------------------------------------
-Dataset columns are often referred to as "variables" | More often referred to as "columns" or sometimes as "vectors" or "variables"
-No need to specify the dataset | In each of the below commands, you need to specify the dataset - see the page on [Cleaning data and core functions] for examples
-New variables are created using the command **generate** *varname* =  | Generate new variables using the function `mutate(varname = )`. See page on [Cleaning data and core functions] for details on all the below **dplyr** functions.
-Variables are renamed using **rename** *old_name new_name* | Columns can be renamed using the function `rename(new_name = old_name)`
-Variables are dropped using **drop** *varname* | Columns can be removed using the function `select()` with the column name in the parentheses following a minus sign
-Factor variables can be labeled using a series of commands such as **label define** | Labeling values can done by converting the column to Factor class and specifying levels. See page on [Factors]. Column names are not typically labeled as they are in Stata.
+Commandes spécifiques par type de fichier | Utilisez `import()` du package **rio** pour presque tous les types de fichiers. Des fonctions spécifiques existent comme alternatives (voir [Import et export])
+La lecture des fichiers csv se fait par **import delimited** “nomdufichier.csv” | Utilisez `import("nomdufichier.csv")`
+La lecture des fichiers xslx se fait par **import excel** “nomdufichier.xlsx” | Utilisez `import("nomdufichier.xlsx")`
+Parcourez vos données dans une nouvelle fenêtre en utilisant la commande **browse** | Visualisez un ensemble de données dans le volet source de RStudio en utilisant `View(dataset)`. *Vous devez spécifier le nom de votre ensemble de données à la fonction dans R car plusieurs ensembles de données peuvent être maintenus en même temps. Notez le "V" majuscule dans cette fonction*
+Obtenez une vue d'ensemble de votre ensemble de données à l'aide de **summarize**, qui fournit les noms des variables et les informations de base | Obtenez une vue d'ensemble de votre ensemble de données à l'aide de `summary(dataset)`
 
-**Descriptive analysis**  
+**Manipulation de données de base**  
 
 **STATA**                    | **R**  
 -------------------------------- | ---------------------------------------------
-Tabulate counts of a variable using **tab** *varname* | Provide the dataset and column name to `table()` such as `table(dataset$colname)`. Alternatively, use `count(varname)` from the **dplyr** package, as explained in [Grouping data]
-Cross-tabulaton of two variables in a 2x2 table is done with **tab** *varname1 varname2* | Use `table(dataset$varname1, dataset$varname2` or `count(varname1, varname2)`
+Les colonnes des ensembles de données sont fréquemment appelées "variables" | Plus souvent appelés "colonnes" ou parfois "vecteurs" ou "variables"
+Il n'est pas nécessaire de spécifier l'ensemble de données | Dans chacune des commandes ci-dessous, vous devez spécifier l'ensemble de données - voir la page [Nettoyage des données et des fonctions de base] pour des exemples
+Les nouvelles variables sont créées à l'aide de la commande **generate** *varname* =  | Générez de nouvelles variables en utilisant la fonction `mutate(varname = )`. Voir la page [Nettoyage des données et des fonctions de base] pour des détails sur les fonctions **dplyr**.
+Les variables sont renommées en utilisant **rename** *nouveau_nom ancien_nom* | Les colonnes peuvent être renommées à l'aide de la fonction `rename(nouveau_nom = ancien_nom)`
+Les variables sont supprimées en utilisant **drop** *nom_variable* | Les colonnes peuvent être supprimées en utilisant la fonction `select()` avec le nom de la colonne dans les parenthèses suivant un signe moins
+Les variables factorielles peuvent être étiquetées en utilisant une série de commandes telles que **label define** | L'étiquetage des valeurs peut se faire en convertissant la colonne en classe de facteurs et en spécifiant des niveaux. Voir la page sur [Facteurs]. Les noms de colonnes ne sont pas typiquement étiquetés comme ils le sont dans Stata.
+
+**Analyse descriptive**  
+
+**STATA**                    | **R**  
+-------------------------------- | ---------------------------------------------
+Mettre en tableau les effectifs d'une variable en utilisant **tab** *nom_variable* | Fournissez l'ensemble de données et le nom de la colonne à `table()` tel que `table(ensemble_de_données$nomcolonne)`. Vous pouvez également utiliser `count(nom_variable)` du package **dplyr**, comme expliqué dans [Regroupement des données]
+Le tableau croisé de deux variables dans un tableau 2x2 se fait avec **tab** *nom_variable1 nom_variable2* | Utilisez `table(ensemble_de_données$nom_variable1, ensemble_de_données$nom_variable2` ou `count(nom_variable1, nom_variable2)`
 
 
-While this list gives an overview of the basics in translating Stata commands into R, it is not exhaustive. There are many other great resources for Stata users transitioning to R that could be of interest:  
+Bien que cette liste donne un aperçu des bases de la conversion des commandes Stata en R, elle n'est pas complète. Il existe de nombreuses autres ressources intéressantes pour les utilisateurs de Stata qui passent à R:  
 
 * https://dss.princeton.edu/training/RStata.pdf  
 * https://clanfear.github.io/Stata_R_Equivalency/docs/r_stata_commands.html  
@@ -197,64 +197,65 @@ While this list gives an overview of the basics in translating Stata commands in
 
 
 
-## From SAS  
+## De SAS  
 <!-- ======================================================= -->
 
-**Coming from SAS to R**  
+**Passer de SAS à R**  
 
-SAS is commonly used at public health agencies and academic research fields. Although transitioning to a new language is rarely a simple process, understanding key differences between SAS and R may help you start to navigate the new language using your native language. 
-Below outlines the key translations in data management and descriptive analysis between SAS and R.   
+SAS est couramment utilisé dans les agences de santé publique et les domaines de recherche universitaires. Bien que la transition vers une nouvelle langue soit rarement un processus simple, la compréhension des principales différences entre SAS et R peut vous aider à commencer à naviguer dans cette nouvelle langue en utilisant votre langue maternelle. 
+Vous trouverez ci-dessous les principales traductions en matière de gestion des données et d'analyse descriptive entre SAS et R. 
 
-**General notes**  
 
-**SAS**                          | **R**  
--------------------------------- | ---------------------------------------------
-Online community available through [SAS Customer Support](https://support.sas.com/en/support-home.html)|Online community available through RStudio, StackOverFlow, and R-bloggers
-Help for commands available by `help [command]`|Help available by [function]? or search in the Help pane
-Comment code using `* TEXT ;` or `/* TEXT */`|Comment code using #
-Almost all commands are built-in.  Users can write new functions using SAS macro, SAS/IML, SAS Component Language (SCL), and most recently, procedures `Proc Fcmp` and `Proc Proto`|R installs with **base** functions, but typical use involves installing other packages from CRAN (see page on [R basics])
-Analysis is usually conducted by writing a SAS program in the Editor window.|Analysis written in an R script in the RStudio source pane. R markdown scripts are an alternative.
-
-**Working directory**  
+**Notes générales**  
 
 **SAS**                          | **R**  
 -------------------------------- | ---------------------------------------------
-Working directories can be either absolute, or relative to a project root folder by defining the root folder using `%let rootdir=/root path; %include “&rootdir/subfoldername/filename”`|Working directories can be either absolute, or relative to a project root folder by using the **here** package (see [Import and export])
-See current working directory with `%put %sysfunc(getoption(work));`|Use `getwd()` or `here()` (if using the **here** package), with empty parentheses
-Set working directory with `libname “folder location”`|Use `setwd(“folder location”)`, or `set_here("folder location)` if using **here** package
+Communauté en ligne disponible via [SAS Support à la clientèle](https://support.sas.com/en/support-home.html)|Communauté en ligne disponible via RStudio, StackOverFlow et R-bloggers
+Aide pour les commandes disponibles par `help [command]`| Aide disponible avec [function]? ou effectuer une recherche dans le volet d'aide
+Commenter le code en utilisant `* TEXTE ;` ou `/* TEXTE */`|Commenter le code en utilisant #
+Presque toutes les commandes sont intégrées.  Les utilisateurs peuvent écrire de nouvelles fonctions en utilisant les macros SAS, SAS/IML, SAS Component Language (SCL) et, plus récemment, les procédures `Proc Fcmp` et `Proc Proto`|R s'installe avec les fonctions **base**, mais l'utilisation typique implique l'installation d'autres packages de CRAN (voir page [Les bases de R])
+L'analyse est généralement effectuée en écrivant un programme SAS dans la fenêtre de l'éditeur.|Analyse écrite dans un script R dans le volet source de RStudio. Les scripts R markdown constituent une alternative.
 
-
-**Importing and viewing data**  
-
-**SAS**                          | **R**  
--------------------------------- | ---------------------------------------------
-Use `Proc Import` procedure or using `Data Step Infile` statement.|Use `import()` from **rio** package for almost all filetypes. Specific functions exist as alternatives (see [Import and export])
-Reading in csv files is done by using `Proc Import datafile=”filename.csv” out=work.filename dbms=CSV; run;` OR using [Data Step Infile statement](http://support.sas.com/techsup/technote/ts673.pdf)|Use `import("filename.csv")`
-Reading in xslx files is done by using `Proc Import datafile=”filename.xlsx” out=work.filename dbms=xlsx; run;` OR using [Data Step Infile statement](http://support.sas.com/techsup/technote/ts673.pdf)|Use import("filename.xlsx")
-Browse your data in a new window by opening the Explorer window and select desired library and the dataset|View a dataset in the RStudio source pane using View(dataset). You need to specify your dataset name to the function in R because multiple datasets can be held at the same time. Note capital “V” in this function
-
-**Basic data manipulation**  
+**Le fichier d'accès au travail**  
 
 **SAS**                          | **R**  
 -------------------------------- | ---------------------------------------------
-Dataset columns are often referred to as “variables”|More often referred to as “columns” or sometimes as “vectors” or “variables”
-No special procedures are needed to create a variable. New variables are created simply by typing the new variable name, followed by an equal sign, and then an expression for the value|Generate new variables using the function `mutate()`. See page on [Cleaning data and core functions] for details on all the below **dplyr** functions.
-Variables are renamed using `rename *old_name=new_name*`|Columns can be renamed using the function `rename(new_name = old_name)`
-Variables are kept using `**keep**=varname`|Columns can be selected using the function `select()` with the column name in the parentheses
-Variables are dropped using `**drop**=varname`|Columns can be removed using the function `select()` with the column name in the parentheses following a minus sign
-Factor variables can be labeled in the Data Step using `Label` statement|Labeling values can done by converting the column to Factor class and specifying levels. See page on [Factors]. Column names are not typically labeled.
-Records are selected using `Where` or `If` statement in the Data Step. Multiple selection conditions are separated using “and” command.|Records are selected using the function `filter()` with multiple selection conditions separated either by an AND operator (&) or a comma  
-Datasets are combined using `Merge` statement in the Data Step. The datasets to be merged need to be sorted first using `Proc Sort` procedure.|**dplyr** package offers a few functions for merging datasets. See page [Joining Data] for details.
+Les répertoires de travail peuvent être soit absolus, soit relatifs au dossier racine d'un projet en définissant le dossier racine à l'aide de `%let rootdir=/chemin d'accès; %include “&cheminracine/nomsousdossier/nomfichier”`|Les répertoires de travail peuvent être soit absolus, soit relatifs au dossier racine du projet en utilisant le package **here** (voir [Import et export])
+Voir le répertoire de travail actuel avec `%put %sysfunc(getoption(work));`|Utilisez `getwd()` ou `here()` (si vous utilisez le package **here**), avec des parenthèses vides
+Définir le répertoire de travail avec `libname “emplacement du dossier”`|Utilisez `setwd(“emplacement du dossier”)`, ou `set_here("emplacement du dossier)` si vous utilisez le package **here**
 
-**Descriptive analysis**  
+
+**Importation et visualisation des données**  
 
 **SAS**                          | **R**  
 -------------------------------- | ---------------------------------------------
-Get a high-level overview of your dataset using `Proc Summary` procedure, which provides the variable names and descriptive statistics|Get a high-level overview of your dataset using `summary(dataset)` or `skim(dataset)` from the **skimr** package
-Tabulate counts of a variable using `proc freq data=Dataset; Tables varname; Run;`|See the page on [Descriptive tables]. Options include `table()` from **base** R, and `tabyl()` from **janitor** package, among others. Note you will need to specify the dataset and column name as R holds multiple datasets.
-Cross-tabulation of two variables in a 2x2 table is done with `proc freq data=Dataset; Tables rowvar*colvar; Run;`|Again, you can use `table()`, `tabyl()` or other options as described in the [Descriptive tables] page.  
+Utilisez la procédure `Proc Import` ou l'instruction `Data Step Infile`.|Utilisez `import()` du package **rio** pour presque tous les types de fichiers. Des fonctions spécifiques existent comme alternatives (voir [Import et export])
+La lecture des fichiers csv se fait à l'aide de la fonction `Proc Import datafile=”nom_fichier.csv” out=travail.nom_fichier dbms=CSV; run;` OU en utilisant [L'instruction Data Step Infile](http://support.sas.com/techsup/technote/ts673.pdf)|Utilisez `import("nom_fichier.csv")`
+La lecture des fichiers xlsx se fait à l'aide de la fonction `Proc Import datafile=”nom_fichier.xlsx” out=travail.nom_fichier dbms=xlsx; run;` OU en utilisant [L'instruction Data Step Infile](http://support.sas.com/techsup/technote/ts673.pdf)|Utilisez import("nom_fichier.xlsx")
+Parcourez vos données dans une nouvelle fenêtre en ouvrant la fenêtre de l'Explorateur et sélectionnez la bibliothèque souhaitée et l'ensemble de données|Visualiser un ensemble de données dans le panneau source de RStudio en utilisant View(dataset). Vous devez spécifier le nom de votre ensemble de données à la fonction dans R car plusieurs ensembles de données peuvent être conservés en même temps. Notez le "V" majuscule dans cette fonction
 
-**Some useful resources:**  
+
+**Manipulation de données de base**  
+
+**SAS**                          | **R**  
+-------------------------------- | ---------------------------------------------
+Aucune procédure spéciale n'est nécessaire pour créer une variable. Les nouvelles variables sont créées simplement en tapant le nom de la nouvelle variable, suivi d'un signe égal, puis d'une expression pour la valeur. Générez de nouvelles variables en utilisant la fonction `mutate()`. Voir la page [Nettoyage des données et fonctions de base] pour plus de détails sur toutes les fonctions **dplyr** ci-dessous.
+Les variables sont renommées en utilisant `rename *ancien_nom=nouveau_nom*`|Les colonnes peuvent être renommées à l'aide de la fonction `rename(nouveau_nom = ancien_nom)`
+Les variables sont conservées en utilisant `**keep**=nom_variable`|Les colonnes peuvent être sélectionnées en utilisant la fonction `select()` avec le nom de la colonne entre parenthèses.
+Les variables sont supprimées à l'aide de la fonction `**drop**=nom_variable`|Les colonnes peuvent être supprimées à l'aide de la fonction `select()` avec le nom de la colonne entre parenthèses après le signe moins.
+Les variables factorielles peuvent être étiquetées dans l'étape de données (Data Step) en utilisant l'instruction `Label`. L'étiquetage des valeurs peut être fait en convertissant la colonne en classe factorielle et en spécifiant les niveaux. Voir la page sur les [Facteurs]. Les noms de colonnes ne sont généralement pas étiquetés.
+Les enregistrements sont sélectionnés à l'aide des instructions `Where` ou `If` dans l'étape de données (Data Step). Les enregistrements sont sélectionnés à l'aide de la fonction `filter()` avec plusieurs conditions de sélection séparées soit par un opérateur AND (&), soit par une virgule. 
+Les ensembles de données sont combinés en utilisant l'instruction `Merge` dans l'étape Data Step. Les jeux de données à fusionner doivent d'abord être triés à l'aide de la procédure `Proc Sort`. Le package `**dplyr** offre quelques fonctions pour fusionner les jeux de données. Voir la page [Joining Data] pour plus de détails.
+
+**Analyse descriptive**  
+
+**SAS**                          | **R**  
+-------------------------------- | ---------------------------------------------
+Obtenez un aperçu de votre ensemble de données en utilisant la procédure `Proc Summary`, qui fournit les noms des variables et les statistiques descriptives|Obtenez un aperçu de votre ensemble de données en utilisant `summary(dataset)` ou `skim(dataset)` du package **skimr**
+Mettre en tableau les effectifs d'une variable en utilisant `proc freq data=Dataset; Tables nom_variable; Run;`|Voir la page sur les [Tableaux descriptifs]. Les options incluent `table()` de R de **base**, et `tabyl()` du package **janitor**, entre autres. Notez que vous devrez spécifier le jeu de données et le nom de la colonne, car R contient plusieurs jeux de données.
+Le tableau croisé de deux variables dans un tableau 2x2 est fait avec `proc freq data=Dataset ; Tables rowvar*colvar ; Run;`|Aussi, vous pouvez utiliser `table()`, `tabyl()` ou d'autres options comme décrit dans la page [Tableaux descriptifs].  
+
+**Quelques ressources utiles:**  
 
 [R for SAS and SPSS Users (2011)](https://www.amazon.com/SAS-SPSS-Users-Statistics-Computing/dp/1461406846/ref=sr_1_1?dchild=1&gclid=EAIaIQobChMIoqLOvf6u7wIVAhLnCh1c9w_DEAMYASAAEgJLIfD_BwE&hvadid=241675955927&hvdev=c&hvlocphy=9032185&hvnetw=g&hvqmt=e&hvrand=16854847287059617468&hvtargid=kwd-44746119007&hydadcr=16374_10302157&keywords=r+for+sas+users&qid=1615698213&sr=8-1)
 
@@ -262,10 +263,10 @@ Cross-tabulation of two variables in a 2x2 table is done with `proc freq data=Da
 
 
 
-## Data interoperability  
+## Interopérabilité des données 
 <!-- ======================================================= -->
 
-See the [Import and export] page for details on how the R package **rio** can import and export files such as STATA .dta files, SAS .xpt and.sas7bdat files, SPSS .por and.sav files, and many others.  
+Voir la page [Import et export] pour des détails sur comment le package **rio** peut importer et experter des fichiers tels que des fichiers STATA .dta, des fichiers SAS .xpt et.sas7bdat, des fichiers SPSS .por et.sav, et plusieurs autres.  
 
 
 
