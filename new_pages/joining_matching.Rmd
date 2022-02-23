@@ -236,38 +236,47 @@ df1 <- df1 %>%
 
 
 <!-- ======================================================= -->
-### Left and right joins {.unnumbered}  
+### Jointures à gauche et droite {.unnumbered}  
 
-**A left or right join is commonly used to add information to a data frame** - new information is added only to rows that already existed in the baseline data frame. These are common joins in epidemiological work as they are used to add information from one dataset into another. 
+**Une jointure à gauche ou droite est une opération très couramment utilisée pour ajouter des informations à un cadre de données**, et en particulier dans les analyses épidémiologiques. Les nouvelles informations sont ajoutées uniquement aux lignes qui existaient déjà dans le dataframe de "référence".  
 
-In using these joins, the written order of the data frames in the command is important*.  
+*En utilisant ces jointures, l'ordre d'écriture des cadres de données dans la commande est important*.  
 
-* In a *left join*, the *first* data frame written is the baseline  
-* In a *right join*, the *second* data frame written is the baseline  
 
-**All rows of the baseline data frame are kept.** Information in the other (secondary) data frame is joined to the baseline data frame *only if there is a match via the identifier column(s)*. In addition:  
+* Dans une *jointure à gauche*, le *premier* dataframe écrit est utilisé comme "référence" à laquelle on adjoint les informations venant de l'autre table.  
+* Dans une *jointure à droite*, le *second* dataframe est la référence à laquelle on rajoute les informations venant du premier dataframe.   
 
-* Rows in the secondary data frame that do not match are dropped.  
-* If there are many baseline rows that match to one row in the secondary data frame (many-to-one), the secondary information is added to *each matching baseline row*.  
-* If a baseline row matches to multiple rows in the secondary data frame (one-to-many), all combinations are given, meaning *new rows may be added to your returned data frame!*  
+Plus précisement :  
+* **Toutes les lignes présentes dans le dataframe de référence sont conservées**. Les informations contenues dans le dataframe secondaire sont adjointes au dataframe de référence *uniquement s'il existe une correspondance via la ou les colonnes d'identification/clefs*.    
 
-Animated examples of left and right joins ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
+* Les lignes du dataframe secondaire qui ne correspondent pas sont abandonnées.  
+
+* Si plusieurs lignes du dataframe utilisé comme référence correspondent à une ligne dans le dataframe secondaire (many-to-one), les informations du dataframe secondaire sont ajoutées à *chaque ligne du dataframe de référence correspondantes*.  
+
+* Si une ligne du dataframe de référence correspond à plusieurs lignes dans le dataframe secondaire (one-to-many), **toutes les combinaisons sont données**, ce qui signifie que *de nouvelles lignes sont ajoutées au dataframe de référence !*.  
+
+Exemples animés de jointures gauche et droite ([source de l'image](https://github.com/gadenbuie/tidyexplain/tree/master/images))
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "left-join.gif"))
 knitr::include_graphics(here::here("images", "right-join.gif"))
 ```
 
-**Example**  
+**Exemple**  
 
-Below is the output of a `left_join()` of `hosp_info` (secondary data frame, [view here](#joins_hosp_info))  *into* `linelist_mini` (baseline data frame, [view here](#joins_llmini)). The original `linelist_mini` has ` nrow(linelist_mini)` rows. The modified `linelist_mini` is displayed. Note the following:  
+Voici le résultat d'un `left_join()` de `hosp_info` (dataframe secondaire, [voir ici](#joins_hosp_info)) *dans*/*vers* `linelist_mini` (dataframe de référence, [voir ici](#joins_llmini)). La `linelist_mini` originale a `nrow(linelist_mini)` lignes. La `linelist_mini` modifiée est affichée. On constate que :   
 
-* Two new columns, `catchment_pop` and `level` have been added on the left side of `linelist_mini`  
-* All original rows of the baseline data frame `linelist_mini` are kept  
-* Any original rows of `linelist_mini` for "Military Hospital" are duplicated because it matched to *two* rows in the secondary data frame, so both combinations are returned  
-* The join identifier column of the secondary dataset (`hosp_name`) has disappeared because it is redundant with the identifier column in the primary dataset (`hospital`)  
-* When a baseline row did not match to any secondary row (e.g. when `hospital` is "Other" or "Missing"), `NA` (blank) fills in the columns from the secondary data frame  
-* Rows in the secondary data frame with no match to the baseline data frame ("sisters" and "ignace" hospitals) were dropped  
+* Deux nouvelles colonnes, `catchment_pop` et `level` ont été ajoutées sur le côté gauche de `linelist_mini`.  
+
+* Toutes les lignes originales du dataframe de référence `linelist_mini` ont été conservées.  
+
+* Toutes les lignes originales de `linelist_mini` pour "Military Hospital" ont été dupliquées car elles correspondaient à *deux* lignes dans le dataframe secondaire, et donc les deux combinaisons ont été  retournées.  
+
+* La colonne d'identifiant/clef de jointure du dataframe secondaire (`hosp_name`) a disparu car elle est redondante avec la colonne d'identifiant du dataframe de référence (`hospital`)   
+
+* Lorsqu'une ligne du dataframe de gauche ne correspond à aucune du dataframe de droite (par exemple, lorsque `hospital` est "Autre" ou "Manquant"), les observations renvoyées dans les colonnes venant du dataframe de droite sont `NA`.  
+
+* Les lignes du dataframe de droite qui ne correspondent pas au dataframe gauche (hôpitaux "sisters" et "ignace") ont été abandonnées.   
 
 
 ```{r, eval=F}
@@ -282,62 +291,74 @@ linelist_mini %>%
 ```
 
 
+#### Jointure à gauche ou jointure à droite ? {.unnumbered}  
+
+Pour répondre à la question, il faut décider quel dataframe doit conserver toutes ses lignes, et l'utiliser comme dataframe de référence. Une *jonction à gauche* conserve toutes les lignes du premier dataframe écrit dans la commande, tandis qu'une *jonction à droite* conserve toutes les lignes du second dataframe.    
 
 
+Les deux instructions ci-dessous retournent le même résultat : 10 lignes de `hosp_info` jointes *dans* un dataframe `linelist_mini`, mais elles utilisent des jointures différentes. Le résultat est que l'ordre des colonnes sera différent selon que `hosp_info` arrive "par la droite" (dans la jointure à gauche) ou arrive "par la gauche" (dans la jointure à droite). L'ordre des lignes peut également changer en conséquence. Néanmoins ces deux conséquences peuvent être traitées ultérieurement, en utilisant `select()` pour réordonner les colonnes ou `arrange()` pour trier les lignes.  
 
-#### "Should I use a right join, or a left join?" {.unnumbered}  
-
-To answer the above question, ask yourself "which data frame should retain all of its rows?" - use this one as the baseline. A *left join* keep all the rows in the first data frame written in the command, whereas a *right join* keeps all the rows in the second data frame.  
-
-The two commands below achieve the same output - 10 rows of `hosp_info` joined *into* a `linelist_mini` baseline, but they use different joins. The result is that the column order will differ based on whether `hosp_info` arrives from the right (in the left join) or arrives from the left (in the right join). The order of the rows may also shift accordingly. But both of these consequences can be subsequently addressed, using `select()` to re-order columns or `arrange()` to sort rows.  
 
 ```{r, eval=F}
-# The two commands below achieve the same data, but with differently ordered rows and columns
+# On obtient le même jeu de données, mais avec l'ordre des colonnes et des lignes différent
 left_join(linelist_mini, hosp_info, by = c("hospital" = "hosp_name"))
 right_join(hosp_info, linelist_mini, by = c("hosp_name" = "hospital"))
 ```
 
-Here is the result of `hosp_info` into `linelist_mini` via a left join (new columns incoming from the right)
+Voici le résultat d'une fusion de `hosp_info` dans `linelist_mini` par une jointure à gauche (nouvelles colonnes ajoutées par la droite) :  
+
 
 ```{r message=FALSE, echo=F}
-left_join(linelist_mini, hosp_info, by = c("hospital" = "hosp_name")) %>% 
+left_join(linelist_mini, hosp_info, 
+          by = c("hospital" = "hosp_name")) %>% 
   DT::datatable(rownames = FALSE, options = list(pageLength = 11))
 ```
 
-Here is the result of `hosp_info` into  `linelist_mini` via a right join (new columns incoming from the left)  
+Voici le résultat de la fusion de `hosp_info` dans `linelist_mini` par une jointure à droite (nouvelles colonnes ajoutées par la gauche) :   
+
 
 ```{r message=FALSE, echo=F}
-right_join(hosp_info, linelist_mini, by = c("hosp_name" = "hospital")) %>% 
+right_join(hosp_info, linelist_mini, 
+           by = c("hosp_name" = "hospital")) %>% 
   DT::datatable(rownames = FALSE, options = list(pageLength = 11))
 ```
 
-Also consider whether your use-case is within a pipe chain (`%>%`). If the dataset in the pipes is the baseline, you will likely use a left join to add data to it.
+Une autre chose à considérer est si la jointure est réalisée au sein d'une chaine d'instructions pipées (`%>%`). Si le dataframe transmis par le pipe doit être utilisé comme référence, utilisez une jointure à gauche pour lui adjoindre de nouvelles données.  
 
 
 <!-- ======================================================= -->
-### Full join {.unnumbered} 
+### Jointure complète {.unnumbered} 
 
-**A full join is the most *inclusive* of the joins** - it returns all rows from both data frames.  
+**Une jointure complète est la plus *inclusive* des jointures**, elle renvoie toutes les lignes des deux dataframes fusionés.  
 
-If there are any rows present in one and not the other (where no match was found), the data frame will include them and become longer. `NA` missing values are used to fill-in any gaps created. As you join, watch the number of columns and rows carefully to troubleshoot case-sensitivity and exact character matches. 
+Si des lignes ne sont présentes que dans l'un des dataframes fusionés (*i.e* aucune correspondance n'est trouvée), elles seront inclues dans le dataframe final (qui s'allonge donc), avec des `NA` pour combler les vides.  
 
-The "baseline" data frame is the one written first in the command. Adjustment of this will not impact which records are returned by the join, but it can impact the resulting column order, row order, and which identifier columns are retained.  
+Lorsque vous effectuez une jointure, **surveillez attentivement le nombre de colonnes et de lignes pour vérifier le nombre de lignes des dataframes en entrée, et du dataframe fusionné**. Cela vous permettra notamment de détecter des problèmes de correspondance dus à la sensibilité à la casse ou à des correspondances inexactes. 
+
+Le dataframe de référence utilisé comme base est celui qui est écrit en premier dans la commande. Dans une jointure complète, Lequel des deux dataframes est écrit en premier n'affecte que l'ordre des lignes, l'ordre des colonnes et le nom des colonnes clef retenues.   
+
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "full-join.gif"))
 ```
 
-Animated example of a full join ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
+Exemple animé d'une jointure complète ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
 
-**Example**  
+**Exemple**  
 
-Below is the output of a `full_join()` of `hosp_info` (originally ` nrow(hosp_info)`, [view here](#joins_hosp_info))  *into* `linelist_mini` (originally ` nrow(linelist_mini)`, [view here](#joins_llmini)). Note the following:  
+Voici la sortie d'une  jointure complète du dataframe `hosp_info` (originellement ` nrow(hosp_info)` lignes, [voir ici](#joins_hosp_info))  *avec* `linelist_mini` (originellement ` nrow(linelist_mini)` lignes, [voir ici](#joins_llmini)). On constate que :    
 
-* All baseline rows are kept (`linelist_mini`)  
-* Rows in the secondary that do not match to the baseline are kept ("ignace" and "sisters"), with values in the corresponding baseline columns  `case_id` and `onset` filled in with missing values  
-* Likewise, rows in the baseline data frame that do not match to the secondary ("Other" and "Missing") are kept, with secondary columns ` catchment_pop` and `level` filled-in with missing values  
-* In the case of one-to-many or many-to-one matches (e.g. rows for "Military Hospital"), all possible combinations are returned (lengthening the final data frame)  
-* Only the identifier column from the baseline is kept (`hospital`)  
+
+* Toutes les lignes du dataframe de référence sont conservées (`linelist_mini`).   
+
+* Les lignes du second dataframe qui n'ont pas de correspondance avec le premier dataframe sont conservées ("ignace" et "sisters"), et les valeurs des colonnes apportées par le dataframe de référence, `case_id` et `onset`, sont complétées par des valeurs manquantes.  
+
+* De même, les lignes du dataframe de référence qui ne correspondent pas à la ligne secondaire ("Autre" et "Manquant") sont conservées, les colonnes secondaires `catchment_pop` et `level` étant remplies de valeurs manquantes.  
+
+* Dans le cas d'une correspondance un-à-plusieurs ou plusieurs-à-un (par exemple, des lignes pour "Hôpital militaire"), toutes les combinaisons possibles sont retournées (ce qui allonge le dataframe final).  
+
+* Seule la colonne d'identification du dataframe de référence est conservée (`hospital`).  
+
 
 
 ```{r, eval=F}
