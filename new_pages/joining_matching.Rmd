@@ -377,83 +377,87 @@ linelist_mini %>%
 
 
 <!-- ======================================================= -->
-### Inner join {.unnumbered} 
+### Jointure interne {.unnumbered} 
 
-**An inner join is the most *restrictive* of the joins** - it returns only rows with matches across both data frames.  
-This means that the number of rows in the baseline data frame may actually *reduce*. Adjustment of which data frame is the "baseline" (written first in the function) will not impact which rows are returned, but it will impact the column order, row order, and which identifier columns are retained.   
+**La jointure interne est la plus *restrictive* des jointures** : elle renvoie uniquement les lignes avec des correspondances dans les deux dataframes.  
+Le nombre de lignes dans le dataframe de référence peut ainsi *diminuer*. Le choix du dataframe à passer en premier à la fonction n'aura pas d'impact sur les lignes conservées, mais affectera l'ordre des colonnes, l'ordre des lignes et clefs d'identification retenues.   
 
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "inner-join.gif"))
 ```
 
-Animated example of an inner join ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
+Exemple animé d'une jointure complète : ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
 
 
-**Example**  
+**Exemple**  
 
-Below is the output of an `inner_join()` of `linelist_mini` (baseline) with `hosp_info` (secondary). Note the following:  
+Voici la sortie d'un `inner_join()` de la `linelist_mini` (référence) avec `hosp_info` (secondaire). On constate que :  
 
-* Baseline rows with no match to the secondary data are removed (rows where `hospital` is "Missing" or "Other")  
-* Likewise, rows from the secondary data frame that had no match in the baseline are removed (rows where `hosp_name` is "sisters" or "ignace")  
-* Only the identifier column from the baseline is kept (`hospital`)  
+* Les lignes du dataframe de référence sans correspondance dans le second dataframe sont supprimées (lignes où `hospital` est "Missing" ou "Other").   
+* De même, les lignes du dataframe secondaires qui n'ont pas de correspondance dans le dataframe de référence (lignes où `hosp_name` est "sisters" ou "ignace") sont supprimées.   
+* Seule la colonne clef du dataframe de référence est conservée (`hospital`).  
 
 
 ```{r, eval=F}
 linelist_mini %>% 
-  inner_join(hosp_info, by = c("hospital" = "hosp_name"))
+  inner_join(hosp_info, 
+             by = c("hospital" = "hosp_name"))
 ```
 
 
 ```{r message=FALSE, echo=F}
 linelist_mini %>% 
-  inner_join(hosp_info, by = c("hospital" = "hosp_name")) %>% 
-  DT::datatable(rownames = FALSE, options = list(pageLength = 12))
+  inner_join(hosp_info, 
+             by = c("hospital" = "hosp_name")) %>% 
+  DT::datatable(rownames = FALSE, 
+                options = list(pageLength = 12))
 ```
 
 
 
 
-
-
 <!-- ======================================================= -->
-### Semi join {.unnumbered} 
+### Semi jointure {.unnumbered} 
 
-A semi join is a "filtering join" which uses another dataset *not to add rows or columns, but to perform filtering*.  
+Les semi jointures sont des jointures dites "filtrantes", qui utilisent la correspondance avec un second dataframe pour *filtrer le dataframe de référence*. 
 
-A **semi-join keeps all observations in the baseline data frame that have a match in the secondary data frame** (but does not add new columns nor duplicate any rows for multiple matches). Read more about these "filtering" joins [here](https://towardsdatascience.com/level-up-with-semi-joins-in-r-a068426096e0).  
+**La semi jointure garde toutes les observations du dataframe de référence qui ont une correspondance dans le dataframe secondaire**. Mais les colonnes du dataframe secondaire ne sont pas ajoutées et les lignes du dataframe de référence ne sont pas dupliquées s'il y a des correspondances multiples.  
+
+Plus d'explications sur les semi-jointures  [ici](https://towardsdatascience.com/level-up-with-semi-joins-in-r-a068426096e0).  
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "semi-join.gif"))
 ```
 
-Animated example of a semi join ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
+Exemple animé d'une semi jointure ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
 
-As an example, the below code returns rows from the `hosp_info` data frame that have matches in `linelist_mini` based on hospital name.  
+Voici un exemple qui retourne les lignes du dataframe `hosp_info` qui ont une correspondance dans le dataframe `linelist_mini` en utilisant le nom de l'hôpital comme clé de jointure/identifiant.  
 
 ```{r}
 hosp_info %>% 
-  semi_join(linelist_mini, by = c("hosp_name" = "hospital"))
+  semi_join(linelist_mini, 
+            by = c("hosp_name" = "hospital"))
 ```
 
 
 
 <!-- ======================================================= -->
-### Anti join {.unnumbered} 
+### Anti-jointure {.unnumbered} 
 
-**The anti join is another "filtering join" that returns rows in the baseline data frame that *do not* have a match in the secondary data frame.**  
+**L'anti-jointure est une autre type de jointure filtrante, qui, à l'opposé du semi-join, ne renvoit que les lignes du dataframe de référence qui n'ont PAS de correspondance dans le dataframe secondaire.**  
 
-Read more about filtering joins [here](https://towardsdatascience.com/level-up-with-semi-joins-in-r-a068426096e0).  
+Plus de détails sur les jointures filtrantes [ici](https://towardsdatascience.com/level-up-with-semi-joins-in-r-a068426096e0).  
 
-Common scenarios for an anti-join include identifying records not present in another data frame, troubleshooting spelling in a join (reviewing records that *should have* matched), and examining records that were excluded after another join.  
+Voici quelques cas d'usage de l'anti-jointure ; identifier les observations non présentes dans un autre dataframe, identifier les typos qui compliquent une jointure (se focaliser sur les observations qui auraient du matcher), examiner les observations qui ont été excplues d'une jointure etc.  
 
-**As with `right_join()` and `left_join()`, the *baseline* data frame (listed first) is important**. The returned rows are from the baseline data frame only. Notice in the gif below that row in the secondary data frame (purple row 4) is not returned even though it does not match with the baseline.  
+**Comme pour les jointures à doite (`right_join()`) et à gauche (`left_join()`), l'ordre dans lequel sont passés les dataframe a de l'importance.** Dans les joins filtrants, on ne renvoit que les lignes présentes dans le dataframe de référence (écrit en premier), comme on peut le voir dans le gif ci-dessous (la ligne 4, violette, du dataframe secondaire n'est pas retournée, alors qu'elle ne matche avec aucune ligne du dataframe de référence).  
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "anti-join.gif"))
 ```
 
-Animated example of an anti join ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
+Exemple animé d'une anti-jointure ([image source](https://github.com/gadenbuie/tidyexplain/tree/master/images))
 
 
 #### Simple `anti_join()` example {.unnumbered}  
