@@ -107,7 +107,7 @@ Il existe de nombreuses autres extensions ("packages") R qui peuvent être utili
 
 ### Charger les packages {.unnumbered}
 
-Installer et charger **flextable**. Dans ce manuel, nous mettons l'accent sur la fonction `p_load()` de **pacman**, qui installe le (ou une liste de) "package (s)" que si nécessaire (uniquement si le package n'est pas déjà installé) et le charge pour l'utiliser . Vous pouvez également charger des "packages" avec `library()` à partir de R **base**. Voir la page sur [Bases de R](#rbasics) pour plus d'informations sur les "packages" R.
+Installer et charger **flextable**. Dans ce manuel, nous mettons l'accent sur la fonction `p_load()` du "package" **pacman**, qui installe le (ou une liste de) "package (s)" que si nécessaire (uniquement si le package n'est pas déjà installé) et le charge pour l'utiliser . Vous pouvez également charger des "packages" avec `library()` à partir de `R` **base**. Voir la page sur [Bases de R](#rbasics) pour plus d'informations sur les "packages" `R`.
 
 ```{r}
 pacman::p_load(
@@ -120,8 +120,6 @@ pacman::p_load(
 ```
 
 ### Importer des données {.unnumbered}
-
-To begin, we import the cleaned linelist of cases from a simulated Ebola epidemic. If you want to follow along, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>click to download the "clean" linelist</a> (as .rds file). Import data with the `import()` function from the **rio** package (it handles many file types like .xlsx, .csv, .rds - see the [Import and export] page for details).
 
 Pour commencer, nous importons la liste linéaire ("linelist") nettoyée des cas d'une épidémie d'Ebola qui a été simulée. Si vous voulez suivre en travaillant sur la base, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la version "clean" </a> (en fichier .rds). Importez les données avec la fonction `import()` du "package" **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de détails).
 
