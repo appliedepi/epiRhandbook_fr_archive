@@ -111,11 +111,11 @@ Installer et charger **flextable**. Dans ce manuel, nous mettons l'accent sur la
 
 ```{r}
 pacman::p_load(
-  rio,            # import/export
-  here,           # file pathways
-  flextable,      # make HTML tables 
-  officer,        # helper functions for tables
-  tidyverse)      # data management, summary, and visualization
+  rio,            # importer/exporter
+  here,           # chemin vers les fichiers
+  flextable,      # creer des tables HTML  
+  officer,        # fonctions d'aide pour les tables
+  tidyverse)      # data management, resume, et visualisation
 
 ```
 
@@ -124,19 +124,19 @@ pacman::p_load(
 Pour commencer, nous importons la liste linéaire ("linelist") nettoyée des cas d'une épidémie d'Ebola qui a été simulée. Si vous voulez suivre en travaillant sur la base, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la version "clean" </a> (en fichier .rds). Importez les données avec la fonction `import()` du "package" **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de détails).
 
 ```{r, echo=F}
-# import the linelist into R
+# importer la liste lineaire dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
 
 ```{r, eval=F}
-# import the linelist
+# importer la liste lineaire
 linelist <- import("linelist_cleaned.rds")
 ```
 
 Les 50 premières lignes de la liste linéaire sont affichées ci-dessous.
 
 ```{r, message=FALSE, echo=F}
-# display the linelist data as a table
+# afficher la liste lineaire sous forme de table
 DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
@@ -144,45 +144,45 @@ DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list
 
 Comme expliqué plus haut, *avant* de commencer à utiliser **flextable**, vous devez d'abord *créer* la table que vous voulez présenter sous forme de tableau de données. Consultez la page sur les [Tables descriptives](#descriptive_tables) et les [Données pivotantes](#pivoting_data) pour apprendre à créer un tableau de données à l'aide de "packages" tels que **janitor** et **dplyr**. Vous devez disposer le contenu en lignes et en colonnes comme vous voulez qu'il soit affiché. C'est à dire on part de notre base de données principales, on lui applique les modifications et opérations nécessaires pour synthétiser l'information que l'on veut présenter dans notre table finale et ce résultat sera enregistré dans un tableu de données. Ensuite, ce tableau de données sera soumis à **flextable** pour l'afficher avec la mise en forme voulue ajoutant des couleurs, des en-têtes, des polices, etc.
 
-Voici un exemple tiré de la page [Tables descriptives](#descriptive_tables) sur la conversion de la "liste linéaire des cas" en un tableau de données qui résume les résultats des patients et les valeurs CT (seuil de cycle dans un test de détection du virus par PCR) par hôpital, avec une ligne de totaux en bas. Le résultat est enregistré sous le nom de `table`.
+Voici un exemple tiré de la page [Tables descriptives](#descriptive_tables) sur la conversion de la "liste linéaire des cas" en un tableau de données qui résume/synthétise l'issue finale des patients et les valeurs CT (seuil de cycle dans un test de détection du virus par PCR) par hôpital, avec une ligne de totaux en bas. Le résultat est enregistré sous le nom de `table`.
 
 ```{r message=FALSE, warning=FALSE}
 table <- linelist %>% 
   
-  # Get summary values per hospital-outcome group
+  # Obtenez les valeurs résumees par hôpital et issue finale
   ###############################################
-  group_by(hospital, outcome) %>%                      # Group data
-  summarise(                                           # Create new summary columns of indicators of interest
-    N = n(),                                            # Number of rows per hospital-outcome group     
-    ct_value = median(ct_blood, na.rm=T)) %>%           # median CT value per group
+  group_by(hospital, outcome) %>%                      # Grouper les donnees selon ces deux variables
+  summarise(                                           # Creer un nouveau résumé des variables d'intérêt 
+    N = n(),                                            # Nombre de lignes par  groupe "hospital-outcome"     
+    ct_value = median(ct_blood, na.rm=T)) %>%           # Valeur CT mediane  par groupe
   
-  # add totals
+  # ajouter le total
   ############
-  bind_rows(                                           # Bind the previous table with this mini-table of totals
+  bind_rows(                                           # Liez le tableau précédent avec ce mini-tableau de totaux
     linelist %>% 
       filter(!is.na(outcome) & hospital != "Missing") %>%
-      group_by(outcome) %>%                            # Grouped only by outcome, not by hospital    
+      group_by(outcome) %>%                            # Grouper avec var "outcome" uniquement et non par  "hospital"    
       summarise(
-        N = n(),                                       # Number of rows for whole dataset     
-        ct_value = median(ct_blood, na.rm=T))) %>%     # Median CT for whole dataset
+        N = n(),                                       # Nombre de lignes pour l'ensemble des données    
+        ct_value = median(ct_blood, na.rm=T))) %>%     # Valeur CT mediane pour l'ensemble des données    
   
-  # Pivot wider and format
+  # Modifier en format long-large
   ########################
   mutate(hospital = replace_na(hospital, "Total")) %>% 
-  pivot_wider(                                         # Pivot from long to wide
-    values_from = c(ct_value, N),                       # new values are from ct and count columns
-    names_from = outcome) %>%                           # new column names are from outcomes
-  mutate(                                              # Add new columns
-    N_Known = N_Death + N_Recover,                               # number with known outcome
-    Pct_Death = scales::percent(N_Death / N_Known, 0.1),         # percent cases who died (to 1 decimal)
-    Pct_Recover = scales::percent(N_Recover / N_Known, 0.1)) %>% # percent who recovered (to 1 decimal)
-  select(                                              # Re-order columns
-    hospital, N_Known,                                   # Intro columns
-    N_Recover, Pct_Recover, ct_value_Recover,            # Recovered columns
-    N_Death, Pct_Death, ct_value_Death)  %>%             # Death columns
-  arrange(N_Known)                                    # Arrange rows from lowest to highest (Total row at bottom)
+  pivot_wider(                                         # Pivoter du format long au format large
+    values_from = c(ct_value, N),                       # nouvelles valeurs sont crees depuis les vars "ct" et "count"
+    names_from = outcome) %>%                           # nouveaux noms de colonne crees depuis var "outcomes"
+  mutate(                                              # Creer de nouvelles colonnes
+    N_Known = N_Death + N_Recover,                               # nombre de cas avec l'issue finale connue
+    Pct_Death = scales::percent(N_Death / N_Known, 0.1),         # pourcentage de cas decedes (1 decimale)
+    Pct_Recover = scales::percent(N_Recover / N_Known, 0.1)) %>% # pourcentage de cas gueris (1 decimale)
+  select(                                              # Re-ordonner l'apparition des colonnes
+    hospital, N_Known,                                   # Colonnes d'Intro
+    N_Recover, Pct_Recover, ct_value_Recover,            # Colonnes concernant les gueris
+    N_Death, Pct_Death, ct_value_Death)  %>%             # Colonnes concernant les deces
+  arrange(N_Known)                                    # Trier les lignes de façon croissante (Total de la ligne en dernier)
 
-table  # print
+table  # afficher la table
 
 ```
 
@@ -262,17 +262,17 @@ Enfin, pour "regrouper" certains en-têtes de colonnes dans l'en-tête supérieu
 my_table <- my_table %>% 
   
   add_header_row(
-    top = TRUE,                # New header goes on top of existing header row
-    values = c("Hospital",     # Header values for each column below
+    top = TRUE,                # Nouvel en-tête placé au-dessus de la rangée d'en-tête existante
+    values = c("Hospital",     # Valeurs d'en-tête pour chaque colonne ci-dessous
                "Total cases with known outcome", 
-               "Recovered",    # This will be the top-level header for this and two next columns
+               "Recovered",    # Celui ci servira d'en-tête de niveau supérieur pour cette colonne et les deux suivantes
                "",
                "",
-               "Died",         # This will be the top-level header for this and two next columns
-               "",             # Leave blank, as it will be merged with "Died"
+               "Died",         # Celui ci servira d'en-tête de niveau supérieur pour cette colonne et les deux suivantes
+               "",             # Laisser vide comme ce sera fusionné avec "Died".
                "")) %>% 
     
-  set_header_labels(         # Rename the columns in original header row
+  set_header_labels(         # Renommer les colonnes de la ligne d'en-tête originale
       hospital = "", 
       N_Known = "",                  
       N_Recover = "Total",
@@ -282,10 +282,10 @@ my_table <- my_table %>%
       Pct_Death = "% of cases",
       ct_value_Death = "Median CT values")  %>% 
   
-  merge_at(i = 1, j = 3:5, part = "header") %>% # Horizontally merge columns 3 to 5 in new header row
-  merge_at(i = 1, j = 6:8, part = "header")     # Horizontally merge columns 6 to 8 in new header row
+  merge_at(i = 1, j = 3:5, part = "header") %>% # Fusionner horizontalement les colonnes 3 à 5 dans une nouvelle ligne d'en-tête
+  merge_at(i = 1, j = 6:8, part = "header")     # Fusionnez horizontalement les colonnes 6 à 8 dans une nouvelle ligne d'en-tête.
 
-my_table  # print
+my_table  # afficher la table résultante
 
 ```
 
@@ -300,21 +300,21 @@ Vous pouvez ajouter des lignes verticales et horizontales avec une variété de 
 Dans toutes ces fonctions, le style de ligne lui-même doit être spécifié par `border =` et doit être le résultat d'une commande séparée utilisant la fonction `fp_border()` du "package" **officer**. Cette fonction vous aide à définir la largeur et la couleur de la ligne. Vous pouvez la définir avant d'appeler les commandes de table, comme indiqué ci-dessous.
 
 ```{r}
-# define style for border line
+# définir le style de la ligne de bordure
 border_style = officer::fp_border(color="black", width=1)
 
-# add border lines to table
+# ajouter des lignes de bordure au tableau
 my_table <- my_table %>% 
 
-  # Remove all existing borders
+  # Enlever toutes les bordures existantes
   border_remove() %>%  
   
-  # add horizontal lines via a pre-determined theme setting
+  # ajouter des lignes horizontales via un thème prédéterminé
   theme_booktabs() %>% 
   
-  # add vertical lines to separate Recovered and Died sections
-  vline(part = "all", j = 2, border = border_style) %>%   # at column 2 
-  vline(part = "all", j = 5, border = border_style)       # at column 5
+  # ajouter des lignes verticales pour séparer les sections "Recovered" et "Died"
+  vline(part = "all", j = 2, border = border_style) %>%   # a la colonne 2 
+  vline(part = "all", j = 5, border = border_style)       # a la colonne 5
 
 my_table
 ```
@@ -334,9 +334,9 @@ De plus, nous pouvons augmenter la taille de la police de l'en-tête et la mettr
 ```{r}
 
 my_table <-  my_table %>%  
-  fontsize(i = 1, size = 12, part = "header") %>%   # adjust font size of header
-  bold(i = 1, bold = TRUE, part = "header") %>%     # adjust bold face of header
-  bold(i = 7, bold = TRUE, part = "body")           # adjust bold face of total row (row 7 of body)
+  fontsize(i = 1, size = 12, part = "header") %>%   # ajuster la taille de la police de l'en-tête
+  bold(i = 1, bold = TRUE, part = "header") %>%     # ajuster le caractère en gras de l'en-tête
+  bold(i = 7, bold = TRUE, part = "body")           # ajuster les caractères en gras de la ligne totale (ligne 7 du corps de la table)
 
 my_table
 
@@ -403,61 +403,61 @@ Ci-dessous, nous regroupons tout le code des sections précédentes en un seul b
 border_style = officer::fp_border(color="black", width=1)
 
 pacman::p_load(
-  rio,            # import/export
-  here,           # file pathways
-  flextable,      # make HTML tables 
-  officer,        # helper functions for tables
-  tidyverse)      # data management, summary, and visualization
+  rio,            # importer/exporter
+  here,           # chemin vers les fichiers
+  flextable,      # creer des tables HTML 
+  officer,        # fonctions d'aide pour les tables
+  tidyverse)      # data management, resume, et visualisation
 
 table <- linelist %>% 
 
-  # Get summary values per hospital-outcome group
+  # Obtenez les valeurs résumees par hôpital et issue finale
   ###############################################
-  group_by(hospital, outcome) %>%                      # Group data
-  summarise(                                           # Create new summary columns of indicators of interest
-    N = n(),                                            # Number of rows per hospital-outcome group     
-    ct_value = median(ct_blood, na.rm=T)) %>%           # median CT value per group
+  group_by(hospital, outcome) %>%                      # Grouper les donnees selon ces deux variables
+  summarise(                                           # Creer un nouveau résumé des variables d'intérêt
+    N = n(),                                            # Nombre de lignes par  groupe "hospital-outcome"
+    ct_value = median(ct_blood, na.rm=T)) %>%           # Valeur CT mediane  par groupe
   
   # add totals
   ############
-  bind_rows(                                           # Bind the previous table with this mini-table of totals
+  bind_rows(                                           # Liez le tableau précédent avec ce mini-tableau de totaux
     linelist %>% 
       filter(!is.na(outcome) & hospital != "Missing") %>%
-      group_by(outcome) %>%                            # Grouped only by outcome, not by hospital    
+      group_by(outcome) %>%                            # # Grouper avec var "outcome" uniquement et non par  "hospital"    
       summarise(
-        N = n(),                                       # Number of rows for whole dataset     
-        ct_value = median(ct_blood, na.rm=T))) %>%     # Median CT for whole dataset
+        N = n(),                                       # Nombre de lignes pour l'ensemble des données      
+        ct_value = median(ct_blood, na.rm=T))) %>%     # Valeur CT mediane pour l'ensemble des données
   
-  # Pivot wider and format
+  # Passer du format long de la table au format large
   ########################
   mutate(hospital = replace_na(hospital, "Total")) %>% 
-  pivot_wider(                                         # Pivot from long to wide
-    values_from = c(ct_value, N),                       # new values are from ct and count columns
-    names_from = outcome) %>%                           # new column names are from outcomes
-  mutate(                                              # Add new columns
-    N_Known = N_Death + N_Recover,                               # number with known outcome
-    Pct_Death = scales::percent(N_Death / N_Known, 0.1),         # percent cases who died (to 1 decimal)
-    Pct_Recover = scales::percent(N_Recover / N_Known, 0.1)) %>% # percent who recovered (to 1 decimal)
-  select(                                              # Re-order columns
-    hospital, N_Known,                                   # Intro columns
-    N_Recover, Pct_Recover, ct_value_Recover,            # Recovered columns
-    N_Death, Pct_Death, ct_value_Death)  %>%             # Death columns
-  arrange(N_Known) %>%                                 # Arrange rows from lowest to highest (Total row at bottom)
+  pivot_wider(                                         # Pivoter du format long au format large
+    values_from = c(ct_value, N),                       # nouvelles valeurs sont crees depuis les vars "ct" et "count"
+    names_from = outcome) %>%                           # nouveaux noms de colonne crees depuis var "outcomes"
+  mutate(                                              # Creer de nouvelles colonnes
+    N_Known = N_Death + N_Recover,                               # nombre de cas avec l'issue finale connue
+    Pct_Death = scales::percent(N_Death / N_Known, 0.1),         # pourcentage de cas decedes (1 decimale)
+    Pct_Recover = scales::percent(N_Recover / N_Known, 0.1)) %>% # pourcentage de cas gueris (1 decimale)
+  select(                                              # Re-ordonner l'apparition des colonnes
+    hospital, N_Known,                                   # Colonnes d'Intro
+    N_Recover, Pct_Recover, ct_value_Recover,            # Colonnes concernant les gueris
+    N_Death, Pct_Death, ct_value_Death)  %>%             # Colonnes concernant les deces
+  arrange(N_Known) %>%                                 # Trier les lignes de façon croissante (Total de la ligne en dernier)
 
   # formatting
   ############
-  flextable() %>%              # table is piped in from above
+  flextable() %>%              # la table est pippee depuis les codes ci-dessus
   add_header_row(
-    top = TRUE,                # New header goes on top of existing header row
-    values = c("Hospital",     # Header values for each column below
+    top = TRUE,                # Nouvel en-tête placé au-dessus de la rangée d'en-tête existante
+    values = c("Hospital",     # Valeurs d'en-tête pour chaque colonne ci-dessous
                "Total cases with known outcome", 
-               "Recovered",    # This will be the top-level header for this and two next columns
+               "Recovered",    # Celui ci servira d'en-tête de niveau supérieur pour cette colonne
                "",
                "",
-               "Died",         # This will be the top-level header for this and two next columns
-               "",             # Leave blank, as it will be merged with "Died"
+               "Died",         # Celui ci servira d'en-tête de niveau supérieur pour cette colonne
+               "",             # Laisser vide comme ce sera fusionné avec "Died"
                "")) %>% 
-    set_header_labels(         # Rename the columns in original header row
+    set_header_labels(         # Renommer les colonnes de la ligne d'en-tête originale
       hospital = "", 
       N_Known = "",                  
       N_Recover = "Total",
@@ -466,7 +466,7 @@ table <- linelist %>%
       N_Death = "Total",
       Pct_Death = "% of cases",
       ct_value_Death = "Median CT values")  %>% 
-  merge_at(i = 1, j = 3:5, part = "header") %>% # Horizontally merge columns 3 to 5 in new header row
+  merge_at(i = 1, j = 3:5, part = "header") %>% # Fusionner horizontalement les colonnes 3 à 5 dans une nouvelle ligne d'en-tête
   merge_at(i = 1, j = 6:8, part = "header") %>%  
   border_remove() %>%  
   theme_booktabs() %>% 
@@ -516,15 +516,11 @@ Notez que les "packages" `webshot` ou `webshot2` sont nécessaires pour sauvegar
 Si vous voulez voir une version "en direct" de la sortie du **flextable** dans le format de document prévu, utilisez `print()` et spécifiez un des éléments ci-dessous pour `preview =`. Le document s'ouvrira "en direct" sur votre ordinateur dans le logiciel spécifié, mais ne sera pas sauvegardé. Cela peut être utile pour vérifier si le tableau tient dans une page/diapositive ou pour le copier rapidement dans un autre document. Vous pouvez utiliser la méthode d'impression avec l'argument preview défini à "pptx" ou "docx".
 
 ```{r, eval=F}
-print(my_table, preview = "docx") # Word document example
-print(my_table, preview = "pptx") # Powerpoint example
+print(my_table, preview = "docx") # Exemple de document Word
+print(my_table, preview = "pptx") # Exemple de document Powerpoint
 ```
 
-### Imprimer le tableau dans R markdown {.unnumbered}
-
-This table can be integrated into your an automated document, an R markdown output, if the table object is called within the R markdown chunk. This means the table can be updated as part of a report where the data might change, so the numbers can be refreshed.
-
-See detail in the [Reports with R Markdown] page of this handbook.
+### Intégrer la table dans R markdown {.unnumbered}
 
 Cette table peut être intégrée dans un document automatisé, une sortie R markdown, si l'objet table est appelé dans le chunk R markdown. Cela signifie que la table peut être mise à jour dans le cadre d'un rapport où les données sont susceptibles de changer, de sorte que les chiffres peuvent être actualisés.
 
@@ -532,7 +528,7 @@ Voir les détails dans la page [Rapports avec R Markdown]() de ce manuel.
 
 <!-- ======================================================= -->
 
-## Resources
+## Ressources
 
 La documentation compléte sur **flextable**  est ici: <https://ardata-fr.github.io/flextable-book/> Le lien Github est [ici](https://davidgohel.github.io/flextable/)\
 Un guide sur toutes les fonctions **flextable** peût être trouvée [ici](https://davidgohel.github.io/flextable/reference/index.html)
