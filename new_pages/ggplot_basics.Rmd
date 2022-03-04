@@ -24,7 +24,7 @@ Ce bout de code montre le chargement des "packages" nécessaires aux analyses. D
 
 ```{r}
 pacman::p_load(
-  tidyverse,      # comprend ggplot2 et d'autres extensions de  data management
+  tidyverse,      # inclut ggplot2 et d'autres extensions de  data management
   rio,            # importer/exporter 
   here,           # localiser des fichiers
   stringr         # travailler avec des caracteres   
@@ -49,7 +49,7 @@ Les 50 premières lignes de la liste linéaire sont affichées ci-dessous.
 Nous allons nous concentrer sur les variables continues `age`, `wt_kg` (le poids en kilos), `ct_blood` (valeurs CT), et `days_onset_hosp` (différence entre la date de début de symptômes et l'hospitalisation).  
 
 ```{r, message=FALSE, echo=F}
-# afficher le jeu de donnees de la liste lineaire comme ue table
+# afficher le jeu de donnees de la liste lineaire comme une table
 DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
