@@ -24,10 +24,10 @@ Ce bout de code montre le chargement des "packages" nécessaires aux analyses. D
 
 ```{r}
 pacman::p_load(
-  tidyverse,      # includes ggplot2 and other data management tools
-  rio,            # import/export
-  here,           # file locator
-  stringr         # working with characters   
+  tidyverse,      # comprend ggplot2 et d'autres extensions de  data management
+  rio,            # importer/exporter 
+  here,           # localiser des fichiers
+  stringr         # travailler avec des caracteres   
 )
 ```
 
