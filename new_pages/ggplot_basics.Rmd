@@ -753,7 +753,7 @@ Les visualisations couvertes ici incluent :
   * **Histogramme**, un graphique classique pour présenter la distribution d'une variable continue. 
   **Graphique en boîte** (également appelé boîte à moustaches), pour montrer les 25ème, 50ème et 75ème percentiles, les extrémités de la distribution et les valeurs aberrantes ([limitations importantes](https://www.data-to-viz.com/caveat/boxplot.html)).  
   **Graphique de gigue**, pour montrer toutes les valeurs sous forme de points qui sont "gigueux" afin qu'ils puissent (presque) tous être vus, même si deux d'entre eux ont la même valeur.  
-  **Violin plot**, montre la distribution d'une variable continue basée sur la largeur symétrique du "violon". 
+  **Graphes en violon**, montre la distribution d'une variable continue basée sur la largeur symétrique du "violon". 
   **Sina plot**, est une combinaison de jitter et de violin plot, où les points individuels sont montrés mais dans la forme symétrique de la distribution (via le "package" **ggforce**).  
 **Scatter plot** pour deux variables continues.  
 **Heatmaps** pour trois variables continues (lien vers la page [Heat plots]).
@@ -883,7 +883,7 @@ Pour le code permettant d'ajouter un diagramme en boîte aux bords d'un nuage de
 
 ### Graphes en violon, guigue, et "sina" {.unnumbered}
 
-Ci-dessous, vous trouverez le code pour créer des diagrammes **violin** (`geom_violin`) et **jitter** (`geom_jitter`) pour montrer les distributions. Vous pouvez spécifier que le remplissage ou la couleur est également déterminé par les données, en insérant ces options dans `aes()`. 
+Ci-dessous, vous trouverez le code pour créer des diagrammes en **violon** (`geom_violin`) et **jitter** (`geom_jitter`) pour montrer les distributions. Vous pouvez spécifier que le remplissage ou la couleur est également déterminé par les données, en insérant ces options dans `aes()`. 
 
 ```{r fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
 
