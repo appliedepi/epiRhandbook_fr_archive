@@ -1,261 +1,238 @@
-# R Basics {#rbasics}
+# R - les bases {#rbasics}
 
 ```{r out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "basics_header_close.png"))
 ```
 
+Bienvenue !
 
-Welcome!  
+Cette page passe en revue les éléments essentiels de R. Elle n'a pas pour but d'être un tutoriel complet, mais elle fournit les bases et peut être utile pour rafraîchir votre mémoire. La section [Ressources pour l'apprentissage](#learning) renvoie à des didacticiels plus complets.
 
-This page reviews the essentials of R. It is not intended to be a comprehensive tutorial, but it provides the basics and can be useful for refreshing your memory. The section on [Resource for learning](#learning) links to more comprehensive tutorials.  
+Certaines parties de cette page ont été adaptées avec l'autorisation du [projet R4Epis](https://r4epis.netlify.app/).
 
-Parts of this page have been adapted with permission from the [R4Epis project](https://r4epis.netlify.app/).  
-
-See the page on [Transition to R] for tips on switching to R from STATA, SAS, or Excel.  
+Voir la page $$Transition to R$$ pour des conseils sur le passage de STATA, SAS ou Excel à R.
 
 ```{r, echo=F}
-# import the cleaned ebola linelist
-linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
+# Importer la liste linéaire nettoyée d'ebola:
+linelist <- rio::import(here::here("data", 
+                                   "case_linelists", 
+                                   "linelist_cleaned.rds"))
+
+# Chargez le paquet apyramid (contient tableaux de données d'exemple):
 pacman::p_load(apyramid)
 ```
 
-
-
-
 <!-- ======================================================= -->
-## Why use R?
 
-As stated on the [R project website](https://www.r-project.org/about.html), R is a programming language and environment for statistical computing and graphics. It is highly versatile, extendable, and community-driven.  
+## Pourquoi utiliser R ?
 
-**Cost**
+Comme indiqué sur le [site Web du projet R](https://www.r-project.org/about.html), R est un langage de programmation et un environnement pour le calcul statistique et les graphiques. Il est très polyvalent, extensible et axé sur la communauté.
 
-R is free to use! There is a strong ethic in the community of free and open-source material.  
+**Coût**
 
-**Reproducibility**  
+L'utilisation de R est gratuite ! Il existe une forte éthique dans la communauté du matériel gratuit et open-source.
 
-Conducting your data management and analysis through a programming language (compared to Excel or another primarily point-click/manual tool) enhances **reproducibility**, makes **error-detection** easier, and eases your workload.  
+**Reproductibilité**
 
-**Community**  
+La gestion et l'analyse de vos données par le biais d'un langage de programmation (par rapport à Excel ou à un autre outil essentiellement manuel) améliore la reproductibilité, facilite la détection des erreurs et allège votre charge de travail.
 
-The R community of users is enormous and collaborative. New packages and tools to address real-life problems are developed daily, and vetted by the community of users. As one example, [R-Ladies](https://rladies.org/) is a worldwide organization whose mission is to promote gender diversity in the R community, and is one of the largest organizations of R users. It likely has a chapter near you!  
+**Communauté**
 
+La communauté des utilisateurs de R est énorme et collaborative. De nouveaux paquets et outils destinés à résoudre des problèmes concrets sont développés quotidiennement et approuvés par la communauté des utilisateurs. À titre d'exemple, [R-Ladies](https://rladies.org/) est une organisation mondiale dont la mission est de promouvoir la diversité des genres dans la communauté R, et c'est l'une des plus grandes organisations d'utilisateurs de R. Elle a probablement un chapitre près de chez vous !
 
-## Key terms  
+## Termes clés
 
-**RStudio** - RStudio is a Graphical User Interface (GUI) for easier use of **R**. Read more [in the RStudio section](#rstudio).  
+**RStudio** - RStudio est une interface utilisateur graphique (GUI) qui facilite l'utilisation de **R**. Pour en savoir plus, consultez la section [RStudio](#rstudio).
 
-**Objects** - Everything you store in R - datasets, variables, a list of village names, a total population number, even outputs such as graphs - are *objects* which are *assigned a name* and *can be referenced* in later commands. Read more [in the Objects section](#objects).  
+**Objets** - Tout ce que vous stockez dans R - les jeu de données, les variables, une liste de noms de villages, un population total d'habitants, et même les résultats tels que les graphiques - sont des *objets* auxquels on *attribue un nom* et qui *peuvent être référencés* dans des commandes ultérieures. Pour en savoir plus, consultez la section [Objets](#objects).
 
-**Functions** - A function is a code operation that accept inputs and returns a transformed output. Read more [in the Functions section](#functions).  
+**Fonctions** - Une fonction est une opération de code qui accepte des entrées et renvoie une sortie transformée. Pour en savoir plus, consultez la section [Fonctions](#functions).
 
-**Packages** - An R package is a shareable bundle of functions. Read more [in the Packages section](#packages).  
+**Paquets** - Un paquet R est un ensemble de fonctions partageables. Pour en savoir plus, consultez la section [Packages](#packages).
 
-**Scripts** - A script is the document file that hold your commands. Read more [in the Scripts section](#scripts)
+**Scripts** - Un script est le fichier document qui contient vos commandes. Pour en savoir plus, consultez la section [Scripts](#scripts)
 
+## Ressources pour l'apprentissage {#learning}
 
+### Ressources au sein de RStudio {.unnumbered}
 
-## Resources for learning {#learning}  
+**Documentation d'aide**
 
-### Resources within RStudio {.unnumbered}  
+Recherchez dans l'onglet "Aide" de RStudio la documentation sur les paquets R et les fonctions spécifiques. Cet onglet se trouve dans le volet qui contient également les fichiers, les graphiques et les paquets (généralement dans le volet inférieur à droit). Comme raccourci, vous pouvez également taper le nom d'un paquet ou d'une fonction dans la console R après un point d'interrogation pour ouvrir la page d'aide correspondante. N'incluez pas les parenthèses.
 
-**Help documentation**  
+Par exemple : `?filter` ou `?diagrammeR`.
 
-Search the RStudio "Help" tab for documentation on R packages and specific functions. This is within the pane that also contains Files, Plots, and Packages (typically in the lower-right pane). As a shortcut, you can also type the name of a package or function into the R console after a question-mark to open the relevant Help page. Do not include parentheses.  
+**Tutoriels interactifs**
 
-For example: `?filter`  or `?diagrammeR`.  
+Il existe plusieurs façons d'apprendre R de manière interactive *dans* RStudio.
 
-**Interactive tutorials**  
+RStudio lui-même offre un volet Tutoriel qui est alimenté par le paquet R [**learnr**](https://blog.rstudio.com/2020/02/25/rstudio-1-3-integrated-tutorials/). Il suffit d'installer ce paquet et d'ouvrir un tutoriel via le nouvel onglet "Tutorial" dans le volet supérieur droit de RStudio (qui contient également les onglets Environnement et Historique).
 
-There are several ways to learn R interactively *within* RStudio.  
+Le paquet R [**swirl**](https://swirlstats.com/) propose des cours interactifs dans la console R. Installez et chargez ce paquet, puis lancez la commande `swirl()` (parenthèses vides) dans la console R. Vous verrez apparaître des invites dans la console. Répondez en tapant dans la console. Elle vous guidera à travers un cours de votre choix.
 
-RStudio itself offers a Tutorial pane that is powered by the [**learnr**](https://blog.rstudio.com/2020/02/25/rstudio-1-3-integrated-tutorials/) R package. Simply install this package and open a tutorial via the new "Tutorial" tab in the upper-right RStudio pane (which also contains Environment and History tabs).  
+### Fiches d'aide-mémoire {.unnumbered}
 
-The R package [**swirl**](https://swirlstats.com/) offers interactive courses in the R Console. Install and load this package, then run the command `swirl()` (empty parentheses) in the R console. You will see prompts appear in the Console. Respond by typing in the Console. It will guide you through a course of your choice.   
+Il existe de nombreuses fiches d'aide-mémoire au format PDF disponibles sur le [site Web de RStudio](https://rstudio.com/resources/cheatsheets/), par exemple :
 
+-   Facteurs avec le paquet **forcats**\
+-   Dates et heures avec le paquet **lubridate**\
+-   Chaînes de caractères avec le paquet **stringr**\
+-   Opérations itératives avec le paquet **purrr**\
+-   Importation de données\
+-   Aide-mémoire pour la transformation des données avec le paquet **dplyr**\
+-   R Markdown (pour créer des documents comme PDF, Word, Powerpoint...)\
+-   Shiny (pour créer des applications Web interactives)\
+-   Visualisation de données avec le paquet **ggplot2**\
+-   Cartographie (SIG)\
+-   Paquet **leaflet** (cartes interactives)\
+-   Python avec R (paquet **reticulate**)
 
-### Cheatsheets {.unnumbered}
+Il existe également une ressource R en ligne spécialement destinée aux [utilisateurs d'Excel](https://jules32.github.io/r-for-excel-users/).
 
-There are many PDF "cheatsheets" available on the [RStudio website](https://rstudio.com/resources/cheatsheets/), for example:  
+### Twitter {.unnumbered}
 
-* Factors with **forcats** package  
-* Dates and times with **lubridate** package  
-* Strings with **stringr** package  
-* iterative opertaions with **purrr** package  
-* Data import  
-* Data transformation cheatsheet with **dplyr** package  
-* R Markdown (to create documents like PDF, Word, Powerpoint...)  
-* Shiny (to build interactive web apps)  
-* Data visualization with **ggplot2** package  
-* Cartography (GIS)  
-* **leaflet** package (interactive maps)  
-* Python with R (**reticulate** package)  
+R possède une communauté Twitter dynamique où vous pouvez apprendre des astuces, des raccourcis et des nouvelles - suivez ces comptes :
 
-This is an online R resource specifically for [Excel users](https://jules32.github.io/r-for-excel-users/)  
+-   Suivez-nous ! [\@epiRhandbook](https://twitter.com/epirhandbook)\
+-   R Function A Day [\@rfuntionaday](https://twitter.com/rfunctionaday) est une ressource *incroyable*\
+-   R pour la science des données [\@rstats4ds](https://twitter.com/rstats4ds?lang=en)\
+-   RStudio [\@RStudio](https://twitter.com/rstudio?lang=en)\
+-   Conseils sur RStudio [\@rstudiotips](https://twitter.com/rstudiotips)\
+-   R-Bloggers [\@Rbloggers](https://twitter.com/Rbloggers)\
+-   R-ladies [\@RLadiesGlobal](https://twitter.com/RLadiesGlobal)\
+-   Hadley Wickham [\@hadleywickham](https://twitter.com/hadleywickham?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor)
 
+Aussi :
 
+**#epitwitter** et **#rstats**
 
-### Twitter {.unnumbered}  
+### Ressources gratuites en ligne {.unnumbered}
 
-R has a vibrant twitter community where you can learn tips, shortcuts, and news - follow these accounts:  
+Un texte définitif est le livre [R for Data Science](https://r4ds.had.co.nz/) de Garrett Grolemund et Hadley Wickham.
 
-* Follow us! [\@epiRhandbook](https://twitter.com/epirhandbook)  
-* R Function A Day [\@rfuntionaday](https://twitter.com/rfunctionaday) is an *incredible* resource  
-* R for Data Science [\@rstats4ds](https://twitter.com/rstats4ds?lang=en)  
-* RStudio [\@RStudio](https://twitter.com/rstudio?lang=en)  
-* RStudio Tips [\@rstudiotips](https://twitter.com/rstudiotips)  
-* R-Bloggers [\@Rbloggers](https://twitter.com/Rbloggers)  
-* R-ladies [\@RLadiesGlobal](https://twitter.com/RLadiesGlobal)  
-* Hadley Wickham [\@hadleywickham](https://twitter.com/hadleywickham?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor)  
+Le site Web du projet [R4Epis](https://r4epis.netlify.app/) vise à "développer des outils standardisés de nettoyage, d'analyse et de rapport des données pour couvrir les types courants d'épidémies et d'enquêtes auprès de la population qui seraient menées dans le cadre d'une réponse d'urgence de MSF". Vous y trouverez des supports de formation aux bases de R, des modèles de rapports RMarkdown sur les épidémies et les enquêtes, ainsi que des tutoriels pour vous aider à les configurer.
 
-
-Also:  
-
-**#epitwitter** and **#rstats**  
-
-
-
-### Free online resources {.unnumbered}  
-
-A definitive text is the [R for Data Science](https://r4ds.had.co.nz/) book by Garrett Grolemund and Hadley Wickham
-
-The [R4Epis](https://r4epis.netlify.app/) project website aims to "develop standardised data cleaning, analysis and reporting tools to cover common types of outbreaks and population-based surveys that would be conducted in an MSF emergency response setting." You can find R basics training materials, templates for RMarkdown reports on outbreaks and surveys, and tutorials to help you set them up.  
-
-
-### Languages other than English {.unnumbered}  
+### Langues autres que l'anglais {.unnumbered}
 
 [Materiales de RStudio en Español](https://www.rstudio.com/collections/espanol/)
 
-[Introduction à R et au tidyverse (Francais)](https://juba.github.io/tidyverse/index.html)  
-
-
-
-
-
-
-
+[Introduction à R et au tidyverse (Francais)](https://juba.github.io/tidyverse/index.html)
 
 <!-- ======================================================= -->
-## Installation  
 
-### R and RStudio {.unnumbered}  
+## Installation
 
-**How to install R**  
+### R et RStudio {.unnumbered}
 
-Visit this website [https://www.r-project.org/](https://www.r-project.org/) and download the latest version of R suitable for your computer.  
+**Comment installer R**
 
-**How to install RStudio**  
+Visitez ce site Web <https://www.r-project.org/> et téléchargez la dernière version de R adaptée à votre ordinateur.
 
-Visit this website [https://rstudio.com/products/rstudio/download/](https://rstudio.com/products/rstudio/download/) and download the latest free Desktop version of RStudio suitable for your computer.
+**Comment installer RStudio**
 
-**Permissions**  
-Note that you should install R and RStudio to a drive where you have read and write permissions. Otherwise, your ability to install R packages (a frequent occurrence) will be impacted. If you encounter problems, try opening RStudio by right-clicking the icon and selecting "Run as administrator". Other tips can be found in the page [R on network drives].  
+Visitez ce site Web <https://rstudio.com/products/rstudio/download/> et téléchargez la dernière version de bureau gratuite de RStudio adaptée à votre ordinateur.
 
-**How to update R and RStudio**  
+**Autorisations requises**\
 
-Your version of R is printed to the R Console at start-up. You can also run `sessionInfo()`.  
+Notez que vous devez installer R et RStudio sur un lecteur sur lequel vous avez des droits de lecture et d'écriture. Sinon, votre capacité à installer des paquets R (ce qui arrive fréquemment) sera affectée. Si vous rencontrez des problèmes, essayez d'ouvrir RStudio en faisant un clic droit sur l'icône et en sélectionnant "Exécuter en tant qu'administrateur". Vous trouverez d'autres conseils sur la page $$R sur les lecteurs réseau$$.
 
-To update R, go to the website mentioned above and re-install R. Alternatively, you can use the **installr** package (on Windows) by running `installr::updateR()`. This will open dialog boxes to help you download the latest R version and update your packages to the new R version. More details can be found in the **installr** [documentation](https://www.r-project.org/nosvn/pandoc/installr.html).  
+**Comment mettre à jour R et RStudio**
 
-Be aware that the old R version will still exist in your computer. You can temporarily run an older version (older "installation") of R by clicking "Tools" -> "Global Options" in RStudio and choosing an R version. This can be useful if you want to use a package that has not been updated to work on the newest version of R.  
+Votre version de R est imprimée dans la Console R au démarrage. Vous pouvez également exécuter `sessionInfo()`.
 
-To update RStudio, you can go to the website above and re-download RStudio. Another option is to click "Help" -> "Check for Updates" within RStudio, but this may not show the very latest updates.  
+Pour mettre à jour R, allez sur le site web mentionné ci-dessus et réinstallez R. Alternativement, vous pouvez utiliser le paquet **installr** (sous Windows) en exécutant `installr::updateR()`. Cela ouvrira des boîtes de dialogue pour vous aider à télécharger la dernière version de R et à mettre à jour vos paquets vers la nouvelle version de R. Plus de détails peuvent être trouvés dans la [documentation de **installr**](https://www.r-project.org/nosvn/pandoc/installr.html).
 
-To see which versions of R, RStudio, or packages were used when this Handbook as made, see the page on [Editorial and technical notes]. 
+Sachez que l'ancienne version de R existera toujours sur votre ordinateur. Vous pouvez temporairement exécuter une ancienne version (ancienne "installation") de R en cliquant sur "Outils" -\> "Options globales" dans RStudio et en choisissant une version de R. Cela peut être utile si vous voulez utiliser un paquet qui n'a pas été mis à jour pour fonctionner sur la version la plus récente de R.
 
+Pour mettre à jour RStudio, vous pouvez aller sur le site Web ci-dessus et retélécharger RStudio. Une autre option consiste à cliquer sur "Aide" -\> "Vérifier les mises à jour" dans RStudio, mais cela peut ne pas montrer les toutes dernières mises à jour.
 
-### Other software you *may* need to install {.unnumbered} 
+Pour savoir quelles versions de R, RStudio ou des paquets ont été utilisées lors de la réalisation de ce manuel, consultez la page sur $$Notes éditoriales et techniques$$.
 
-* TinyTeX (*for compiling an RMarkdown document to PDF*)  
-* Pandoc  (*for compiling RMarkdown documents*)  
-* RTools  (*for building packages for R*)  
-* phantomjs (*for saving still images of animated networks, such as transmission chains*)  
+### Autres logiciels que vous *pourriez* avoir besoin d'installer {.unnumbered}
 
+-   TinyTeX (*pour la compilation d'un document RMarkdown au format PDF*)\
+-   Pandoc (*pour compiler des documents RMarkdown*)\
+-   RTools (*pour construire des paquets pour R*)\
+-   phantomjs (*pour enregistrer des images fixes de réseaux animés, tels que des chaînes de transmission*)
 
-#### TinyTex {.unnumbered}  
+#### TinyTex {.unnumbered}
 
-TinyTex is a custom LaTeX distribution, useful when trying to produce PDFs from R.  
-See [https://yihui.org/tinytex/](https://yihui.org/tinytex/) for more informaton.  
+TinyTex est une distribution LaTeX personnalisée, utile lorsqu'on essaie de produire des PDF à partir de R.\
+Voir <https://yihui.org/tinytex/> pour plus d'informations.
 
-To install TinyTex from R:  
+Pour installer TinyTex à partir de R :
 
 ```{r, eval=F}
+
 install.packages('tinytex')
 tinytex::install_tinytex()
-# to uninstall TinyTeX, run tinytex::uninstall_tinytex()
-```
 
+# pour désinstaller TinyTeX, lancez tinytex::uninstall_tinytex()
+```
 
 #### Pandoc {.unnumbered}
 
-Pandoc is a document converter, a separate software from R. **It comes bundled with RStudio and should not need to be downloaded.** It helps the process of converting Rmarkdown documents to formats like .pdf and adding complex functionality.  
+Pandoc est un convertisseur de document, un logiciel séparé de R. **Il est fourni avec RStudio et ne devrait pas avoir besoin d'être téléchargé.** Il aide le processus de conversion de documents Rmarkdown à des formats comme .pdf et ajoute des fonctionnalités complexes.
 
+#### RTools {.unnumbered}
 
-#### RTools {.unnumbered}  
+RTools est une collection de logiciels permettant de construire des paquets pour R.
 
-RTools is a collection of software for building packages for R
+Installer à partir de ce site web : <https://cran.r-project.org/bin/windows/Rtools/>
 
-Install from this website: [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/)  
+#### phantomjs {.unnumbered}
 
-
-#### phantomjs {.unnumbered}  
-
-This is often used to take "screenshots" of webpages. For example when you make a transmission chain with **epicontacts** package, an HTML file is produced that is interactive and dynamic. If you want a static image, it can be useful to use the [**webshot**](https://wch.github.io/webshot/articles/intro.html) package to automate this process. This will require the external program "phantomjs". You can install phantomjs via the **webshot** package with the command `webshot::install_phantomjs()`.  
-
-
-
+Cet outil est souvent utilisé pour faire des "captures d'écran" des pages web. Par exemple, lorsque vous faites une chaîne de transmission avec le paquet **epicontacts**, un fichier HTML interactif et dynamique est produit. Si vous voulez une image statique, il peut être utile d'utiliser le paquet [**webshot**](https://wch.github.io/webshot/articles/intro.html) pour automatiser ce processus. Cela nécessite le programme externe "phantomjs". Vous pouvez installer phantomjs via le paquet **webshot** avec la commande `webshot::install_phantomjs()`.
 
 <!-- ======================================================= -->
-## RStudio {#rstudio}
 
+### RStudio {#rstudio}
 
-### RStudio orientation {.unnumbered}  
+### Orientation de RStudio {.unnumbered}
 
-**First, open RStudio.** As their icons can look very similar, be sure you are opening *RStudio* and not R.  
+**D'abord, ouvrez RStudio.** Comme leurs icônes peuvent être très similaires, assurez-vous que vous ouvrez bien *RStudio* et non pas R.
 
-For RStudio to work you must also have R installed on the computer (see above for installation instructions).  
+Pour que RStudio fonctionne, vous devez également avoir R installé sur l'ordinateur (voir ci-dessus pour les instructions d'installation).
 
-**RStudio** is an interface (GUI) for easier use of **R**. You can think of R as being the engine of a vehicle, doing the crucial work, and RStudio as the body of the vehicle (with seats, accessories, etc.) that helps you actually use the engine to move forward! You can see the complete RStudio user-interface cheatsheet (PDF) [here](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)  
+**RStudio** est une interface (GUI) pour une utilisation plus facile de **R**. Vous pouvez considérer R comme le moteur d'un véhicule, qui effectue le travail crucial, et RStudio comme le corps du véhicule (avec les sièges, les accessoires, etc.) qui vous aide à utiliser le moteur pour avancer ! Vous pouvez consulter la fiche technique complète de l'interface utilisateur de RStudio (PDF) [ici](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
 
-By default RStudio displays four rectangle panes.  
+Par défaut, RStudio affiche quatre volets rectangulaires.
 
 ```{r out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "RStudio_overview.png"))
 ```
 
+[***TIP:*** Si votre RStudio n'affiche qu'un seul volet gauche, c'est parce que vous n'avez pas encore de scripts ouverts.]{style="color: black;"}
 
-<span style="color: black;">**_TIP:_** If your RStudio displays only one left pane it is because you have no scripts open yet.</span>
+**Le volet source**
 
+Ce volet, par défaut en haut à gauche, est un espace pour éditer, exécuter et enregistrer vos [scripts](#scripts). Les scripts contiennent les commandes que vous souhaitez exécuter. Ce volet peut également afficher des ensembles de données (cadres de données) pour les visualiser.
 
-**The Source Pane**  
-This pane, by default in the upper-left, is a space to edit, run, and save your [scripts](#scripts). Scripts contain the commands you want to run. This pane can also display datasets (data frames) for viewing.  
+Pour les utilisateurs de Stata, ce volet est similaire aux fenêtres Do-file et Data Editor.
 
-For Stata users, this pane is similar to your Do-file and Data Editor windows.
+**Le volet Console R**
 
+La console R, qui est par défaut le volet gauche ou inférieur gauche de R Studio, est le siège du "moteur" R. C'est là que les commandes sont réellement exécutées et que les sorties non graphiques et les messages d'erreur/d'avertissement apparaissent. Vous pouvez saisir et exécuter directement des commandes dans la console R, mais sachez que ces commandes ne sont pas enregistrées comme c'est le cas lorsque vous exécutez des commandes à partir d'un script.
 
+Si vous êtes familier avec Stata, la console R ressemble à la fenêtre de commande et à la fenêtre des résultats.
 
-**The R Console Pane**  
+**Le volet Environnement**
 
-The R Console, by default the left or lower-left pane in R Studio, is the home of the R "engine". This is where the commands are actually run and non-graphic outputs and error/warning messages appear. You can directly enter and run commands in the R Console, but realize that these commands are not saved as they are when running commands from a script.  
+Ce volet, situé par défaut en haut à droite, est le plus souvent utilisé pour afficher de brefs résumés des [objets](#objets) de l'environnement R dans la session en cours. Ces objets peuvent inclure des ensembles de données importés, modifiés ou créés, des paramètres que vous avez définis (par exemple, une semaine épi spécifique pour l'analyse), ou des vecteurs ou des listes que vous avez définis pendant l'analyse (par exemple, les noms des régions). Vous pouvez cliquer sur la flèche à côté du nom d'un cadre de données pour voir ses variables.
 
-If you are familiar with Stata, the R Console is like the Command Window and also the Results Window.
+Dans Stata, cette fenêtre est très similaire à celle du gestionnaire de variables.
 
+Ce volet contient également l'onglet "Historique" où vous pouvez voir les commandes que vous avez exécutées précédemment. Il comporte également un onglet "Tutoriel" où vous pouvez suivre des tutoriels R interactifs si vous avez installé le paquet **learnr**. En outre, il existe un volet "Connexions" pour les connexions aux bases de données externes. Si vous avez lié le répertoire actif à un dépôt sur Github, il y aura également un volet "Git".
 
-**The Environment Pane**  
-This pane, by default in the upper-right, is most often used to see brief summaries of [objects](#objects) in the R Environment in the current session. These objects could include imported, modified, or created datasets, parameters you have defined (e.g. a specific epi week for the analysis), or vectors or lists you have defined during analysis (e.g. names of regions). You can click on the arrow next to a data frame name to see its variables.  
+**Volets Graphiques, visionneuse, paquets et aide**
 
-In Stata, this is most similar to the Variables Manager window.
+Le volet inférieur droit comprend plusieurs onglets importants. Les graphiques de tracé typiques, y compris les cartes, s'affichent dans le volet Tracé. Les sorties interactives ou HTML s'affichent dans le volet Visionneuse. Le volet Aide permet d'afficher la documentation et les fichiers d'aide. Le volet Fichiers est un navigateur qui peut être utilisé pour ouvrir ou supprimer des fichiers. Le volet Paquets vous permet de voir, d'installer, de mettre à jour, de supprimer, de charger/décharger des paquets R et de voir quelle version du paquet vous avez. Pour en savoir plus sur les paquets, consultez la [section paquets](#packages) ci-dessous.
 
-This pane also contains *History* where can see commands that you can previously. It also has a "Tutorial" tab where you can complete interactive R tutorials if you have the **learnr** package installed. It also has a "Connections" pane for external connections, and can have a "Git" pane if you choose to interface with Github.  
+Ce volet contient les équivalents Stata des fenêtres Plots Manager et Project Manager.
 
+### Paramètres RStudio {.unnumbered}
 
-**Plots, Viewer, Packages, and Help Pane**  
-The lower-right pane includes several important tabs. Typical plot graphics including maps will display in the Plot pane. Interactive or HTML outputs will display in the Viewer pane. The Help pane can display documentation and help files. The Files pane is a browser which can be used to open or delete files. The Packages pane allows you to see, install, update, delete, load/unload R packages, and see which version of the package you have. To learn more about packages see the [packages section](#packages) below.  
-
-This pane contains the Stata equivalents of the Plots Manager and Project Manager windows.
-
-### RStudio settings {.unnumbered}  
-
-Change RStudio settings and appearance in the *Tools* drop-down menu, by selecting *Global Options*. There you can change the default settings, including appearance/background color.  
+Modifiez les paramètres et l'apparence de RStudio dans le menu déroulant *Outiles*, en sélectionnant *Options globales*. Vous pouvez y modifier les paramètres par défaut, y compris l'apparence/couleur de fond.
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "RStudio_tools_options_1.png"))
@@ -263,1432 +240,1484 @@ knitr::include_graphics(here::here("images", "RStudio_tools_options_1.png"))
 knitr::include_graphics(here::here("images", "RStudio_tools_options.png"))
 ```
 
-**Restart**  
+**Redémarrage**
 
-If your R freezes, you can re-start R by going to the Session menu and clicking "Restart R". This avoids the hassle of closing and opening RStudio. Everything in your R environment will be removed when you do this.  
+Si votre R se fige, vous pouvez redémarrer R en allant dans le menu Session et en cliquant sur "Redémarrer R". Cela vous évite de devoir fermer et ouvrir RStudio. Tout ce qui se trouve dans votre environnement R sera supprimé lorsque vous ferez cela.
 
+### Raccourcis clavier {.unnumbered}
 
-### Keyboard shortcuts {.unnumbered}  
+Vous trouverez ci-dessous quelques raccourcis clavier très utiles. Vous trouverez tous les raccourcis clavier pour Windows, Max et Linux sur la deuxième page de ce [fichier technique](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf) par RStudio.
 
-Some very useful keyboard shortcuts are below. See all the keyboard shortcuts for Windows, Max, and Linux in the second page of this RStudio [user interface cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf).  
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Windows/Linux                           | Mac                    | Action                                                                                                                                                              |
++=========================================+========================+=====================================================================================================================================================================+
+| Esc                                     | Esc                    | Interrompre la commande en cours (utile si vous avez accidentellement lancé une commande incomplète et que vous ne pouvez pas éviter de voir "+" dans la console R) |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl+s                                  | Cmd+s                  | Sauvegarder (script)                                                                                                                                                |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Tab                                     | Tab                    | Autocomplétion                                                                                                                                                      |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + Enter                            | Cmd + Enter            | Exécuter la ou les ligne(s) courante(s)/sélection(s) de code                                                                                                        |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + Shift + C                        | Cmd + Shift + c        | commenter/dé-commenter les lignes souslignées                                                                                                                       |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Alt + -                                 | Option + -             | Insérer `<-`                                                                                                                                                        |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + Shift + m                        | Cmd + Shift + m        | Insérer `%>%`                                                                                                                                                       |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + l                                | Cmd + l                | Effacer le contenu de la console R                                                                                                                                  |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + Alt + b                          | Cmd + Option + b       | Exécuter du début à la ligne courante                                                                                                                               |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + Alt + t                          | Cmd + Option + t       | Exécuter la section de code actuelle (R Markdown)                                                                                                                   |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + Alt + i                          | Cmd + Shift + r        | Insérer un morceau de code (en R Markdown)                                                                                                                          |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + Alt + c                          | Cmd + Option + c       | Exécuter le morceau de code actuel (en R Markdown)                                                                                                                  |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Flèches haut/bas dans la console R      |     Idem               |     Basculer entre les commandes récemment exécutées                                                                                                                |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Shift + flèches haut/bas dans le script | Idem                   |     Sélectionner plusieurs lignes de code                                                                                                                           |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + f                                | Cmd + f                | Rechercher et remplacer dans le script actuel                                                                                                                       |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Ctrl + Shift + f                        | Cmd + Shift + f        | Rechercher dans les dossiers (rechercher/remplacer dans plusieurs scripts)                                                                                          |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Alt + l                                 | Cmd + Option + l       | Plier le code sélectionné                                                                                                                                           |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Shift + Alt + l                         | Cmd + Shift + Option+l | Déplier le code sélectionné                                                                                                                                         |
++-----------------------------------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-
-Windows/Linux     |Mac             |Action                
-------------------|----------------|-----------------------------------------
-Esc               |Esc             |Interrupt current command (useful if you accidentally ran an incomplete command and cannot escape seeing "+" in the R console)
-Ctrl+s            |Cmd+s           |Save (script)
-Tab               |Tab             |Auto-complete  
-Ctrl + Enter      |Cmd + Enter     |Run current line(s)/selection of code
-Ctrl + Shift + C  |Cmd + Shift + c |comment/uncomment the highlighted lines
-Alt + -           |Option + -      |Insert `<-`  
-Ctrl + Shift + m  |Cmd + Shift + m |Insert `%>%`
-Ctrl + l          |Cmd + l         |Clear the R console
-Ctrl + Alt + b    |Cmd + Option + b|Run from start to current line
-Ctrl + Alt + t    |Cmd + Option + t|Run the current code section (R Markdown)
-Ctrl + Alt + i    |Cmd + Shift + r |Insert code chunk (into R Markdown)
-Ctrl + Alt + c    |Cmd + Option + c|Run current code chunk (R Markdown)
-up/down arrows in R console|Same |Toggle through recently run commands
-Shift + up/down arrows in script|Same|Select multiple code lines
-Ctrl + f |Cmd + f|Find and replace in current script
-Ctrl + Shift + f|Cmd + Shift + f|Find in files (search/replace across many scripts)
-Alt + l |Cmd + Option + l|Fold selected code
-Shift + Alt + l|Cmd + Shift + Option+l|Unfold selected code
-
-
-
-<span style="color: darkgreen;">**_TIP:_** Use your Tab key when typing to engage RStudio's auto-complete functionality. This can prevent spelling errors. Press Tab while typing to produce a drop-down menu of likely functions and objects, based on what you have typed so far.</span>  
-
-  
-
-
-
-<!-- ======================================================= -->
-## Functions {#functions}  
-
-Functions are at the core of using R. Functions are how you perform tasks and operations. Many functions come installed with R, many more are available for download in *packages* (explained in the [packages](#packages) section), and you can even write your own custom functions! 
-
-This basics section on functions explains:  
-
-* What a function is and how they work  
-* What function *arguments* are  
-* How to get help understanding a function  
-
-*A quick note on syntax:* In this handbook, functions are written in code-text with open parentheses, like this: `filter()`. As explained in the [packages](#packages) section, functions are downloaded within *packages*. In this handbook, package names are written in **bold**, like **dplyr**. Sometimes in example code you may see the function name linked explicitly to the name of its package with two colons (`::`) like this: `dplyr::filter()`. The purpose of this linkage is explained in the packages section.  
-
+[***TIP:*** Utilisez votre touche de tabulation lorsque vous tapez pour activer la fonctionnalité de complétion automatique de RStudio. Cela peut éviter les fautes d'orthographe. Appuyez sur la touche Tab pendant la saisie pour produire un menu déroulant de fonctions et d'objets probables, en fonction de ce que vous avez tapé jusqu'à présent.]{style="color: darkgreen;"}
 
 <!-- ======================================================= -->
-### Simple functions {.unnumbered}  
 
-**A function is like a machine that receives inputs, does some action with those inputs, and produces an output.** What the output is depends on the function.    
+## Fonctions {#functions}
 
-**Functions typically operate upon some object placed within the function's parentheses**. For example, the function `sqrt()` calculates the square root of a number:  
+Les fonctions sont au cœur de l'utilisation de R. Les fonctions vous permettent d'effectuer des tâches et des opérations. De nombreuses fonctions sont installées avec R, beaucoup d'autres sont disponibles à télécharger dans des *paquets* (expliqués dans la section [paquets](#packages)), et vous pouvez même écrire vos propres fonctions personnalisées !
+
+Cette section de base sur les fonctions explique :
+
+-   Ce qu'est une fonction et comment elle fonctionne\
+-   Ce que sont les *paramètres* des fonctions\
+-   Comment obtenir de l'aide pour comprendre une fonction
+
+*Une note rapide sur la syntaxe :* Dans ce manuel, les fonctions sont écrites en code-texte avec des parenthèses vides, comme ceci : `filter()`. Comme expliqué dans la section [paquets](#packages), les fonctions sont téléchargées dans des *paquets*. Dans ce manuel, les noms de paquets sont écrits en **gras**, comme **dplyr**. Parfois, dans le code d'exemple, vous pouvez voir le nom de la fonction lié explicitement au nom de son paquet avec deux points de suspension (`::`) comme ceci : `dplyr::filter()`. Le but de ce lien est expliqué dans la section sur les paquets.
+
+<!-- ======================================================= -->
+
+### Fonctions simples {.unnumbered}
+
+**Une fonction est comme une machine qui reçoit des entrées, effectue une action avec ces entrées, et produit une sortie.** La nature de la sortie dépend de la fonction.
+
+**Les fonctions opèrent généralement sur un objet placé entre les parenthèses de la fonction**. Par exemple, la fonction `sqrt()` calcule la racine carrée d'un nombre :
 
 ```{r basics_function_sqrt}
 sqrt(49)
 ```
 
-The object provided to a function also can be a column in a dataset (see the [Objects](#objects) section for detail on all the kinds of objects). Because R can store multiple datasets, you will need to specify both the dataset and the column. One way to do this is using the `$` notation to link the name of the dataset and the name of the column (`dataset$column`). In the example below, the function `summary()` is applied to the numeric column `age` in the dataset `linelist`, and the output is a summary of the column's numeric and missing values.  
-
+L'objet fourni à une fonction peut également être une colonne dans un jeu de données (voir la section [Objets](#objects) pour plus de détails sur tous les types d'objets). Comme R peut stocker plusieurs jeux de données, vous devrez spécifier à la fois le jeu de données et la colonne. Une façon de le faire est d'utiliser la notation `$` pour lier le nom du jeu de données et le nom de la colonne (`dataset$column`). Dans l'exemple ci-dessous, la fonction `summary()` est appliquée à la colonne numérique `age` du jeu de données `linelist`, et la sortie est un résumé des valeurs numériques et manquantes de la colonne.
 
 ```{r basics_functions_summary}
-# Print summary statistics of column 'age' in the dataset 'linelist'
+# Imprimez les statistiques sommaires de la colonne 'age' dans le jeu de données 'linelist'.
 summary(linelist$age)
 ```
 
-<span style="color: black;">**_NOTE:_** Behind the scenes, a function represents complex additional code that has been wrapped up for the user into one easy command.</span>
-
-
+[***NOTE:*** En coulisses, une fonction représente un code supplémentaire complexe qui a été regroupé pour l'utilisateur dans une seule commande simple.]{style="color: black;"}
 
 <!-- ======================================================= -->
-### Functions with multiple arguments {.unnumbered}  
 
-Functions often ask for several inputs, called ***arguments***, located within the parentheses of the function, usually separated by commas. 
+### Fonctions à paramètres multiples {.unnumbered}
 
-* Some arguments are required for the function to work correctly, others are optional  
-* Optional arguments have default settings  
-* Arguments can take character, numeric, logical (TRUE/FALSE), and other inputs  
+Les fonctions demandent souvent plusieurs entrées, appelées ***paramètres***, situées entre les parenthèses de la fonction, généralement séparées par des virgules.
 
-Here is a fun fictional function, called `oven_bake()`, as an example of a typical function. It takes an input object (e.g. a dataset, or in this example "dough") and performs operations on it as specified by additional arguments (`minutes = ` and `temperature = `). The output can be printed to the console, or saved as an object using the assignment operator `<-`.  
+-   Certains paramètres sont obligatoires pour que la fonction fonctionne correctement, d'autres sont facultatifs\
+-   Les paramètres facultatifs ont des valeurs par défaut\
+-   Les paramètres peuvent prendre des entrées de type caractère, numérique, logique (VRAI/FAUX) et autres.
+
+Voici une fonction fictive amusante, appelée `oven_bake()` (cuisson au four), comme exemple d'une fonction typique. Elle prend un objet comme entrée (par exemple un jeu de données, ou dans cet exemple "pâte") et effectue des opérations sur celui-ci comme spécifié par des paramètres supplémentaires (`minutes =` et `température =`). La sortie peut être imprimée sur la console, ou sauvegardée comme un objet en utilisant l'opérateur d'affectation `<-`.
 
 ```{r basics_functions_image, echo=F, out.width = "75%", fig.align = "center"}
 knitr::include_graphics(here::here("images", "Function_Bread_Example.png"))
 ```
 
-
-**In a more realistic example**, the `age_pyramid()` command below produces an age pyramid plot based on defined age groups and a binary split column, such as `gender`. The function is given three arguments within the parentheses, separated by commas. The values supplied to the arguments establish `linelist` as the dataframe to use, `age_cat5` as the column to count, and `gender` as the binary column to use for splitting the pyramid by color.
+**Dans un exemple plus réaliste**, la commande `age_pyramid()` ci-dessous produit un graphique de pyramide des âges basé sur des groupes d'âge définis et une colonne de division binaire, comme le genre `gender`. La fonction reçoit trois paramètres entre parenthèses, séparés par des virgules. Les valeurs fournies aux paramètres établissent `linelist` comme le cadre de données à utiliser, `age_cat5` comme la colonne à compter, et `gender` comme la colonne binaire à utiliser pour diviser la pyramide par couleur.
 
 ```{r basics_functions_arguments, include=FALSE, results='hide', message=FALSE, warning=FALSE,}
-## create an age group variable by specifying categorical breaks
+## Créer une variable de groupe d'âge en spécifiant des ruptures catégorielles
 linelist$age_group <- cut(linelist$age, breaks = c(0, 5, 10, 15, 20, 30, 45, 60))
 ```
 
 ```{r message=FALSE, warning=FALSE,  out.width = "75%", out.height="75%"}
-# Create an age pyramid
+# Créer une pyramide des âges
 age_pyramid(data = linelist, age_group = "age_cat5", split_by = "gender")
 ```
 
-The above command can be equivalently written as below, in a longer style with a new line for each argument. This style can be easier to read, and easier to write "comments" with `#` to explain each part (commenting extensively is good practice!). To run this longer command you can highlight the entire command and click "Run", or just place your cursor in the first line and then press the Ctrl and Enter keys simultaneously.  
+La commande ci-dessus peut être écrite de manière équivalente comme ci-dessous, dans un style plus long avec une nouvelle ligne pour chaque argument. Ce style peut être plus facile à lire, et plus facile d'écrire des "commentaires" avec `#` pour expliquer chaque partie (commenter abondamment est une bonne pratique !). Pour exécuter cette commande plus longue, vous pouvez souligner la commande entière et cliquer sur "Run", ou simplement placer votre curseur sur la première ligne et appuyer simultanément sur les touches `Ctrl` et `Enter`.
 
 ```{r message=FALSE, warning=FALSE,  out.width = "75%", out.height="75%"}
-# Create an age pyramid
+# Créer une pyramide des âges
 age_pyramid(
-  data = linelist,        # use case linelist
-  age_group = "age_cat5", # provide age group column
-  split_by = "gender"     # use gender column for two sides of pyramid
+  data = linelist,        # utiliser la liste linéaire des cas
+  age_group = "age_cat5", # fournir une colonne de groupe d'âge
+  split_by = "gender"     # utiliser la colonne genre pour les deux côtés de la pyramide
   )
 ```
 
-The first half of an argument assignment (e.g. `data = `) does not need to be specified if the arguments are written in a specific order (specified in the function's documentation). The below code produces the exact same pyramid as above, because the function expects the argument order: data frame, `age_group` variable, `split_by` variable.  
+La première moitié d'une affectation de paramètre (par exemple `data =`) n'a pas besoin d'être spécifiée si les paramètres sont écrits dans un ordre spécifique (spécifié dans la documentation de la fonction). Le code ci-dessous produit exactement la même pyramide que ci-dessus, parce que la fonction attend l'ordre des paramètres : cadre de données, le variable `age_group`, puis le variable `split_by`.
 
 ```{r, basics_functions_pyramid2, eval = FALSE, warning=FALSE, message=FALSE, , out.width = "75%", out.height="75%", eval=F}
-# This command will produce the exact same graphic as above
+# Cette commande produira exactement le même graphique que ci-dessus
 age_pyramid(linelist, "age_cat5", "gender")
 ```
 
-**A more complex `age_pyramid()` command might include the *optional* arguments to:**  
+**Une commande `age_pyramid()` plus complexe pourrait inclure les paramètres *optionnels* pour :**
 
-* Show proportions instead of counts (set `proportional = TRUE` when the default is `FALSE`)  
-* Specify the two colors to use (`pal = ` is short for "palette" and is supplied with a vector of two color names. See the [objects](#objectstructure) page for how the function `c()` makes a vector)  
+-   Afficher les proportions au lieu des nombres (définissez `proportional = TRUE` (vrai) quand la valeur par défaut est `FALSE` (faux))\`\
+-   Spécifier les deux couleurs à utiliser (`pal =` est l'abréviation de "palette" et est fourni avec un vecteur de deux noms de couleurs. Voir la page [objets](#objectstructure) pour savoir comment la fonction `c()` fabrique un vecteur).
 
-
-<span style="color: black;">**_NOTE:_** For arguments that you specify with both parts of the argument (e.g. `proportional = TRUE`), their order among all the arguments does not matter.</span>
-
+[***NOTE:*** Pour les paramètres que vous spécifiez avec les deux parties du paramètre (par exemple `proportional = TRUE`), leur ordre parmi tous les paramètres n'a pas d'importance.]{style="color: black;"}
 
 ```{r message=FALSE, warning=FALSE, out.width = "75%", out.height="75%"}
 age_pyramid(
-  linelist,                    # use case linelist
-  "age_cat5",                  # age group column
-  "gender",                    # split by gender
-  proportional = TRUE,         # percents instead of counts
-  pal = c("orange", "purple")  # colors
+  linelist,                    # utiliser la liste linéaire des cas
+  "age_cat5",                  # colonne de groupe d'âge
+  "gender",                    # répartition par genre
+  proportional = TRUE,         # pourcentage au lieu du nombre
+  pal = c("orange", "purple")  # couleurs
   )
 ```
 
+<!-- ======================================================= -->
 
+### Ecrire des fonctions {.unnumbered}
+
+R est un langage orienté autour des fonctions, vous devez donc vous sentir capable d'écrire vos propres fonctions. La création de fonctions présente plusieurs avantages :
+
+-   Faciliter la programmation modulaire - la séparation du code en morceaux indépendants et gérables\
+-   Remplacer le copier-coller répétitif, qui peut être source d'erreurs\
+-   Donner des noms mémorisables aux morceaux de code
+
+L'écriture d'une fonction est traitée en détail à la page [Écriture de fonctions].
 
 <!-- ======================================================= -->
 
-### Writing Functions {.unnumbered}  
+## Paquets {#packages}
 
-R is a language that is oriented around functions, so you should feel empowered to write your own functions. Creating functions brings several advantages:  
+**Les paquets contiennent des fonctions.**
 
-* To facilitate modular programming - the separation of code in to independent and manageable pieces  
-* Replace repetitive copy-and-paste, which can be error prone  
-* Give pieces of code memorable names  
+Un paquet en R est un ensemble partageable de code et de documentation qui contient des fonctions prédéfinies. Les utilisateurs de la communauté R développent en permanence des packages répondant à des problèmes spécifiques; donc il est probable que l'un d'entre eux puisse vous aider dans votre travail ! Vous allez installer et utiliser des centaines de paquets dans votre utilisation de R.
 
-How to write a function is covered in-depth in the [Writing functions] page.  
+À l'installation, R contient des paquets et des fonctions **"de base "** qui effectuent des tâches élémentaires communes. Mais de nombreux utilisateurs de R créent des fonctions spécialisées, qui sont vérifiées par la communauté R et que vous pouvez télécharger en tant que **paquet** pour votre propre usage. Dans ce manuel, les noms des paquets sont écrits en **gras**. L'un des aspects les plus difficiles de R est qu'il existe souvent de nombreuses fonctions ou paquets parmi lesquels on peut choisir pour effectuer une tâche donnée.
 
-<!-- A function is given a name and defined with the assignment operator `<-` to a special **base** R function called `function()`. Within the parentheses, the arguments that the function will accept are defined. This is followed by curly brackets `{ }`, within which the actual code of the function is written.     -->
+### Installer et charger {.unnumbered}
 
-```{r, eval=F, echo=F}
-my_function <- function( ARGUMENTS HERE ){ CODE HERE }
-```
+Les *fonctions* sont contenues dans des **paquets** qui peuvent être téléchargés ("installés") sur votre ordinateur à partir d'Internet. Une fois qu'un paquet est téléchargé, il est stocké dans votre "bibliothèque". Vous pouvez alors accéder aux fonctions qu'il contient pendant votre séance R actuelle en "chargeant" le paquet.
 
-<!-- The arguments should be provided in the syntax `argument = default`, separated by commas.   -->
+*Pensez à R comme votre bibliothèque personnelle* : Lorsque vous téléchargez un paquet, votre bibliothèque gagne un nouveau livre de fonctions, mais chaque fois que vous voulez utiliser une fonction de ce livre, vous devez emprunter ("charger") ce livre dans votre bibliothèque.
 
-<!-- Here is an example where we create a function `staff_calc()` to serve as a staffing calculator for COVID-19 case investigation and contact tracing calls.   -->
+En résumé : pour utiliser les fonctions disponibles dans un paquet R, deux étapes doivent être mises en œuvre :
 
-<!-- The arguments (inputs) and their default values will be:   -->
+1)  Le paquet doit être **installé** (une fois), *et*\
+2)  Le paquet doit être **chargé** (à chaque séance R)
 
-<!-- * `daily_cases = NULL` The number of new COVID-19 cases per day   -->
-<!-- * `contacts_each = 5` The number contacts enumerated for each case   -->
-<!-- * `time_case = 0.5`  Number of hours to complete a case investigaton by phone   -->
-<!-- * `time_contact = 0.25`  Number of hours to complete a contact follow-up by phone   -->
-<!-- * `time_day = 8` The number of hours one staff works per day   -->
+#### Votre bibliothèque {.unnumbered}
 
-<!-- Below, the function is created. The code ends with the special function `return()`, which is what the function produces.    -->
+Votre "bibliothèque" est en fait un dossier sur votre ordinateur, contenant un dossier pour chaque paquet qui a été installé. Déterminez où R est installé sur votre ordinateur, et cherchez un dossier appelé "win-library". Par exemple : `R\win-library\4.0` (4.0 est la version de R). Notez que vous aurez une bibliothèque différente pour chaque version de R que vous avez téléchargée.
 
-<!-- ```{r message=FALSE, warning=FALSE, out.width = "75%", out.height="75%"} -->
-<!-- staff_calc <- function(daily_cases = NULL, contacts_each = 5, -->
-<!--                        time_case = 0.5, time_contact = 0.25, time_day = 8){ -->
+Vous pouvez imprimer le chemin d'accès à votre bibliothèque en entrant `.libPaths()` (parenthèses vides). Ceci devient particulièrement important si vous travaillez avec $$R sur des lecteurs réseau$$.
 
-<!--   # Define total daily hours for calling cases -->
-<!--   case_hours <- daily_cases * time_case  -->
+#### Installer à partir du CRAN {.unnumbered}
 
-<!--   # Define total daily hours for calling contacts -->
-<!--   contact_hours <- daily_cases * contacts_each * time_contact -->
+Le plus souvent, les utilisateurs de R téléchargent des paquets depuis CRAN. CRAN (Comprehensive R Archive Network) est un entrepôt public en ligne de paquets R qui ont été publiés par des membres de la communauté R.
 
-<!--   # Calculate number of staff required -->
-<!--   staff_required <- (case_hours + contact_hours)/time_day -->
+Vous vous inquiétez des virus et de la sécurité lorsque vous téléchargez un paquet depuis CRAN ? Lisez [cet article](https://support.rstudio.com/hc/en-us/articles/360042593974-R-and-R-Package-Security) à ce sujet.
 
-<!--   return(staff_required) -->
-<!-- } -->
-<!-- ``` -->
+#### Comment installer et charger {.unnumbered}
 
-<!-- Once this code is run, the function will be defined and will appear in the R Environment. We can run the function. Below all the default values are used and the `daily_cases = ` is set to 150.   -->
+Dans ce manuel, nous suggérons d'utiliser le paquet **pacman** (abréviation de "package manager" en anglais). Il offre une fonction pratique `p_load()` qui installera un paquet si nécessaire *et* le chargera pour l'utiliser dans la séance R actuelle.
 
-```{r eval=F, echo=F, message=FALSE, warning=FALSE, out.width = "75%", out.height="75%"}
-staff_calc(daily_cases = 150)
-```
+La syntaxe est assez simple. Il suffit de lister les noms des paquets entre les parenthèses de `p_load()`, séparés par des virgules.
 
-```{r, eval=F, echo=F}
-case_incidence <- tibble(
-  dates = seq.Date(from = as.Date("2020-05-01"), to = as.Date("2020-05-21"), by = 1),
-  projected_incidence = c(102,110,50,37,106,190,146,138,135,111,60,43,189,184,185,80,44,97,254,291,288),
-  staff_needed = staff_calc(projected_incidence)
-)
-
-ggplot(case_incidence, aes(x = dates))+
-  geom_line(aes(y = projected_incidence))+
-  geom_line(aes(y = staff_needed))
-```
-
-<!-- There are many other nuances to understand when writing functions, as discussed in the page [Writing functions].   -->
-
-
-<!-- ======================================================= -->
-<!-- ======================================================= -->
-## Packages {#packages}  
-
-**Packages contain functions.**  
-
-An R package is a shareable bundle of code and documentation that contains pre-defined functions. Users in the R community develop packages all the time catered to specific problems, it is likely that one can help with your work! You will install and use hundreds of packages in your use of R.  
-
-On installation, R contains **"base"** packages and functions that perform common elementary tasks. But many R users create specialized functions, which are verified by the R community and which you can download as a **package** for your own use. In this handbook, package names are written in **bold**. One of the more challenging aspects of R is that there are often many functions or packages to choose from to complete a given task.  
-
-
-### Install and load {.unnumbered}  
-
-*Functions* are contained within **packages** which can be downloaded ("installed") to your computer from the internet. Once a package is downloaded, it is stored in your "library". You can then access the functions it contains during your current R session by "loading" the package.
-
-*Think of R as your personal library*: When you download a package, your library gains a new book of functions, but each time you want to use a function in that book, you must borrow ("load") that book from your library.  
-
-In summary: to use the functions available in an R package, 2 steps must be implemented:  
-
-1) The package must be **installed** (once), *and*  
-2) The package must be **loaded** (each R session)  
-
-
-#### Your library {.unnumbered}  
-
-Your "library" is actually a folder on your computer, containing a folder for each package that has been installed. Find out where R is installed in your computer, and look for a folder called "win-library". For example: `R\win-library\4.0` (the 4.0 is the R version - you'll have a different library for each R version you've downloaded).  
-
-You can print the file path to your library by entering `.libPaths()` (empty parentheses). This becomes especially important if working with [R on network drives].   
-
-
-#### Install from CRAN {.unnumbered}  
-
-Most often, R users download packages from CRAN. CRAN (Comprehensive R Archive Network) is an online public warehouse of R packages that have been published by R community members. 
-
-Are you worried about viruses and security when downloading a package from CRAN? Read [this article](https://support.rstudio.com/hc/en-us/articles/360042593974-R-and-R-Package-Security) on the topic.  
- 
-
-#### How to install and load {.unnumbered}  
-
-In this handbook, we suggest using the **pacman** package (short for "package manager"). It offers a convenient function `p_load()` which will install a package if necessary *and* load it for use in the current R session.  
-
-The syntax quite simple. Just list the names of the packages within the `p_load()` parentheses, separated by commas. This command will install the **rio**, **tidyverse**, and **here** packages if they are not yet installed, and will load them for use. This makes the `p_load()` approach convenient and concise if sharing scripts with others. Note that package names are case-sensitive. 
+La commande ci-dessous installera les paquets **rio**, **tidyverse**, et **here** s'ils ne sont pas encore installés, et les chargera pour les utiliser. Cela rend l'approche `p_load()` pratique et concise si vous partagez des scripts avec d'autres personnes. Notez que les noms des paquets sont sensibles à la casse.
 
 ```{r}
-# Install (if necessary) and load packages for use
+# Installer (si nécessaire) et charger les paquets pour l'utilisation
 pacman::p_load(rio, tidyverse, here)
 ```
 
-Note that we have used the syntax `pacman::p_load()` which explicitly writes the package name (**pacman**) prior to the function name (`p_load()`), connected by two colons `::`. This syntax is useful because it also loads the **pacman** package (assuming it is already installed).  
+Notez que nous avons utilisé la syntaxe `pacman::p_load()` qui écrit explicitement le nom du paquet (**pacman**) avant le nom de la fonction (`p_load()`), reliés par deux deux points `::`. Cette syntaxe est utile car elle charge également le paquet **pacman** (en supposant qu'il soit déjà installé).
 
-There are alternative **base** R functions that you will see often. The **base** R function for installing a package is `install.packages()`. The name of the package to install must be provided in the parentheses *in quotes*. If you want to install multiple packages in one command, they must be listed within a character vector `c()`.   
+Il existe d'autres fonctions R **de base** que vous verrez souvent. La fonction R **de base** pour installer un paquet est `install.packages()`. Le nom du paquet à installer doit être fourni entre les parenthèses et *entre guillemets*. Si vous voulez installer plusieurs paquets en une seule commande, ils doivent être listés dans un vecteur de caractères `c()`.
 
-Note: this command *installs* a package, but does *not* load it for use in the current session.  
+Remarque : cette commande *installe* un paquet, mais ne le charge *pas* pour l'utiliser dans la séance en cours.
 
 ```{r, eval=F}
-# install a single package with base R
+# Installer un seul paquet avec la base R
 install.packages("tidyverse")
 
-# install multiple packages with base R
+# Installer plusieurs paquets avec la base R
 install.packages(c("tidyverse", "rio", "here"))
 ```
 
-Installation can also be accomplished point-and-click by going to the RStudio "Packages" pane and clicking "Install" and searching for the desired package name.  
+L'installation peut également être effectuée par pointer-cliquer en allant dans le panneau "Packages" de RStudio, en cliquant sur "Installer" et en recherchant le nom du paquet souhaité.
 
-The **base** R function to **load** a package for use (after it has been installed) is `library()`. It can load only one package at a time (another reason to use `p_load()`). You can provide the package name with or without quotes.    
+La fonction **base** de R pour **charger** un paquet à utiliser (après qu'il ait été installé) est `library()`. Elle ne peut charger qu'un seul paquet à la fois (une autre raison d'utiliser `p_load()`). Vous pouvez fournir le nom du paquet avec ou sans guillemets.
 
 ```{r, eval=F}
-# load packages for use, with base R
+# Charger des paquets à utiliser, avec la base R
 library(tidyverse)
 library(rio)
 library(here)
 ```
 
-To check whether a package in installed and/or loaded, you can view the Packages pane in RStudio. If the package is installed, it is shown there with version number. If its box is checked, it is loaded for the current session. 
+Pour vérifier si un paquet est installé et/ou chargé, vous pouvez afficher le panneau des paquets dans RStudio. Si le paquet est installé, il est affiché avec son numéro de version. Si sa case est cochée, il est chargé pour la séance en cours.
 
+**Installation depuis Github**
 
+Parfois, vous avez besoin d'installer un paquet qui n'est pas encore disponible sur CRAN. Ou peut-être que le paquet est disponible sur CRAN mais que vous voulez la *version de développement* avec de nouvelles fonctionnalités qui ne sont pas encore proposées dans la version CRAN publiée, plus stable. Ces versions sont souvent hébergées sur le site Web [github.com](https://github.com/) dans un "dépôt" de code libre et public. Pour en savoir plus sur Github, consultez la page du manuel intitulée $$Version control and collaboration with GitHub$$.
 
-**Install from Github**
+Pour télécharger des paquets R depuis Github, vous pouvez utiliser la fonction `p_load_gh()` de **pacman**, qui installera le paquet si nécessaire, et le chargera pour l'utiliser dans votre séance R actuelle. Les alternatives à l'installation incluent l'utilisation des paquets **remotes** ou **devtools**. Pour en savoir plus sur toutes les fonctions de **pacman**, consultez la [documentation du paquet](https://cran.r-project.org/web/packages/pacman/pacman.pdf).
 
-Sometimes, you need to install a package that is not yet available from CRAN. Or perhaps the package is available on CRAN but you want the *development version* with new features not yet offered in the more stable published CRAN version. These are often hosted on the website [github.com](https://github.com/) in a free, public-facing code "repository". Read more about Github in the handbook page on [Version control and collaboration with Git and Github].  
+Pour installer à partir de Github, vous devez fournir plus d'informations. Vous devez fournir :
 
-To download R packages from Github, you can use the function `p_load_gh()` from **pacman**, which will install the package if necessary, and load it for use in your current R session. Alternatives to install include using the **remotes** or **devtools** packages. Read more about all the **pacman** functions in the [package documentation](https://cran.r-project.org/web/packages/pacman/pacman.pdf).  
+1)  L'ID Github (nom d'utilisateur) du propriétaire du dépôt.
+2)  Le nom du dépôt qui contient le paquet.
+3)  *(facultatif) Le nom de la "branche" (version de développement spécifique) que vous souhaitez télécharger*.
 
-To install from Github, you have to provide more information. You must provide:  
-
-1) The Github ID of the repository owner
-2) The name of the repository that contains the package  
-3) *(optional) The name of the "branch" (specific development version) you want to download*  
-
-In the examples below, the first word in the quotation marks is the Github ID of the repository owner, after the slash is the name of the repository (the name of the package).  
+Dans les exemples ci-dessous, le premier mot entre guillemets est l'ID Github du propriétaire du dépôt. Après la barre oblique est le nom du dépôt (typiquement le nom du paquet).
 
 ```{r, eval=F}
-# install/load the epicontacts package from its Github repository
+# Installer/charger le paquet epicontacts depuis son dépôt Github
 p_load_gh("reconhub/epicontacts")
 ```
 
-If you want to install from a "branch" (version) other than the main branch, add the branch name after an "@", after the repository name.  
+Si vous voulez installer à partir d'une "branche" (version) autre que la branche principale, ajoutez le nom de la branche après un "\@", après le nom du dépôt.
 
 ```{r, eval=F}
-# install the "timeline" branch of the epicontacts package from Github
+# Installer la branche "timeline" du paquet epicontacts depuis Github
 p_load_gh("reconhub/epicontacts@timeline")
 ```
 
-If there is no difference between the Github version and the version on your computer, no action will be taken. You can "force" a re-install by instead using `p_load_current_gh()` with the argument `update = TRUE`. Read more about **pacman** in this [online vignette](http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html)
+S'il n'y a pas de différence entre la version Github et la version sur votre ordinateur, aucune action ne sera entreprise. Vous pouvez "forcer" une réinstallation en utilisant `p_load_current_gh()` avec le paramètre `update = TRUE`. Lisez plus sur **pacman** dans cette [vignette en ligne](http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html)
 
+**Installation à partir d'un ZIP ou d'un TAR**
 
-**Install from ZIP or TAR**
-
-You could install the package from a URL:  
+Vous pouvez installer le paquet à partir d'une URL :
 
 ```{r, eval=F}
 packageurl <- "https://cran.r-project.org/src/contrib/Archive/dsr/dsr_0.2.2.tar.gz"
-install.packages(packageurl, repos=NULL, type="source")
+install.packages(packageurl, repos = NULL, type = "source")
 ```
 
-Or, download it to your computer in a zipped file:  
+Ou bien, le télécharger sur votre ordinateur dans un fichier zippé :
 
-Option 1: using `install_local()` from the **remotes** package  
+Option 1 : utiliser `install_local()` du paquet **remotes**.
 
 ```{r, eval=F}
 remotes::install_local("~/Downloads/dplyr-master.zip")
 ```
 
-Option 2: using `install.packages()` from **base** R, providing the file path to the ZIP file and setting `type = "source` and `repos = NULL`.    
+Option 2 : en utilisant `install.packages()` du R de **base**, en fournissant le chemin d'accès au fichier ZIP et en définissant `type = "source"` et `repos = NULL`.
 
 ```{r, eval=F}
-install.packages("~/Downloads/dplyr-master.zip", repos=NULL, type="source")
+install.packages("~/Downloads/dplyr-master.zip", 
+                 type = "source", 
+                 repos = NULL)
 ```
 
+### Syntaxe du code {.unnumbered}
 
-### Code syntax {.unnumbered}  
+Pour plus de clarté dans ce manuel, les fonctions sont parfois précédées du nom de leur paquet en utilisant le symbole `::` de la manière suivante : `nom_du_paquet::nom_de_la_fonction()`.
 
-For clarity in this handbook, functions are sometimes preceded by the name of their package using the `::` symbol in the following way: `package_name::function_name()`  
-
-Once a package is loaded for a session, this explicit style is not necessary. One can just use `function_name()`. However writing the package name is useful when a function name is common and may exist in multiple packages (e.g. `plot()`). Writing the package name will also load the package if it is not already loaded. 
+Une fois qu'un paquet est chargé pour une séance, ce style explicite n'est plus nécessaire. On peut simplement utiliser `nom_de_la_fonction()`. Cependant, écrire le nom du paquet est utile lorsqu'un nom de fonction est commun et peut exister dans plusieurs paquets (par exemple, `plot()`). L'écriture du nom du paquet chargera également le paquet s'il n'est pas déjà chargé.
 
 ```{r eval=FALSE}
-# This command uses the package "rio" and its function "import()" to import a dataset
+# Cette commande utilise le paquet "rio" et sa fonction "import()" pour importer un jeu de données
 linelist <- rio::import("linelist.xlsx", which = "Sheet1")
 ```
 
+### Aide sur les fonctions {.unnumbered}
 
+Pour en savoir plus sur une fonction, vous pouvez la rechercher dans l'onglet Aide du RStudio en bas à droite. Vous pouvez également lancer une commande comme `?thefunctionname` (mettez le nom de la fonction après un point d'interrogation) et la page d'aide apparaîtra dans le volet d'aide. Enfin, essayez de rechercher des ressources en ligne.
 
-### Function help {.unnumbered}  
+### Mettre à jour les paquets {.unnumbered}
 
-To read more about a function, you can search for it in the Help tab of the lower-right RStudio. You can also run a command like  `?thefunctionname` (put the name of the function after a question mark) and the Help page will appear in the Help pane. Finally, try searching online for resources.  
+Vous pouvez mettre à jour les paquets en les réinstallant. Vous pouvez également cliquer sur le bouton vert "Update" dans votre panneau "RStudio Packages" pour voir quels paquets ont de nouvelles versions à installer. Sachez que votre ancien code peut avoir besoin d'être mis à jour s'il y a une révision majeure du fonctionnement d'une fonction !
 
+### Supprimer des paquets {.unnumbered}
 
+Utilisez `p_delete()` de **pacman**, ou `remove.packages()` de **base** R. Alternativement, allez chercher le dossier qui contient votre bibliothèque et supprimez manuellement le dossier.
 
-### Update packages {.unnumbered}  
+### Dépendances {.unnumbered}
 
-You can update packages by re-installing them. You can also click the green "Update" button in your RStudio Packages pane to see which packages have new versions to install. Be aware that your old code may need to be updated if there is a major revision to how a function works!  
+Les paquets dépendent souvent d'autres paquets pour fonctionner. Ceux-ci sont appelés dépendances. Si une dépendance ne s'installe pas, le paquet qui en dépend peut également ne pas s'installer.
 
+Voir les dépendances d'un paquet avec `p_depends()`, et voir quels paquets en dépendent avec `p_depends_reverse()`.
 
-### Delete packages {.unnumbered}
-Use `p_delete()` from **pacman**, or `remove.packages()` from **base** R. Alternatively, go find the folder which contains your library and manually delete the folder.
+### Fonctions masquées {.unnumbered}
 
+Il n'est pas rare que deux paquets ou plus contiennent le même nom de fonction. Par exemple, le paquet **dplyr** possède une fonction `filter()`, mais le paquet **stats** aussi. La fonction `filter()` par défaut dépend de l'ordre dans lequel ces paquets sont chargés pour la première fois dans la séance R - le dernier sera la fonction par défaut de la commande `filter()`.
 
-
-### Dependencies {.unnumbered}  
-
-Packages often depend on other packages to work. These are called dependencies. If a dependency fails to install, then the package depending on it may also fail to install.  
-
-See the dependencies of a package with `p_depends()`, and see which packages depend on it with `p_depends_reverse()`  
-
-
-
-### Masked functions {.unnumbered}  
-
-It is not uncommon that two or more packages contain the same function name. For example, the package **dplyr** has a `filter()` function, but so does the package **stats**. The default `filter()` function depends on the order these packages are first loaded in the R session - the later one will be the default for the command `filter()`. 
-
-You can check the order in your Environment pane of R Studio - click the drop-down for "Global Environment" and see the order of the packages. Functions from packages *lower* on that drop-down list will mask functions of the same name in packages that appear higher in the drop-down list. When first loading a package, R will warn you in the console if masking is occurring, but this can be easy to miss.  
+Vous pouvez vérifier l'ordre dans votre panneau Environnement de R Studio - cliquez sur la liste déroulante pour "Global Environment" et voyez l'ordre des paquets. Les fonctions des paquets *inférieurs* dans cette liste déroulante masqueront les fonctions du même nom dans les paquets qui apparaissent plus haut dans la liste déroulante. Lors du premier chargement d'un paquet, R vous avertira dans la console si le masquage se produit, mais il est facile de ne pas le voir.
 
 ```{r out.width = "50%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "masking_functions.png"))
 ```
 
-Here are ways you can fix masking:  
+Voici comment vous pouvez corriger le masquage :
 
-1) Specify the package name in the command. For example, use `dplyr::filter()`  
-2) Re-arrange the order in which the packages are loaded (e.g. within `p_load()`), and **start a new R session**  
+1)  Spécifiez le nom du paquet dans la commande. Par exemple, utilisez `dplyr::filter()`\
+2)  Réorganisez l'ordre dans lequel les paquets sont chargés (par exemple, dans `p_load()`), et **démarrez une nouvelle séance R**.
 
+### Détacher / décharger {.unnumbered}
 
-
-### Detach / unload {.unnumbered}  
-
-To detach (unload) a package, use this command, with the correct package name and only one colon. Note that this may not resolve masking.  
+Pour détacher (décharger) un paquet, utilisez cette commande, avec le nom correct du paquet et un seul deux-points. Notez que cela peut ne pas résoudre le masquage.
 
 ```{r, eval=F}
-detach(package:PACKAGE_NAME_HERE, unload=TRUE)
+detach(package:NOM_DU_PAQUET_ICI, unload = TRUE)
 ```
 
+### Installer une ancienne version {.unnumbered}
 
-### Install older version {.unnumbered}  
+Consultez ce [guide](https://support.rstudio.com/hc/en-us/articles/219949047-Installing-older-versions-of-packages) pour installer une ancienne version d'un paquet particulier.
 
-See this [guide](https://support.rstudio.com/hc/en-us/articles/219949047-Installing-older-versions-of-packages) to install an older version of a particular package.  
+### Paquets suggérés {.unnumbered}
 
-
-### Suggested packages {.unnumbered}  
-
-See the page on [Suggested packages] for a listing of packages we recommend for everyday epidemiology.  
-
-
-
-
-
-
+Voir la page [Paquets suggérés] pour une liste de paquets que nous recommandons pour l'épidémiologie quotidienne.
 
 <!-- ======================================================= -->
+
 ## Scripts {#scripts}
 
-Scripts are a fundamental part of programming. They are documents that hold your commands (e.g. functions to create and modify datasets, print visualizations, etc). You can save a script and run it again later. There are many advantages to storing and running your commands from a script (vs. typing commands one-by-one into the R console "command line"):  
+Les scripts sont une partie fondamentale de la programmation. Ce sont des documents qui contiennent vos commandes (par exemple, des fonctions pour créer et modifier des jeux de données, imprimer des visualisations, etc). Vous pouvez sauvegarder un script et l'exécuter à nouveau ultérieurement. Le stockage et l'exécution de vos commandes à partir d'un script présentent de nombreux avantages (par rapport à la saisie des commandes une par une dans la "ligne de commande" de la console R) :
 
-* Portability - you can share your work with others by sending them your scripts  
-* Reproducibility - so that you and others know exactly what you did  
-* Version control - so you can track changes made by yourself or colleagues  
-* Commenting/annotation - to explain to your colleagues what you have done  
+-   Portabilité : vous pouvez partager votre travail avec d'autres personnes en leur envoyant vos scripts\
+-   Reproductibilité : pour que vous et les autres sachiez exactement ce que vous avez fait\
+-   Contrôle de version : pour que vous puissiez suivre les modifications apportées par vous-même ou par vos collègues\
+-   Commentaire/annotation : pour expliquer à vos collègues ce que vous avez fait
 
-### Commenting {.unnumbered}  
+### Commentaire {.unnumbered}
 
-In a script you can also annotate ("comment") around your R code. Commenting is helpful to explain to yourself and other readers what you are doing. You can add a comment by typing the hash symbol (#) and writing your comment after it. The commented text will appear in a different color than the R code.  
+Dans un script, vous pouvez également annoter ("commenter") votre code R. Les commentaires sont utiles pour expliquer à vous-même et aux autres lecteurs ce que vous faites. Vous pouvez ajouter un commentaire en tapant le symbole dièse (\#) et en écrivant votre commentaire après. Le texte commenté apparaîtra dans une couleur différente de celle du code R.
 
-Any code written after the # will not be run. Therefore, placing a # before code is also a useful way to temporarily block a line of code ("comment out") if you do not want to delete it). You can comment out/in multiple lines at once by highlighting them and pressing Ctrl+Shift+c (Cmd+Shift+c in Mac).  
-
+Tout code écrit après le \# ne sera pas exécuté. Par conséquent, placer un \# avant le code est également un moyen utile de bloquer temporairement une ligne de code ("commenter") si vous ne souhaitez pas la supprimer). Vous pouvez mettre en commentaire plusieurs lignes à la fois en les soulignant et en appuyant sur Ctrl+Shift+c (Cmd+Shift+c sur Mac).
 
 ```{r, eval = F}
-# A comment can be on a line by itself
-# import data
-linelist <- import("linelist_raw.xlsx") %>%   # a comment can also come after code
-# filter(age > 50)                          # It can also be used to deactivate / remove a line of code
-  count()
+
+# Un commentaire peut être sur une ligne par lui-même, ex.:
+# Importer des données:
+linelist <- import("linelist_raw.xlsx") %>% # un commentaire peut aussi venir après le code
+     # filter(age > 50)
+     # Il peut aussi être utilisé pour désactiver une ligne de code
+count()
 
 ```
 
-* Comment on *what* you are doing *and on **why** you are doing it*.  
-* Break your code into logical sections  
-* Accompany your code with a text step-by-step description of what you are doing (e.g. numbered steps)  
+Vous trouverez ci-dessous quelques conseils essentiels pour commenter et annoter votre code :
 
-### Style {.unnumbered}  
+-   Commentez *ce que vous faites* et *pourquoi* vous le faites\
+-   Découpez votre code en sections logiques\
+-   Accompagnez votre code d'une description textuelle étape par étape de ce que vous faites (par exemple, des étapes numérotées).
 
-It is important to be conscious of your coding style - especially if working on a team. We advocate for the **tidyverse** [style guide](https://style.tidyverse.org/). There are also packages such as **styler** and **lintr** which help you conform to this style.  
+### Style {.unnumbered}
 
-A few very basic points to make your code readable to others:  
-  * When naming objects, use only lowercase letters, numbers, and underscores `_`, e.g. `my_data`  
-  * Use frequent spaces, including around operators, e.g. `n = 1` and `age_new <- age_old + 3`  
+Il est important d'être conscient de votre style de codage, surtout si vous travaillez en équipe. Nous préconisons le **tidyverse** [guide de style](https://style.tidyverse.org/). Il existe également des paquets tels que **styler** et **lintr** qui vous aident à vous conformer à ce style.
 
+Quelques points très basiques pour rendre votre code lisible pour les autres:\
+\* Lorsque vous nommez des objets, n'utilisez que des lettres minuscules, des chiffres et des traits de soulignement `_`, par exemple `mes_donnees`\
+\* Utilisez fréquemment des espaces, y compris autour des opérateurs, par exemple `n = 1` et `age_nouveau <- age_vieillesse + 3`.
 
-### Example Script {.unnumbered}  
+### Exemple de script {.unnumbered}
 
-Below is an example of a short R script. Remember, the better you succinctly explain your code in comments, the more your colleagues will like you!  
+Vous trouverez ci-dessous un exemple d'un court script R. N'oubliez pas que plus vous expliquerez succinctement votre code dans les commentaires, plus vos collègues vous apprécieront !
 
 ```{r out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "example_script.png"))
 ```
 
 <!-- ======================================================= -->
+
 ### R markdown {.unnumbered}
 
-An R markdown script is a type of R script in which the script itself *becomes* an output document (PDF, Word, HTML, Powerpoint, etc.). These are incredibly useful and versatile tools often used to create dynamic and automated reports. Even this website and handbook is produced with R markdown scripts!  
+Un script R markdown est un type de script R dans lequel le script lui-même *devient* un document de sortie (PDF, Word, HTML, Powerpoint, etc.). Ce sont des outils incroyablement utiles et polyvalents, souvent utilisés pour créer des rapports dynamiques et automatisés. Même ce site Web et ce manuel sont produits à l'aide de scripts R markdown !
 
-It is worth noting that beginner R users can also use R Markdown - do not be intimidated! To learn more, see the handbook page on [Reports with R Markdown] documents.  
-
-
-<!-- ======================================================= -->
-### R notebooks {.unnumbered}
-
-There is no difference between writing in a Rmarkdown vs an R notebook. However the execution of the document differs slightly. See this [site](http://uc-r.github.io/r_notebook) for more details.
+Il convient de noter que les utilisateurs débutants de R peuvent également utiliser R Markdown - ne vous laissez pas intimider !Pour en savoir plus, consultez la page du manuel consacrée aux $$Reports with R Markdown documents$$.
 
 <!-- ======================================================= -->
+
+### Carnets de notes R {.unnumbered}
+
+Il n'y a pas de différence entre écrire dans un Rmarkdown et un R notebook. Cependant, l'exécution du document diffère légèrement. Voir ce [site](http://uc-r.github.io/r_notebook) pour plus de détails.
+
+<!-- ======================================================= -->
+
 ### Shiny {.unnumbered}
 
-Shiny apps/websites are contained within one script, which must be named `app.R`. This file has three components:  
+Les applications/sites web Shiny sont contenus dans un script, qui doit être nommé `app.R`. Ce fichier comporte trois éléments :
 
-1) A user interface (ui)  
-2) A server function  
-3) A call to the `shinyApp` function  
+1)  Une interface utilisateur (ui)\
+2)  Une fonction serveur\
+3)  Un appel à la fonction `shinyApp`
 
-See the handbook page on [Dashboards with Shiny], or this online tutorial: [Shiny tutorial](https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/)
+Consultez la page du manuel sur $$Shiny dashboards$$, ou ce tutoriel en ligne : [Tutoriel Shiny](https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/)
 
-*In older times, the above file was split into two files (`ui.R` and `server.R`)*
+*Auparavant, le fichier ci-dessus était divisé en deux fichiers (`ui.R` et `server.R`)*.
 
+### Repli du code {.unnumbered}
 
-### Code folding {.unnumbered}  
+Vous pouvez replier des portions de code pour rendre votre script plus facile à lire.
 
-You can collapse portions of code to make your script easier to read.  
+Pour ce faire, créez un en-tête de texte avec #, écrivez votre en-tête, et faites-le suivre d'au moins 4 tirets (-), hachages (\#) ou égaux (=). Lorsque vous aurez fait cela, une petite flèche apparaîtra dans la "gouttière" à gauche (près du numéro de ligne). Vous pouvez cliquer sur cette flèche et sur le code situé en dessous jusqu'à ce que l'en-tête suivant se réduise et qu'une icône à double flèche apparaisse à sa place.
 
-To do this, create a text header with #, write your header, and follow it with at least 4 of either dashes (-), hashes (#) or equals (=). When you have done this, a small arrow will appear in the "gutter" to the left (by the row number). You can click this arrow and the code below until the next header will collapse and a dual-arrow icon will appear in its place.  
+Pour développer le code, cliquez à nouveau sur la flèche dans la gouttière ou sur l'icône à double flèche. Il existe également des raccourcis clavier, comme expliqué dans la section [RStudio](#rstudio) de cette page.
 
-To expand the code, either click the arrow in the gutter again, or the dual-arrow icon. There are also keyboard shortcuts as explained in the [RStudio section](#rstudio) of this page.   
+En créant des en-têtes avec #, vous activerez également la table des matières au bas de votre script (voir ci-dessous) que vous pouvez utiliser pour naviguer dans votre script. Vous pouvez créer des sous-titres en ajoutant d'autres symboles, par exemple \# pour les titres primaires, \## pour les titres secondaires et \### pour les titres tertiaires.
 
-By creating headers with #, you will also activate the Table of Contents at the bottom of your script (see below) that you can use to navigate your script. You can create sub-headers by adding more # symbols, for example # for primary, ## for seconary, and ### for tertiary headers.  
-
-Below are two versions of an example script. On the left is the original with commented headers. On the right, four dashes have been written after each header, making them collapsible. Two of them have been collapsed, and you can see that the Table of Contents at the bottom now shows each section.  
+Vous trouverez ci-dessous deux versions d'un exemple de script. À gauche, l'original avec des en-têtes commentés. À droite, quatre tirets ont été écrits après chaque en-tête, les rendant ainsi repliables. Deux d'entre eux ont été réduits, et vous pouvez voir que la table des matières en bas de page affiche maintenant chaque section.
 
 ```{r, out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "code_folding1.png"))
 knitr::include_graphics(here::here("images", "code_folding2.png"))
 ```
 
-Other areas of code that are automatically eligible for folding include "braced" regions with brackets `{ }` such as function definitions or conditional blocks (if else statements). You can read more about code folding at the RStudio [site](https://support.rstudio.com/hc/en-us/articles/200484568-Code-Folding-and-Sections).  
-
-
+D'autres zones de code qui sont automatiquement éligibles pour le pliage incluent les régions "accolées" avec des parenthèses `{ }` telles que les définitions de fonctions ou les blocs conditionnels (instructions "if else"). Vous pouvez en savoir plus sur le pliage du code sur le [site RStudio](https://support.rstudio.com/hc/en-us/articles/200484568-Code-Folding-and-Sections).
 
 <!-- ======================================================= -->
-<!-- ======================================================= -->
-<!-- ======================================================= -->
-## Working directory  
 
-The working directory is the root folder location used by R for your work - where R looks for and saves files by default. By default, it will save new files and outputs to this location, and will look for files to import (e.g. datasets) here as well.  
+<!-- ======================================================= -->
 
-The working directory appears in grey text at the top of the RStudio Console pane. You can also print the current working directory by running `getwd()` (leave the parentheses empty).  
+<!-- ======================================================= -->
+
+## Répertoire de travail
+
+Le répertoire de travail est l'emplacement du dossier racine utilisé par R pour votre travail - où R recherche et enregistre les fichiers par défaut. Par défaut, il enregistrera de nouveaux fichiers et sorties à cet emplacement et recherchera ici des fichiers (par exemple, des ensembles de données).
+
+Le répertoire de travail apparaît dans le texte gris en haut du volet de la console RStudio. Vous pouvez également imprimer le répertoire de travail actuel en exécutant `getwd()` (laissez les parenthèses vides).
 
 ```{r out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "working_directory_1.png"))
 ```
 
+### Approche recommandée {.unnumbered}
 
-### Recommended approach {.unnumbered}  
+**Voir la page sur** $$R Projects$$ pour plus de détails sur notre approche recommandée pour gérer votre répertoire de travail.\
 
-**See the page on [R projects] for details on our recommended approach to managing your working directory.**  
-A common, efficient, and trouble-free way to manage your working directory and file paths is to combine these 3 elements in an [R project][R projects]-oriented workflow:  
+Un moyen commun, efficace et sans problème de gérer votre répertoire de travail et vos chemins de fichier consiste à combiner ces trois éléments dans un flux de travail du $$R projects$$ orienté comme expliqué ci-dessous:
 
-1) An R Project to store all your files (see page on [R projects])  
-2) The **here** package to locate files (see page on [Import and export])  
-3) The **rio** package to import/export files (see page on [Import and export])  
-
+1.  Un projet R pour stocker tous vos fichiers (voir page sur $$R projects$$)\
+2.  Le paquet **here** pour localiser les fichiers (voir page sur $$Import and export$$)\
+3.  Le paquet **rio** pour importer ou exporter des fichiers (voir page sur $$Import and export$$)
 
 <!-- ======================================================= -->
-### Set by command {.unnumbered}
 
-Until recently, many people learning R were taught to begin their scripts with a `setwd()` command. Please instead consider using an [R project][R projects]-oriented workflow and read the [reasons for not using `setwd()`](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/). In brief, your work becomes specific to your computer, file paths used to import and export files become "brittle", and this severely hinders collaboration and use of your code on any other computer. There are easy alternatives!  
+### Définir le répertoire de travail par commande {.unnumbered}
 
-As noted above, although we do not recommend this approach in most circumstances, you can use the command `setwd()` with the desired folder file path in quotations, for example:  
+Jusqu'à récemment, de nombreuses personnes apprenant R ont appris à commencer leurs scripts avec une commande `setwd()`. Veuillez plutôt envisager d'utiliser un flux de travail orienté par $$R Projects$$ et lire les [raisons de ne pas utiliser `setwd()`](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/).
+
+En bref, votre travail devient spécifique à votre ordinateur, les chemins de fichier utilisés pour importer et exporter des fichiers deviennent "cassants", ce qui entrave gravement la collaboration et l'utilisation de votre code sur tout autre ordinateur. Heureusement il existe des alternatives faciles!
+
+Comme indiqué ci-dessus, bien que nous ne recommandons pas cette approche dans la plupart des cas, vous pouvez utiliser la commande `setwd()` avec le chemin du fichier de dossier souhaité dans les citations, par exemple:
 
 ```{r, eval=F}
 setwd("C:/Documents/R Files/My analysis")
 ```
 
-<span style="color: red;">**_DANGER:_** Setting a working directory with `setwd()` *can* be "brittle" if the file path is specific to one computer. Instead, use file paths relative to an R Project root directory (with the **here** package). </span>  
-
-
+[***DANGER:*** Définition d'un répertoire de travail avec `setwd()` *peut* être "cassant" si le chemin de fichier est spécifique à un ordinateur. Au lieu de cela, utilisez des chemins de fichier par rapport à un répertoire racine du projet R (avec le paquet **here**).]{style="color:red;"}
 
 <!-- ======================================================= -->
-### Set manually {.unnumbered}  
 
-To set the working directory manually (the point-and-click equivalent of `setwd()`), click the Session drop-down menu and go to "Set Working Directory" and then "Choose Directory". This will set the working directory for that specific R session. Note: if using this approach, you will have to do this manually each time you open RStudio.  
+### Définir manuellement le répertoire de travail {.unnumbered}
 
-
-<!-- ======================================================= -->
-### Within an R project {.unnumbered}
-
-If using an R project, the working directory will default to the R project root folder that contains the ".rproj" file. This will apply if you open RStudio by clicking open the R Project (the file with ".rproj" extension).  
-
+Pour définir le répertoire de travail manuellement (l'équivalent graphique du `setwd()`), cliquez sur le menu déroulant "Session" et accédez à "Set Working Directory", puis "Choose Directory". Cela définira le répertoire de travail pour cette scéance spécifique de R. Remarque: Si vous utilisez cette approche, vous devrez le faire manuellement chaque fois que vous ouvrez Rstudio.
 
 <!-- ======================================================= -->
-### Working directory in an R markdown {.unnumbered}
 
-In an R markdown script, the default working directory is the folder the Rmarkdown file (`.Rmd`) is saved within. If using an R project and **here** package, this does not apply and the working directory will be `here()` as explained in the [R projects] page.  
+### Définir le répertoire de travail dans un projet R {.unnumbered}
 
-If you want to change the working directory of a stand-alone R markdown (not in an R project), if you use `setwd()` this will only apply to that specific code chunk. To make the change for all code chunks in an R markdown, edit the setup chunk to add the `root.dir = ` parameter, such as below:
+Si vous utilisez un projet R, le répertoire de travail sera par défaut dans le dossier racine du projet R qui contient le fichier `.rproj`. Cela s'appliquera si vous ouvrez RStudio en cliquant sur le projet R (le fichier avec l'extension `.rproj`).
+
+<!-- ======================================================= -->
+
+### Répertoire de travail dans un script R Markdown {.Unnumbered}
+
+Dans un script R Markdown, le répertoire de travail par défaut est le dossier ou le fichier RMarkdown (`.rmd`) est enregistré. Si vous utilisez un projet R et le paquet **here**, cela ne s'applique pas et le répertoire de travail sera `here()`, comme expliqué dans la page $$R projets$$.
+
+Si vous souhaitez modifier le répertoire de travail d'une dossier RMarkdown autonome (qui ne fait pas partie d'un projet R), et vous utilisez `setwd()`, cela ne s'appliquera qu'à ce morceau de code spécifique. Pour modifier tous les morceaux de code dans une dossier RMarkdown, modifiez le morceau de configuration pour ajouter le paramètre `root.dir =`, comme ci-dessous:
 
 ```{r, eval=F}
 knitr::opts_knit$set(root.dir = 'desired/directorypath')
 ```
 
-It is much easier to just use the R markdown within an R project and use the **here** package.  
-
-
+Il est beaucoup plus facile d'utiliser simplement le script RMarkdown dans un projet R et d'utiliser le paquet **here**.
 
 <!-- ======================================================= -->
-### Providing file paths {.unnumbered}  
 
-Perhaps the most common source of frustration for an R beginner (at least on a Windows machine) is typing in a file path to import or export data. There is a thorough explanation of how to best input file paths in the [Import and export] page, but here are a few key points:  
+### Fournir des chemins de fichier {.unnumbered}
 
-**Broken paths**  
+La source de frustration la plus commune pour un débutant R (au moins sur un ordinateur avec Windows) est de saisir un chemin de fichier pour importer ou exporter des données. Il existe une explication approfondie sur la meilleure façon de saisir les chemins de fichier de saisie dans la page $$Import and export$$, mais voici quelques points clés:
 
-Below is an example of an "absolute" or "full address" file path. These will likely break if used by another computer. One exception is if you are using a shared/network drive.  
+**Chemins cassés**
 
-```
-C:/Users/Name/Document/Analytic Software/R/Projects/Analysis2019/data/March2019.csv  
-```
+Vous trouverez ci-dessous un exemple de chemin de fichier "absolute" avec un "adresse complète". Ceux-ci se casseront probablement s'ils sont utilisés par un autre ordinateur. Une exception est si vous utilisez un dossier sur un réseau partagé.
 
-**Slash direction**  
+    C:/Utilisateurs/Nom/Document/Logiciels analytiques/R/Projets/Analyse2019/data/mars2019.csv
 
-*If typing in a file path, be aware the direction of the slashes.* Use *forward slashes* (`/`) to separate the components ("data/provincial.csv"). For Windows users, the default way that file paths are displayed is with *back slashes* (\\) - so you will need to change the direction of each slash. If you use the **here** package as described in the [R projects] page the slash direction is not an issue.  
+**Direction de la barre oblique**
 
-**Relative file paths**  
+*Si vous saisissez un chemin de fichier, soyez conscient de la direction des barres obliques.* Utilisez *des barres obliques vers l'avant* (`/`) pour séparer les composants, par exemple `Data/Provincial.csv`. Le défaut pour les ordinateurs avec Windows est de séparer les composants du chemin avec *des barres obliques en arrière* (`\\`). Vous devrez donc modifier la direction de chaque barre oblique. Si vous utilisez le paquet **here** comme décrit dans la page $$R projects$$, la direction des barres obliques n'est pas un problème.
 
-We generally recommend providing "relative" filepaths instead - that is, the path *relative to* the root of your R Project. You can do this using the **here** package as explained in the [R projects] page. A relativel filepath might look like this:  
+**Chemins de fichiers relatifs**
+
+Nous recommandons généralement de utiliser des fichiers avec chemins "relatifs" - c'est-à-dire le chemin *par rapport à* la racine de votre projet R. Vous pouvez le faire en utilisant le paquet **here** comme expliqué dans la page $$R projects$$. Un chemin de fichiers relatif peut ressembler à ceci:
 
 ```{r, eval=F}
-# Import csv linelist from the data/linelist/clean/ sub-folders of an R project
+
+# Importer csv Linelist à partir de données/listes linéare/propres/sous-dossiers d'un projet R
+
 linelist <- import(here("data", "clean", "linelists", "marin_country.csv"))
 ```
 
-Even if using relative file paths within an R project, you can still use absolute paths to import/export data  outside your R project.  
-
-
-
-
+Même si vous utilisez des chemins de fichiers relatifs dans un projet R, vous pouvez toujours utiliser des chemins absolus pour importer/exporter des données en dehors de votre projet R.
 
 <!-- ======================================================= -->
-## Objects {#objects}
 
-Everything in R is an object, and R is an "object-oriented" language. These sections will explain:  
+## Objets {#objets}
 
-* How to create objects (`<-`) 
-* Types of objects (e.g. data frames, vectors..)  
-* How to access subparts of objects (e.g. variables in a dataset)  
-* Classes of objects (e.g. numeric, logical, integer, double, character, factor)  
+Tout dans R est un objet, et R est une langue "orienté sur l'objet". Les sections suivantes expliquent:
 
-
-
-<!-- ======================================================= -->
-### Everything is an object {.unnumbered} 
-
-*This section is adapted from the [R4Epis project](https://r4epis.netlify.app/training/r_basics/objects/).*  
-Everything you store in R - datasets, variables, a list of village names, a total population number, even outputs such as graphs - are **objects** which are **assigned a name** and **can be referenced** in later commands.  
-
-An object exists when you have assigned it a value (see the assignment section below). When it is assigned a value, the object appears in the Environment (see the upper right pane of RStudio). It can then be operated upon, manipulated, changed, and re-defined.
-
+-   Comment créer des objets (`<-`)
+-   Types d'objets (par exemple, trames de données, vecteurs ..)\
+-   Comment accéder à des sous-parties d'objets (par exemple, des variables dans un jeu de données)\
+-   Classes d'objets (ex. numérique, logique, nombres entieres, double, caractère, facteur)
 
 <!-- ======================================================= -->
-### Defining objects (`<-`) {.unnumbered}
 
-**Create objects *by assigning them a value* with the <- operator.**  
-You can think of the assignment operator `<-` as the words "is defined as". Assignment commands generally follow a standard order:
- 
-**object_name**  <-  **value** (or process/calculation that produce a value)
+### Tout est un objet {.unnumbered}
 
-For example, you may want to record the current epidemiological reporting week as an object for reference in later code. In this example, the object `current_week` is created when it is assigned the value `"2018-W10"` (the quote marks make this a character value). The object `current_week` will then appear in the RStudio Environment pane (upper-right) and can be referenced in later commands.  
+*Cette section est adaptée du [projet R4Epis](https://r4epis.netlify.app/training/r_basics/objects/).*\
+Tout ce que vous stockez dans R - des ensembles de données, des variables, une liste de noms de villages, un nombre total de population, même des sorties telles que des graphiques - sont des **objets** qui sont **attribués à un nom** et **peuvent être référencés** dans les commandes ultérieures.
 
-See the R commands and their output in the boxes below. 
+Un objet existe lorsque vous lui avez attribué une valeur (voir la section d'attribution ci-dessous). Lorsqu'une valeur lui est attribuée, l'objet apparaît dans l'environnement (voir le volet supérieur droit de RStudio). Il peut alors être exploité, manipulé, modifié et redéfini.
+
+<!-- ======================================================= -->
+
+### Définir des objets (`<-`) {.unnumbered}
+
+**Créez des objets *en leur attribuant une valeur* avec l'opérateur `<-`.** Vous pouvez considérer l'opérateur d'affectation`<-` comme les mots "est défini comme". Les commandes d'affectation suivent généralement un ordre standard:
+
+**`nom_objet <- valeur`** (ou processus/calcul qui produit une valeur)
+
+Par exemple, vous souhaiterez peut-être enregistrer la semaine de rapport épidémiologique en cours en tant qu'objet de référence dans le code ultérieur. Dans cet exemple, l'objet `semaine_en_cours` est créé lorsqu'il reçoit la valeur `"2018-W10"` (les guillemets en font une valeur de caractère). L'objet `semaine_en_cours` apparaîtra alors dans le volet Environnement de RStudio (en haut à droite) et pourra être référencé dans les commandes ultérieures.
+
+Voir les commandes R et leur sortie dans les cases ci-dessous.
 
 ```{r basics_objects_assignment}
-current_week <- "2018-W10"   # this command creates the object current_week by assigning it a value
-current_week                 # this command prints the current value of current_week object in the console
+
+# Créer l'objet semaine_en_cours en lui attribuant une valeur:
+semaine_en_cours <- "2018-W10"   
+
+# Imprime la valeur actuelle de l'objet semaine_en_cours dans la console:
+semaine_en_cours
+
 ```
 
-<span style="color: black;">**_NOTE:_** Note the `[1]` in the R console output is simply indicating that you are viewing the first item of the output</span>
+[***NOTE:*** Notez que le `[1]` dans la sortie de la console R indique simplement que vous visualisez le premier élément de la sortie]{style="color: black;"}
 
+[***ATTENTION:*** **La valeur d'un objet peut être écrasée** à tout moment en exécutant une commande d'affectation pour redéfinir sa valeur. Ainsi, **l'ordre d'exécution des commandes est très important**.]{style="color: orange;"}
 
-<span style="color: orange;">**_CAUTION:_** **An object's value can be over-written** at any time by running an assignment command to re-define its value. Thus, the **order of the commands run is very important**.</span>
-
-The following command will re-define the value of `current_week`: 
+La commande suivante redéfinira la valeur de `semaine_en_cours`:
 
 ```{r basics_objects_reassignment}
-current_week <- "2018-W51"   # assigns a NEW value to the object current_week
-current_week                 # prints the current value of current_week in the console
+
+# Attribuer une NOUVELLE valeur à l'objet semaine_en_cours:
+semaine_en_cours <- "2018-W51"
+
+# Afficher la valeur actuelle de semaine_en_cours dans la console:
+semaine_en_cours
+
 ```
 
-**Equals signs `=`**  
+**Signe égal `=`**
 
-You will also see equals signs in R code:  
+Vous verrez également des signes égal dans le code R:
 
-* A double equals sign `==` between two objects or values asks a logical *question*: "is this equal to that?".  
-* You will also see equals signs within functions used to specify values of function arguments (read about these in sections below), for example `max(age, na.rm = TRUE)`.  
-* You *can* use a single equals sign `=` in place of `<-` to create and define objects, but this is discouraged. You can read about why this is discouraged [here](https://renkun.me/2014/01/28/difference-between-assignment-operators-in-r/).  
+-   Un double signe égal `==` entre deux objets ou valeurs pose une *question* logique: "est-ce égal à cela?".
+-   Vous verrez également des signes égal dans les fonctions utilisées pour spécifier les valeurs des arguments d'un fonction (lisez-les dans les sections ci-dessous), par exemple `max(age, na.rm = TRUE)`.
+-   Vous *pouvez* utiliser un seul signe égal `=` à la place de `<-` pour créer et définir des objets, mais cela est déconseillé. Vous pouvez lire pourquoi cela est déconseillé [ici](https://renkun.me/2014/01/28/difference-between-assignment-operators-in-r/).
 
+**Ensembles de données**
 
-**Datasets**  
-
-Datasets are also objects (typically "dataframes") and must be assigned names when they are imported. In the code below, the object `linelist` is created and assigned the value of a CSV file imported with the **rio** package and its `import()` function.  
+Les ensembles de données sont également des objets (généralement des « dataframes ») et doivent recevoir des noms lors de leur importation. Dans le code ci-dessous, l'objet `linelist` est créé et reçoit la valeur d'un fichier CSV importé avec le paquet **rio** et sa fonction `import()`.
 
 ```{r basics_objects_dataframes, eval=FALSE}
-# linelist is created and assigned the value of the imported CSV file
+
+# <<linelist>> est créée et reçoit la valeur du fichier CSV importé:
 linelist <- import("my_linelist.csv")
+
 ```
 
-You can read more about importing and exporting datasets with the section on [Import and export].
+Vous pouvez en savoir plus sur l'importation et l'exportation d'ensembles de données dans la section sur $$Import and export$$.
 
-<span style="color: orange;">**_CAUTION:_** A quick note on naming of objects:</span>
+[***ATTENTION:*** Une note rapide sur la dénomination des objets:]{style="color: orange;"}
 
-  * Object names must not contain spaces, but you should use underscore (_) or a period (.) instead of a space.  
-  * Object names are case-sensitive (meaning that Dataset_A is different from dataset_A). 
-  * Object names must begin with a letter (cannot begin with a number like 1, 2 or 3). 
+-   Les noms d'objets ne doivent pas contenir d'espaces, mais vous devez utiliser un trait de soulignement (\_) ou un point (.) au lieu d'un espace.
+-   Les noms d'objets sont sensibles à la casse (lettres majuscules et minuscules; ce qui signifie que **D**ataset_A est différent de **d**ataset_A).
+-   Les noms d'objets doivent commencer par une lettre (ne peuvent pas commencer par un chiffre comme 1, 2 ou 3).
 
-**Outputs**  
+**Les sorties**
 
-Outputs like tables and plots provide an example of how outputs can be saved as objects, or just be printed without being saved. A cross-tabulation of gender and outcome using the **base** R function `table()` can be printed directly to the R console (*without* being saved).
+Les sorties telles que les tableaux et les tracés fournissent un exemple de la façon dont les sorties peuvent être enregistrées en tant qu'objets ou simplement imprimées sans être enregistrées. Un tableau croisé du sexe et du résultat à l'aide de la fonction R **base** `table()` peut être imprimé directement sur la console R (*sans* être enregistré).
 
 ```{r}
-# printed to R console only
+
+# Imprimé sur la console R uniquement:
 table(linelist$gender, linelist$outcome)
+
 ```
 
-But the same table can be saved as a named object. Then, optionally, it can be printed.
+La même table peut également être enregistrée en tant qu'objet nommé. Ensuite, éventuellement, il peut être imprimé.
 
 ```{r}
-# save
+
+# Enregistrer:
 gen_out_table <- table(linelist$gender, linelist$outcome)
 
-# print
+# Imprimer:
 gen_out_table
+
 ```
 
-**Columns**  
+**Colonnes**
 
-Columns in a dataset are also objects and can be defined, over-written, and created as described below in the section on Columns. 
+Les colonnes d'un ensemble de données sont également des objets et peuvent être définies, écrasées et créées comme décrit ci-dessous dans la section sur les colonnes.
 
-You can use the assignment operator from **base** R to create a new column. Below, the new column `bmi` (Body Mass Index) is created, and for each row the new value is result of a mathematical operation on the row's value in the `wt_kg` and `ht_cm` columns.  
+Vous pouvez utiliser l'opérateur d'affectation de **base** R pour créer une nouvelle colonne. Ci-dessous, la nouvelle colonne `bmi` (indice de masse corporelle) est créée, et pour chaque ligne la nouvelle valeur est le résultat d'une opération mathématique sur la valeur de la ligne dans les colonnes `wt_kg` et `ht_cm`.
 
 ```{r, eval=F}
-# create new "bmi" column using base R syntax
+
+# Créer une nouvelle colonne "bmi" en utilisant la syntaxe de base R:
 linelist$bmi <- linelist$wt_kg / (linelist$ht_cm/100)^2
+
 ```
 
-However, in this handbook, we emphasize a different approach to defining columns, which uses the function `mutate()` from the **dplyr** package and *piping* with the pipe operator (`%>%`). The syntax is easier to read and there are other advantages explained in the page on [Cleaning data and core functions]. You can read more about *piping* in the Piping section below.  
+Cependant, dans ce manuel, nous mettons l'accent sur une approche différente de la définition des colonnes, qui utilise la fonction `mutate()` du package **dplyr** et *piping* avec l'opérateur pipe (`%>%`). La syntaxe est plus facile à lire et il y a d'autres avantages expliqués dans la page $$Cleaning data and core functions$$
 
-```{r, eval=F} 
-# create new "bmi" column using dplyr syntax
+Vous pouvez lire plus sur *piping* dans la section "Piping" ci-dessous.
+
+```{r, eval=F}
+
+# Créer une nouvelle colonne "bmi" en utilisant la syntaxe dplyr:
 linelist <- linelist %>% 
   mutate(bmi = wt_kg / (ht_cm/100)^2)
+
 ```
 
-
 <!-- ======================================================= -->
-### Object structure {.unnumbered}  
 
-**Objects can be a single piece of data (e.g. `my_number <- 24`), or they can consist of structured data.**  
+### Structure d'objet {.unnumbered}
 
-The graphic below is borrowed from [this online R tutorial](http://venus.ifca.unican.es/Rintro/dataStruct.html). It shows some common data structures and their names. Not included in this image is spatial data, which is discussed in the [GIS basics] page.  
+**Les objets peuvent être une seule donnée (par exemple, "mon_numéro \<- 24"), ou ils peuvent être constitués de données structurées.**
 
+Le graphique ci-dessous est emprunté à [ce tutoriel R en ligne](http://venus.ifca.unican.es/Rintro/dataStruct.html). Il montre certaines structures de données courantes et leurs noms. Les données spatiales ne sont pas incluses dans cette image, qui sont abordées dans la page $$GIS basics$$
 
 ```{r basics_objects_structures, echo=F, out.width = "75%", out.height="50%", fig.align = "center"}
 knitr::include_graphics(here::here("images", "R_data_structures.png"))
-```  
+```
 
-In epidemiology (and particularly field epidemiology), you will *most commonly* encounter data frames and vectors:  
+En épidémiologie (et en particulier en épidémiologie de terrain), vous rencontrerez *le plus souvent* des trames de données et des vecteurs:
 
++-------------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------+
+| Structure commune | Explication                                                                                                    | Exemple                                                                                                           |
++===================+================================================================================================================+===================================================================================================================+
+| Vecteurs          | Un conteneur pour une séquence d'objets singuliers, tous de la même classe (par exemple numérique, caractère). | **Les "variables" (colonnes) dans les blocs de données sont des vecteurs** (par exemple, la colonne `age_years`). |
++-------------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------+
+| Trames de données | Vecteurs (par exemple, des colonnes) qui sont liés ensemble et qui ont tous le même nombre de lignes.          | `linelist` est une trame de données.                                                                              |
++-------------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------+
 
-Common structure | Explanation | Example
-------------------- | ------------------------------------ | ------------------------  
-Vectors | A container for a sequence of singular objects, all of the same class (e.g. numeric, character). | **"Variables" (columns) in data frames are vectors** (e.g. the column `age_years`).  
-Data Frames | Vectors (e.g. columns) that are bound together that all have the same number of rows. | `linelist` is a data frame.
+Notez que pour créer un vecteur "autonome" (ne faisant pas partie d'un bloc de données), la fonction `c()` est utilisée pour combiner les différents éléments. Par exemple, si vous créez un vecteur de couleurs à appliquer à l'échelle de couleurs d'un tracé:
 
-Note that to create a vector that "stands alone" (is not part of a data frame) the function `c()` is used to combine the different elements. For example, if creating a vector of colors plot's color scale: 
-`vector_of_colors <- c("blue", "red2", "orange", "grey")`  
-
+`vector_of_colors <- c("blue", "red2", "orange", "grey")`
 
 <!-- ======================================================= -->
-### Object classes  {.unnumbered}
 
-All the objects stored in R have a *class* which tells R how to handle the object. There are many possible classes, but common ones include:
+### Classes d'objets {.unnumbered}
 
-Class |	Explanation | Examples
------- | ------------------------------------------ |  -----------------------------
-Character	| These are text/words/sentences **"within quotation marks"**. Math cannot be done on these objects.	| "Character objects are in quotation marks"  
-Integer | Numbers that are **whole only** (no decimals) | -5, 14, or 2000  
-Numeric	| These are numbers and **can include decimals**. If within quotation marks they will be considered character class. | 23.1 or 14  
-Factor | These are vectors that have a **specified order** or hierarchy of values | An variable of economic status with ordered values  
-Date | **Once R is told that certain data are Dates**, these data can be manipulated and displayed in special ways. See the page on [Working with dates] for more information. | 2018-04-12 or 15/3/1954 or Wed 4 Jan 1980  
-Logical | Values must be one of the two special values TRUE or FALSE (note these are **not** "TRUE" and "FALSE" in quotation marks) | TRUE or FALSE  
-data.frame | A data frame is how R stores a **typical dataset**. It consists of vectors (columns) of data bound together, that all have the same number of observations (rows). | The example AJS dataset named `linelist_raw` contains 68 variables with 300 observations (rows) each.  
-tibble | tibbles are a variation on data frame, the main operational difference being that they print more nicely to the console (display first 10 rows and only columns that fit on the screen) | Any data frame, list, or matrix can be converted to a tibble with `as_tibble()`  
-list | A list is like vector, but holds other objects that can be other different classes | A list could hold a single number, and a dataframe, and a vector, and even another list within it!  
+Tous les objets stockés dans R ont une *classe* qui indique à R comment gérer l'objet. Il existe de nombreuses classes possibles, mais les plus courantes incluent:
 
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| Classe     | Explication                                                                                                                                                                                                                      | Exemples                                                                                                           |
++============+==================================================================================================================================================================================================================================+====================================================================================================================+
+| Caractère  | Ce sont des textes/mots/phrases **"entre guillemets"**. Les mathématiques ne peuvent pas être effectuées sur ces objets.                                                                                                         | "Les objets caractères sont entre guillemets"                                                                      |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| Entier     | Nombres **entiers uniquement** (pas de décimales)                                                                                                                                                                                | -5, 14 ou 2000                                                                                                     |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| Numérique  | Ce sont des nombres et **peuvent inclure des décimales**. S'ils sont entre guillemets, ils seront considérés comme une classe de caractères.                                                                                     | 23.1 ou 14                                                                                                         |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| Facteur    | Ce sont des vecteurs qui ont un **ordre spécifié** ou une hiérarchie de valeurs                                                                                                                                                  | Une variable de statut économique à valeurs ordonnées                                                              |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| Des dates  | **Une fois que R est informé que certaines données sont des dates**, ces données peuvent être manipulées et affichées de manière spéciale. Voir la page sur [Working with dates] pour plus d'informations.                       | 2018-04-12 ou                                                                                                      |
+|            |                                                                                                                                                                                                                                  |                                                                                                                    |
+|            |                                                                                                                                                                                                                                  | 15/3/1954 ou                                                                                                       |
+|            |                                                                                                                                                                                                                                  |                                                                                                                    |
+|            |                                                                                                                                                                                                                                  | mer 4 janv 1980                                                                                                    |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| Logique    | Les valeurs doivent être l'une des deux valeurs spéciales `TRUE` ou `FALSE` (notez qu'elles ne sont **pas** "TRUE" et "FALSE" entre guillemets)                                                                                  | TRUE ou FALSE                                                                                                      |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| data.frame | Une trame de données est la façon dont R stocke un **ensemble de données typique**. Il se compose de vecteurs (colonnes) de données liés entre eux, qui ont tous le même nombre d'observations (lignes).                         | L'exemple de jeu de données AJS nommé `linelist_raw` contient 68 variables avec 300 observations (lignes) chacune. |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| tibble     | Les tibbles sont une variante du cadre de données; la principale différence opérationnelle étant qu'ils s'impriment mieux sur la console (affichent les 10 premières lignes et uniquement les colonnes qui tiennent sur l'écran) | Tout cadre de données, liste ou matrice peut être converti en tibble avec `as_tibble()`                            |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
+| liste      | Une liste est comme un vecteur, mais contient d'autres objets qui peuvent être d'autres classes différentes                                                                                                                      | Une liste peut contenir un seul nombre, une trame de données, un vecteur et même une autre liste à l'intérieur!    |
++------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
 
-**You can test the class of an object by providing its name to the function `class()`**. Note: you can reference a specific column within a dataset using the `$` notation to separate the name of the dataset and the name of the column.
+**Vous pouvez tester la classe d'un objet en fournissant son nom à la fonction `class()`**. Remarque : vous pouvez référencer une colonne spécifique dans un jeu de données en utilisant la notation «\$» pour séparer le nom du jeu de données et le nom de la colonne.
 
 ```{r, echo=TRUE,}
-class(linelist)         # class should be a data frame or tibble
 
-class(linelist$age)     # class should be numeric
+# La classe doit être une trame de données ou un tibble:
+class(linelist)         
 
-class(linelist$gender)  # class should be character
+# La classe doit être numérique:
+class(linelist$age)
+
+# La classe doit être caractère:
+class(linelist$gender)
+
 ```
 
-Sometimes, a column will be converted to a different class automatically by R. Watch out for this! For example, if you have a vector or column of numbers, but a character value is inserted... the entire column will change to class character.  
+Parfois, une colonne sera automatiquement convertie dans une classe différente par R. Attention à cela ! Par exemple, si vous avez un vecteur ou une colonne de nombres, mais qu'une valeur de caractère est insérée; toute la colonne deviendra un caractère de classe.
 
 ```{r}
-num_vector <- c(1,2,3,4,5) # define vector as all numbers
-class(num_vector)          # vector is numeric class
-num_vector[3] <- "three"   # convert the third element to a character
-class(num_vector)          # vector is now character class
+
+# Définir le vecteur avec des numéros:
+num_vector <- c(1,2,3,4,5) 
+
+# Le vecteur est de classe "numérique":
+class(num_vector)          
+
+# Convertir le troisième élément en caractère:
+num_vector[3] <- "three"   
+
+# Le vecteur est maintenant de classe "caractère"
+class(num_vector)          
+
 ```
 
+Un exemple courant de ceci est lors de la manipulation d'un bloc de données afin d'imprimer un tableau. Si vous faites une ligne totale et essayez de coller/coller ensemble des pourcentages dans la même cellule que des nombres (par exemple `23 (40%)`), le toute la colonne numérique ci-dessus sera convertie en caractère et ne pourra plus être utilisée pour des calculs mathématiques. **Parfois, vous devrez convertir des objets ou des colonnes dans une autre classe.**
 
-One common example of this is when manipulating a data frame in order to print a table - if you make a total row and try to paste/glue together percents in the same cell as numbers (e.g. `23 (40%)`), the entire numeric column above will convert to character and can no longer be used for mathematical calculations.**Sometimes, you will need to convert objects or columns to another class.**
++------------------+------------------------------------------------------------------------------------------------------+
+| Fonction         | Action                                                                                               |
++==================+======================================================================================================+
+| `as.character()` | Convertit en classe "caractère"                                                                      |
++------------------+------------------------------------------------------------------------------------------------------+
+| `as.numeric()`   | Convertit en classe "numérique"                                                                      |
++------------------+------------------------------------------------------------------------------------------------------+
+| `as.integer()`   | Convertit en classe "entière"                                                                        |
++------------------+------------------------------------------------------------------------------------------------------+
+| `as.Date()`      | Convertit en classe "Date"                                                                           |
+|                  |                                                                                                      |
+|                  | *Remarque:* voir la section sur les $$Dates$$ pour plus de détails                                   |
++------------------+------------------------------------------------------------------------------------------------------+
+| `factor()`       | Convertit en classe "facteur"                                                                        |
+|                  |                                                                                                      |
+|                  | *Remarque:* la redéfinition de l'ordre des niveaux de valeur nécessite des arguments supplémentaires |
++------------------+------------------------------------------------------------------------------------------------------+
 
-Function | Action  
------------------ | --------------------------------------------------------------    
-`as.character()` | Converts to character class  
-`as.numeric()` | Converts to numeric class  
-`as.integer()` | Converts to integer class
-`as.Date()` | Converts to Date class - Note: see section on [dates](#dates) for details  
-`factor()` | Converts to factor - Note: re-defining order of value levels requires extra arguments
+De même, il existe des fonctions **base** R pour vérifier si un objet EST d'une classe spécifique, comme `is.numeric()`, `is.character()`, `is.double()`, `is .facteur()`, `is.integer()`
 
-Likewise, there are **base** R functions to check whether an object IS of a specific class, such as `is.numeric()`, `is.character()`, `is.double()`, `is.factor()`, `is.integer()`
-
-Here is [more online material on classes and data structures in R](https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures/).
-
+Voici [plus de matériel en ligne sur les classes et les structures de données dans R](https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures/).
 
 <!-- ======================================================= -->
-### Columns/Variables (`$`) {.unnumbered}  
 
-**A column in a data frame is technically a "vector" (see table above)** - a series of values that must all be the same class (either character, numeric, logical, etc).  
+### Colonnes/Variables (`$`) {.unnumbered}
 
-A vector can exist independent of a data frame, for example a vector of column names that you want to include as explanatory variables in a model. To create a "stand alone" vector, use the `c()` function as below:  
+**Une colonne dans un bloc de données est techniquement un "vecteur" (voir tableau ci-dessus)** - une série de valeurs qui doivent toutes être de la même classe (caractère, numérique, logique, etc.).
+
+Un vecteur peut exister indépendamment d'un bloc de données, par exemple un vecteur de noms de colonnes que vous souhaitez inclure en tant que variables explicatives dans un modèle. Pour créer un vecteur "autonome", utilisez la fonction `c()` comme ci-dessous:
 
 ```{r, warning=F, message=F}
-# define the stand-alone vector of character values
-explanatory_vars <- c("gender", "fever", "chills", "cough", "aches", "vomit")
 
-# print the values in this named vector
-explanatory_vars
+# Définir le vecteur autonome des valeurs de classe caractère:
+var_explicatives <- c("gender", "fever", "chills", "cough", "aches", "vomit")
+
+# Affiche les valeurs dans ce vecteur nommé:
+var_explicatives
+
 ```
 
-**Columns in a data frame are also vectors and can be called, referenced, extracted, or created using the `$` symbol.** The `$` symbol connects the name of the column to the name of its data frame. In this handbook, we try to use the word "column" instead of "variable".  
-
+**Les colonnes d'un bloc de données sont également des vecteurs et peuvent être appelées, référencées, extraites ou créées à l'aide du symbole `$`.** Le symbole `$` relie le nom de la colonne au nom de son bloc de données. Dans ce manuel, nous essayons d'utiliser le mot "colonne" au lieu de "variable".
 
 ```{r basics_objects_call, eval=F}
-# Retrieve the length of the vector age_years
-length(linelist$age) # (age is a column in the linelist data frame)
+
+# Récupérer la longueur du vecteur age:
+length(linelist$age) # (l'âge est une colonne dans le bloc de données nomé "linelist")
 
 ```
 
-By typing the name of the dataframe followed by `$` you will also see a drop-down menu of all columns in the data frame. You can scroll through them using your arrow key, select one with your Enter key, and avoid spelling mistakes!  
+En tapant le nom de la trame de données suivi de `$`, vous verrez également un menu déroulant de toutes les colonnes de la trame de données. Vous pouvez les faire défiler à l'aide de votre touche fléchée, en sélectionner une avec votre touche Entrée et éviter les fautes d'orthographe !
 
 ```{r echo=F, out.width = "100%", fig.align = "center"}
 knitr::include_graphics(here::here("images", "Calling_Names.gif"))
-```  
-
-
-
-<span style="color: darkgreen;">**_ADVANCED TIP:_** Some more complex objects (e.g. a list, or an `epicontacts` object) may have multiple levels which can be accessed through multiple dollar signs. For example `epicontacts$linelist$date_onset`</span>
-
-
-
-<!-- ======================================================= -->
-### Access/index with brackets (`[ ]`) {.unnumbered}  
-
-You may need to view parts of objects, also called "indexing", which is often done using the square brackets `[ ]`. Using `$` on a dataframe to access a column is also a type of indexing.  
-
-```{r}
-my_vector <- c("a", "b", "c", "d", "e", "f")  # define the vector
-my_vector[5]                                  # print the 5th element
 ```
 
-Square brackets also work to return specific parts of an returned output, such as the output of a `summary()` function: 
+[***CONSEIL AVANCÉ:*** Certains objets plus complexes (par exemple, une liste ou un objet `epicontacts`) peuvent avoir plusieurs niveaux accessibles via plusieurs signes dollar. Par exemple `epicontacts$linelist$date_onset`]{style="color: darkgreen;"}
+
+<!-- ======================================================= -->
+
+### Accès/index avec crochets (`[ ]`) {.unnumbered}
+
+Vous devrez peut-être afficher des parties d'objets, également appelées "indexation", ce qui se fait souvent à l'aide des crochets `[ ]`. L'utilisation de `$` sur une trame de données pour accéder à une colonne est également un type d'indexation.
 
 ```{r}
-# All of the summary
+
+# Définir le vecteur:
+mon_vecteur <- c("a", "b", "c", "d", "e", "f")
+
+# Imprimer le 5ème élément:
+mon_vecteur[5]
+
+```
+
+Les crochets fonctionnent également pour renvoyer des parties spécifiques d'une sortie renvoyée, comme la sortie d'une fonction `summary()`:
+
+```{r}
+
+# Tout le résumé
 summary(linelist$age)
 
-# Just the second element of the summary, with name (using only single brackets)
+# Juste le deuxième élément du résumé, avec le nom (en utilisant uniquement des crochets simples)
 summary(linelist$age)[2]
 
-# Just the second element, without name (using double brackets)
+# Juste le deuxième élément, sans nom (en utilisant des doubles crochets)
 summary(linelist$age)[[2]]
 
-# Extract an element by name, without showing the name
+# Extraire un élément par son nom, sans afficher le nom
 summary(linelist$age)[["Median"]]
 
 ```
 
-Brackets also work on data frames to view specific rows and columns. You can do this using the syntax `dataframe[rows, columns]`:  
+Les crochets fonctionnent également sur les blocs de données pour afficher des lignes et des colonnes spécifiques. Vous pouvez le faire en utilisant la syntaxe `dataframe[lignes, colonnes]`:
 
 ```{r basics_objects_access, eval=F}
-# View a specific row (2) from dataset, with all columns (don't forget the comma!)
+
+# Afficher une ligne spécifique (2) du jeu de données, avec toutes les colonnes 
+# (n'oubliez pas la virgule!)
 linelist[2,]
 
-# View all rows, but just one column
+# Afficher toutes les lignes, mais une seule colonne:
 linelist[, "date_onset"]
 
-# View values from row 2 and columns 5 through 10
-linelist[2, 5:10] 
+# Afficher les valeurs de la ligne 2 et des colonnes 5 à 10:
+linelist[2, 5:10]
 
-# View values from row 2 and columns 5 through 10 and 18
-linelist[2, c(5:10, 18)] 
+# Afficher les valeurs de la ligne 2 et des colonnes 5 à 10 et 18:
+linelist[2, c(5:10, 18)]
 
-# View rows 2 through 20, and specific columns
+# Afficher les lignes 2 à 20 et des colonnes spécifiques:
 linelist[2:20, c("date_onset", "outcome", "age")]
 
-# View rows and columns based on criteria
-# *** Note the dataframe must still be named in the criteria!
+# Afficher les lignes et les colonnes en fonction de critères
+# *** Notez que le dataframe doit toujours être nommé dans les critères!
 linelist[linelist$age > 25 , c("date_onset", "outcome", "age")]
 
-# Use View() to see the outputs in the RStudio Viewer pane (easier to read) 
-# *** Note the capital "V" in View() function
+# Utilisez View() pour voir les sorties dans le volet RStudio Viewer (plus facile à lire)
+# *** Notez le "V" majuscule dans la fonction View()
 View(linelist[2:20, "date_onset"])
 
-# Save as a new object
-new_table <- linelist[2:20, c("date_onset")] 
+# Enregistrer en tant que nouvel objet:
+new_table <- linelist[2:20, c("date_onset")]
+
 ```
 
-Note that you can also achieve the above row/column indexing on data frames and tibbles using **dplyr** syntax (functions `filter()` for rows, and `select()` for columns). Read more about these core functions in the [Cleaning data and core functions] page.  
+Notez que vous pouvez également réaliser l'indexation des lignes/colonnes ci-dessus sur les blocs de données et les tibbles en utilisant la syntaxe **dplyr** (fonctions `filter()` pour les lignes et `select()` pour les colonnes). Pour en savoir plus sur ces fonctions principales, consultez la page $$Cleaning data and core functions$$.
 
-To filter based on "row number", you can use the **dplyr** function `row_number()` with open parentheses as part of a logical filtering statement. Often you will use the `%in%` operator and a range of numbers as part of that logical statement, as shown below. To see the *first* N rows, you can also use the special **dplyr** function `head()`.   
+Pour filtrer en fonction du "numéro de ligne", vous pouvez utiliser la fonction **dplyr** `row_number()` avec des parenthèses ouvertes dans le cadre d'une instruction de filtrage logique. Vous utiliserez souvent l'opérateur `%in%` et une plage de nombres dans le cadre de cette instruction logique, comme indiqué ci-dessous. Pour voir les *premières* N lignes, vous pouvez également utiliser la fonction spéciale **dplyr** `head()`.
 
 ```{r, eval=F}
-# View first 100 rows
-linelist %>% head(100)
 
-# Show row 5 only
-linelist %>% filter(row_number() == 5)
+# Afficher les 100 premières lignes:
+linelist %>% 
+     head(100)
 
-# View rows 2 through 20, and three specific columns (note no quotes necessary on column names)
-linelist %>% filter(row_number() %in% 2:20) %>% select(date_onset, outcome, age)
+# Afficher la ligne 5 uniquement:
+linelist %>% 
+     filter(row_number() == 5)
+
+# Afficher les lignes 2 à 20 et trois colonnes spécifiques 
+# (notez qu'aucun guillemet n'est nécessaire sur les noms de colonne)
+linelist %>% 
+     filter(row_number() %in% 2:20) %>% 
+     select(date_onset, issue, age)
+
 ```
 
+Lors de l'indexation d'un objet de classe **list**, les crochets simples retournent toujours avec la classe list, même si un seul objet est retourné. Les crochets doubles, cependant, peuvent être utilisés pour accéder à un seul élément et renvoyer une classe différente de la liste.\
+Les parenthèses peuvent également être écrites les unes après les autres, comme illustré ci-dessous.
 
-When indexing an object of class **list**, single brackets always return with class list, even if only a single object is returned. Double brackets, however, can be used to access a single element and return a different class than list.  
-Brackets can also be written after one another, as demonstrated below.  
-
-This [visual explanation of lists indexing, with pepper shakers](https://r4ds.had.co.nz/vectors.html#lists-of-condiments) is humorous and helpful.
+Cette [explication visuelle de l'indexation des listes, avec des poivrières](https://r4ds.had.co.nz/vectors.html#lists-of-condiments) est humoristique et utile.
 
 ```{r}
-# define demo list
-my_list <- list(
-  # First element in the list is a character vector
-  hospitals = c("Central", "Empire", "Santa Anna"),
+
+# définir la liste des démos
+ma_liste <- list(
+   # Le premier élément de la liste est un vecteur de caractères:
+   hopitaux = c("Central", "Empire", "Santa Anna"),
   
-  # second element in the list is a data frame of addresses
-  addresses   = data.frame(
-    street = c("145 Medical Way", "1048 Brown Ave", "999 El Camino"),
-    city   = c("Andover", "Hamilton", "El Paso")
-    )
-  )
+   # Le deuxième élément de la liste est une trame de données d'adresses:
+   adresses = data.frame(
+     rue = c("145 Medical Way", "1048 Brown Ave", "999 El Camino"),
+     ville = c("Andover", "Hamilton", "El Paso")
+     )
+   )
+
 ```
 
-Here is how the list looks when printed to the console. See how there are two named elements:  
+Voici à quoi ressemble la liste lorsqu'elle est imprimée sur la console. Voyez comment il y a deux éléments nommés:
 
-* `hospitals`, a character vector  
-* `addresses`, a data frame of addresses
+-   `hôpitaux`, un vecteur de caractères\
+-   `adresses`, une trame de données d'adresses
 
 ```{r}
-my_list
+ma_liste
 ```
-Now we extract, using various methods:  
+
+Maintenant, nous extrayons, en utilisant diverses méthodes:
 
 ```{r}
-my_list[1] # this returns the element in class "list" - the element name is still displayed
 
-my_list[[1]] # this returns only the (unnamed) character vector
+# Cela renvoie l'élément dans la classe "list" - le nom de l'élément est toujours affiché:
+ma_liste[1] 
 
-my_list[["hospitals"]] # you can also index by name of the list element
+# Cela ne renvoie que le vecteur de caractères (sans nom):
+ma_liste[[1]]
 
-my_list[[1]][3] # this returns the third element of the "hospitals" character vector
+# Vous pouvez également indexer par le nom de l'élément de la liste:
+ma_liste[["hopitaux"]]
 
-my_list[[2]][1] # This returns the first column ("street") of the address data frame
+# Cela renvoie le troisième élément du vecteur de caractères "hôpitaux":
+ma_liste[[1]][3] 
+
+# Cela renvoie la première colonne ("rue") de la trame de données d'adresse:
+ma_liste[[2]][1]
 
 ```
-
-
 
 <!-- ======================================================= -->
-### Remove objects {.unnumbered} 
 
-You can remove individual objects from your R environment by putting the name in the `rm()` function (no quote marks):  
+### Supprimer des objets {.unnumbered}
+
+Vous pouvez supprimer des objets individuels de votre environnement R en mettant le nom dans la fonction `rm()` (sans guillemets):
 
 ```{r, eval=F}
-rm(object_name)
+rm(nom_objet)
 ```
 
-You can remove all objects (clear your workspace) by running:  
+Vous pouvez supprimer tous les objets (vider votre espace de travail) en exécutant:
 
 ```{r, eval=F}
 rm(list = ls(all = TRUE))
 ```
 
-
+<!-- ======================================================= -->
 
 <!-- ======================================================= -->
-<!-- ======================================================= -->
-<!-- ======================================================= -->
-## Piping (`%>%`)  
-
-**Two general approaches to working with objects are:**  
-
-1) **Pipes/tidyverse** - pipes send an object from function to function - emphasis is on the *action*, not the object  
-2) **Define intermediate objects** - an object is re-defined again and again - emphasis is on the object  
-
 
 <!-- ======================================================= -->
-### **Pipes** {.unnumbered}
 
-**Simply explained, the pipe operator (`%>%`) passes an intermediate output from one function to the next.**  
-You can think of it as saying "then". Many functions can be linked together with `%>%`.  
+## Tuyauterie / "Piping" (`%>%`)
 
-* **Piping emphasizes a sequence of actions, not the object the actions are being performed on**  
-* Pipes are best when a sequence of actions must be performed on one object  
-* Pipes come from the package **magrittr**, which is automatically included in packages **dplyr** and **tidyverse**
-* Pipes can make code more clean and easier to read, more intuitive
+**Deux approches générales pour travailler avec des objets sont:**
 
-Read more on this approach in the tidyverse [style guide](https://style.tidyverse.org/pipes.html)  
+1)  **Pipes/tidyverse** - les tuyaux envoient un objet d'une fonction à l'autre - l'accent est mis sur *l'action*, pas sur l'objet\
+2)  **Définir les objets intermédiaires** - un objet est redéfini encore et encore - l'accent est mis sur l'objet
 
-Here is a fake example for comparison, using fictional functions to "bake a cake". First, the pipe method:  
+<!-- ======================================================= -->
+
+### **Tuyaux / Pipes** {.unnumbered}
+
+\*\* Expliqué simplement, l'opérateur pipe (`%>%`) passe une sortie intermédiaire d'une fonction à la suivante. \*\*\
+Vous pouvez penser que cela signifie "alors". De nombreuses fonctions peuvent être liées avec `%>%`.
+
+-   **Le tuyau met l'accent sur une séquence d'actions, et non sur l'objet sur lequel les actions sont effectuées**\
+-   Les tuyaux sont plus efficaces lorsqu'une séquence d'actions doit être effectuée sur un objet\
+-   Les tuyaux proviennent du paquet **magrittr**, qui est automatiquement inclus dans les paquets **dplyr** et **tidyverse**
+-   Les tuyaux peuvent rendre le code plus propre et plus facile à lire, plus intuitif
+
+En savoir plus sur cette approche dans le tidyverse [guide de style](https://style.tidyverse.org/pipes.html)
+
+Voici un faux exemple de comparaison, utilisant des fonctions fictives pour "faire un gâteau". Tout d'abord, la méthode du tuyau:
 
 ```{r piping_example_pipe, eval=F}
-# A fake example of how to bake a cake using piping syntax
 
-cake <- flour %>%       # to define cake, start with flour, and then...
-  add(eggs) %>%   # add eggs
-  add(oil) %>%    # add oil
-  add(water) %>%  # add water
-  mix_together(         # mix together
-    utensil = spoon,
-    minutes = 2) %>%    
-  bake(degrees = 350,   # bake
-       system = "fahrenheit",
-       minutes = 35) %>%  
-  let_cool()            # let it cool down
+# Un faux exemple de comment faire cuire un gâteau en utilisant la syntaxe de tuyauterie:
+
+gateau <- farine %>% # pour définir le gâteau, commencez par la farine, puis...
+     # ajouter des oeufs
+     add(oeufs) %>% 
+     # ajouter de l'huile
+     add(huile) %>% 
+     # ajouter de l'eau
+     add(eau) %>% 
+     # mélanger ensemble avec cuillère pour 2 minutes:
+     mix_together(
+          ustensil = "spoon",
+          minutes = 2) %>%
+     # cuire à 200 degrés centigrade pour 35 minutes:
+     bake(
+          degrees = 200, 
+          system = "centigrade",
+          minute = 35) %>%
+     # laissez-le refroidir
+     let_cool() 
+
+
 ```
 
-Here is another [link](https://cfss.uchicago.edu/notes/pipes/#:~:text=Pipes%20are%20an%20extremely%20useful,code%20and%20combine%20multiple%20operations) describing the utility of pipes.  
+Voici un autre [lien](https://cfss.uchicago.edu/notes/pipes/#:~:text=Pipes%20are%20an%20extremely%20useful,code%20and%20combine%20multiple%20operations) décrivant l'utilitaire de tuyaux.
 
-Piping is not a **base** function. To use piping, the **magrittr** package must be installed and loaded (this is typically done by loading **tidyverse** or **dplyr** package which include it). You can [read more about piping in the magrittr documentation](https://magrittr.tidyverse.org/).
+La tuyauterie n'est pas une fonction de **base** en R. Pour utiliser la tuyauterie, le paquet **magrittr** doit être installé et chargé (cela se fait généralement en chargeant le paquet **tidyverse** ou **dplyr** qui l'inclut). Vous pouvez [en savoir plus sur la tuyauterie dans la documentation de magrittr](https://magrittr.tidyverse.org/).
 
-Note that just like other R commands, pipes can be used to just display the result, or to save/re-save an object, depending on whether the assignment operator `<-` is involved. See both below:  
+Notez que, tout comme les autres commandes R, les tuyaux peuvent être utilisés pour afficher simplement le résultat ou pour enregistrer/réenregistrer un objet, selon que l'opérateur d'affectation `<-` est impliqué ou non. Voir les deux exemplaires ci-dessous:
 
 ```{r, eval=F}
-# Create or overwrite object, defining as aggregate counts by age category (not printed)
+
+# Créer ou écraser un objet, en le définissant sous 
+# forme de nombres agrégés par catégorie d'âge (non imprimé)
 linelist_summary <- linelist %>% 
   count(age_cat)
+
 ```
 
 ```{r}
-# Print the table of counts in the console, but don't save it
+
+# Imprimez le tableau des comptes dans la console, mais ne l'enregistrez pas:
 linelist %>% 
   count(age_cat)
+
 ```
 
-
-**`%<>%`**  
-This is an "assignment pipe" from the **magrittr** package, which *pipes an object forward and also re-defines the object*. It must be the first pipe operator in the chain. It is shorthand. The below two commands are equivalent:  
+**`%<>%`**\
+Il s'agit d'un "tuyau d'affectation" du paquet **magrittr**, qui *transmet un objet en avant et redéfinit également l'objet*. Il doit être le premier opérateur pipe de la chaîne. C'est un raccourci. Les deux commandes ci-dessous sont équivalentes:
 
 ```{r, eval=F}
+
+# Utilisez l'opérateur d'affectation:
 linelist <- linelist %>%
   filter(age > 50)
 
+# Utilisez le tuyau d'affectation:
 linelist %<>% filter(age > 50)
+
 ```
 
-
 <!-- ======================================================= -->
-### Define intermediate objects {.unnumbered}
 
-This approach to changing objects/dataframes may be better if:  
+### Définir les objets intermédiaires {.unnumbered}
 
-* You need to manipulate multiple objects  
-* There are intermediate steps that are meaningful and deserve separate object names
+Cette approche de modification des objets ou trammes de données peut être meilleure si:
 
+-   Vous devez manipuler plusieurs objets\
+-   Il y a des étapes intermédiaires qui sont significatives et méritent des noms d'objets séparés
 
-**Risks:**  
+**Des risques:**
 
-* Creating new objects for each step means creating lots of objects. If you use the wrong one you might not realize it!  
-* Naming all the objects can be confusing  
-* Errors may not be easily detectable  
+-   Créer de nouveaux objets pour chaque étape signifie créer beaucoup d'objets. Si vous utilisez le mauvais, vous ne vous en rendrez peut-être pas compte!\
+-   Nommer tous les objets peut prêter à confusion\
+-   Les erreurs peuvent ne pas être facilement détectables
 
-Either name each intermediate object, or overwrite the original, or combine all the functions together. All come with their own risks.  
+Soit nommer chaque objet intermédiaire, soit écraser l'original, soit combiner toutes les fonctions ensemble. Tous viennent avec leurs propres risques.
 
-Below is the same fake "cake" example as above, but using this style:  
+Vous trouverez ci-dessous le même exemple de faux "gâteau" que ci-dessus, mais en utilisant ce style:
 
 ```{r piping_example_redefine, eval=F}
-# a fake example of how to bake a cake using this method (defining intermediate objects)
-batter_1 <- left_join(flour, eggs)
-batter_2 <- left_join(batter_1, oil)
-batter_3 <- left_join(batter_2, water)
 
-batter_4 <- mix_together(object = batter_3, utensil = spoon, minutes = 2)
+# un faux exemple de comment faire un gâteau en utilisant cette méthode 
+# (définissant des objets intermédiaires):
 
-cake <- bake(batter_4, degrees = 350, system = "fahrenheit", minutes = 35)
+# Ajouter le farine et les oeufs:
+pate_1 <- left_join(farine, oeufs)
 
-cake <- let_cool(cake)
+# Ajouter l'huile:
+pate_2 <- left_join (pate_1, huile)
+
+# Ajouter l'eau:
+pate_3 <- left_join(pate_2, eau)
+
+# Melange tous ensemble:
+pate_4 <- mix_together(object = pate_3, 
+                       ustensil = "spoon", 
+                       minutes = 2)
+
+# Cuire le gâteau dans le four:
+gateau <-bake(object = pate_4, 
+              degrees = 200, 
+              system = "centigrade", 
+              minutes = 35)
+
+# Laissez-le à refroidir:
+gateau <- let_cool(gateau)
+
 ```
 
-Combine all functions together - this is difficult to read:  
+Combinez toutes les fonctions ensemble - c'est difficile à lire :
 
 ```{r eval=F}
-# an example of combining/nesting mutliple functions together - difficult to read
-cake <- let_cool(bake(mix_together(batter_3, utensil = spoon, minutes = 2), degrees = 350, system = "fahrenheit", minutes = 35))
+
+# Un exemple de combinaison/imbrication de plusieurs fonctions - difficile à lire:
+gateau <- let_cool(bake(mix_together(pate_3, 
+                                     utensil = "spoon", 
+                                     minutes = 2), 
+                        degrees = 200, 
+                        system = "centigrade",
+                        minutes = 35))
+
 ```
 
+<!-- ======================================================= -->
+
+## Opérateurs clés et fonctions {#operators}
+
+Cette section détaille les opérateurs dans R, tels que:
+
+-   Opérateurs définitionnels\
+-   Opérateurs relationnels (inférieur à, égal aussi..)\
+-   Opérateurs logiques (et, ou...)\
+-   Gestion des valeurs manquantes\
+-   Opérateurs et fonctions mathématiques (+/-, \>, sum(), median(), ...)\
+-   L'opérateur `%in%`
 
 <!-- ======================================================= -->
-## Key operators and functions {#operators}
 
-This section details operators in R, such as:  
+### Opérateurs d'affectation {.unnumbered}
 
-* Definitional operators  
-* Relational operators (less than, equal too..)  
-* Logical operators (and, or...)  
-* Handling missing values  
-* Mathematical operators and functions (+/-, >, sum(), median(), ...)  
-* The `%in%` operator  
+**`<-`**
 
+L'opérateur d'affectation de base dans R est `<-`. Tel que `nom_objet <- valeur`.\
+Cet opérateur d'affectation peut également être écrit comme `=`. Nous vous conseillons d'utiliser `<-` pour une utilisation générale de R.\
+Nous conseillons également d'entourer ces opérateurs d'espaces, pour plus de lisibilité.
 
+**`<<-`**
 
-<!-- ======================================================= -->
-### Assignment operators {.unnumbered}  
+Si [Fonctions d'écriture], ou si vous utilisez R de manière interactive avec des scripts sourcés, vous devrez peut-être utiliser cet opérateur d'affectation `<<-` (de **base** R). Cet opérateur est utilisé pour définir un objet dans un environnement R « parent » supérieur. Voir ceci [référence en ligne](https://stat.ethz.ch/R-manual/R-devel/library/base/html/assignOps.html).
 
-**`<-`**  
+**`%<>%`**
 
-The basic assignment operator in R is `<-`. Such that `object_name <- value`.  
-This assignment operator can also be written as `=`. We advise use of `<-` for general R use.  
-We also advise surrounding such operators with spaces, for readability.  
-
-
-**`<<-`**  
-
-If [Writing functions], or using R in an interactive way with sourced scripts, then you may need to use this assignment operator `<<-` (from **base** R). This operator is used to define an object in a higher 'parent' R Environment. See this [online reference](https://stat.ethz.ch/R-manual/R-devel/library/base/html/assignOps.html).
-
-
-**`%<>%`**  
-
-This is an "assignment pipe" from the **magrittr** package, which pipes an object forward and *also re-defines the object*. It must be the first pipe operator in the chain. It is shorthand, as shown below in two equivalent examples:  
-
-```{r, eval=F}
-linelist <- linelist %>% 
-  mutate(age_months = age_years * 12)
-```  
-
-The above is equivalent to the below:  
-
-```{r, eval=F}
-linelist %<>% mutate(age_months = age_years * 12)
-```
+Il s'agit d'un "tuyau d'affectation" du paquet **magrittr**, qui dirige un objet vers l'avant et *redéfinit également l'objet*. Il doit être le premier opérateur pipe de la chaîne. Il s'agit d'un raccourci.
 
 **`%<+%`**
 
-This is used to add data to phylogenetic trees with the **ggtree** package. See the page on [Phylogenetic trees] or this online [resource book](https://yulab-smu.top/treedata-book/).  
-
-
- 
+Ceci est utilisé pour ajouter des données aux arbres phylogénétiques avec le package **ggtree**. Voir la page sur les $$Phylogenetic trees$$ ou ce [livre de ressources en ligne](https://yulab-smu.top/treedata-book/).
 
 <!-- ======================================================= -->
-### Relational and logical operators {.unnumbered}  
 
-Relational operators compare values and are often used when defining new variables and subsets of datasets. Here are the common relational operators in R:  
+### Opérateurs relationnels et logiques {.unnumbered}
 
-Meaning                 |Operator     |Example       |Example Result
-------------------------|-------------|--------------|---------------------------
-Equal to                |`==`         |`"A" == "a"`  |`FALSE` (because R is case sensitive) *Note that == (double equals) is different from = (single equals), which acts like the assignment operator `<-`*
-Not equal to            |`!=`         |`2 != 0`      |`TRUE`
-Greater than            |`>`          |`4 > 2`       |`TRUE`
-Less than               |`<`          |`4 < 2`       |`FALSE`
-Greater than or equal to|`>=`         |`6 >= 4`      |`TRUE`
-Less than or equal to   |`<=`         |`6 <= 4`      |`FALSE`
-Value is missing        |`is.na()`    |`is.na(7)`    |`FALSE` (see page on [Missing data])
-Value is not missing    |`!is.na()`   |`!is.na(7)`   |`TRUE`
+Les opérateurs relationnels comparent les valeurs et sont souvent utilisés lors de la définition de nouvelles variables et de sous-ensembles des blocs de données. Voici les opérateurs relationnels courants dans R:
 
-Logical operators, such as AND and OR, are often used to connect relational operators and create more complicated criteria. Complex statements might require parentheses ( ) for grouping and order of application.  
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
+| Sens                 | Opérateur  | Exemple      | Exemple de résultat                                                                                              |
++======================+============+==============+==================================================================================================================+
+| Égal à               | `==`       | `"A" == "a"` | `FALSE` (parce que R est sensible à la casse)                                                                    |
+|                      |            |              |                                                                                                                  |
+|                      |            |              | *Notez que `==` (double égal) est différent de `=` (simple égal), qui agit comme l'opérateur d'affectation `<-`* |
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
+| Non égal à           | `!=`       | `2 != 0`     | `TRUE`                                                                                                           |
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
+| Supérieur à          | `>`        | `4 > 2`      | `TRUE`                                                                                                           |
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
+| Moins de             | `<`        | `4 < 2`      | `FALSE`                                                                                                          |
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
+| Supérieur ou égal à  | `>=`       | `6 >= 4`     | `TRUE`                                                                                                           |
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
+| Inférieur ou égal à  | `<=`       | `6 <= 4`     | `FALSE`                                                                                                          |
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
+| Valeur manquante     | `is.na()`  | `is.na(7)`   | `FALSE`                                                                                                          |
+|                      |            |              |                                                                                                                  |
+|                      |            |              | (voir page sur $$Missing data$$)                                                                                 |
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
+| Valeur ne manque pas | `!is.na()` | `!is.na(7)`  | `TRUE`                                                                                                           |
++----------------------+------------+--------------+------------------------------------------------------------------------------------------------------------------+
 
-Meaning    |Operator
------------|------------------------
-AND        |`&`
-OR         |`|` (vertical bar)
-Parentheses|`( )` Used to group criteria together and clarify order  of operations
+Les opérateurs logiques, tels que ET et OU, sont souvent utilisés pour connecter des opérateurs relationnels et créer des critères plus complexes. Les instructions complexes peuvent nécessiter des parenthèses ( ) pour le regroupement et l'ordre d'application.
 
++-------------+-------------------------------------------------------------------------------+
+| Sens        | Opérateur                                                                     |
++=============+===============================================================================+
+| ET          | `&`                                                                           |
++-------------+-------------------------------------------------------------------------------+
+| OU          | `|` (barre verticale)                                                         |
++-------------+-------------------------------------------------------------------------------+
+| Parenthèses | `( )` Utilisé pour regrouper les critères et clarifier l'ordre des opérations |
++-------------+-------------------------------------------------------------------------------+
 
-For example, below, we have a linelist with two variables we want to use to create our case definition, `hep_e_rdt`, a test result and `other_cases_in_hh`, which will tell us if there are other cases in the household. The command below uses the function `case_when()` to create the new variable `case_def` such that:
+Par exemple, ci-dessous, nous avons une liste linéaire avec deux variables que nous voulons utiliser pour créer notre définition de cas, `resultat_tdr`, un résultat d'un test rapide, et `autres_cas_menage`, qui nous dira s'il y a d'autres cas dans le ménage. La commande ci-dessous utilise la fonction `case_when()` pour créer la nouvelle variable `case_def` telle que:
 
 ```{r eval=FALSE}
-linelist_cleaned <- linelist %>%
+linelist_propre <- linelist %>%
   mutate(case_def = case_when(
-    is.na(rdt_result) & is.na(other_case_in_home)            ~ NA_character_,
-    rdt_result == "Positive"                                 ~ "Confirmed",
-    rdt_result != "Positive" & other_cases_in_home == "Yes"  ~ "Probable",
-    TRUE                                                     ~ "Suspected"
+    is.na(resultat_tdr) & is.na(autres_cas_menage)            ~ NA_character_,
+    resultat_tdr == "Positive"                                 ~ "Confirmé",
+    resultat_tdr != "Positive" & other_cases_in_home == "Oui"  ~ "Probable",
+    TRUE                                                     ~ "Suspect"
   ))
 ```
 
-Criteria in example above               | Resulting value in new variable "case_def"
-----------------------------------------|-------------------------------------
-If the value for variables `rdt_result` and `other_cases_in_home` are missing | `NA` (missing)  
-If the value in `rdt_result` is "Positive" | "Confirmed"  
-If the value in `rdt_result` is NOT "Positive" AND the value in `other_cases_in_home` is "Yes" | "Probable"  
-If one of the above criteria are not met | "Suspected"  
++--------------------------------------------------------------------------------+------------------------+
+| Critères dans l'exemple ci-dessus                                              | Valeur dans "case_def" |
++================================================================================+========================+
+| Si la valeur des variables `resultat_tdr` et `autres_cas_menage` est manquante | `NA` (manquante)       |
++--------------------------------------------------------------------------------+------------------------+
+| Si la valeur dans `resultat_tdr` est "Positive"                                | "Confirmé"             |
++--------------------------------------------------------------------------------+------------------------+
+| Si la valeur dans `resultat_tdr` n'est pas "Positive" **ET**                   | "Probable"             |
+|                                                                                |                        |
+| la valeur dans `autres_cas_menage` est "Oui"                                   |                        |
++--------------------------------------------------------------------------------+------------------------+
+| Si l'un des critères ci-dessus n'est pas rempli                                | "Suspect"              |
++--------------------------------------------------------------------------------+------------------------+
 
+*Notez que R est sensible à la casse, donc "Positif" est différent de "positif"...*
 
-*Note that R is case-sensitive, so "Positive" is different than "positive"...*  
-
- 
 <!-- ======================================================= -->
-### Missing values {.unnumbered}
 
-In R, missing values are represented by the special value `NA` (a "reserved" value) (capital letters N and A - not in quotation marks). If you import data that records missing data in another way (e.g. 99, "Missing", or .), you may want to re-code those values to `NA`. How to do this is addressed in the [Import and export] page.  
+### Valeurs manquantes {.unnumbered}
 
-**To test whether a value is `NA`, use the special function `is.na()`**, which returns `TRUE` or `FALSE`.
+Dans R, les valeurs manquantes sont représentées par la valeur spéciale `NA` (une valeur "réservée") (lettres majuscules N et A - pas entre guillemets). Si vous importez des données qui enregistrent des données manquantes d'une autre manière (par exemple, 99, "Missing" ou .), vous pouvez recoder ces valeurs en "NA". La procédure à suivre est expliquée dans la page $$Import and export$$.
+
+**Pour tester si une valeur est `NA`, utilisez la fonction spéciale `is.na()`**, qui renvoie `TRUE` ou `FALSE`.
 
 ```{r basics_operators_missing}
-rdt_result <- c("Positive", "Suspected", "Positive", NA)   # two positive cases, one suspected, and one unknown
-is.na(rdt_result)  # Tests whether the value of rdt_result is NA
+
+# 2 cas positives, un suspect et un inconnu:
+resultat_tdr <- c("Positive", "Suspect", "Positive", NA)   
+
+# Verifier si il y' a des valeurs manquantes:
+is.na(resultat_tdr)
+
 ```
 
-Read more about missing, infinite, `NULL`, and impossible values in the page on [Missing data]. Learn how to convert missing values when importing data in the page on [Import and export].  
-
-
+En savoir plus sur les valeurs manquantes, infinies, `NULL` et impossibles dans la page sur les $$Missing data$$. Découvrez comment convertir les valeurs manquantes lors de l'importation de données dans la page sur $$Import and export$$.
 
 <!-- ======================================================= -->
-### Mathematics and statistics {.unnumbered}  
 
-All the operators and functions in this page are automatically available using **base** R.  
+### Mathématiques et statistiques {.unnumbered}
 
-#### Mathematical operators {.unnumbered} 
+Tous les opérateurs et fonctions de cette page sont automatiquement disponibles en utilisant **base** R.
 
-These are often used to perform addition, division, to create new columns, etc. Below are common mathematical operators in R. Whether you put spaces around the operators is not important.  
+#### Opérateurs mathématiques {.unnumbered}
 
+Ceux-ci sont souvent utilisés pour effectuer des additions, des divisions, pour créer de nouvelles colonnes, etc. Vous trouverez ci-dessous des opérateurs mathématiques courants dans R. Que vous mettiez des espaces autour des opérateurs n'est pas important.
 
-Purpose            |Example in R
--------------------|-------------
-addition           | 2 + 3
-subtraction        | 2 - 3
-multiplication     | 2 * 3
-division           | 30 / 5
-exponent           | 2^3
-order of operations| ( )
+| Objectif             | Exemple en R |
+|----------------------|--------------|
+| addition             | 2 + 3        |
+| soustraction         | 2 - 3        |
+| multiplication       | 2 \* 3       |
+| division             | 30 / 5       |
+| exposant             | 2\^3         |
+| ordre des opérations | ( )          |
 
+#### Fonctions mathématiques {.unnumbered}
 
++--------------------------------+---------------------------------------+
+| Objectif                       | Fonction                              |
++================================+=======================================+
+| arrondir                       | round(x, digits = n)                  |
++--------------------------------+---------------------------------------+
+| arrondir                       | janitor::round_half_up(x, digits = n) |
++--------------------------------+---------------------------------------+
+| plafond (arrondi)              | ceiling(x)                            |
++--------------------------------+---------------------------------------+
+| étage (arrondir à l'inférieur) | floor(x)                              |
++--------------------------------+---------------------------------------+
+| valeur absolue                 | abs(x)                                |
++--------------------------------+---------------------------------------+
+| racine carrée                  | sqrt(x)                               |
++--------------------------------+---------------------------------------+
+| exposant                       | exponent(x)                           |
++--------------------------------+---------------------------------------+
+| un algorithme naturel          | log(x)                                |
++--------------------------------+---------------------------------------+
+| log à la base 10               | log10(x)                              |
++--------------------------------+---------------------------------------+
+| log à la base 2                | log2(x)                               |
++--------------------------------+---------------------------------------+
 
-#### Mathematical functions {.unnumbered}
+Remarque: pour `round()`, les `digits =` spécifient le nombre de décimales placées. Utilisez `signif()` pour arrondir à un nombre de chiffres significatifs.
 
-Purpose            |Function
--------------------|-------------
-rounding           | round(x, digits = n)  
-rounding           | janitor::round_half_up(x, digits = n)
-ceiling (round up) | ceiling(x)
-floor (round down) | floor(x)
-absolute value     | abs(x)
-square root        | sqrt(x)
-exponent           | exponent(x)
-natural logarithm  | log(x)
-log base 10        | log10(x)
-log base 2         | log2(x)
+#### Notation scientifique {.unnumbered}
 
-Note: for `round()` the `digits = ` specifies the number of decimal placed. Use `signif()` to round to a number of significant figures.  
+La probabilité d'utilisation de la notation scientifique dépend de la valeur de l'option "scipen".
 
+D'après la documentation de `?options`: scipen est une pénalité à appliquer lors de la décision d'imprimer des valeurs numériques en notation fixe ou exponentielle. Les valeurs positives tendent vers la notation fixe et négatives vers la notation scientifique: la notation fixe sera préférée à moins qu'elle ne soit plus large de plus de 'scipen'.
 
-#### Scientific notation {.unnumbered}
-
-The likelihood of scientific notation being used depends on the value of the `scipen` option.  
-
-From the documentation of `?options`: scipen is a penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.  
-
-If it is set to a low number (e.g. 0) it will be "turned on" always. To "turn off" scientific notation in your R session, set it to a very high number, for example:    
+S'il est réglé sur un nombre faible (par exemple 0), il sera toujours "allumé". Pour "désactiver" la notation scientifique dans votre session R, définissez-la sur un nombre très élevé, par exemple:
 
 ```{r, eval=F}
-# turn off scientific notation
-options(scipen=999)
+# Désactiver la notation scientifique
+options(scipen = 999)
 ```
 
+#### Arrondi {.unnumbered}
 
-
-#### Rounding {.unnumbered}  
-
-<span style="color: red;">**_DANGER:_** `round()` uses "banker's rounding" which rounds up from a .5 only if the upper number is even. Use `round_half_up()` from **janitor** to consistently round halves up to the nearest whole number. See [this explanation](https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html#explore-records-with-duplicated-values-for-specific-combinations-of-variables-with-get_dupes) </span>  
+[***DANGER:*** `round()` utilise "l'arrondi du banquier" qui arrondit à partir de 0,5 uniquement si le nombre supérieur est pair. Utilisez `round_half_up()` de **janitor** pour arrondir systématiquement les moitiés au nombre entier le plus proche. Voir [cette explication](https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html#explore-records-with-duplicated-values-for-specific-combinations-of-variables-%20with-get_dupes)]{style="color: rouge;"}
 
 ```{r}
-# use the appropriate rounding function for your work
+
+# Fonction d'arrondi avec R de base:
 round(c(2.5, 3.5))
 
+# Fonction d'arrondi du paquet "janitor":
 janitor::round_half_up(c(2.5, 3.5))
+
 ```
 
+#### Fonctions statistiques {.unnumbered}
 
-#### Statistical functions {.unnumbered}  
+[***ATTENTION:*** Les fonctions ci-dessous incluront par défaut les valeurs manquantes dans les calculs. Les valeurs manquantes entraîneront une sortie de `NA`, sauf si l'argument `na.rm = TRUE` est spécifié. Cela peut être écrit en raccourci comme `na.rm = T`.]{style="color: orange;"}
 
-<span style="color: orange;">**_CAUTION:_** The functions below will by default include missing values in calculations. Missing values will result in an output of `NA`, unless the argument `na.rm = TRUE` is specified. This can be written shorthand as `na.rm = T`.</span>
+| Objective                   | Fonction           |
+|-----------------------------|--------------------|
+| moyen                       | mean(x, na.rm=T)   |
+| médian                      | median(x, na.rm=T) |
+| écart-type                  | sd(x, na.rm=T)     |
+| quantiles\*                 | quantile(x, probs) |
+| somme                       | sum(x, na.rm=T)    |
+| valeur minimum              | min(x, na.rm=T)    |
+| valeur maximum              | max(x, na.rm=T)    |
+| plage de valeurs numériques | range(x, na.rm=T)  |
+| sommaire\*\*                | summary(x)         |
 
+Remarques:
 
-Objective                |Function
--------------------------|----------------------
-mean (average)           | mean(x, na.rm=T)
-median                   | median(x, na.rm=T)
-standard deviation       | sd(x, na.rm=T)
-quantiles*               | quantile(x, probs)
-sum                      | sum(x, na.rm=T)
-minimum value            | min(x, na.rm=T)
-maximum value            | max(x, na.rm=T)
-range of numeric values  | range(x, na.rm=T)
-summary**               | summary(x)
+-   `*quantile()`: `x` est le vecteur numérique à examiner et `probs =` est un vecteur numérique avec des probabilités comprises entre 0 et 1,0, par exemple `c(0,5, 0,8, 0,85)`
+-   `**summary()`: donne un résumé sur un vecteur numérique comprenant la moyenne, la médiane et les centiles communs
 
-Notes:  
-
-* `*quantile()`: `x` is the numeric vector to examine, and `probs = ` is a numeric vector with probabilities within 0 and 1.0, e.g `c(0.5, 0.8, 0.85)`
-* `**summary()`: gives a summary on a numeric vector including mean, median, and common percentiles  
-
-<span style="color: red;">**_DANGER:_** If providing a vector of numbers to one of the above functions, be sure to wrap the numbers within `c()` .</span>
+[***DANGER:*** Si vous fournissez un vecteur de nombres à l'une des fonctions ci-dessus, assurez-vous d'envelopper les nombres dans `c()`.]{style="color: red;"}
 
 ```{r}
-# If supplying raw numbers to a function, wrap them in c()
-mean(1, 6, 12, 10, 5, 0)    # !!! INCORRECT !!!  
+# Si vous fournissez des nombres bruts à une fonction, 
+# enveloppez-les dans c():
 
-mean(c(1, 6, 12, 10, 5, 0)) # CORRECT
+# !!! ERREUR !!!
+mean(1, 6, 12, 10, 5, 0)      
+
+# CORRECT
+mean(c(1, 6, 12, 10, 5, 0)) 
+
 ```
 
+#### Autres fonctions utiles {.unnumbered}
 
-
-
-
-#### Other useful functions {.unnumbered}  
-
-
-Objective                   |Function            |Example
-----------------------------|--------------------|-----------------------------------------------
-create a sequence           | seq(from, to, by)  |`seq(1, 10, 2)`
-repeat x, n times           | rep(x, ntimes)     |`rep(1:3, 2)` or `rep(c("a", "b", "c"), 3)` 
-subdivide a numeric vector  | cut(x, n)          |`cut(linelist$age, 5)`
-take a random sample        | sample(x, size)    |`sample(linelist$id, size = 5, replace = TRUE)`
-
-
-
++----------------------------------+-------------------+-------------------------------------------------+
+| Objectif                         | Fonction          | Exemple                                         |
++==================================+===================+=================================================+
+| créer une séquence               | seq(from, to, by) | `seq(1, 10, 2)`                                 |
++----------------------------------+-------------------+-------------------------------------------------+
+| répéter x, n fois                | rep(x, ntimes)    | `rep(1:3, 2)` or `rep(c("a", "b", "c"), 3)`     |
++----------------------------------+-------------------+-------------------------------------------------+
+| subdiviser un vecteur numérique  | cut(x, n)         | `cut(linelist$age, 5)`                          |
++----------------------------------+-------------------+-------------------------------------------------+
+| prendre un échantillon au hasard | sample(x, size)   | `sample(linelist$id, size = 5, replace = TRUE)` |
++----------------------------------+-------------------+-------------------------------------------------+
 
 <!-- ======================================================= -->
-### `%in%` {.unnumbered}  
 
-A very useful operator for matching values, and for quickly assessing if a value is within a vector or dataframe.   
+### `%in%` {.unnumbered}
+
+Un opérateur très utile pour faire correspondre les valeurs et pour évaluer rapidement si une valeur se trouve dans un vecteur ou une trame de données:
 
 ```{r}
-my_vector <- c("a", "b", "c", "d")
+mon_vecteur <- c("a", "b", "c", "d")
 ```
 
 ```{r}
-"a" %in% my_vector
-"h" %in% my_vector
+"a" %in% mon_vecteur
+"h" %in% mon_vecteur
 ```
 
-To ask if a value is **not** `%in%` a vector, put an exclamation mark (!) **in front** of the logic statement:  
+Pour demander si une valeur n'est **pas** `%in%` un vecteur, placez un point d'exclamation (!) **devant** l'instruction logique:
 
 ```{r}
-# to negate, put an exclamation in front
-!"a" %in% my_vector
-!"h" %in% my_vector
+# Pour nier, mettre une exclamation devant:
+!"a" %in% mon_vecteur
+!"h" %in% mon_vecteur
 ```
 
-`%in%` is very useful when using the **dplyr** function `case_when()`. You can define a vector previously, and then reference it later. For example:  
+`%in%` est très utile lors de l'utilisation de la fonction **dplyr** `case_when()`. Vous pouvez définir un vecteur précédemment, puis le référencer ultérieurement. Par exemple:
 
 ```{r eval=F}
 affirmative <- c("1", "Yes", "YES", "yes", "y", "Y", "oui", "Oui", "Si")
 
 linelist <- linelist %>% 
-  mutate(child_hospitaled = case_when(
-    hospitalized %in% affirmative & age < 18 ~ "Hospitalized Child",
-    TRUE                                      ~ "Not"))
+  mutate(enfant_hospitalise = case_when(
+    hospitalise %in% affirmative & age < 18 ~ "Hospitalized Child",
+    TRUE                                    ~ "Not"))
 ```
 
-Note: If you want to detect a partial string, perhaps using `str_detect()` from **stringr**, it will not accept a character vector like `c("1", "Yes", "yes", "y")`. Instead, it must be given a *regular expression* - one condensed string with OR bars, such as "1|Yes|yes|y". For example, `str_detect(hospitalized, "1|Yes|yes|y")`. See the page on [Characters and strings] for more information.  
+Remarque: Si vous souhaitez détecter une chaîne partielle, en utilisant peut-être `str_detect()` de **stringr**, il n'acceptera pas un vecteur de caractères tel que `c("1", "Oui", "oui", "y ")`. Au lieu de cela, il doit recevoir une *expression régulière* - une chaîne condensée avec des barres OU, telle que "1\|Oui\|oui\|y". Par exemple, `str_detect(hospitalisé, "1|Oui|oui|y")`. Voir la page sur les $$Characters and strings$$ pour plus d'informations.
 
-You can convert a character vector to a named regular expression with this command:  
+Vous pouvez convertir un vecteur de caractères en une expression régulière nommée avec cette commande:
 
 ```{r}
 affirmative <- c("1", "Yes", "YES", "yes", "y", "Y", "oui", "Oui", "Si")
 affirmative
 
-# condense to 
-affirmative_str_search <- paste0(affirmative, collapse = "|")  # option with base R
-affirmative_str_search <- str_c(affirmative, collapse = "|")   # option with stringr package
+# Condenser à: 
+affirmative_str_search <- paste0(affirmative, collapse = "|")  # option avec R de base
+affirmative_str_search <- str_c(affirmative, collapse = "|")   # option avec le paquet stringr
 
 affirmative_str_search
 ```
 
-
-
-
-
-
-
-
+<!-- ======================================================= -->
 
 <!-- ======================================================= -->
-<!-- ======================================================= -->
-<!-- ======================================================= -->
-## Errors & warnings  
-
-This section explains:  
-
-* The difference between errors and warnings  
-* General syntax tips for writing R code  
-* Code assists  
-
-Common errors and warnings and troubleshooting tips can be found in the page on [Errors and help].  
-
-
 
 <!-- ======================================================= -->
-### Error versus Warning {.unnumbered}
 
-When a command is run, the R Console may show you warning or error messages in red text.  
+## Erreurs et avertissements
 
-* A **warning** means that R has completed your command, but had to take additional steps or produced unusual output that you should be aware of.  
+Cette section explique :
 
-* An **error** means that R was not able to complete your command.  
+-   La différence entre les erreurs et les avertissements\
+-   Conseils généraux de syntaxe pour l'écriture de code R\
+-   Aides au code
 
-Look for clues: 
-
-* The error/warning message will often include a line number for the problem.  
-
-* If an object "is unknown" or "not found", perhaps you spelled it incorrectly, forgot to call a package with library(), or forgot to re-run your script after making changes.  
-
-If all else fails, copy the error message into Google along with some key terms - chances are that someone else has worked through this already!
-
+Les erreurs et avertissements courants ainsi que des conseils de dépannage sont disponibles sur la page $$Errors and help$$.
 
 <!-- ======================================================= -->
-### General syntax tips {.unnumbered}
 
-A few things to remember when writing commands in R, to avoid errors and warnings:  
+### Erreur contre avertissement {.unnumbered}
 
-* Always close parentheses - tip: count the number of opening "(" and closing parentheses ")" for each code chunk
-* Avoid spaces in column and object names. Use underscore ( _ ) or periods ( . ) instead
-* Keep track of and remember to separate a function's arguments with commas
-* R is case-sensitive, meaning `Variable_A` is *different* from `variable_A`
+Lorsqu'une commande est exécutée, la console R peut afficher des messages d'avertissement ou d'erreur en texte rouge.
 
+-   Un **avertissement** signifie que R a terminé votre commande, mais a dû prendre des mesures supplémentaires ou a produit une sortie inhabituelle dont vous devez être conscient.
+
+-   Une **erreur** signifie que R n'a pas pu terminer votre commande.
+
+Cherchez des indices:
+
+-   Le message d'erreur/d'avertissement inclura souvent un numéro de ligne pour le problème.
+
+-   Si un objet "est inconnu" ou "introuvable", vous l'avez peut-être mal orthographié, vous avez oublié d'appeler un package avec library() ou vous avez oublié de relancer votre script après avoir apporté des modifications.
+
+Si tout le reste échoue, copiez le message d'erreur dans Google avec quelques termes clés - il y a de fortes chances que quelqu'un d'autre ait déjà travaillé dessus!
 
 <!-- ======================================================= -->
-### Code assists {.unnumbered}  
 
-Any script (RMarkdown or otherwise) will give clues when you have made a mistake. For example, if you forgot to write a comma where it is needed, or to close a parentheses, RStudio will raise a flag on that line, on the right side of the script, to warn you.  
+### Conseils généraux sur la syntaxe {.unnumbered}
 
+Quelques points à retenir lors de l'écriture de commandes dans R, pour éviter les erreurs et les avertissements:
 
+-   Fermez toujours les parenthèses - astuce: comptez le nombre de "(" et de parenthèses fermantes ")" pour chaque bloc de code
+-   Évitez les espaces dans les noms de colonnes et d'objets. Utilisez le trait de soulignement ( \_ ) ou les points ( . ) à la place
+-   Gardez une trace et n'oubliez pas de séparer les arguments d'une fonction par des virgules
+-   R est sensible à la casse, ce qui signifie que `Variable_A` est *différent* de `Variable_a`
 
+<!-- ======================================================= -->
 
+### Aides au code {.unnumbered}
 
-
-
-
+N'importe quel script (RMarkdown ou autre) donnera des indices lorsque vous avez fait une erreur. Par exemple, si vous avez oublié d'écrire une virgule là où c'est nécessaire, ou de fermer une parenthèse, RStudio lèvera un drapeau sur cette ligne, sur le côté droit du script, pour vous avertir.
