@@ -1,26 +1,26 @@
 
-# Getting help  
+# Obtenir de l'aide 
 
-This page covers how to get help by posting a Github issue or by posting a reproducible example ("reprex") to an online forum.  
+Cette page explique comment obtenir de l'aide en postant un problème sur Github ou en publiant un exemple reproductible ("reprex") sur un forum en ligne.  
 
 
 
 
 ## Github issues  
 
-Many R packages and projects have their code hosted on the website Github.com. You can communicate directly with authors via this website by posting an "Issue".  
+Plusieurs packages et projets en R ont leur code sur le site Github.com. Vous pouvez communiquer directement avec les auteurs sur ce site en postant un "Issue".   
 
-Read more about how to store your work on Github in the page [Collaboration and Github]. 
+Pour en savoir plus sur comment sauvegarder vos travaux sur Github, consultez la page [Collaboration et Github]. 
 
-On Github, each project is contained within a *repository*. Each repository contains code, data, outputs, help documentation, etc. There is also a vehicle to communicate with the authors called "Issues".  
+Sur Github, chaque projet est contenu dans un *repository*. Chaque repository contient du code, des données, des résultats, la documentation d'aide, etc. Il existe également un moyen de communiquer avec les auteurs dénommé "Issues".   
 
-See below the Github page for the **incidence2** package (used to make epidemic curves). You can see the "Issues" tab highlighted in yellow. You can see that there are 5 open issues.  
+Ci-dessous, la page Github pour le package **incidence2** (utilisé pour créer des courbes épidémiques). Vous pouvez voir l'onglet "Issues" surligné en jaune. Vous pouvez voir qu'il y a 5 issues ouvertes.    
 
 ```{r, warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "errors_Github_issues.png"))
 ```
 
-Once in the Issues tab, you can see the open issues. Review them to ensure your problem is not already being addressed. You can open a new issue by clicking the green button on the right. You will need a Github account to do this. 
+Une fois dans l'onglet Issues, vous pouvez voir les questions ou issues ouvertes. Lisez-les pour vous assurer que votre question n'est pas déjà abordée. Vous pouvez ouvrir un nouveau issue en cliquant sur le bouton vert à droite. Vous aurez besoin d'un compte Github pour le faire.  
 
 ```{r, warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "errors_Github_issues2.png"))
@@ -28,51 +28,52 @@ knitr::include_graphics(here::here("images", "errors_Github_issues2.png"))
 
 
   
-In your issue, follow the instructions below to provide a minimal, reproducible example. And please be courteous! Most people developing R packages and projects are doing so in their spare time (like this handbook!).  
+Dans votre question, suivez les instructions ci-dessous pour fournir un exemple minimal et reproductible. Et soyez gentil! La plupart des personnes qui développent des packages et des projets R le font pendant leur temps libre (comme ce manuel!). 
 
-To read more advanced materials about handling issues in your own Github repository, check out the Github [documentation on Issues](https://guides.github.com/features/issues/).  
-
-
-
-## Reproducible example  
-
-Providing a reproducible example ("reprex") is key to getting help when posting in a forum or in a Github issue. People want to help you, but you have to give them an example that they can work with on their own computer. The example should:  
-
-* Demonstrate the problem you encountered  
-* Be *minimal*, in that it includes only the data and code required to reproduce your problem  
-* Be *reproducible*, such that all objects (e.g. data), package calls (e.g. `library()` or `p_load()`) are included
-
-*Also, be sure you do not post any sensitive data with the reprex!* You can create example data frames, or use one of the data frames built into R (enter `data()` to open a list of these datasets).  
+To read more advanced materials about handling issues in your own Github repository, check out the Github [documentation on Issues](https://guides.github.com/features/issues/). 
+Pour en savoir plus sur la gestion des questions dans votre propre repository Github, consultez la [documentation sur les issues](https://guides.github.com/features/issues/) sur Github.  
 
 
 
-### The **reprex** package {.unnumbered}  
+## Exemple reproductible  
 
-The **reprex** package can assist you with making a reproducible example:  
+Fournir un exemple reproductible ("reprex") est essentiel pour obtenir de l'aide lorsque vous postez un message dans un forum ou dans un issue Github. Les gens veulent vous aider, mais vous devez leur donner un exemple avec lequel ils peuvent travailler sur leur propre ordinateur. L'exemple doit :  
 
-1) **reprex** is installed with **tidyverse**, so load either package  
+* Démontrer le problème que vous avez rencontré  
+* Être *minimal*, c'est-à-dire qu'il ne doit contenir que les données et le code nécessaires à la reproduction du problème.  
+* Être *reproductible*, c'est-à-dire que tous les objets (par exemple les données) et les requêtes sur les packages (par exemple `library()` ou `p_load()`) sont inclus.
+
+*Aussi, assurez-vous de ne pas poster de données confidentielles avec le reprex!* Vous pouvez créer des tableaux de données exemplaires, ou utiliser l'un des tableaux de données intégrés à R (entrez `data()` pour ouvrir une liste de ces ensembles de données).   
+
+
+
+### Le package **reprex** {.unnumbered}  
+
+Le package **reprex** peut vous aider à créer un exemple reproduisible :   
+
+1) **reprex** est installé avec **tidyverse**, donc chargez l'un ou l'autre des packages  
 
 ```{r, eval=F}
-# install/load tidyverse (which includes reprex)
+# installer/charger tidyverse (qui inclut reprex)
 pacman::p_load(tidyverse)
 ```
 
-2) Begin an R script that creates your problem, step-by-step, starting from loading packages and data.  
+2) Commencez un script R qui crée votre problème, étape par étape, en commençant par le chargement des packages et des données.  
 
 ```{r, eval=F}
-# load packages
+# charger les packages
 pacman::p_load(
-     tidyverse,  # data mgmt and vizualization
-     outbreaks)  # example outbreak datasets
+     tidyverse,  # gestion des donnees et visualisation 
+     outbreaks)  # exemple de données sur les épidémies
 
-# flu epidemic case linelist
-outbreak_raw <- outbreaks::fluH7N9_china_2013  # retrieve dataset from outbreaks package
+# Liste des cas d'épidémie de grippe
+outbreak_raw <- outbreaks::fluH7N9_china_2013 # récupérer les données à partir du package outbreaks 
 
-# Clean dataset
+# nettoyage des données
 outbreak <- outbreak_raw %>% 
      mutate(across(contains("date"), as.Date))
 
-# Plot epidemic
+# graphique de l'epidémie 
 
 ggplot(data = outbreak)+
      geom_histogram(
@@ -84,67 +85,68 @@ ggplot(data = outbreak)+
   )
 
 ```
-*Copy* all the code to your clipboard, and run the following command:  
+*Copiez* tout le code sur votre clipboard, et exécutez la commande suivante :   
 
 ```{r, eval=F}
 reprex::reprex()
 ```
 
-You will see an HTML output appear in the RStudio Viewer pane. It will contain all your code and any warnings, errors, or plot outputs. This output is also copied to your clipboard, so you can post it directly into a Github issue or a forum post.  
+Vous verrez une fenêtre HTML apparaître dans la fenêtre viewer de RStudio. Elle contiendra l'ensemble de votre code et tous les messages, les erreurs, ou les résultats de graphique. Ce résultat est également copié sur votre presse-papier, de façon à ce que vous pouvez le poster directement dans un issue Github ou un poste de forum.  
 
 ```{r, out.width=c('100%', '100%'), warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "errors_reprex_RStudio1.png"))
 ```
 
 
-* If you set `session_info = TRUE` the output of `sessioninfo::session_info()` with your R and R package versions will be included  
-* You can provide a working directory to `wd = `  
-* You can read more about the arguments and possible variations at the [documentation]() or by entering `?reprex`
+* Si vous définissez `session_info = TRUE`, le resultat de `sessioninfo::session_info()` avec votre version de R et du package R sera inclus.  
+* Vous pouvez spécifier un répertoire de travail avec `wd = `.  
+* Vous pouvez en lire plus sur les arguments et les variations possibles dans la [documentation]() ou en saisissant `?reprex`.
 
-In the example above, the `ggplot()` command did not run because the arguemnt `date_format =` is not correct - it should be `date_labels = `.  
-
-
-### Minimal data {.unnumbered}  
-
-The helpers need to be able to use your data - ideally they need to be able to create it *with code*.  
-
-To create a minumal dataset, consider anonymising and using only a subset of the observations. 
-
-UNDER CONSTRUCTION - you can also use the function `dput()` to create minimal dataset.  
+Dans l'exemple ci-dessus, la commande `ggplot()` ne s'est pas exécutée car l'argument `date_format =` n'est pas correcte - il devrait être `date_labels = `.  
 
 
 
+### Données minimales {.unnumbered}  
 
-## Posting to a forum  
+Les aidants doivent être en mesure d'utiliser vos données - idéalement, ils doivent pouvoir les créer *avec du code*.  
 
-Read lots of forum posts. Get an understanding for which posts are well-written, and which ones are not.  
+Pour créer un ensemble de données minimales, considérez anonymer et utiliser seulement un sous-ensemble des observations. 
 
-1) First, decide whether to ask the question at all. Have you *thoroughly* reviewed the forum website, trying various search terms, to see if your question has already been asked?  
-
-2) Give your question an informative title (not "Help! this isn't working").  
-
-3) Write your question:  
-
-* Introduce your situation and problem  
-* Link to posts of similar issues and explain how they do not answer your question  
-* Include any relevant information to help someone who does not know the context of your work  
-* Give a minimal reproducible example with your R session information  
-* Use proper spelling, grammar, punctuation, and break your question into paragraphs so that it is easier to read  
-
-4) Monitor your question once posted to respond to any requests for clarification. Be courteous and gracious - often the people answering are volunteering their time to help you. If you have a follow-up question consider whether it should be a separate posted question.  
-
-5) Mark the question as answered, *if* you get an answer that meets the *original* request. This helps others later quickly recognize the solution.  
+EN CONSTRUCTION - vous pouvez également utiliser la fonction `dput()` pour créer un ensemble de données minimales. 
 
 
-Read these posts about [how to ask a good question](https://stackoverflow.com/help/how-to-ask) the [Stack overflow code of conduct](https://stackoverflow.com/conduct).  
+
+
+## Poster sur un forum  
+
+Lisez beaucoup de messages de forum. Essayez de comprendre quels messages sont bien rédigés et lesquels ne sont pas.  
+
+1) Tout d'abord, décidez si vous devez poser la question. Avez-vous *parcouru* le site web du forum, en essayant divers termes de recherche, pour voir si votre question n'a pas déjà été posée ?  
+
+2) Choisissez un titre informatif pour votre question (pas "Au secours ! ça ne marche pas").  
+
+3) Rédigez votre question :  
+
+* Présentez votre situation et votre problème  
+* Liez aux posts de problèmes similaires et expliquez pourquoi ils ne répondent pas à votre question
+* Incluez toute information pertinente pour aider quelqu'un qui ne connaît pas le contexte de votre travail.  
+* Donnez un exemple minimal reproductible avec les informations de votre session R.  
+* Utilisez la propre orthographe, grammaire et ponctuation, et divisez votre question en paragraphes pour faciliter la lecture.  
+
+4) surveillez votre question une fois qu'elle est publiée pour pouvoir répondre à toute demande de clarification. Soyez gentil et aimable - souvent, les personnes qui répondent vous aident volontairement. Si vous avez une question complémentaire, demandez-vous si elle doit faire l'objet d'une question différente.  
+
+5) Marquez la question comme ayant reçu une réponse, *si* vous obtenez une réponse qui répond à la demande *originale*. Cela permet aux autres personnes de reconnaître rapidement la solution.  
+
+
+Lisez ces articles sur [comment poser une bonne question](https://stackoverflow.com/help/how-to-ask) et le [code de conduite de Stack overflow](https://stackoverflow.com/conduct).  
 
 
 <!-- ======================================================= -->
 ## Resources { }
 
 
-Tidyverse page on how to [get help!](https://www.tidyverse.org/help/#:~:text=When%20you%20want%20to%20make,to%20load%20the%20reprex%20package.&text=Enter%20reprex()%20in%20the,preview%20of%20your%20rendered%20reprex.)
+Page Tidyverse sur comment [obtenir de l'aide](https://www.tidyverse.org/help/#:~:text=When%20you%20want%20to%20make,to%20load%20the%20reprex%20package.&text=Enter%20reprex()%20in%20the,preview%20of%20your%20rendered%20reprex.)
 
-Tips on [producing a minimal dataset](https://xiangxing98.github.io/R_Learning/R_Reproducible.nb.html#producing-a-minimal-dataset)
+Astuces pour [produire un ensemble de données minimal](https://xiangxing98.github.io/R_Learning/R_Reproducible.nb.html#producing-a-minimal-dataset)
 
-Documentation for the [dput function](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/dput)
+Documentation de la [fonction dput](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/dput)
