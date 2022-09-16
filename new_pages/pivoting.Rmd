@@ -25,7 +25,7 @@ Dans le contexte de la gestion des données, le *pivot des données* fait réfé
 
 Dans ce chapitre, nous allons nous focaliser sur le second processus. Résumer ses données dans des tableau est une étape cruciale de l'analyse des données et est traitée dans les chapitres sur [le regroupement des données](#grouping_data) et les [tableaux descriptifs](#descriptive_tables). 
 
-Ce chapitre traite des formats de données. Il est utile de connaître l'idée de "données bien rangées / ordonées", dans laquelle chaque variable a sa propre colonne, chaque observation a sa propre ligne et chaque valeur a sa propre cellule. Vous trouverez plus d'informations sur ce sujet [dans ce chapitre en ligne de R for Data Science](https://r4ds.had.co.nz/tidy-data.html)(en Anglais). 
+Ce chapitre traite des formats de données. Il est utile de connaître l'idée de "données bien rangées / ordonnées", dans laquelle chaque variable a sa propre colonne, chaque observation a sa propre ligne et chaque valeur a sa propre cellule. Vous trouverez plus d'informations sur ce sujet [dans ce chapitre en ligne de R for Data Science](https://r4ds.had.co.nz/tidy-data.html)(en Anglais). 
 
 
 ## Étapes préliminaires {#pivot_prep_data}
@@ -116,7 +116,7 @@ DT::datatable(count_data,
                              scrollX = T) )
 ```
 
-Plus précisément, chaque ligne dans ce tableau se réfère aux nombre de cas de paludisme dans l'un des 65 établissements à une date donnée, dans la période allant de ` count_data$data_date %>% min()` à ` count_data$data_date %>% max()`. Ces établissements sont situés dans une `province` (Nord) et quatre `districts` (Spring, Bolo, Dingo, et Barnard). Le dataframe contient les totaux des cas de paludisme, globaux et pour chaque classe d'age (<4 ans, 5-14 ans, et 15 ans et plus).
+Plus précisément, chaque ligne dans ce tableau contient le nombre de cas de paludisme dans l'un des 65 établissements à une date donnée, dans la période allant de ` count_data$data_date %>% min()` à ` count_data$data_date %>% max()`. Ces établissements sont situés dans une `province` (Nord) et quatre `districts` (Spring, Bolo, Dingo, et Barnard). Le dataframe contient les totaux des cas de paludisme, globaux et pour chaque classe d'age (<4 ans, 5-14 ans, et 15 ans et plus).
 
 Les données sous format "large" comme celle-ci ne respectent pas les normes de "données rangées", car les en-têtes de colonne ne représentent pas réellement des "variables": ils contiennent les *valeurs* d'une hypothétique variable "groupe d'âge".
 
@@ -136,7 +136,7 @@ Cependant, les choses se compliquent si l'on veut visualiser les contributions r
 <!-- ======================================================= -->
 ### `pivot_longer()` {.unnumbered}
 
-La fonction **tidyr** `pivot_longer()` transforme un jeu de données au format "large" en un jeu de données "plus long". **tidyr** fait partie du méta-paquet **tidyverse**.   
+La fonction `pivot_longer()` de **tidyr** transforme un jeu de données au format "large" en un jeu de données "plus long". **tidyr** fait partie du méta-paquet **tidyverse**.   
 
 Elle accepte une ou plusieurs colonnes à transformer (argument `cols = `), ce qui donne un contrôle fin sur les colonnes à restructurer. Par exemple, pour les données sur le paludisme, nous ne voulons faire pivoter que les colonnes contenant des nombre de cas.  
 
