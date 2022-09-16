@@ -1,3 +1,4 @@
+
 # Tableaux de bord avec Shiny {#shiny}  
 
 Les tableaux de bord sont souvent un excellent moyen de partager les résultats d'analyses avec d'autres personnes. Produire un tableau de bord avec **shiny** nécessite une connaissance relativement avancée du langage R, mais offre une personnalisation et des possibilités incroyables.  
@@ -1399,3 +1400,6 @@ Il existe également un certain nombre de packages qui peuvent être utilisés pour
 
 
 ## Ressources recommandées
+
+
+
