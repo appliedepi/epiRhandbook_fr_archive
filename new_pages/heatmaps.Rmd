@@ -2,16 +2,16 @@
 # Heat plots { }  
 
 
-Heat plots, also known as "heat maps" or "heat tiles", can be useful visualizations when trying to display 3 variables (x-axis, y-axis, and fill). Below we demonstrate two examples:  
+Les diagrammes de chaleur, également connus sous le nom de "cartes de chaleur" ou "tuiles de chaleur", peuvent être des visualisations utiles lorsqu'on essaie d'afficher 3 variables (axe des x, axe des y et remplissage). Nous présentons ci-dessous deux exemples :  
 
-* A visual matrix of transmission events by age ("who infected whom")  
-* Tracking reporting metrics across many facilities/jurisdictions over time  
+* Une matrice visuelle des événements de transmission par âge ("qui a infecté qui").  
+* Le suivi des métriques de déclaration dans de nombreux établissements/juridictions au fil du temps.  
 
 
-```{r, out.width = c('50%', '50%'), fig.show='hold', warning=F, message=F, echo=F}
+``{r, out.width = c('50%', '50%'), fig.show='hold', warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "transmission_matrix.png"))
 
-knitr::include_graphics(here::here("images", "heat_tile.png"))
+knitr::include_graphics(ici::ici("images", "heat_tile.png"))
 
 ```
 
@@ -20,44 +20,44 @@ knitr::include_graphics(here::here("images", "heat_tile.png"))
 
 
 <!-- ======================================================= -->
-## Preparation { }
+## Préparation { }
 
-### Load packages {.unnumbered}  
+### Chargement des paquets {.unnumbered}  
 
-This code chunk shows the loading of packages required for the analyses. In this handbook we emphasize `p_load()` from **pacman**, which installs the package if necessary *and* loads it for use. You can also load installed packages with  `library()` from **base** R. See the page on [R basics] for more information on R packages.  
+Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
 
 ```{r}
 pacman::p_load(
-  tidyverse,       # data manipulation and visualization
-  rio,             # importing data 
-  lubridate        # working with dates
+  tidyverse, # manipulation et visualisation de données
+  rio, # importation de données 
+  lubridate # travail avec les dates
   )
 ```
 
-**Datasets**  
+**Ensembles de données**  
 
-This page utilizes the case linelist of a simulated outbreak for the transmission matrix section, and a separate dataset of daily malaria case counts by facility for the metrics tracking section. They are loaded and cleaned in their individual sections.  
-
-
+Cette page utilise la liste de cas d'une épidémie simulée pour la section de la matrice de transmission, et un jeu de données séparé du nombre quotidien de cas de paludisme par établissement pour la section du suivi des mesures. Ils sont chargés et nettoyés dans leurs sections individuelles.  
 
 
 
 
 
-## Transmission matrix  
-
-Heat tiles can be useful to visualize matrices. One example is to display "who-infected-whom" in an outbreak. This assumes that you have information on transmission events.  
-
-Note that the [Contact tracing] page contains another example of making a heat tile contact matrix, using a different (perhaps more simple) dataset where the ages of cases and their sources are neatly aligned in the same row of the data frame. This same data is used to make a *density* map in the [ggplot tips] page. This example below begins from a case linelist and so involves considerable data manipulation prior to achieving a plotable data frame. So there are many scenarios to chose from...  
 
 
-We begin from the case linelist of a simulated Ebola epidemic. If you want to follow along, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>click to download the "clean" linelist</a> (as .rds file). Import your data with the `import()` function from the **rio** package (it accepts many file types like .xlsx, .rds, .csv - see the [Import and export] page for details).  
+## Matrice de transmission  
+
+Les tuiles thermiques peuvent être utiles pour visualiser les matrices. Un exemple est d'afficher "qui a infecté qui" dans une épidémie. Cela suppose que vous disposiez d'informations sur les événements de transmission.  
+
+Notez que la page [Recherche des contacts] contient un autre exemple de création d'une matrice de contacts en tuiles thermiques, à l'aide d'un ensemble de données différent (peut-être plus simple) où les âges des cas et leurs sources sont soigneusement alignés sur la même ligne du cadre de données. Ces mêmes données sont utilisées pour réaliser une carte de *densité* dans la page [ggplot tips]. L'exemple ci-dessous part d'une liste de cas et implique donc une manipulation considérable des données avant d'obtenir un cadre de données traçable. Il existe donc de nombreux scénarios parmi lesquels choisir...  
 
 
-The first 50 rows of the linelist are shown below for demonstration:  
+Nous commençons à partir de la liste de cas d'une épidémie d'Ebola simulée. Si vous souhaitez nous suivre, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (en tant que fichier .rds). Importez vos données avec la fonction `import()` du paquet **rio** (elle accepte de nombreux types de fichiers comme .xlsx, .rds, .csv - voir la page [Importation et exportation] pour plus de détails).  
 
 
-```{r, echo=F}
+Les 50 premières lignes de la liste de lignes sont présentées ci-dessous à titre de démonstration :  
+
+
+``{r, echo=F}
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
 
@@ -67,29 +67,29 @@ linelist <- import("linelist_cleaned.rds")
 ```
 
 
-In this linelist:  
+Dans cette linelist :  
 
-* There is one row per case, as identified by `case_id`  
-* There is a later column `infector` that contains the `case_id` of the *infector*, who is also a case in the linelist  
+* Il y a une ligne par cas, identifié par `case_id`.  
+* Il y a une colonne ultérieure `infector` qui contient le `case_id` de l'*infector*, qui est aussi un cas dans la linelist  
 
 
-```{r message=FALSE, echo=F}
-# display the population as a table
-DT::datatable(head(linelist, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+``{r message=FALSE, echo=F}
+# affichez la population sous forme de tableau
+DT::datatable(head(linelist, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
 
 
-### Data preparation {.unnumbered}  
+### Préparation des données {.unnumbered}  
 
-**Objective**: We need to achieve a "long"-style data frame that contains one row per possible age-to-age transmission route, with a numeric column containing that row's proportion of all observed transmission events in the linelist.  
+**Objectif** : Nous devons obtenir un cadre de données de type "long" qui contient une ligne par route de transmission âge-âge possible, avec une colonne numérique contenant la proportion de cette ligne de tous les événements de transmission observés dans la liste de lignes.  
 
-This will take several data manuipulation steps to achieve:  
+Il faudra plusieurs étapes de manipulation des données pour y parvenir :  
 
 
-#### Make cases data frame {.unnumbered} 
+#### Créer un cadre de données pour les cas {.unnumbered} 
 
-To begin, we create a data frame of the cases, their ages, and their infectors - we call the data frame `case_ages`. The first 50 rows are displayed below.  
+Pour commencer, nous créons un cadre de données des cas, de leurs âges, et de leurs infecteurs - nous appelons ce cadre de données `case_ages`. Les 50 premières lignes sont affichées ci-dessous.  
 
 ```{r}
 case_ages <- linelist %>% 
@@ -97,125 +97,125 @@ case_ages <- linelist %>%
   rename("case_age_cat" = "age_cat")
 ```
 
-```{r message=FALSE, echo=F}
-# display the shapefile as a table
-DT::datatable(head(case_ages, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+``{r message=FALSE, echo=F}
+# afficher le fichier de forme sous forme de tableau
+DT::datatable(head(case_ages, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
-#### Make infectors data frame {.unnumbered}  
+#### Création d'un cadre de données d'infecteurs {.unnumbered} (non numéroté)  
 
-Next, we create a data frame of the infectors - at the moment it consists of a single column. These are the infector IDs from the linelist. Not every case has a known infector, so we remove missing values. The first 50 rows are displayed below.  
+Ensuite, nous créons un cadre de données des infecteurs - pour l'instant, il est constitué d'une seule colonne. Il s'agit des identifiants des infecteurs de la liste de diffusion. Tous les cas n'ont pas un infecteur connu, nous supprimons donc les valeurs manquantes. Les 50 premières lignes sont affichées ci-dessous.  
 
 
 ```{r}
 infectors <- linelist %>% 
-  select(infector) %>% 
-  drop_na(infector)
+  select(infecteur) %>% 
+  drop_na(infecteur)
 ```
 
-```{r message=FALSE, echo=F}
-# display the shapefile as a table
-DT::datatable(head(infectors, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+``{r message=FALSE, echo=F}
+# afficher le fichier de forme sous forme de tableau
+DT::datatable(head(infectors, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
-Next, we use joins to procure the ages of the infectors. This is not simple, because in the `linelist`, the infector's ages are not listed as such. We achieve this result by joining the case `linelist` to the infectors. We begin with the infectors, and `left_join()` (add) the case `linelist` such that the `infector` id column left-side "baseline" data frame joins to the `case_id` column in the right-side `linelist` data frame.  
+Ensuite, nous utilisons des jointures pour obtenir l'âge des infecteurs. Ce n'est pas simple, car dans la `linelist`, les âges des infecteurs ne sont pas listés en tant que tels. Nous obtenons ce résultat en joignant le cas `linelist` aux infecteurs. Nous commençons par les infecteurs, et `left_join()` (ajoutons) la case `linelist` de sorte que la colonne `infector` id du cadre de données "baseline" de gauche rejoint la colonne `case_id` du cadre de données `linelist` de droite.  
 
-Thus, the data from the infector's case record in the linelist (including age) is added to the infector row. The 50 first rows are displayed below.  
+Ainsi, les données de l'enregistrement du cas de l'infecteur dans la linelist (y compris l'âge) sont ajoutées à la ligne de l'infecteur. Les 50 premières lignes sont affichées ci-dessous.  
 
 ```{r}
-infector_ages <- infectors %>%             # begin with infectors
-  left_join(                               # add the linelist data to each infector  
+infector_ages <- infectors %>% # commence par infectors
+  left_join( # ajoute les données de la linelist à chaque infecteur  
     linelist,
-    by = c("infector" = "case_id")) %>%    # match infector to their information as a case
-  select(infector, age_cat) %>%            # keep only columns of interest
-  rename("infector_age_cat" = "age_cat")   # rename for clarity
+    by = c("infector" = "case_id")) %>% # faire correspondre l'infector à ses informations en tant que cas
+  select(infector, age_cat) %>% # ne conserve que les colonnes d'intérêt
+  rename("infector_age_cat" = "age_cat") # renommer pour plus de clarté
 ```
 
-```{r message=FALSE, echo=F}
-# display the shapefile as a table
-DT::datatable(head(infector_ages, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+``{r message=FALSE, echo=F}
+# afficher le fichier de forme sous forme de tableau
+DT::datatable(head(infector_ages, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
-Then, we combine the cases and their ages with the infectors and their ages. Each of these data frame has the column `infector`, so it is used for the join. The first rows are displayed below:    
+Ensuite, nous combinons les cas et leurs âges avec les infecteurs et leurs âges. Chacun de ces cadres de données possède la colonne `infector`, elle est donc utilisée pour la jointure. Les premières lignes sont affichées ci-dessous :    
 
 ```{r}
 ages_complete <- case_ages %>%  
-  left_join(
+  jointure gauche(
     infector_ages,
-    by = "infector") %>%        # each has the column infector
-  drop_na()                     # drop rows with any missing data
+    by = "infector") %>% # chacun a la colonne infector
+  drop_na() # supprime les lignes avec des données manquantes
 ```
 
 
-```{r message=FALSE, echo=F}
-# display the shapefile as a table
-DT::datatable(head(ages_complete, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+``{r message=FALSE, echo=F}
+# afficher le fichier de forme sous forme de tableau
+DT::datatable(head(ages_complete, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
-Below, a simple cross-tabulation of counts between the case and infector age groups. Labels added for clarity.  
+Ci-dessous, un simple tableau croisé des chiffres entre les groupes d'âge des cas et des infecteurs. Des étiquettes ont été ajoutées pour plus de clarté.  
 
 ```{r}
 table(cases = ages_complete$case_age_cat,
-      infectors = ages_complete$infector_age_cat)
+      infecteurs = ages_complete$infector_age_cat)
 ```
 
 
-We can convert this table to a data frame with `data.frame()` from **base** R, which also automatically converts it to "long" format, which is desired for the `ggplot()`. The first rows are shown below.  
+Nous pouvons convertir ce tableau en un cadre de données avec `data.frame()` de **base** R, qui le convertit aussi automatiquement au format "long", ce qui est souhaité pour le `ggplot()`. Les premières lignes sont présentées ci-dessous.  
 
 ```{r}
 long_counts <- data.frame(table(
-    cases     = ages_complete$case_age_cat,
+    cas = ages_complete$case_age_cat,
     infectors = ages_complete$infector_age_cat))
 ```
 
-```{r message=FALSE, echo=F}
-# display the shapefile as a table
-DT::datatable(head(long_counts, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+``{r message=FALSE, echo=F}
+# afficher le fichier de forme sous forme de tableau
+DT::datatable(head(long_counts, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
 
-Now we do the same, but apply `prop.table()` from **base** R to the table so instead of counts we get proportions of the total. The first 50 rows are shown below.    
+Maintenant, nous faisons la même chose, mais nous appliquons `prop.table()` de **base** R au tableau pour qu'au lieu de compter, nous obtenions des proportions du total. Les 50 premières lignes sont affichées ci-dessous.    
 
 ```{r}
 long_prop <- data.frame(prop.table(table(
-    cases = ages_complete$case_age_cat,
+    cas = ages_complete$case_age_cat,
     infectors = ages_complete$infector_age_cat)))
 ```
 
-```{r message=FALSE, echo=F}
-# display the shapefile as a table
-DT::datatable(head(long_prop, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
+``{r message=FALSE, echo=F}
+# afficher le fichier de forme sous forme de tableau
+DT::datatable(head(long_prop, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
 
 
 
-### Create heat plot {.unnumbered}  
+### Créer un diagramme de chaleur {.unnumbered} (non numéroté)  
 
-Now finally we can create the heat plot with **ggplot2** package, using the `geom_tile()` function. See the [ggplot tips] page to learn more extensively about color/fill scales, especially the `scale_fill_gradient()` function.  
+Maintenant, nous pouvons enfin créer le graphique de chaleur avec le paquet **ggplot2**, en utilisant la fonction `geom_tile()`. Consultez la page [ggplot tips] pour en savoir plus sur les échelles de couleur et de remplissage, en particulier la fonction `scale_fill_gradient()`.  
 
-* In the aesthetics `aes()` of `geom_tile()` set the x and y as the case age and infector age  
-* Also in `aes()` set the argument `fill = ` to the `Freq` column - this is the value that will be converted to a tile color  
-* Set a scale color with `scale_fill_gradient()` - you can specify the high/low colors  
-  * Note that `scale_color_gradient()` is different! In this case you want the fill  
-* Because the color is made via "fill", you can use the `fill = ` argument in `labs()` to change the legend title  
+* Dans l'esthétique `aes()` de `geom_tile()`, définissez x et y comme l'âge du cas et l'âge de l'infecteur.  
+* De plus, dans `aes()`, mettez l'argument `fill = ` dans la colonne `Freq` - c'est la valeur qui sera convertie en une couleur de tuile.  
+* Définissez une couleur d'échelle avec `scale_fill_gradient()` - vous pouvez spécifier les couleurs hautes et basses.  
+  * Notez que `scale_color_gradient()` est différent ! Dans ce cas, vous voulez le remplissage  
+* Comme la couleur est faite via "fill", vous pouvez utiliser l'argument `fill = ` dans `labs()` pour changer le titre de la légende.  
 
 ```{r}
-ggplot(data = long_prop)+       # use long data, with proportions as Freq
-  geom_tile(                    # visualize it in tiles
+ggplot(data = long_prop)+ # utilise des données longues, avec des proportions comme Freq
+  geom_tile( # visualisation en tuiles
     aes(
-      x = cases,         # x-axis is case age
-      y = infectors,     # y-axis is infector age
-      fill = Freq))+            # color of the tile is the Freq column in the data
-  scale_fill_gradient(          # adjust the fill color of the tiles
-    low = "blue",
+      x = cas, # l'axe des x est l'âge du cas
+      y = infecteurs, # l'axe des y est l'âge de l'infecteur
+      fill = Freq))+ # la couleur de la tuile correspond à la colonne Freq dans les données
+  scale_fill_gradient( # ajuste la couleur de remplissage des tuiles
+    low = "bleu",
     high = "orange")+
-  labs(                         # labels
-    x = "Case age",
-    y = "Infector age",
-    title = "Who infected whom",
-    subtitle = "Frequency matrix of transmission events",
-    fill = "Proportion of all\ntranmsission events"     # legend title
+  labs( # étiquettes
+    x = "Âge du cas",
+    y = "Âge du contaminateur",
+    title = "Qui a infecté qui",
+    subtitle = "Matrice de fréquence des événements de transmission",
+    fill = "Proportion de tous les événements de transmission" # titre de la légende
   )
   
 ```
@@ -223,17 +223,17 @@ ggplot(data = long_prop)+       # use long data, with proportions as Freq
 
 
 <!-- ======================================================= -->
-## Reporting metrics over time { }
+## Rapport sur les mesures dans le temps { }
 
-Often in public health, one objective is to assess trends over time for many entities (facilities, jurisdictions, etc.). One way to visualize such trends over time is a heat plot where the x-axis is time and on the y-axis are the many entities.  
+Souvent, en santé publique, un objectif est d'évaluer les tendances dans le temps pour de nombreuses entités (établissements, juridictions, etc.). Une façon de visualiser ces tendances dans le temps est un diagramme de chaleur où l'axe des x est le temps et l'axe des y sont les nombreuses entités.  
 
 
 
-### Data preparation {.unnumbered}
+### Préparation des données {.unnumbered}
 
-We begin by importing a dataset of daily malaria reports from many facilities. The reports contain a date, province, district, and malaria counts. See the page on [Download handbook and data] for information on how to download these data. Below are the first 30 rows:  
+Nous commençons par importer un jeu de données de rapports quotidiens sur le paludisme provenant de nombreux établissements. Les rapports contiennent une date, une province, un district et un nombre de cas de paludisme. Voir la page [Télécharger le manuel et les données] pour savoir comment télécharger ces données. Voici les 30 premières lignes :  
 
-```{r, echo=F}
+``{r, echo=F}
 facility_count_data <- rio::import(here::here("data", "malaria_facility_count_data.rds")) %>% 
   select(location_name, data_date, District, malaria_tot)
 ```
@@ -243,195 +243,195 @@ facility_count_data <- import("malaria_facility_count_data.rds")
 ```
 
 
-```{r, echo=F}
-DT::datatable(head(facility_count_data,30), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
+``{r, echo=F}
+DT::datatable(head(facility_count_data,30), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
 ```
 
 
-#### Aggregate and summarize {.unnumbered}
+#### Agréger et résumer {.unnumbered}
 
-**The objective in this example** is to transform the daily facility *total* malaria case counts (seen in previous tab) into *weekly* summary statistics of facility reporting performance - in this case *the proportion of days per week that the facility reported any data*. For this example we will show data only for **Spring District**.  
+**L'objectif de cet exemple** est de transformer les comptages quotidiens de cas de paludisme *totaux* de l'établissement (vus dans l'onglet précédent) en statistiques récapitulatives *hebdomadaires* des performances de déclaration de l'établissement - dans ce cas, *la proportion de jours par semaine où l'établissement a déclaré des données*. Pour cet exemple, nous allons montrer les données uniquement pour le **District de Spring**.  
 
-To achieve this we will do the following data management steps:  
+Pour ce faire, nous allons procéder aux étapes suivantes de gestion des données :  
 
-1) Filter the data as appropriate (by place, date)  
-2) Create a week column using `floor_date()` from package **lubridate**  
-    + This function returns the start-date of a given date's week, using a specified start date of each week (e.g. "Mondays")  
-3) The data are grouped by columns "location" and "week" to create analysis units of "facility-week"  
-4) The function `summarise()` creates new columns to reflecting summary statistics per facility-week group:  
-    + Number of days per week (7 - a static value)  
-    + Number of reports received from the facility-week (could be more than 7!)  
-    + Sum of malaria cases reported by the facility-week (just for interest)  
-    + Number of *unique* days in the facility-week for which there is data reported  
-    + **Percent of the 7 days per facility-week for which data was reported**  
-5) The data frame is joined with `right_join()` to a comprehensive list of all possible facility-week combinations, to make the dataset complete. The matrix of all possible combinations is created by applying `expand()` to those two columns of the data frame as it is at that moment in the pipe chain (represented by `.`). Because a `right_join()` is used, all rows in the `expand()` data frame are kept, and added to `agg_weeks` if necessary. These new rows appear with `NA` (missing) summarized values.  
+1) Filtrer les données comme il convient (par lieu, par date).  
+2) Créer une colonne hebdomadaire en utilisant `floor_date()` du package **lubridate**.  
+    + Cette fonction renvoie la date de début de la semaine d'une date donnée, en utilisant une date de début spécifiée de chaque semaine (par exemple "Lundi")  
+3) Les données sont regroupées par les colonnes "lieu" et "semaine" pour créer des unités d'analyse de "semaine d'installation".  
+4) La fonction `summarise()` crée de nouvelles colonnes pour refléter les statistiques sommaires par groupe de semaine d'installation :  
+    + Nombre de jours par semaine (7 - une valeur statique)  
+    + Nombre de rapports reçus de la semaine d'installation (peut être plus de 7 !)  
+    + Somme des cas de malaria rapportés par la semaine d'installation (juste pour l'intérêt)  
+    + Nombre de jours *uniques* dans la semaine d'installation pour lesquels des données ont été rapportées.  
+    **Pourcentage des 7 jours par semaine d'installation pour lesquels des données ont été déclarées**.  
+5) Le cadre de données est joint avec `right_join()` à une liste complète de toutes les combinaisons possibles de semaine d'installation, pour rendre l'ensemble de données complet. La matrice de toutes les combinaisons possibles est créée en appliquant `expand()` aux deux colonnes du cadre de données tel qu'il est à ce moment-là dans la chaîne de production (représenté par `.`). Comme un `right_join()` est utilisé, toutes les lignes du cadre de données `expand()` sont conservées, et ajoutées à `agg_weeks` si nécessaire. Ces nouvelles lignes apparaissent avec des valeurs résumées `NA` (manquantes).  
 
 
-Below we demonstrate step-by-step:  
+Nous faisons ci-dessous une démonstration étape par étape :  
 
-```{r, message=FALSE, warning=FALSE}
-# Create weekly summary dataset
+``{r, message=FALSE, warning=FALSE}
+# Créer un ensemble de données de résumé hebdomadaire
 agg_weeks <- facility_count_data %>% 
   
-  # filter the data as appropriate
+  # Filtrez les données comme il se doit
   filter(
     District == "Spring",
     data_date < as.Date("2020-08-01")) 
 ```
 
-Now the dataset has ` nrow(agg_weeks)` rows, when it previously had ` nrow(facility_count_data)`.  
+Maintenant, le jeu de données a `nrow(agg_weeks)` lignes, alors qu'il avait précédemment `nrow(facility_count_data)`.  
 
-Next we create a `week` column reflecting the start date of the week for each record. This is achieved with the **lubridate** package and the function `floor_date()`, which is set to "week" and for the weeks to begin on Mondays (day 1 of the week - Sundays would be 7). The top rows are shown below.  
+Ensuite, nous créons une colonne `week` reflétant la date de début de la semaine pour chaque enregistrement. Ceci est réalisé avec le package **lubridate** et la fonction `floor_date()`, qui est définie sur "week" et pour que les semaines commencent le lundi (jour 1 de la semaine - le dimanche serait le 7). Les lignes du haut sont présentées ci-dessous.  
 
 ```{r}
 agg_weeks <- agg_weeks %>% 
-  # Create week column from data_date
+  # Créez une colonne semaine à partir de data_date
   mutate(
-    week = lubridate::floor_date(                     # create new column of weeks
-      data_date,                                      # date column
-      unit = "week",                                  # give start of the week
-      week_start = 1))                                # weeks to start on Mondays 
+    week = lubridate::floor_date( # créer une nouvelle colonne de semaines
+      data_date, # colonne de date
+      unit = "week", # donne le début de la semaine
+      week_start = 1))                                # les semaines commencent le lundi 
 ```
 
-The new week column can be seen on the far right of the data frame  
+La nouvelle colonne de semaine est visible à l'extrême droite du cadre de données.  
 
 ```{r, echo=F}
-DT::datatable(head(agg_weeks,30), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
+DT::datatable(head(agg_weeks,30), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
 ```
 
-Now we group the data into facility-weeks and summarise them to produce statistics per facility-week. See the page on [Descriptive tables] for tips. The grouping itself doesn't change the data frame, but it impacts how the subsequent summary statistics are calculated.  
+Maintenant, nous regroupons les données en semaines d'installation et les résumons pour produire des statistiques par semaine d'installation. Consultez la page sur les [Tableaux descriptifs] pour obtenir des conseils. Le regroupement en lui-même ne modifie pas la trame de données, mais il a un impact sur la façon dont les statistiques récapitulatives suivantes sont calculées.  
 
-The top rows are shown below. Note how the columns have completely changed to reflect the desired summary statistics. Each row reflects one facility-week. 
+Les lignes du haut sont présentées ci-dessous. Notez comment les colonnes ont complètement changé pour refléter les statistiques récapitulatives souhaitées. Chaque ligne reflète une semaine d'installation. 
 
-```{r, warning=F, message=F}
+``{r, warning=F, message=F}
 agg_weeks <- agg_weeks %>%   
 
-  # Group into facility-weeks
-  group_by(location_name, week) %>%
+  # Regroupement en semaines d'installation
+  group_by(nom_lieu, semaine) %>%
   
-  # Create summary statistics columns on the grouped data
+  # Créez des colonnes de statistiques récapitulatives sur les données groupées
   summarize(
-    n_days          = 7,                                          # 7 days per week           
-    n_reports       = dplyr::n(),                                 # number of reports received per week (could be >7)
-    malaria_tot     = sum(malaria_tot, na.rm = T),                # total malaria cases reported
-    n_days_reported = length(unique(data_date)),                  # number of unique days reporting per week
-    p_days_reported = round(100*(n_days_reported / n_days)))      # percent of days reporting
+    n_days = 7, # 7 jours par semaine           
+    n_reports = dplyr::n(), # nombre de rapports reçus par semaine (peut être >7)
+    malaria_tot = sum(malaria_tot, na.rm = T), # nombre total de cas de paludisme signalés
+    n_days_reported = length(unique(data_date)), # nombre de jours uniques de déclaration par semaine
+    p_days_reported = round(100*(n_days_reported / n_days)))      # pourcentage de jours de déclaration
 ```
 
 ```{r, echo=F}
-DT::datatable(head(agg_weeks,30), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
+DT::datatable(head(agg_weeks,30), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
 ```
 
-Finally, we run the command below to ensure that ALL possible facility-weeks are present in the data, even if they were missing before.  
+Enfin, nous exécutons la commande ci-dessous pour nous assurer que TOUTES les semaines d'installation possibles sont présentes dans les données, même si elles étaient absentes auparavant.  
 
-We are using a `right_join()` on itself (the dataset is represented by ".") but having been expanded to include all possible combinations of the columns `week` and `location_name`. See documentation on the `expand()` function in the page on [Pivoting]. Before running this code the dataset contains ` nrow(agg_weeks)` rows.   
+Nous utilisons un `right_join()` sur lui-même (l'ensemble de données est représenté par ".") mais il a été étendu pour inclure toutes les combinaisons possibles des colonnes `week` et `location_name`. Voir la documentation sur la fonction `expand()` dans la page sur [Pivoting]. Avant d'exécuter ce code, l'ensemble de données contient `nrow(agg_weeks)` lignes.   
 
-```{r, message=F, warning=F}
-# Create data frame of every possible facility-week
+``{r, message=F, warning=F}
+# Créez un cadre de données pour chaque semaine d'installation possible.
 expanded_weeks <- agg_weeks %>% 
-  mutate(week = as.factor(week)) %>%         # convert date to a factor so expand() works correctly
-  tidyr::expand(., week, location_name) %>%  # expand data frame to include all possible facility-week combinations
-                                             # note: "." represents the dataset at that moment in the pipe chain
-  mutate(week = as.Date(week))               # re-convert week to class Date so the subsequent right_join works
+  mutate(week = as.factor(week)) %>% # Convertit la date en un facteur pour que expand() fonctionne correctement
+  tidyr::expand(., week, location_name) %>% # étendre le cadre de données pour inclure toutes les combinaisons possibles établissement-semaine
+                                             # Note : "." représente l'ensemble de données à ce moment de la chaîne de production.
+  mutate(week = as.Date(week))               # reconvertir la semaine en classe Date pour que le right_join suivant fonctionne
 ```
 
-Here is `expanded_weeks`:  
+Voici `expanded_weeks` :  
 
-```{r, echo=F}
-DT::datatable(expanded_weeks, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
+``{r, echo=F}
+DT::datatable(expanded_weeks, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
 ```
 
-Before running this code, `agg_weeks` contains ` nrow(agg_weeks)` rows.   
+Avant d'exécuter ce code, `agg_weeks` contient ` nrow(agg_weeks)` lignes.   
 
 ```{r}
-# Use a right-join with the expanded facility-week list to fill-in the missing gaps in the data
+# Utilisez une jointure à droite avec la liste étendue des semaines d'installation pour combler les lacunes dans les données.
 agg_weeks <- agg_weeks %>%      
-  right_join(expanded_weeks) %>%                            # Ensure every possible facility-week combination appears in the data
-  mutate(p_days_reported = replace_na(p_days_reported, 0))  # convert missing values to 0                           
+  right_join(expanded_weeks) %>% # Assurez-vous que toutes les combinaisons possibles de semaines d'installation apparaissent dans les données.
+  mutate(p_days_reported = replace_na(p_days_reported, 0))  # Convertir les valeurs manquantes en 0                           
 ```
 
-After running this code, `agg_weeks` contains ` nrow(agg_weeks)` rows.   
+Après avoir exécuté ce code, `agg_weeks` contient ` nrow(agg_weeks)` lignes.   
 
 
 <!-- ======================================================= -->
-### Create heat plot {.unnumbered}
+### Créer un graphique de chaleur {.unnumbered}
 
 
-The `ggplot()` is made using `geom_tile()` from the **ggplot2** package:  
+Le `ggplot()` est réalisé en utilisant `geom_tile()` du paquet **ggplot2** :  
 
-* Weeks on the x-axis is transformed to dates, allowing use of `scale_x_date()`  
-* `location_name` on the y-axis will show all facility names  
-* The `fill` is `p_days_reported`, the performance for that facility-week (numeric)  
-* `scale_fill_gradient()` is used on the numeric fill, specifying colors for high, low, and `NA`  
-* `scale_x_date()` is used on the x-axis specifying labels every 2 weeks and their format  
-* Display themes and labels can be adjusted as necessary
+* Les semaines sur l'axe des x sont transformées en dates, permettant l'utilisation de `scale_x_date()`.  
+* L'axe des ordonnées affiche tous les noms des établissements.  
+* Le "remplissage" est "p_days_reported", la performance pour cette semaine d'installation (numérique).  
+* `scale_fill_gradient()` est utilisé sur le remplissage numérique, en spécifiant des couleurs pour le haut, le bas, et `NA`.  
+* La fonction `scale_x_date()` est utilisée sur l'axe des x pour spécifier les étiquettes toutes les 2 semaines et leur format.  
+* Les thèmes d'affichage et les étiquettes peuvent être ajustés si nécessaire.
 
 
 
 
 <!-- ======================================================= -->
-### Basic {.unnumbered}  
+### Basique {.unnumbered}  
 
-A basic heat plot is produced below, using the default colors, scales, etc. As explained above, within the `aes()` for `geom_tile()` you must provide an x-axis column, y-axis column, **and** a column for the the `fill = `. The fill is the numeric value that presents as tile color.  
+Un graphique thermique de base est produit ci-dessous, en utilisant les couleurs, les échelles, etc. par défaut. Comme expliqué ci-dessus, dans le `aes()` pour le `geom_tile()` vous devez fournir une colonne pour l'axe des x, une colonne pour l'axe des y, **et** une colonne pour le `fill = `. Le remplissage est la valeur numérique qui présente comme couleur de tuile.  
 
 ```{r}
 ggplot(data = agg_weeks)+
   geom_tile(
-    aes(x = week,
-        y = location_name,
+    aes(x = semaine,
+        y = nom du lieu,
         fill = p_days_reported))
 ```
 
-### Cleaned plot {.unnumbered}
+### Tracé nettoyé {.unnumbered}
 
-We can make this plot look better by adding additional **ggplot2** functions, as shown below. See the page on [ggplot tips] for details.  
+Nous pouvons améliorer l'apparence de ce graphique en ajoutant des fonctions **ggplot2** supplémentaires, comme indiqué ci-dessous. Voir la page sur les [astuces ggplot] pour plus de détails.  
 
-```{r, message=FALSE, warning=FALSE}
+``{r, message=FALSE, warning=FALSE}
 ggplot(data = agg_weeks)+ 
   
-  # show data as tiles
+  # affiche les données sous forme de tuiles
   geom_tile(
-    aes(x = week,
-        y = location_name,
+    aes(x = semaine,
+        y = nom du lieu,
         fill = p_days_reported),      
-    color = "white")+                 # white gridlines
+    color = "white")+ # lignes de grille blanches
   
   scale_fill_gradient(
-    low = "orange",
-    high = "darkgreen",
+    bas = "orange",
+    haut = "vert foncé",
     na.value = "grey80")+
   
-  # date axis
+  # axe des dates
   scale_x_date(
-    expand = c(0,0),             # remove extra space on sides
-    date_breaks = "2 weeks",     # labels every 2 weeks
-    date_labels = "%d\n%b")+     # format is day over month (\n in newline)
+    expand = c(0,0), # supprimer l'espace supplémentaire sur les côtés
+    date_breaks = "2 weeks", # étiquettes toutes les 2 semaines
+    date_labels = "%d\n%b")+ # le format est jour sur mois (\n dans la nouvelle ligne)
   
-  # aesthetic themes
-  theme_minimal()+                                  # simplify background
+  # thèmes esthétiques
+  theme_minimal()+ # simplifier l'arrière-plan
   
-  theme(
+  thème(
     legend.title = element_text(size=12, face="bold"),
-    legend.text  = element_text(size=10, face="bold"),
-    legend.key.height = grid::unit(1,"cm"),           # height of legend key
-    legend.key.width  = grid::unit(0.6,"cm"),         # width of legend key
+    legend.text = element_text(size=10, face="bold"),
+    legend.key.height = grid::unit(1, "cm"), # hauteur de la clé de légende
+    legend.key.width = grid::unit(0.6, "cm"), # largeur de la clé de légende
     
-    axis.text.x = element_text(size=12),              # axis text size
-    axis.text.y = element_text(vjust=0.2),            # axis text alignment
+    axis.text.x = element_text(size=12), # taille du texte de l'axe
+    axis.text.y = element_text(vjust=0.2), # alignement du texte de l'axe
     axis.ticks = element_line(size=0.4),               
-    axis.title = element_text(size=12, face="bold"),  # axis title size and bold
+    axis.title = element_text(size=12, face="bold"), # taille et gras du titre de l'axe
     
-    plot.title = element_text(hjust=0,size=14,face="bold"),  # title right-aligned, large, bold
-    plot.caption = element_text(hjust = 0, face = "italic")  # caption right-aligned and italic
+    plot.title = element_text(hjust=0,size=14,face="bold"), # titre aligné à droite, large, gras
+    plot.caption = element_text(hjust = 0, face = "italic"), # légende alignée à droite et en italique
     )+
   
-  # plot labels
-  labs(x = "Week",
-       y = "Facility name",
-       fill = "Reporting\nperformance (%)",           # legend title, because legend shows fill
-       title = "Percent of days per week that facility reported data",
-       subtitle = "District health facilities, May-July 2020",
-       caption = "7-day weeks beginning on Mondays.")
+  # étiquettes du graphique
+  labs(x = "Semaine",
+       y = "Nom de l'établissement",
+       fill = "Reporting\nperformance (%)", # titre de la légende, car la légende montre le remplissage
+       title = "Pourcentage de jours par semaine où l'établissement a déclaré des données",
+       subtitle = "Établissements de santé du district, mai-juillet 2020",
+       caption = "Semaines de 7 jours commençant le lundi")
 ```
 
 
@@ -439,91 +439,91 @@ ggplot(data = agg_weeks)+
 
 
 <!-- ======================================================= -->
-### Ordered y-axis {.unnumbered}  
+### Axe des y ordonné {.non numéroté}  
 
-Currently, the facilities are ordered "alpha-numerically" from the bottom to the top. If you want to adjust the order the y-axis facilities, convert them to class factor and provide the order. See the page on [Factors] for tips.  
+Actuellement, les installations sont ordonnées "alpha-numériquement" de bas en haut. Si vous voulez ajuster l'ordre des installations de l'axe des y, convertissez-les en facteur de classe et fournissez l'ordre. Voir la page sur les [Facteurs] pour des conseils.  
 
-Since there are many facilities and we don't want to write them all out, we will try another approach - ordering the facilities in a data frame and using the resulting column of names as the factor level order. Below, the column `location_name` is converted to a factor, and the order of its levels is set based on the total number of reporting days filed by the facility across the whole time-span.  
+Puisqu'il y a beaucoup d'installations et que nous ne voulons pas les écrire toutes, nous allons essayer une autre approche - classer les installations dans un cadre de données et utiliser la colonne de noms résultante comme ordre de niveau de facteur. Ci-dessous, la colonne `location_name` est convertie en un facteur, et l'ordre de ses niveaux est établi sur la base du nombre total de jours de déclaration déposés par l'installation sur l'ensemble de la période.  
 
-To do this, we create a data frame which represents the total number of reports per facility, arranged in ascending order. We can use this vector to order the factor levels in the plot.   
+Pour ce faire, nous créons un cadre de données qui représente le nombre total de rapports par établissement, classés par ordre croissant. Nous pouvons utiliser ce vecteur pour ordonner les niveaux de facteurs dans le graphique.   
 
 ```{r}
 facility_order <- agg_weeks %>% 
   group_by(location_name) %>% 
   summarize(tot_reports = sum(n_days_reported, na.rm=T)) %>% 
-  arrange(tot_reports) # ascending order
+  arrange(tot_reports) # ordre ascendant
 ```
 
-See the data frame below:  
+Voir le cadre de données ci-dessous :  
 
-```{r, echo=F}
-DT::datatable(facility_order, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
+``{r, echo=F}
+DT::datatable(facility_order, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
 ```
 
 
 
 
-Now use a column from the above data frame (`facility_order$location_name`) to be the order of the factor levels of `location_name` in the data frame `agg_weeks`:  
+Utilisez maintenant une colonne du cadre de données ci-dessus (`facility_order$location_name`) comme ordre des niveaux de facteur de `location_name` dans le cadre de données `agg_weeks` :  
 
-```{r, warning=F, message=F}
-# load package 
+``{r, warning=F, message=F}
+# charger le paquet 
 pacman::p_load(forcats)
 
-# create factor and define levels manually
+# créer le facteur et définir les niveaux manuellement
 agg_weeks <- agg_weeks %>% 
   mutate(location_name = fct_relevel(
-    location_name, facility_order$location_name)
+    nom_localisation, nom_fonctionnement$nom_localisation)
     )
 ```
 
-And now the data are re-plotted, with location_name being an ordered factor:  
+Et maintenant, les données sont à nouveau tracées, le nom de l'emplacement étant un facteur ordonné :  
 
-```{r, message=FALSE, warning=FALSE}
+``{r, message=FALSE, warning=FALSE}
 ggplot(data = agg_weeks)+ 
   
-  # show data as tiles
+  # afficher les données sous forme de tuiles
   geom_tile(
-    aes(x = week,
-        y = location_name,
+    aes(x = semaine,
+        y = nom du lieu,
         fill = p_days_reported),      
-    color = "white")+                 # white gridlines
+    color = "white")+ # lignes de grille blanches
   
   scale_fill_gradient(
-    low = "orange",
-    high = "darkgreen",
+    bas = "orange",
+    haut = "vert foncé",
     na.value = "grey80")+
   
-  # date axis
+  # axe des dates
   scale_x_date(
-    expand = c(0,0),             # remove extra space on sides
-    date_breaks = "2 weeks",     # labels every 2 weeks
-    date_labels = "%d\n%b")+     # format is day over month (\n in newline)
+    expand = c(0,0), # supprimer l'espace supplémentaire sur les côtés
+    date_breaks = "2 weeks", # étiquettes toutes les 2 semaines
+    date_labels = "%d\n%b")+ # le format est jour sur mois (\n dans la nouvelle ligne)
   
-  # aesthetic themes
-  theme_minimal()+                                  # simplify background
+  # thèmes esthétiques
+  theme_minimal()+ # simplifier l'arrière-plan
   
-  theme(
+  thème(
     legend.title = element_text(size=12, face="bold"),
-    legend.text  = element_text(size=10, face="bold"),
-    legend.key.height = grid::unit(1,"cm"),           # height of legend key
-    legend.key.width  = grid::unit(0.6,"cm"),         # width of legend key
+    legend.text = element_text(size=10, face="bold"),
+    legend.key.height = grid::unit(1, "cm"), # hauteur de la clé de légende
+    legend.key.width = grid::unit(0.6, "cm"), # largeur de la clé de légende
     
-    axis.text.x = element_text(size=12),              # axis text size
-    axis.text.y = element_text(vjust=0.2),            # axis text alignment
+    axis.text.x = element_text(size=12), # taille du texte de l'axe
+    axis.text.y = element_text(vjust=0.2), # alignement du texte de l'axe
     axis.ticks = element_line(size=0.4),               
-    axis.title = element_text(size=12, face="bold"),  # axis title size and bold
+    axis.title = element_text(size=12, face="bold"), # taille et gras du titre de l'axe
     
-    plot.title = element_text(hjust=0,size=14,face="bold"),  # title right-aligned, large, bold
-    plot.caption = element_text(hjust = 0, face = "italic")  # caption right-aligned and italic
+    plot.title = element_text(hjust=0,size=14,face="bold"), # titre aligné à droite, large, gras
+    plot.caption = element_text(hjust = 0, face = "italic"), # légende alignée à droite et en italique
     )+
   
-  # plot labels
-  labs(x = "Week",
-       y = "Facility name",
-       fill = "Reporting\nperformance (%)",           # legend title, because legend shows fill
-       title = "Percent of days per week that facility reported data",
-       subtitle = "District health facilities, May-July 2020",
-       caption = "7-day weeks beginning on Mondays.")
+  # étiquettes du graphique
+  labs(x = "Semaine",
+       y = "Nom de l'établissement",
+       fill = "Reporting\nperformance (%)", # titre de la légende, car la légende montre le remplissage
+       title = "Pourcentage de jours par semaine où l'établissement a déclaré des données",
+       subtitle = "Établissements de santé du district, mai-juillet 2020",
+       caption = "Semaines de 7 jours commençant le lundi")
 ```
 
 
@@ -531,82 +531,78 @@ ggplot(data = agg_weeks)+
 
 
 <!-- ======================================================= -->
-### Display values {.unnumbered}  
+### Afficher les valeurs {.non numérotées}  
 
 
-You can add a `geom_text()` layer on top of the tiles, to display the actual numbers of each tile. Be aware this may not look pretty if you have many small tiles!  
+Vous pouvez ajouter une couche `geom_text()` au dessus des tuiles, pour afficher les numéros réels de chaque tuile. Attention, cela peut ne pas être joli si vous avez beaucoup de petites tuiles !  
 
-The following code has been added: `geom_text(aes(label = p_days_reported))`. This adds text onto every tile. The text displayed is the value assigned to the argument `label = `, which in this case has been set to the same numeric column `p_days_reported` that is also used to create the color gradient.  
+Le code suivant a été ajouté : `geom_text(aes(label = p_days_reported))`. Ceci ajoute du texte sur chaque tuile. Le texte affiché est la valeur assignée à l'argument `label =`, qui dans ce cas a été fixé à la même colonne numérique `p_days_reported` qui est aussi utilisée pour créer le gradient de couleur.  
 
 
 
   
-```{r, message=FALSE, warning=FALSE}
+``{r, message=FALSE, warning=FALSE}
 ggplot(data = agg_weeks)+ 
   
-  # show data as tiles
+  # affiche les données sous forme de tuiles
   geom_tile(
-    aes(x = week,
-        y = location_name,
+    aes(x = semaine,
+        y = nom du lieu,
         fill = p_days_reported),      
-    color = "white")+                 # white gridlines
+    color = "white")+ # lignes de grille blanches
   
-  # text
+  # Texte
   geom_text(
     aes(
-      x = week,
-      y = location_name,
-      label = p_days_reported))+      # add text on top of tile
+      x = semaine,
+      y = nom_local,
+      label = p_days_reported))+ # ajouter le texte au dessus de la tuile
   
-  # fill scale
+  # remplir l'échelle
   scale_fill_gradient(
     low = "orange",
     high = "darkgreen",
     na.value = "grey80")+
   
-  # date axis
+  # axe des dates
   scale_x_date(
-    expand = c(0,0),             # remove extra space on sides
-    date_breaks = "2 weeks",     # labels every 2 weeks
-    date_labels = "%d\n%b")+     # format is day over month (\n in newline)
+    expand = c(0,0), # supprimer l'espace supplémentaire sur les côtés
+    date_breaks = "2 weeks", # étiquettes toutes les 2 semaines
+    date_labels = "%d\n%b")+ # le format est jour sur mois (\n dans la nouvelle ligne)
   
-  # aesthetic themes
-  theme_minimal()+                                    # simplify background
+  # thèmes esthétiques
+  theme_minimal()+ # simplifier l'arrière-plan
   
-  theme(
+  thème(
     legend.title = element_text(size=12, face="bold"),
-    legend.text  = element_text(size=10, face="bold"),
-    legend.key.height = grid::unit(1,"cm"),           # height of legend key
-    legend.key.width  = grid::unit(0.6,"cm"),         # width of legend key
+    legend.text = element_text(size=10, face="bold"),
+    legend.key.height = grid::unit(1, "cm"), # hauteur de la clé de légende
+    legend.key.width = grid::unit(0.6, "cm"), # largeur de la clé de légende
     
-    axis.text.x = element_text(size=12),              # axis text size
-    axis.text.y = element_text(vjust=0.2),            # axis text alignment
+    axis.text.x = element_text(size=12), # taille du texte de l'axe
+    axis.text.y = element_text(vjust=0.2), # alignement du texte de l'axe
     axis.ticks = element_line(size=0.4),               
-    axis.title = element_text(size=12, face="bold"),  # axis title size and bold
+    axis.title = element_text(size=12, face="bold"), # taille et gras du titre de l'axe
     
-    plot.title = element_text(hjust=0,size=14,face="bold"),  # title right-aligned, large, bold
-    plot.caption = element_text(hjust = 0, face = "italic")  # caption right-aligned and italic
+    plot.title = element_text(hjust=0,size=14,face="bold"), # titre aligné à droite, large, gras
+    plot.caption = element_text(hjust = 0, face = "italic"), # légende alignée à droite et en italique
     )+
   
-  # plot labels
-  labs(x = "Week",
-       y = "Facility name",
-       fill = "Reporting\nperformance (%)",           # legend title, because legend shows fill
-       title = "Percent of days per week that facility reported data",
-       subtitle = "District health facilities, May-July 2020",
-       caption = "7-day weeks beginning on Mondays.")
+  # étiquettes du graphique
+  labs(x = "Semaine",
+       y = "Nom de l'établissement",
+       fill = "Reporting\nperformance (%)", # titre de la légende, car la légende montre le remplissage
+       title = "Pourcentage de jours par semaine où l'établissement a déclaré des données",
+       subtitle = "Établissements de santé du district, mai-juillet 2020",
+       caption = "Semaines de 7 jours commençant le lundi")
 ```
 
 
 
 
 <!-- ======================================================= -->
-## Resources { }
+## Ressources { }
 
 [scale_fill_gradient()](https://ggplot2.tidyverse.org/reference/scale_gradient.html)  
 
-[R graph gallery - heatmap](https://ggplot2.tidyverse.org/reference/scale_gradient.html)  
-
-
-
-
+[Galerie de graphiques R - carte thermique](https://ggplot2.tidyverse.org/reference/scale_gradient.html)  
