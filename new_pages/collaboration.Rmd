@@ -1,724 +1,725 @@
-# Version control and collaboration with Git and Github
 
-This chapter presents an overview of using Git to collaborate with others.
-More extensive tutorials can be
-found at the bottom in the Resources section.
+# Contrôle de version et collaboration avec Git et Github [#collaboration]
 
-## What is Git?
+Ce chapitre présente un aperçu de l'utilisation de Git pour collaborer avec d'autres personnes.
+Des tutoriels plus complets peuvent être
+en bas de page dans la section Ressources.
 
-Git is a **version control** software that allows tracking changes in a
-folder. It can be used like the "track change" option in Word, LibreOffice or
-Google docs, but for all types of files. It is one of the most powerful
-and most used options for version control.
+## Qu'est-ce que Git ?
 
-**Why have I never heard of it? -** While people with a developer
-background routinely learn to use version control software (Git,
-Mercurial, Subversion or others), few of us from
-quantitative disciplines are taught these skills. Consequently, most epidemiologists never
-hear of it during their studies, and have to learn it on the fly.
+Git est un logiciel de **contrôle de version** qui permet de suivre les modifications dans un
+dossier. Il peut être utilisé comme l'option "track change" dans Word, LibreOffice ou Google docs, mais pour tous les types de fichiers.
+Google docs, mais pour tous les types de fichiers. C'est l'une des options les plus puissantes
+et les plus utilisées pour le contrôle de version.
 
-**Wait, I heard of Github, is it the same?** - Not exactly, but you
-often use them together, and we will show you how to. In short:
+**Pourquoi n'en ai-je jamais entendu parler ? **Les personnes ayant une formation de développeur
+développeurs apprennent couramment à utiliser un logiciel de contrôle de version (Git,
+Mercurial, Subversion ou autres), peu d'entre nous issus de disciplines
+disciplines quantitatives sont enseignés ces compétences. Par conséquent, la plupart des épidémiologistes n'en
+Par conséquent, la plupart des épidémiologistes n'en ont jamais entendu parler au cours de leurs études, et doivent l'apprendre à la volée.
 
--   **Git** is the version control system, a piece of software. You can use it
-    locally on your computer or to synchronize a folder with a
-    host **website**. By default, one uses a terminal to give Git
-    instructions in command-line.
+**Attendez, j'ai entendu parler de Github, c'est la même chose ?
+pas exactement, mais vous les utilisez souvent ensemble, et nous vous montrerons comment faire. En bref :
 
--   You can use a **Git client/interface** to avoid the command-line and
-    perform the same actions (at least for the simple, super common
-    ones).
+- **Git** est le système de contrôle de version, un logiciel. Vous pouvez l'utiliser
+    localement sur votre ordinateur ou pour synchroniser un dossier avec un
+    hôte **site web**. Par défaut, on utilise un terminal pour donner à Git
+    en ligne de commande.
 
--   If you want to store your folder in a **host website** to
-    collaborate with others, you may create an account at Github,
-    Gitlab, Bitbucket or others.
+- Vous pouvez utiliser un **client/interface Git** pour éviter la ligne de commande et
+    et effectuer les mêmes actions (au moins pour les actions simples et super courantes).
+    courantes).
 
-So you could use the client/interface **Github Desktop**, which uses
-**Git** in the background to manage your files, both locally on your
-computer, and remotely on a **Github** server.
+- Si vous souhaitez stocker votre dossier dans un **site web hôte** pour
+    collaborer avec d'autres, vous pouvez créer un compte sur Github,
+    Gitlab, Bitbucket ou autres.
 
-## Why use the combo Git and Github?
+Ainsi, vous pouvez utiliser le client/interface **Github Desktop**, qui utilise
+**Git** en arrière-plan pour gérer vos fichiers, à la fois localement sur votre
+ordinateur, et à distance sur un serveur **Github**.
 
-Using **Git** facilitates:
+## Pourquoi utiliser le combo Git et Github ?
 
-1)  Archiving documented versions with incremental changes so that you
-    can easily revert backwards to any previous state
-2)  Having parallel *branches*, i.e. developing/"working" versions with
-    structured ways to integrate the changes after review
+L'utilisation de **Git** facilite :
 
-This can be done locally on your computer, even if you don't collaborate
-with other people. Have you ever:
+1) L'archivage des versions documentées avec des modifications incrémentielles de sorte que vous
+    afin que vous puissiez facilement revenir en arrière à n'importe quel état antérieur.
+2) Avoir des *branches* parallèles, c'est-à-dire des versions de développement/"de travail" avec
+    des moyens structurés pour intégrer les changements après révision
 
--   regretted having deleted a section of code, only to realize two
-    months later that you actually needed it?
+Cela peut être fait localement sur votre ordinateur, même si vous ne collaborez pas avec d'autres personnes.
+avec d'autres personnes. Avez-vous déjà :
 
-
--   come back on a project that had been on pause and attempted to
-    remember whether you had made that tricky modification in one of the
-    models?
-
--   had a *file model_1.R* and another file *model_1\_test.R* and a file
-    *model_1\_not_working.R* to try things out?
-
--   had a file *report.Rmd*, a file *report_full.Rmd*, a file
-    *report_true_final.Rmd*, a file *report_final_20210304.Rmd*, a file
-    *report_final_20210402.Rmd* and cursed your archiving skills?
-
-Git will help with all that, and is worth to learn for that alone.
+- regretté d'avoir supprimé une section de code, pour réaliser deux mois plus tard que vous en aviez en fait besoin ?
+    mois plus tard que vous en aviez besoin ?
 
 
-However, it becomes even more powerful when used with a online repository
-such as Github to support **collaborative projects**. This facilitates:
+- revenir sur un projet qui avait été mis en pause et tenter de vous rappeler si vous aviez effectué cette opération délicate ?
+    de vous souvenir si vous aviez effectué cette modification délicate dans l'un des modèles ?
+    modèles ?
 
--   Collaboration: others can review, comment on, and
-    accept/decline changes
+- aviez un *fichier modèle_1.R* et un autre fichier *modèle_1\_test.R* et un fichier
+    *modèle_1\_non_fonctionnel.R* pour faire des essais ?
 
--   Sharing your code, data, and outputs, and invite feedback
-    from the public (or privately, with your team)
+- avait un fichier *report.Rmd*, un fichier *report_full.Rmd*, un fichier
+    *report_true_final.Rmd*, un fichier *report_final_20210304.Rmd*, un fichier
+    *report_final_20210402.Rmd* et maudit vos compétences en archivage ?
 
-and avoids:
-
--   "Oops, I forgot to send the last version and now you need to
-    redo two days worth of work on this new file"
-
--   Mina, Henry and Oumar all worked at the same time on one script and
-    need to manually merge their changes
-
--   Two people try to modify the same file on Dropbox and Sharepoint 
-    and this creates a synchronization error.
-
-### This sounds complicated, I am not a programmer {-}
-
-It can be. Examples of advanced uses can be quite scary. However, much
-like R, or even Excel, you don't need to become an expert to reap the
-benefits of the tool. Learning a *small number of functions and notions*
-lets you track your changes, synchronize your files on a online
-repository and collaborate with your colleagues in a very short amount
-of time.
-
-Due to the learning curve, emergency context may not be the best of time
-to learn these tools. But learning can be achieved by steps. Once you acquire 
-a couple of notions, your workflow can be quite efficient and fast.
-If you are not working on a project where collaborating with people
-through Git is a necessity, **it is actually a good time to get
-confident using it** in solo before diving in collaboration.
-
-## Setup
-
-### Install Git {.unnumbered}
-
-*Git* is the engine behind the scenes on your computer, which tracks
-changes, branches (versions), merges, and reverting. **You must first
-install *Git* from <https://git-scm.com/downloads>.**
-
-### Install an interface (optional but recommended) {.unnumbered}
-
-Git has its own language of commands, which can be typed into a command
-line terminal. However, there are many clients/interfaces and as non-developpers, in your
-day-to-day use, you will rarely _need_ to interact with Git directly and 
-interface usually provide nice visualisation tools for file modifications or branches. 
-
-Many options exist, on all OS, from beginner friendly to more complex ones. 
-Good options for beginners include the RStudio Git pane and 
-[Github Desktop](https://desktop.github.com/), which we will showcase in 
-this chapter.
-Intermediate (more powerfull, but more complex) options include Source Tree, 
-Gitkracken, Smart Git and others.
-
-Quick explanation on [Git clients](-%09https:/happygitwithr.com/git-client.html#git-client).
-
-*Note: since interfaces actually all use Git internally, you can try several of
-them, switch from one to another on a given project, use the console punctually 
-for an action your interface does not support, or even perform any number of 
-actions online on Github.*
-
-As noted below, you may occasionally have to write Git commands into a
-terminal such as the RStudio terminal pane (a tab adjacent to the R
-Console) or the Git Bash terminal.
+Git vous aidera dans tout cela, et vaut la peine d'être appris pour cette seule raison.
 
 
-### Github account {.unnumbered}
+Cependant, il devient encore plus puissant lorsqu'il est utilisé avec un référentiel en ligne
+tel que Github pour soutenir des **projets collaboratifs**. Cela facilite :
 
-Sign-up for a free account at [github.com](github.com).
+- la collaboration : d'autres personnes peuvent examiner, commenter, et
+    accepter/refuser des modifications
 
-You may be offered to set-up two-factor authentication with an app on
-your phone. Read more in the Github [help
+- Le partage de votre code, de vos données et de vos résultats, et l'invitation à faire des commentaires
+    du public (ou en privé, avec votre équipe)
+
+et éviter :
+
+- "Oups, j'ai oublié d'envoyer la dernière version et maintenant vous devez
+    refaire deux jours de travail sur ce nouveau fichier".
+
+- Mina, Henry et Oumar ont tous travaillé en même temps sur un script et doivent
+    doivent fusionner manuellement leurs modifications
+
+- Deux personnes tentent de modifier le même fichier sur Dropbox et Sharepoint 
+    et cela crée une erreur de synchronisation.
+
+### Cela semble compliqué, je ne suis pas un programmeur {-}
+
+Cela peut l'être. Les exemples d'utilisations avancées peuvent être assez effrayants. Cependant, un peu comme
+Cependant, comme R, ou même Excel, vous n'avez pas besoin de devenir un expert pour profiter des
+avantages de l'outil. L'apprentissage d'un *petit nombre de fonctions et de notions*...
+vous permet de suivre vos modifications, de synchroniser vos fichiers sur un référentiel en ligne et de collaborer avec vos collègues.
+en ligne et de collaborer avec vos collègues en très peu de temps.
+de temps.
+
+En raison de la courbe d'apprentissage, le contexte d'urgence n'est peut-être pas le meilleur moment
+pour apprendre ces outils. Mais l'apprentissage peut se faire par étapes. Une fois que vous aurez acquis 
+quelques notions, votre flux de travail peut être assez efficace et rapide.
+Si vous ne travaillez pas sur un projet où la collaboration avec des personnes
+par le biais de Git est une nécessité, **c'est en fait un bon moment pour devenir
+l'utiliser** en solo avant de vous lancer dans la collaboration.
+
+## Installation
+
+### Installer Git {.unnumbered}
+
+*Git* est le moteur qui se cache derrière les coulisses de votre ordinateur, qui suit
+les changements, les branches (versions), les fusions et les retours en arrière. **Vous devez d'abord
+installer *Git* à partir de <https://git-scm.com/downloads>.**
+
+### Installer une interface (facultatif mais recommandé) {.unnumbered}
+
+Git possède son propre langage de commandes, qui peuvent être tapées dans un terminal de ligne de commande.
+dans un terminal de ligne de commande. Cependant, il existe de nombreux clients/interfaces et en tant que non-développeur, dans votre
+dans votre utilisation quotidienne, vous aurez rarement _besoin_ d'interagir directement avec Git. 
+L'interface Git fournit généralement des outils de visualisation agréables pour les modifications de fichiers ou les branches. 
+
+De nombreuses options existent, sur tous les systèmes d'exploitation, des plus simples aux plus complexes. 
+Parmi les bonnes options pour les débutants, citons le volet Git de RStudio et le [Github Desktop]. 
+[Github Desktop] (https://desktop.github.com/), que nous présenterons dans ce chapitre. 
+ce chapitre.
+Les options intermédiaires (plus puissantes, mais plus complexes) comprennent Source Tree, 
+Gitkracken, Smart Git et d'autres.
+
+Explication rapide sur les [clients Git](-%09https:/happygitwithr.com/git-client.html#git-client).
+
+*Remarque : comme les interfaces utilisent toutes Git en interne, vous pouvez en essayer plusieurs, passer de l'une à l'autre en fonction de vos besoins.
+d'entre elles, passer de l'une à l'autre sur un projet donné, utiliser ponctuellement la console 
+pour une action que votre interface ne prend pas en charge, ou même effectuer un certain nombre d'actions en ligne sur Github. 
+actions en ligne sur Github.*
+
+Comme indiqué ci-dessous, vous pouvez occasionnellement avoir à écrire des commandes Git dans un terminal
+terminal tel que le volet terminal de RStudio (un onglet adjacent à la Console R
+Console) ou le terminal Git Bash.
+
+
+### Compte Github {.non numéroté}
+
+Créez un compte gratuit sur [github.com](github.com).
+
+Il se peut que l'on vous propose de configurer une authentification à deux facteurs avec une application sur votre téléphone.
+votre téléphone. Pour en savoir plus, consultez le document Github [help
 documents](https://docs.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa).
 
-If you use Github Desktop, you can enter your Gitub credentials after
-installation following these
-[steps](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/authenticating-to-github).
-If you don't do it know, credentials will be asked later when you try to
-clone a project from Github.
+Si vous utilisez Github Desktop, vous pouvez entrer vos informations d'identification Gitub après l'installation en suivant les étapes suivantes
+l'installation en suivant ces
+[étapes] (https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/authenticating-to-github).
+Si vous ne le faites pas, les informations d'identification vous seront demandées ultérieurement lorsque vous tenterez de cloner un projet à partir de Github.
+cloner un projet depuis Github.
 
-## Vocabulary, concepts and basic functions
+## Vocabulaire, concepts et fonctions de base
 
-As when learning R, there is a bit of vocabulary to remember to
-understand Git. Here are the [basics to get you
-going](https://www.freecodecamp.org/news/an-introduction-to-git-for-absolute-beginners-86fa1d32ff71/)
-/ [interactive tutorial](learngitbranching.js.org). In the next
-sections, we will show how to use interfaces, but it is good
-to have the vocabulary and concepts in mind, to build your mental model,
-and as you'll need them when using interfaces anyway.
+Comme lors de l'apprentissage de R, il y a un peu de vocabulaire à retenir pour
+comprendre Git. Voici les [bases pour vous aider à
+démarrer](https://www.freecodecamp.org/news/an-introduction-to-git-for-absolute-beginners-86fa1d32ff71/)
+/ [tutoriel interactif](learngitbranching.js.org). Dans les prochaines
+Dans les prochaines sections, nous montrerons comment utiliser les interfaces.
+d'avoir le vocabulaire et les concepts en tête, pour construire votre modèle mental,
+et comme vous en aurez besoin en utilisant les interfaces de toute façon.
 
-### Repository {.unnumbered}
+### Référentiel {.non numéroté}
 
-A Git *repository* ("*repo*") is a folder that contains all the
-sub-folders and files for your project (data, code, images, etc.) and
-their revision histories. When you begin tracking changes in the
-repository with it, Git will create a hidden folder that contains
-all tracking information. A typical Git repository is
-your *R Project* folder (see handbook page on [R projects]).
+Un *référentiel* Git ("*repo*") est un dossier qui contient tous les sous-dossiers et fichiers de votre projet.
+les sous-dossiers et les fichiers de votre projet (données, code, images, etc.) et
+) et l'historique de leurs révisions. Lorsque vous commencez à suivre les changements dans le
+dépôt, Git créera un dossier caché qui contient toutes les informations de
+toutes les informations de suivi. Un référentiel Git typique est
+votre dossier *R Project* (voir la page du manuel sur les [R projects]).
 
-We will show how to create (_initialize_) a Git repository 
-from Github, Github Desktop or Rstudio in the next
-sections.
+Nous allons montrer comment créer (_initialiser_) un dépôt Git 
+Gitub, Github Desktop ou Rstudio dans les sections suivantes.
+sections suivantes.
 
-### Commits {.unnumbered}
+### Commits {.non numérotés}
 
-A *commit* is a **snapshot** of the project at a given time. 
-When you make a change to the project, you will make a new commit
-to track the changes (the delta) made to your
-files. For example, perhaps you edited some lines of code and updated a
-related dataset. Once your changes are saved, you can bundle these
-changes together into one "commit".
+Un *commit* est un **snapshot** du projet à un moment donné. 
+Lorsque vous apportez un changement au projet, vous faites un nouveau commit
+pour suivre les modifications (le delta) apportées à vos fichiers.
+fichiers. Par exemple, vous avez peut-être édité quelques lignes de code et mis à jour une
+jeu de données associé. Une fois que vos modifications sont enregistrées, vous pouvez regrouper ces
+changements en un seul "commit".
 
-Each commit has a unique ID (a *hash*). For version control purposes,
-you can revert your project back in time based on commits, so it is best
-to keep them relatively small and coherent. You will also attach a brief
-description of the changes called the "commit message".
+Chaque commit a un ID unique (un *hash*). À des fins de contrôle de version,
+vous pouvez revenir en arrière dans votre projet en vous basant sur les commits.
+de les garder relativement petits et cohérents. Vous joindrez également une brève
+brève description des modifications appelée "message de validation".
 
-*Staged changes*? To stage changes is to add them to the *staging area*
-in preparation for the next commit. The idea is that you can finely
-decide which changes to include in a given commit. For example, if you
-worked on model specification in one script, and later on a figure in
-another script, it would make sense to have two different commits (it would be easier
-in case you wanted to revert the changes on the figure but not the model).
-
-
-### Branches {.unnumbered}
-
-A branch represents an *independent line* of changes in your repo, a
-parallel, alternate version of your project files. 
+*Modifications organisées* ? Mettre en scène les changements, c'est les ajouter à la *zone de mise en scène*.
+en préparation pour le prochain commit. L'idée est que vous pouvez finement
+décider quels changements inclure dans un commit donné. Par exemple, si vous
+par exemple, si vous avez travaillé sur la spécification d'un modèle dans un
+un autre script, il serait judicieux d'avoir deux commits différents (ce serait plus facile
+au cas où vous voudriez annuler les changements sur la figure mais pas sur le modèle).
 
 
-Branches are useful to test changes before they are incorporated into
-the *main* branch, which is usually the primary/final/"live" version of
-your project. When you are done experimenting on a branch, you can bring
-the changes into your *main* branch, by *merging* it, or delete it, if
-the changes were not so successful.
+### Branches {.non numérotées}
 
-*Note: you do not have to collaborate with other people to use branches,
-nor need to have a remote online repository.*
+Une branche représente une ligne *indépendante* de changements dans votre repo, une version parallèle et alternative de votre projet.
+version parallèle et alternative des fichiers de votre projet. 
 
 
+Les branches sont utiles pour tester les modifications avant qu'elles ne soient incorporées dans
+la branche *principale*, qui est généralement la version principale/finale/"live" de
+votre projet. Lorsque vous avez fini d'expérimenter sur une branche, vous pouvez apporter
+les changements dans votre branche *main*, en la *fusionnant*, ou la supprimer, si les
+les changements n'ont pas été couronnés de succès.
 
-### Local and remote repositories {.unnumbered}
-
-To *clone* is to create a copy of a Git repository in another place.
-
-For example, you can *clone* a online repository _from_ Github locally on
-your computer, or begin with a local repository and clone
-it online _to_ Github.
-
-When you have cloned a repository, the project files exist in
-two places:
-
--   the *LOCAL* repository on your physical computer. This
-    is where you make the actual changes to the files/code.
-
--   the *REMOTE*, online repository: the versions of your project files
-    in the Github repository (or on any other web
-    host).
-
-To synchronize these repositories, we will use more functions. Indeed,
-unlike Sharepoint, Dropbox or other synchronizing software, Git does
-not automatically update your local repository based or what's online,
-or vice-versa. You get to choose when and how to synchronize.
-
--   `git fetch` downloads the new changes from the remote repository but does not 
-change your local repository. Think of it as checking the state of the remote repository.
-
--   `git pull` downloads the new changes from the remote repositories
-    and update your local repository.
-
--   When you have made one or several commits locally, you can
-    `git push` the commits to the remote repository. This sends your
-    changes on Github so that other people can see and pull them if
-    they want to.
+*Note : vous n'avez pas besoin de collaborer avec d'autres personnes pour utiliser les branches,
+ni d'avoir un référentiel en ligne distant.*
 
 
-## Get started: create a new repository
 
-There are many ways to create new repositories. You can do it from the
-console, from Github, from an interface.
+### Dépôts locaux et distants {.non numéroté}
 
-Two general approaches to set-up are:
+*cloner* consiste à créer une copie d'un dépôt Git à un autre endroit.
+
+Par exemple, vous pouvez *cloner* un dépôt en ligne _de_ Github localement sur
+votre ordinateur, ou commencer par un dépôt local et le cloner en ligne
+en ligne _vers_ Github.
+
+Lorsque vous avez cloné un référentiel, les fichiers du projet existent à
+deux endroits :
+
+- le référentiel *LOCAL* sur votre ordinateur physique. Ce
+    C'est là que vous apportez les modifications réelles aux fichiers/codes.
+
+- le référentiel *ROMPU*, en ligne : les versions de vos fichiers de projet
+    dans le dépôt Github (ou sur tout autre hébergeur).
+    hôte web).
+
+Pour synchroniser ces dépôts, nous allons utiliser d'autres fonctions. En effet ,
+contrairement à Sharepoint, Dropbox ou autre logiciel de synchronisation, Git ne met pas
+ne met pas automatiquement à jour votre dépôt local en fonction de ce qui est en ligne,
+ou vice-versa. C'est vous qui choisissez quand et comment synchroniser.
+
+- `git fetch` télécharge les nouvelles modifications depuis le dépôt distant mais ne modifie pas 
+mais ne modifie pas votre dépôt local. Pensez-y comme une vérification de l'état du dépôt distant.
+
+- `git pull` télécharge les nouvelles modifications depuis les dépôts distants
+    et met à jour votre dépôt local.
+
+- Lorsque vous avez fait un ou plusieurs commits localement, vous pouvez
+    `git push` les commits vers le dépôt distant. Ceci envoie vos
+    modifications sur Github afin que d'autres personnes puissent les voir et les tirer si
+    s'ils le souhaitent.
 
 
--   Create a new R Project from an existing or new Github repository
-    (*preferred for beginners*), or
--   Create a Github repository for an existing R project
+## Démarrer : créer un nouveau dépôt
+
+Il y a plusieurs façons de créer de nouveaux dépôts. Vous pouvez le faire à partir de la
+console, depuis Github, depuis une interface.
+
+Deux approches générales sont possibles :
 
 
-### Start-up files {.unnumbered}
+- Créer un nouveau projet R à partir d'un dépôt Github existant ou nouveau.
+    (*préféré pour les débutants*), ou bien
+- Créer un dépôt Github pour un projet R existant.
 
-When you create a new repository, you can optionally create 
-all of the below files, or you can add them to your repository at a later stage.
-They would typically live in the "root" folder of the repository.
 
--   A *README* file is a file that someone can read to understand why
-    your project exists and what else they should know to use it. It
-    will be empty at first, but you should complete it later.
+### Fichiers de démarrage {.unnumbered}
 
--   A *.gitignore* file is a text file where each line would contain
-    folders or files that Git should ignore (not track changes). Read
-    more about it and see examples
-    [here](https://www.freecodecamp.org/news/gitignore-what-is-it-and-how-to-add-to-repo/).
+Lorsque vous créez un nouveau référentiel, vous pouvez éventuellement créer 
+tous les fichiers ci-dessous, ou vous pouvez les ajouter à votre référentiel à un stade ultérieur.
+Ils se trouvent généralement dans le dossier "racine" du référentiel.
 
--   You can choose a *license* for your work, so that other people
-    know under which conditions they can use or reproduce your work. For more
-    information, see the [Creative Commons
-    licenses](https://creativecommons.org/licenses/).
+- Un fichier *README* est un fichier que quelqu'un peut lire pour comprendre pourquoi
+    votre projet existe et ce qu'il doit savoir pour l'utiliser. Il
+    sera vide au début, mais vous devriez le compléter plus tard.
 
-### Create a new repository in Github {.unnumbered}
+- Un fichier *.gitignore* est un fichier texte dont chaque ligne contient
+    des dossiers ou fichiers que Git devrait ignorer (ne pas suivre les modifications). Lisez
+    plus sur ce sujet et voir des exemples
+    [ici](https://www.freecodecamp.org/news/gitignore-what-is-it-and-how-to-add-to-repo/).
 
-To create a new repository, log into Github and look for the green
-button to create a new repository. This now empty repository can be
-cloned locally to your computer (see next section).
+- Vous pouvez choisir une *licence* pour votre travail, afin que les autres personnes
+    les autres personnes sachent sous quelles conditions elles peuvent utiliser ou reproduire votre travail. Pour de plus amples
+    informations, consultez la page [Creative Commons
+    licenses] (https://creativecommons.org/licenses/).
 
-```{r echo=F, fig.align = "center"}
+### Créer un nouveau référentiel dans Github {.unnumbered}
+
+Pour créer un nouveau dépôt, connectez-vous à Github et cherchez le bouton vert
+pour créer un nouveau dépôt. Ce dépôt maintenant vide peut être
+cloné localement sur votre ordinateur (voir la section suivante).
+
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_new.png"))
 ```
 
-You must choose if you want your repository to be **public** (visible to
-everyone on the internet) or **private** (only visible to those with
-permission). This has important implications if your data are sensitive.
-If your repository is private you will encounter some quotas in advanced
-special circumstances, such as if you are using Github *actions* to
-automatically run your code in the cloud.
+Vous devez choisir si vous voulez que votre dépôt soit **public** (visible par tout le monde sur Internet) ou **privé**.
+tout le monde sur Internet) ou **privé** (seulement visible pour ceux qui ont la
+permission). Cela a des implications importantes si vos données sont sensibles.
+Si votre référentiel est privé, vous rencontrerez certains quotas dans des
+circonstances particulières, par exemple si vous utilisez les *actions* de Github pour
+exécuter automatiquement votre code dans le nuage.
  
-### Clone from a Github repository {.unnumbered}
+### Clone à partir d'un dépôt Github {.unnumbered}
 
-You can *clone* an existing Github repository to create
-a new local R project on your computer.
+Vous pouvez *cloner* un référentiel Github existant pour créer
+un nouveau projet R local sur votre ordinateur.
 
-The Github repository could be one that already exists and contains
-content, or could be an empty repository that you just created. In this
-latter case you are essentially creating the Github repo and local R
-project at the same time (see instructions above).
+Le dépôt Github peut être un dépôt qui existe déjà et contient du contenu
+contenu, ou un dépôt vide que vous venez de créer. Dans ce
+Dans ce dernier cas, vous créez essentiellement le repo Github et le projet local R
+local en même temps (voir les instructions ci-dessus).
 
-_Note_: if you do not have contributing rights on a Github repository, 
-it is possible to first _fork_ the repository to your profile, and then
-proceed with the other actions. Forking is explained at the end of this 
-chapter, but we recommend that you read the other sections first.
+Remarque : si vous n'avez pas de droits de contribution sur un dépôt Github, 
+il est possible de d'abord _forker_ le dépôt vers votre profil, et ensuite
+puis de procéder aux autres actions. La bifurcation est expliquée à la fin de ce chapitre. 
+chapitre, mais nous vous recommandons de lire les autres sections d'abord.
 
-Step 1: Navigate in Github to the repository, click on the green "**Code**"
-button and copy the **HTTPS clone URL** (see image below)
+Etape 1 : Naviguez dans Github jusqu'au dépôt, cliquez sur le bouton vert "**Code**".
+et copier l'URL **HTTPS clone** (voir image ci-dessous)
 
-```{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_clone.png"))
 ```
 
-The next step can be performed in any interface. We will illustrate with
-Rstudio and Github desktop.
+L'étape suivante peut être effectuée dans n'importe quelle interface. Nous allons illustrer avec
+Rstudio et le bureau Github.
 
-#### In Rstudio {.unnumbered}
+#### Dans Rstudio {.unnumbered}
 
-In RStudio, start a new R project by clicking *File \> New Project \>
-Version Control \> Git*
+Dans RStudio, démarrez un nouveau projet R en cliquant sur *Fichier \> Nouveau projet \>.
+Contrôle de version \> Git
 
--   When prompted for the "Repository URL", paste the HTTPS URL from
+- Lorsque vous êtes invité à saisir l'"URL du dépôt", collez l'URL HTTPS de
     Github\
--   Assign the R project a short, informative name\
--   Choose where the new R Project will be saved locally\
--   Check "Open in new session" and click "Create project"
+- Attribuez au projet R un nom court et informatif.
+- Choisissez l'endroit où le nouveau projet R sera enregistré localement.
+- Cochez "Ouvrir dans une nouvelle session" et cliquez sur "Créer un projet".
 
 
-You are now in a new, local, RStudio project that is a clone of the
-Github repository. This local project and the Github repository are now
-linked.
+Vous êtes maintenant dans un nouveau projet RStudio local qui est un clone du dépôt Github.
+dépôt Github. Ce projet local et le dépôt Github sont maintenant
+liés.
 
-#### In Github Desktop {.unnumbered}
+#### Dans le bureau de Github {.unnumbered}
 
--   Click on *File \> Clone a repository*
+- Cliquez sur *Fichier \> Cloner un référentiel*.
 
--   Select the URL tab
+- Sélectionnez l'onglet URL
 
--   Paste the HTTPS URL from Github in the first box
+- Collez l'URL HTTPS de Github dans la première case.
 
--   Select the folder in which you want to have your local repository
+- Sélectionnez le dossier dans lequel vous voulez avoir votre dépôt local.
 
--   Click "CLONE"
+- Cliquez sur "CLONE".
 
-```{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_clone_desktop.png"))
 ```
 
-### New Github repo from existing R project {.unnumbered}
+### Nouveau repo Github à partir d'un projet R existant {.unnumbered}
 
-An alternative setup scenario is that you have an existing R project
-with content, and you want to create a Github repository for it.
+Un autre scénario de configuration est que vous avez un projet R existant
+avec du contenu, et que vous voulez créer un dépôt Github pour celui-ci.
 
-1)  Create a new, empty Github repository for the project (see
-    instructions above)\
-2)  Clone this repository locally (see HTTPS instructions above)\
-3)  Copy all the content from your pre-existing R
-    project (codes, data, etc.) into this new empty, local, repository (e.g. use copy and paste).\
-4)  Open your new project in RStudio, and go to the Git pane. The new files should
-    register as file changes, now tracked by Git. Therefore, you can
-    bundle these changes as a *commit* and *push* them up to Github.
-    Once *pushed*, the repository on Github will reflect all the files.
+1) Créez un nouveau dépôt Github vide pour le projet (cf.
+    instructions ci-dessus).
+2) Clonez ce dépôt localement (voir les instructions HTTPS ci-dessus).
+3) Copiez tout le contenu de votre projet R
+    (codes, données, etc.) dans ce nouveau dépôt local vide (utilisez le copier-coller, par exemple).
+4) Ouvrez votre nouveau projet dans RStudio, et allez dans le volet Git. Les nouveaux fichiers devraient
+    s'enregistrer comme des modifications de fichiers, désormais suivies par Git. Par conséquent, vous pouvez
+    regrouper ces modifications sous forme de *commit* et les *pousser* vers Github.
+    Une fois *poussé*, le dépôt sur Github reflétera tous les fichiers.
     
-See the Github workflow section below for details on this process.
+Voir la section sur le flux de travail Github ci-dessous pour plus de détails sur ce processus.
 
-### What does it look like now? {.unnumbered}
+### A quoi cela ressemble-t-il maintenant ? {.unnumbered}
 
-#### In RStudio {-}
+#### Dans RStudio {-}
 
-Once you have cloned a Github repository to a new R project, 
-you now see in RStudio a "Git" tab. This tab appears in the same RStudio pane
-as your R Environment:
+Une fois que vous avez cloné un dépôt Github vers un nouveau projet R, 
+vous voyez maintenant dans RStudio un onglet "Git". Cet onglet apparaît dans le même volet de RStudio que votre environnement R : {-}.
+que votre environnement R :
 
-```{r echo=F, out.width = "75%", out.height="75%", fig.align = "center"}
+``{r echo=F, out.width = "75%", out.height="75%", fig.align = "center"}
 knitr::include_graphics(here::here("images", "Git_console.png"))
 ```
 
-Please note the buttons circled in the image above, as they will be
-referenced later (from left to right):
+Veuillez noter les boutons encerclés dans l'image ci-dessus, puisqu'ils seront
+seront référencés plus tard (de gauche à droite) :
 
--   Button to *commit* the saved file changes to the local
-    branch (this will open a new window)
--   Blue arrow to *pull* (update your local version of the branch with
-    any changes made on the remote/Github version of that branch)
--   Green arrow to *push* (send any commits/changes for your local
-    version of the branch to the remote/Github version of that branch)
--   The Git tab in RStudio
--   Button to create a NEW branch using whichever local branch is shown
-    to the right as the base. *You almost always want to branch off from
-    the main branch (after you first pull to update the main branch)*
--   The branch you are currently working in
--   Changes you made to code or other files will appear below
+- Bouton pour *commettre* les modifications du fichier sauvegardé dans la branche
+    locale (cela ouvrira une nouvelle fenêtre)
+- Flèche bleue pour *pull* (mettre à jour votre version locale de la branche avec
+    avec les changements effectués sur la version distante/Github de cette branche)
+- Flèche verte pour *push* (envoyer tous les commits/modifications de votre version
+    version locale de la branche vers la version distante/Github de cette branche)
+- L'onglet Git dans RStudio
+- Bouton pour créer une NOUVELLE branche en utilisant comme base la branche locale affichée
+    à droite comme base. *Vous voulez presque toujours créer une branche à partir de la branche principale (après la première extraction).
+    la branche principale (après avoir tiré pour mettre à jour la branche principale)*.
+- La branche dans laquelle vous travaillez actuellement
+- Les modifications que vous avez apportées au code ou à d'autres fichiers apparaissent ci-dessous
 
-#### In Github Desktop {-}
+#### dans Github Desktop {-}
 
-Github Desktop is an independent application that allows you to manage
-all your repositories. When you open it, the interface allows you to
-choose the repository you want to work on, and then to perform basic Git
-actions from there.
+Github Desktop est une application indépendante qui vous permet de gérer
+tous vos dépôts. Lorsque vous l'ouvrez, l'interface vous permet de
+de choisir le dépôt sur lequel vous souhaitez travailler, puis d'effectuer les actions Git
+à partir de là.
 
-```{r echo=F, out.width = "75%", out.height="75%", fig.align = "center"}
+``{r echo=F, out.width = "75%", out.height="75%", fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_interface.png"))
 ```
 
 
-## Git + Github workflow
+### Flux de travail Git + Github
 
-### Process overview {.unnumbered}
+### Aperçu du processus {.unnumbered}
 
-Once you have completed the setup (described above), you will have a
-Github repo that is connected (*cloned*) to a local R project. The
-*main* branch (created by default) is the so-called "live" version of
-*all* the files. When you want to make modifications, it is a good
-practice to create a *new branch* from the *main* branch (like "Make a
-Copy"). This is a typical workflow in Git because creating a branch is
-easy and fast.
-
-
-A typical workflow is as follow:
-
-1.  Make sure that your local repository is up-to-date, update it if
-    not
-
-2.  Go to the branch you were working on previously, or create a new
-    branch to try out some things
+Une fois que vous avez terminé la configuration (décrite ci-dessus), vous aurez un
+Github qui est connecté (*cloné*) à un projet R local. La branche
+branche *main* (créée par défaut) est la version dite "live" de
+*tous* les fichiers. Lorsque vous voulez faire des modifications, il est bon de créer une
+pratique de créer une *nouvelle branche* à partir de la branche *main* (comme "Make a
+copie"). Il s'agit d'un flux de travail typique de Git, car la création d'une branche est facile et rapide.
+facile et rapide.
 
 
-3.  Work on the files locally on your computer, make one or several
-    commits to this branch
+Un flux de travail typique est le suivant :
 
-4.  Update the remote version of the branch with your changes (push)
+1.  Assurez-vous que votre dépôt local est à jour, mettez-le à jour si ce n'est
+    pas
 
-5.  When you are satisfied with your branch, you can merge the online
-    version of the working branch into the online "main" branch to
-    transfer the changes
+2.  Allez sur la branche sur laquelle vous travailliez précédemment, ou créez une nouvelle
+    branche pour essayer certaines choses
 
-Other team members may be doing the same thing with their own branches,
-or perhaps contributing commits into your working branch as well. 
 
-We go through the above process step-by-step in more detail below.
-Here is a schematic we've developed - it's in the format of a two-way
-table so it should help epidemiologists understand.
+3.  Travaillez sur les fichiers localement sur votre ordinateur, faites un ou plusieurs
+    commits à cette branche
 
-```{r echo=F, out.height='150%', out.width='100%', fig.align = "center"}
+4.  Mettre à jour la version distante de la branche avec vos modifications (push)
+
+5.  Lorsque vous êtes satisfait de votre branche, vous pouvez fusionner la version en ligne de la branche de travail avec la branche "principale" en ligne afin de créer une nouvelle branche.
+    version en ligne de la branche de travail dans la branche "principale" en ligne pour
+    transférer les modifications
+
+Les autres membres de l'équipe peuvent faire la même chose avec leurs propres branches,
+ou peut-être contribuer des commits dans votre branche de travail aussi. 
+
+Nous détaillons ci-dessous le processus ci-dessus, étape par étape.
+Voici un schéma que nous avons développé - il se présente sous la forme d'un tableau à double sens, ce qui devrait aider les épidémiologistes.
+tableau à double sens, ce qui devrait aider les épidémiologistes à comprendre.
+
+``{r echo=F, out.height='150%', out.width='100%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_table.png"))
 ```
 
-Here's [another diagram](https://build5nines.com/introduction-to-git-version-control-workflow/).
+Voici [un autre diagramme] (https://build5nines.com/introduction-to-git-version-control-workflow/).
 
-*Note: until recently, the term "master" branch was used, but it is now
-referred to as "main" branch.*
+*Note : jusqu'à récemment, le terme de branche "master" était utilisé, mais il est désormais
+mais on parle maintenant de branche "principale".
 
-```{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "GitHub-Flow.png"))
 ```
 
 Image
 [source](https://build5nines.com/introduction-to-git-version-control-workflow/)
 
-## Create a new branch
+## Créer une nouvelle branche
 
-When you select a branch to work on, **Git resets your working directory
-the way it was the last time you were on this branch**.
+Lorsque vous sélectionnez une branche sur laquelle travailler, **Git réinitialise votre répertoire de travail
+comme il était la dernière fois que vous étiez sur cette branche**.
 
-### In Rstudio Git pane {.unnumbered}
+### Dans le volet Git de Rstudio {.unnumbered}
 
-Ensure you are in the "main" branch, and then click on the purple icon to
-create a new branch (see image above).
+Assurez-vous que vous êtes dans la branche "principale", puis cliquez sur l'icône violette pour
+créer une nouvelle branche (voir image ci-dessus).
 
--   You will be prompted to name your branch with a one-word descriptive
-    name (can use underscores if needed).
--   You will see that locally, you are still in the same R project, but
-    you are no longer working on the "main" branch.
--   Once created, the new branch will also appear in the Github website
-    as a branch.
+- Vous serez invité à nommer votre branche avec un nom descriptif en un mot (vous pouvez utiliser des caractères de soulignement).
+    descriptif en un mot (vous pouvez utiliser des caractères de soulignement si nécessaire).
+- Vous verrez que, localement, vous êtes toujours dans le même projet R, mais que vous ne travaillez plus sur la branche "R".
+    vous ne travaillez plus sur la branche "principale".
+- Une fois créée, la nouvelle branche apparaîtra également sur le site Github
+    comme une branche.
     
-You can visualize branches in the Git Pane in Rstudio after clicking on "History"
+Vous pouvez visualiser les branches dans le volet Git de Rstudio après avoir cliqué sur "Historique".
 
-```{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_rstudio_branchs.png"))
 ```
 
 
-### In Github Desktop {.unnumbered}
+### Dans le bureau de Github {.unnumbered}
 
-The process is very much similar, you are prompted to give your branch
-a name. After, you will be prompted to "Publish you branch to Github" to
-make the new branch appear in the remote repo as well.
+Le processus est très similaire, il vous est demandé de donner un nom à votre branche.
+un nom. Ensuite, il vous sera demandé de "Publier votre branche sur Github" pour
+pour que la nouvelle branche apparaisse également dans le dépôt distant.
 
 
-```{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='100%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_new_branch.png"))
 ```
 
-### In console {.unnumbered}
+### Dans la console {.unnumbered}
 
-What is actually happening behind the scenes is that you create a new
-branch with `git branch`, then go to the branch with
-`git checkout` (_i.e._ tell Git that your next commits will occur there). 
-From your git repository:
+Ce qui se passe en réalité dans les coulisses est que vous créez une nouvelle
+nouvelle branche avec `git branch`, puis vous allez dans la branche avec
+`git checkout` (_i.e._ dites à Git que vos prochains commits se feront là). 
+Depuis votre dépôt git :
 
-```{bash, eval = FALSE}
-git branch my-new-branch  # Create the new branch branch
-git checkout my-new-branch # Go to the branch
-git checkout -b my-new-branch # Both at once (shortcut)
+``{bash, eval = FALSE}
+git branch my-new-branch # Créez la nouvelle branche
+git checkout my-new-branch # Aller sur la branche
+git checkout -b ma-nouvelle-branche # Les deux à la fois (raccourci)
 ```
 
 
-For more information about using the console, see the section on
-Git commands at the end.
+Pour plus d'informations sur l'utilisation de la console, voir la section sur les
+Commandes Git à la fin.
 
-## Commit changes
+## Valider les changements
 
-Now you can edit code, add new files, update datasets, etc.
+Vous pouvez maintenant modifier le code, ajouter de nouveaux fichiers, mettre à jour les ensembles de données, etc.
 
 
-Every one of your changes is tracked, *once the respective file is
-saved*. Changed files will appear in the RStudio Git tab, in Github
-Desktop, or using the command `git status` in the terminal (see below).
+Chacune de vos modifications est suivie, *une fois que le fichier respectif est
+sauvegardé*. Les fichiers modifiés apparaîtront dans l'onglet Git de RStudio, dans Github
+Desktop, ou en utilisant la commande `git status` dans le terminal (voir ci-dessous).
 
-Whenever you make substantial changes (e.g. adding or updating a section of
-code), pause and *commit* those changes. Think of a commit as a "batch"
-of changes related to a common purpose. You can always continue to
-revise a file after having committed changes on it.
+Chaque fois que vous effectuez des modifications substantielles (par exemple, l'ajout ou la mise à jour d'une section de
+code), faites une pause et *committez* ces changements. Pensez à un commit comme un "lot" de
+de changements liés à un objectif commun. Vous pouvez toujours continuer à
+réviser un fichier après y avoir apporté des modifications.
 
-*Advice on commits*: generally, it is better to make small commits, that
-can be easily reverted if a problem arises, to commit together
-modifications related to a common purpose. To achieve this, you will
-find that *you should commit often*. At the beginning, you'll probably
-forget to commit often, but then the habit kicks in.
+*Conseil sur les commits : en général, il est préférable de faire de petits commits, qui
+qui peuvent être facilement annulées si un problème survient, pour commiter ensemble
+des modifications liées à un objectif commun. Pour y parvenir, vous
+vous trouverez que *vous devez commiter souvent*. Au début, vous allez probablement
+oublier de commiter souvent, mais ensuite l'habitude s'installe.
 
-### In Rstudio {.unnumbered}
+### Dans Rstudio {.unnumbered}
 
-The example below shows that, since the last commit, the R Markdown script "collaboration.Rmd" has changed, 
-and several PNG images were added.
+L'exemple ci-dessous montre que, depuis le dernier commit, le script R Markdown "collaboration.Rmd" a été modifié, 
+et plusieurs images PNG ont été ajoutées.
 
-```{r echo=F, fig.align = "center"}
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_tracking2.png"))
 ```
 
-You might be wondering what the yellow, blue, green, and red squares next to
-the file names represent. Here is a snapshot from the [RStudio
+Vous vous demandez peut-être ce que représentent les carrés jaunes, bleus, verts et rouges à côté
+les noms de fichiers. Voici un instantané de la [feuille de route RStudio
 cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
-that explains their meaning. Note that changes with yellow "?" can still
-be staged, committed, and pushed.
+qui explique leur signification. Notez que les changements avec des " ?" jaunes peuvent toujours être
+peuvent toujours être mises en scène, validées et poussées.
 
-```{r echo=F, fig.align = "center"}
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_tracking.png"))
 ```
 
--   Press the "Commit" button in the Git tab, which will open a new
-    window (shown below)
+- Cliquez sur le bouton "Commit" dans l'onglet Git, ce qui ouvrira une nouvelle fenêtre (voir ci-dessous).
+    fenêtre (montrée ci-dessous)
 
--   Click on a file name in the upper-left box
+- Cliquez sur le nom d'un fichier dans le cadre supérieur gauche.
 
--   Review the changes you made to that file (highlighted below in green
-    or red)
+- Passez en revue les modifications que vous avez apportées à ce fichier (surlignées en vert ou en rouge ci-dessous).
+    ou rouge)
 
--   "Stage" the file, which will include those changes in the commit. Do
-    this by checking the box next to the file name. Alternatively, you
-    can highlight multiple file names and then click "Stage"
+- "Mettez en scène" le fichier, ce qui inclura ces modifications dans le commit. Faites
+    en cochant la case à côté du nom du fichier. Alternativement, vous pouvez
+    pouvez mettre en surbrillance plusieurs noms de fichiers, puis cliquer sur "Stage".
 
--   Write a commit message that is short but descriptive (required)
+- Rédigez un message de validation court mais descriptif (obligatoire).
 
--   Press the "Commit" button. A pop-up box will appear showing success
-    or an error message.
+- Appuyez sur le bouton "Commit". Une boîte de dialogue apparaîtra, indiquant le succès
+    ou un message d'erreur.
 
 
-Now you can make more changes and more commits, as many times as you would like
+Vous pouvez maintenant effectuer d'autres modifications et d'autres livraisons, autant de fois que vous le souhaitez.
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_commit.png"))
 ```
 
-### In Github Desktop {.unnumbered}
+### Dans le bureau de Github {.unnumbered}
 
-You can see the list of the files that were changed on the left. If
-you select a text file, you will see a summary of the modifications that were made
-in the right pane (the view will not work on more complex files like .docs or .xlsx).
+Vous pouvez voir la liste des fichiers qui ont été modifiés sur la gauche. Si
+vous sélectionnez un fichier texte, vous verrez un résumé des modifications qui ont été apportées
+dans le volet de droite (cette vue ne fonctionnera pas sur des fichiers plus complexes comme les .docs ou les .xlsx).
 
-To stage the changes, just tick the little box near file names. When you
-have selected the files you want to add to this commit, give the commit
-a name, optionally a description and then click on the **commit**
-button.
+Pour mettre en scène les modifications, il suffit de cocher la petite case près des noms de fichiers. Lorsque vous avez
+avez sélectionné les fichiers que vous souhaitez ajouter à cette livraison, donnez un nom à la livraison, une description facultative et un mot de passe.
+un nom, éventuellement une description, puis cliquez sur le bouton **commit**.
+et cliquez sur le bouton **commit**.
 
-```{r echo=F, fig.align = "center"}
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_commit.png"))
 ```
 
-### In console {.unnumbered}
+### Dans la console {.unnumbered}
 
-The two functions used behind the scenes are `git add` to select/stage
-files and `git commit` to actually do the commit.
+Les deux fonctions utilisées dans les coulisses sont `git add` pour sélectionner/établir
+et `git commit` pour effectuer la livraison.
 
-```{bash, eval = FALSE}
-git status # see the changes 
+``{bash, eval = FALSE}
+git status # voir les changements 
 
-git add new_pages/collaboration.Rmd  # select files to commit (= stage the changes)
+git add new_pages/collaboration.Rmd # sélectionner les fichiers à livrer (= mettre en scène les changements)
 
-git commit -m "Describe commit from Github Desktop" # commit the changes with a message
+git commit -m "Describe commit from Github Desktop" # livrer les changements avec un message
 
-git log  # view information on past commits
+git log # affiche les informations sur les commits passés
 ```
 
 
-### Amend a previous commit {.unnumbered}
+### Modifier un commit précédent {.unnumbered}
 
-What happens if you commit some changes, carry on working, and realize
-that you made changes that should "belong" to the past commit (in your opinion). 
-Fear not! You can append these changes to your previous commit.
+Que se passe-t-il si vous commettez des changements, continuez à travailler et réalisez que vous avez fait des changements qui devraient "appartenir" à l'auteur ?
+que vous avez fait des changements qui devraient "appartenir" au commit précédent (à votre avis). 
+N'ayez crainte ! Vous pouvez ajouter ces changements à votre validation précédente.
 
-In Rstudio, it should be pretty obvious as there is a "Amend previous commit" 
-box on the same line as the COMMIT button. 
+Dans Rstudio, cela devrait être assez évident puisqu'il y a une case "Amend previous commit" sur la même ligne que le COMMIT. 
+sur la même ligne que le bouton COMMIT. 
 
-For some unclear reason, the functionality has not been implemented 
-as such in Github Desktop, but there is a (conceptually awkward but easy)
-way around. If you have committed **but not pushed** your changes yet, 
-an "UNDO" button appears just under the COMMIT button. Click on it and 
-it will revert your commit (but keep your staged files and your commit message). 
-Save your changes, add new files to the commit if necessary and commit again.
+Pour une raison peu claire, la fonctionnalité n'a pas été implémentée comme telle 
+n'a pas été implémentée en tant que telle dans Github Desktop, mais il existe une
+moyen de la contourner. Si vous avez validé **mais pas encore poussé** vos changements, 
+un bouton "UNDO" apparaît juste en dessous du bouton COMMIT. Cliquez dessus et 
+il annulera votre validation (mais conservera vos fichiers indexés et votre message de validation). 
+Sauvegardez vos changements, ajoutez de nouveaux fichiers à la livraison si nécessaire et livrez à nouveau.
 
-In the console:  
+Dans la console :  
 
-```{bash, eval = FALSE}
-git add [YOUR FILES] # Stage your new changes
+``{bash, eval = FALSE}
+git add [YOUR FILES] # Ajoute vos nouvelles modifications
 
-git commit --amend  # Amend the previous commit
+git commit --amend # Modifie le commit précédent
 
-git commit --amend -m "An updated commit message"  # Amend the previous commit AND update the commit message
+git commit --amend -m "An updated commit message" # Modifie la livraison précédente ET met à jour le message de livraison.
 ```
 
 
-_Note: think before modifying commits that are already public and shared with your collaborators_.
+_Note : réfléchissez avant de modifier des commits qui sont déjà publics et partagés avec vos collaborateurs_.
 
 
-## Pull and push changes up to Github
+## Tirez et poussez les modifications vers Github
 
-"First PULL, then PUSH"
+"D'abord PULL, ensuite PUSH"
 
-It is good practice to *fetch* and *pull* before you begin working on
-your project, to update the branch version on your local computer with
-any changes that have been made to it in the remote/Github version.
+C'est une bonne pratique de *fetch* et de *pull* avant de commencer à travailler sur
+votre projet, afin de mettre à jour la version de la branche sur votre ordinateur local avec
+toutes les modifications qui ont été apportées dans la version distante/Github.
 
-PULL often. Don't hesitate. *Always pull before pushing*.
+PULL souvent. N'hésitez pas. *Tirez toujours avant de pousser.
 
-When your changes are made and committed and you are happy with the 
-state of your project, you can *push* your commits up
-to the remote/Github version of your branch.
-
-
-Rince and repeat while you are working on the repository.
-
-**Note:** it is much easier to revert changes that were committed but not 
-pushed (i.e. are still local) than to revert changes that were pushed to the
-remote repository (and perhaps already pulled by someone else), so it is better 
-to push when you are done with introducing changes on the task that 
-you were working on.
+Lorsque vos modifications sont effectuées et validées et que vous êtes satisfait de l'état de votre projet, vous pouvez *tirer avant de pousser*. 
+état de votre projet, vous pouvez *pousser* vos commits vers la version
+vers la version distante/Github de votre branche.
 
 
-#### In Rstudio {.unnumbered}
+Rincez et répétez pendant que vous travaillez sur le référentiel.
 
-*PULL* - First, click the "Pull" icon (downward arrow) which fetches and
-pulls at the same time.
-
-*PUSH* - Clicking the green "Pull" icon (upward arrow). You may be asked
-to enter your Github username and password. The first time you are
-asked, you may need to enter two Git command lines into the *Terminal*:
-
--   **git config --global user.email
-    "[you\@example.com](mailto:you@example.com){.email}"** (your Github
-    email address), and\
--   **git config --global user.name "Your Github username"**
-
-To learn more about how to enter these commands, see the section below
-on Git commands.
-
-***TIP:*** Asked to provide your password too often? See these chapters
-10 & 11 of this
-[tutorial](https://happygitwithr.com/credential-caching.html#credential-caching)
-to connect to a repository using a SSH key (more
-complicated)  
+**Note:** il est beaucoup plus facile de revenir sur des modifications qui ont été commises mais pas poussées (c'est-à-dire qu'elles sont toujours en cours de traitement). 
+mais qui n'ont pas été poussées (c.-à-d. qui sont encore locales) que de revenir sur des changements qui ont été poussés vers le
+poussées vers le dépôt distant (et peut-être déjà extraites par quelqu'un d'autre). 
+de pousser lorsque vous avez fini d'introduire des changements dans la tâche sur laquelle 
+sur laquelle vous travailliez.
 
 
-#### In Github Desktop {.unnumbered}
+#### Dans Rstudio {.unnumbered}
 
-Click on the "Fetch origin" button to check if there are new commits on
-the remote repository.
+*PULL* - Cliquez d'abord sur l'icône "Pull" (flèche vers le bas) qui récupère et tire en même temps.
+tire en même temps.
 
-```{r echo=F, fig.align = "center"}
+*PUSH* - Cliquez sur l'icône verte "Pull" (flèche vers le haut). Il peut vous être demandé
+d'entrer votre nom d'utilisateur et votre mot de passe Github. La première fois qu'ils vous
+la première fois, vous devrez peut-être entrer deux lignes de commande Git dans le *Terminal* :
+
+- **git config --global utilisateur.email
+    "[you\@example.com](mailto:you@example.com){.email}"** (votre adresse électronique Github
+    ), et **.
+- **git config --global user.name "Votre nom d'utilisateur Github "**.
+
+Pour en savoir plus sur la façon de saisir ces commandes, consultez la section ci-dessous
+sur les commandes Git.
+
+***TIP:*** On vous demande trop souvent de fournir votre mot de passe ? Consultez les chapitres
+10 & 11 de ce
+[tutoriel](https://happygitwithr.com/credential-caching.html#credential-caching)
+pour se connecter à un référentiel en utilisant une clé SSH (plus
+compliqué)  
+
+
+#### Dans le bureau de Github {.unnumbered} (en anglais)
+
+Cliquez sur le bouton "Fetch origin" pour vérifier s'il y a de nouveaux commits sur le dépôt distant.
+sur le référentiel distant.
+
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_fetch_button.png"))
 ```
 
-If Git finds new commits on the remote repository, the button will
-change into a "Pull" button. Because the same button is used to push and
-pull, you cannot push your changes if you don't pull before.
+Si Git trouve de nouveaux commits sur le dépôt distant, le bouton se
+se transformera en bouton "Pull". Comme le même bouton est utilisé pour pousser et
+pousser et tirer, vous ne pouvez pas pousser vos modifications si vous ne tirez pas auparavant.
 
-```{r echo=F, fig.align = "center"}
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_pull_button.png"))
 ```
 
-You can go to the "History" tab (near the "Changes" tab) to see all
-commits (yours and others). This is a nice way of acquainting yourself
-with what your collaborators did. You can read the commit message, the
-description if there is one, and compare the code of the two files using
-the *diff* pane.
+Vous pouvez aller dans l'onglet "History" (près de l'onglet "Changes") pour voir toutes les
+commits (les vôtres et ceux des autres). C'est un bon moyen de savoir ce que vos collaborateurs ont fait.
+ce que vos collaborateurs ont fait. Vous pouvez lire le message du commit, la
+description s'il y en a une, et comparer le code des deux fichiers en utilisant le volet
+le panneau *diff*.
 
-```{r echo=F, fig.align = "center"}
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_history.png"))
 ```
 
-Once all remote changes have been pulled, and at least one local change
-has been committed, you can push by clicking on the same button.
+Une fois que toutes les modifications distantes ont été tirées, et qu'au moins une modification locale
+a été validée, vous pouvez pousser en cliquant sur le même bouton.
 
 ```{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_push_button.png"))
@@ -726,426 +727,426 @@ knitr::include_graphics(here::here("images", "github_desktop_push_button.png"))
 
 #### Console {.unnumbered}
 
-Without surprise, the commands are *fetch*, *pull* and *push*.
+Sans surprise, les commandes sont *fetch*, *pull* et *push*.
 
-```{bash, eval = FALSE}
-git fetch  # are there new commits in the remote directory?
-git pull   # Bring remote commits into your local branch
-git push   # Puch local commits of this branch to the remote branch
+``{bash, eval = FALSE}
+git fetch # Y a-t-il de nouveaux commits dans le répertoire distant ?
+git pull # Apporte les commits distants dans votre branche locale
+git push # Pousse les commits locaux de cette branche vers la branche distante
 ```
 
 
-### I want to pull but I have local work {.unnumbered}
+### Je veux tirer mais j'ai du travail local {.unnumbered}
 
-This can happen sometimes: 
-you made some changes on your local repository, but the remote
-repository has commits that you didn't pull. 
+Cela peut arriver parfois : 
+vous avez effectué des modifications sur votre dépôt local, mais le dépôt distant
+mais le dépôt distant a des commits que vous n'avez pas tirés. 
 
 
-Git will refuse to pull because it might overwrite your changes. 
-There are several strategies to keep your changes, 
-well described in [Happy Git with R](https://happygitwithr.com/pull-tricky.html), 
-among which the two main ones are:
-- commit your changes, fetch remote changes, pull them in, resolve conflicts 
-if needed (see section below), and push everything online
-- `stash` your changes, which sort of stores them aside, pull, unstash 
-(restore), and then commit, solve any conflicts, and push. 
+Git refusera de les extraire car cela pourrait écraser vos modifications. 
+Il existe plusieurs stratégies pour conserver vos modifications, 
+bien décrites dans [Happy Git with R](https://happygitwithr.com/pull-tricky.html), 
+parmi lesquelles les deux principales sont :
+- livrer vos modifications, récupérer les modifications distantes, les tirer, résoudre les conflits 
+si nécessaire (voir la section ci-dessous), et pousser le tout en ligne
+- `stash` vos changements, ce qui les met en quelque sorte de côté, les tirer, les déstocker 
+(restauration), puis commit, résolution des conflits, et push. 
 
-If the files concerned by the remote changes and the files concerned 
-by your local changes do not overlap, Git may solve conflicts automatically.
+Si les fichiers concernés par les modifications distantes et les fichiers concernés 
+par vos modifications locales ne se chevauchent pas, Git peut résoudre les conflits automatiquement.
 
-In Github Desktop, this can be done with buttons. To stash, go to _Branch > Stash all changes_.
+Dans Github Desktop, cela peut être fait avec des boutons. Pour mettre en cache, allez dans _Branch > Stash all changes_.
 
-```{r echo=F, fig.align = "center"}
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_stash.png"))
 ```
 
 
 
-## Merge branch into Main 
+## Fusionner la branche dans Main 
 
-If you have finished making changes, you can begin the process of
-merging those changes into the main branch. Depending on your situation,
-this may be fast, or you may have deliberate review and approval
-steps involving teammates.
+Si vous avez fini de faire des changements, vous pouvez commencer le processus de
+fusionner ces changements dans la branche principale. En fonction de votre situation,
+cela peut être rapide, ou vous pouvez avoir des étapes délibérées de révision et d'approbation
+impliquant des coéquipiers.
 
-### Locally in Github Desktop {.unnumbered}
+### Localement dans Github Desktop {.unnumbered}
 
-One can merge branches locally using Github Desktop. First, go to
-(checkout) the branch that will be the recipient of the commits, in other words, the
-branch you want to update. Then go to the menu *Branch \> Merge into
-current branch* and click. A box will allow you to select the branch you
-want to import from.
+On peut fusionner des branches localement en utilisant Github Desktop. Tout d'abord, allez dans
+(checkout) la branche qui sera le destinataire des commits, en d'autres termes, la branche
+branche que vous voulez mettre à jour. Ensuite, allez dans le menu *Branche \> Fusionner en
+branche actuelle* et cliquez. Une boîte vous permet de sélectionner la branche à partir de laquelle vous souhaitez
+la branche à partir de laquelle vous voulez importer.
 
-```{r echo=F, fig.align = "center"}
+``{r echo=F, fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_desktop_merge.png"))
 ```
 
-### In console {.unnumbered}
+### Dans la console {.unnumbered}
 
-First move back to the branch that will be the recipient of the changes.
-This is usually *master*, but it could be another branch. Then merge your
-working branch into master.
+Revenez d'abord à la branche qui sera le destinataire des changements.
+C'est généralement *master*, mais cela peut être une autre branche. Ensuite, fusionnez votre
+branche de travail dans master.
 
-```{bash, eval = FALSE}
-git checkout master  # Go back to master (or to the branch you want to move your )
+``{bash, eval = FALSE}
+git checkout master # Retournez à master (ou à la branche que vous voulez déplacer)
 git merge this_fancy_new_branch
 ```
 
-[This
+[Cette
 page](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging)
-shows a more advanced example of branching and explains a bit what is
-happening behind the scenes.
+montre un exemple plus avancé de branchement et explique un peu ce qui se passe en
+ce qui se passe en coulisses.
 
-### In Github: submitting pull requests {.unnumbered}
+### Dans Github : soumettre des demandes de pull {.unnumbered}
 
 
-While it is totally possible to merge two branches locally, or without
-informing anybody, a merge may be discussed or investigated by several
-people before being integrated to the master branch. To help with the
-process, Github offers some discussion features around the merge: the
+S'il est tout à fait possible de fusionner deux branches localement, ou sans en
+sans en informer qui que ce soit, une fusion peut être discutée ou étudiée par plusieurs
+personnes avant d'être intégrée à la branche master. Pour aider à ce
+processus, Github propose des fonctionnalités de discussion autour de la fusion : la
 **pull request**.
 
-A pull request (a "PR") is a request to merge one branch into another 
-(in other words, a request that _your working branch be pulled into the "main" branch_). 
-A pull request typically involves multiple commits. A pull request usually begins a conversation and review 
-process before it is accepted and the branch is merged. For example, 
-you can read pull request discussions on [dplyr's
-github](https://github.com/tidyverse/dplyr/pulls).
+Une pull request (une "PR") est une demande de fusion d'une branche dans une autre 
+(en d'autres termes, une demande pour que _votre branche de travail soit intégrée à la branche "principale"_). 
+Une pull request implique généralement plusieurs commits. Une pull request commence généralement une conversation et un processus de révision 
+avant qu'elle ne soit acceptée et que la branche ne soit fusionnée. Par exemple, 
+vous pouvez lire les discussions sur les demandes de téléchargement sur le site [dplyr's
+github] (https://github.com/tidyverse/dplyr/pulls).
 
 
-You can submit a pull request (PR) directly form the website (as
-illustrated bellow) or from Github Desktop.
+Vous pouvez soumettre une demande de modification (PR) directement à partir du site Web (comme illustré ci-dessous) ou à partir de Github.
+site Web (comme illustré ci-dessous) ou à partir du bureau Github.
 
--   Go to Github repository (online)
--   View the tab "Pull Requests" and click the "New pull request" button
--   Select from the drop-down menu to merge your branch into main
--   Write a detailed Pull Request comment and click "Create Pull
-    Request".
+- Accéder au dépôt Github (en ligne)
+- Affichez l'onglet "Pull Requests" et cliquez sur le bouton "New pull request".
+- Choisissez dans le menu déroulant de fusionner votre branche avec la branche principale.
+- Rédigez un commentaire détaillé de la Pull Request et cliquez sur "Create Pull
+    demande".
 
-In the image below, the branch "forests" has been selected to be merged
-into "main":
+Dans l'image ci-dessous, la branche "forests" a été sélectionnée pour être fusionnée dans "main".
+dans "main" :
 
-```{r echo=F, out.width = '100%', out.height='150%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='150%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_pull_request2.png"))
 ```
 
-Now you should be able to see the pull request (example image below):
+Maintenant vous devriez être capable de voir la pull request (image d'exemple ci-dessous) :
 
--   Review the tab "Files changed" to see how the "main" branch would
-    change if the branch were merged.\
--   On the right, you can request a review from members of your team by
-    tagging their Github ID. If you like, you can set the repository
-    settings to require one approving review in order to merge into
+- Passez en revue l'onglet "Fichiers modifiés" pour voir comment la branche "principale" serait
+    changerait si la branche était fusionnée.
+- Sur la droite, vous pouvez demander une révision aux membres de votre équipe en
+    en marquant leur identifiant Github. Si vous le souhaitez, vous pouvez définir les paramètres du référentiel
+    pour qu'une révision approuvée soit nécessaire afin de fusionner avec la branche
     main.\
--   Once the pull request is approved, a button to
-    "Merge pull request" will become active. Click this.\
--   Once completed, delete your branch as explained below.
+- Une fois la demande de retrait approuvée, un bouton permettant de
+    "Merge pull request" devient actif. Cliquez dessus.
+- Une fois terminé, supprimez votre branche comme expliqué ci-dessous.
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_pull_request.png"))
 ```
 
-### Resolving conflicts {.unnumbered}
+### Résolution des conflits {.unnumbered}
 
-When two people modified the same line(s) at the same time, a
-merge conflict arises. Indeed, Git refuses to make a decision about
-which version to keep, but it helps you find where the
-conflict is. **DO NOT PANIC**. Most of the time, it is pretty straightforward
-to resolve.
+Lorsque deux personnes modifient la ou les mêmes lignes au même moment, un
+conflit de fusion se produit. En effet, Git refuse de prendre une décision quant à
+version à conserver, mais il vous aide à trouver où se trouve le conflit.
+conflit. **NE PANIQUEZ PAS**. La plupart du temps, il est assez simple à
+à résoudre.
 
-For example, on Github:
+Par exemple, sur Github :
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_conflict2.png"))
 ```
 
 
-After the merge raised a conflict, open the file in your favorite editor.
-The conflict will be indicated by series of characters:
+Après que la fusion ait soulevé un conflit, ouvrez le fichier dans votre éditeur préféré.
+Le conflit sera indiqué par une série de caractères :
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_conflict3.png"))
 ```
 
-The text between *\<\<\<\<\<\<\< HEAD* and *=======* comes from your
-local repository, and the one between *=======* and *\>\>\>\>\>\>\>* from the
-the other branch (which may be origin, master or any branch of
-your choice).
+Le texte entre *<<<<<<<<<<<<<<<<< HEAD* et *=======* provient de votre référentiel
+dépôt local, et celui entre *=======* et *\>\>\>\>\>\>\>\>* de l'autre branche (qui peut être d'origine).
+l'autre branche (qui peut être origin, master ou toute autre branche de
+votre choix).
 
-You need to decide which version of the code you prefer (or even write a
-third, including changes from both sides if pertinent), delete the rest
-and remove all the marks that Git added *(\<\<\<\<\<\<\< HEAD, =======,
-\>\>\>\>\>\>\> origin/master/your_branch_name*). 
+Vous devez décider quelle version du code vous préférez (ou même écrire une
+troisième, en incluant les changements des deux côtés si cela est pertinent), effacer le reste
+et retirer toutes les marques que Git a ajoutées *(\\N<<<<<<<<<<<< HEAD, =======,
+\>\>\>\>\>\> origin/master/your_branch_name*). 
 
-Then, save the file, stage it and commit it : this is the commit 
-that makes the merged version "official". Do not forget to push afterwards.
+Ensuite, sauvegardez le fichier, mettez-le en scène et commitez-le : c'est le commit 
+qui rend la version fusionnée "officielle". N'oubliez pas de pousser ensuite.
 
-The more often you and your collaborators pull and push, the smaller the
-conflicts will be.
+Plus vous et vos collaborateurs tirent et poussent souvent, plus les conflits seront réduits.
+conflits seront réduits.
 
 
-*Note: If you feel at ease with the console, there are more [advanced
-merging
+*Note : Si vous vous sentez à l'aise avec la console, il existe des outils plus [avancés] de
+fusionner
 options](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging)
-(e.g. ignoring whitespace, giving a collaborator priority etc.).*
+(par exemple, ignorer les espaces, donner la priorité à un collaborateur, etc.)
 
-### Delete your branch {.unnumbered}
+### Supprimer votre branche {.unnumbered}
 
-Once a branch was merged into master and is no longer needed, you can
-delete it.
+Une fois qu'une branche a été fusionnée dans master et n'est plus nécessaire, vous pouvez
+la supprimer.
 
 #### Github + Rstudio
 
-Go to the repository on Github and click the button to view all the
-branches (next to the drop-down to select branches). Now find your
-branch and click the trash icon next to it. Read more detail on deleting
-a branch
-[here](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-and-deleting-branches-within-your-repository#deleting-a-branch).
+Allez sur le dépôt sur Github et cliquez sur le bouton pour afficher toutes les branches (à côté de la liste déroulante pour les branches).
+branches (à côté de la liste déroulante pour sélectionner les branches). Trouvez maintenant votre
+branche et cliquez sur l'icône de la corbeille à côté d'elle. Lisez plus de détails sur la suppression
+une branche
+[ici] (https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-and-deleting-branches-within-your-repository#deleting-a-branch).
 
-Be sure to also delete the branch locally on your computer. This will
-not happen automatically.
+Assurez-vous de supprimer également la branche localement sur votre ordinateur. Cela ne se fera pas
+Cela ne se fera pas automatiquement.
 
--   From RStudio, make sure you are in the Main branch
--   Switch to typing Git commands in the RStudio "Terminal" (the tab
-    adjacent to the R console), and type: **git branch -d
-    branch_name**, where "branch_name" is the name of your branch to be
-    deleted
--   Refresh your Git tab and the branch should be gone
-
-
-#### In Github Desktop
-
-Just checkout the branch you want to delete, and go to the menu
-*Branch \> Delete*.
+- Depuis RStudio, assurez-vous que vous êtes dans la branche Main.
+- Passez à la saisie de commandes Git dans le "Terminal" de RStudio (l'onglet
+    adjacent à la console R), et tapez : **git branch -d
+    nom_branche**, où "nom_branche" est le nom de la branche à supprimer.
+    supprimée
+- Rafraîchissez votre onglet Git et la branche devrait avoir disparu.
 
 
-### Forking {.unnumbered}
+#### dans le bureau de Github
 
-You can fork a project if you would like to contribute to it but 
-do not have the rights to do so, or if you just 
-want to modify it for your personal use. A 
-short description of forking can be found [here](https://guides.github.com/activities/forking/).
+Vérifiez simplement la branche que vous voulez supprimer, et allez dans le menu
+*Branche \> Supprimer*.
 
-On Github, click on the "Fork" button:  
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+### Forking {.unnumbered} (bifurcation)
+
+Vous pouvez forker un projet si vous souhaitez y contribuer mais que vous n'avez pas les droits pour le faire. 
+mais n'avez pas les droits pour le faire, ou si vous voulez simplement 
+simplement le modifier pour votre usage personnel. A 
+courte description de la bifurcation se trouve [ici] (https://guides.github.com/activities/forking/).
+
+Sur Github, cliquez sur le bouton "Fork" :  
+
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_fork_1.png"))
 ```
 
-This will clone the original repository, but in your own profile. So now, 
-there are two versions of the repository **on Github**: the original one,
-that you cannot modify, and the cloned version in your profile.
+Ceci clonera le dépôt original, mais dans votre propre profil. Donc maintenant, 
+il y a deux versions du dépôt **sur Github** : l'original,
+que vous ne pouvez pas modifier, et la version clonée dans votre profil.
 
-Then, you can proceed to clone your version of the online repository locally 
-on your computer, using any of the methods described in previous sections. 
-Then, you can create a new branch, make changes, commit and push them 
-_to your remote repository_.
+Ensuite, vous pouvez procéder au clonage de votre version du dépôt en ligne en local 
+sur votre ordinateur, en utilisant l'une des méthodes décrites dans les sections précédentes. 
+Ensuite, vous pouvez créer une nouvelle branche, faire des changements, les livrer et les pousser 
+vers votre dépôt distant.
 
-Once you are happy with the result you can create a Pull Request 
-from Github or Github Desktop to begin the conversation with the 
-owners/maintainers of the original repository.
-
-
-**What if you need some newer commits from the official repository?**
-
-Imagine that someone makes a critical modification to the official repository,
-which you want to include to your cloned version.
-It is possible to synchronize your fork with the official repository. 
-It involves using the terminal, but it is not too complicated. 
-You mostly need to remember that:
-- _upstream_ = the official repository, the one that you could not modify
-- _origin_ = your version of the repository on your Github profile
+Une fois que vous êtes satisfait du résultat, vous pouvez créer une Pull Request 
+à partir de Github ou de Github Desktop pour entamer la conversation avec les 
+propriétaires/mainteneurs du dépôt d'origine.
 
 
-You can read [this tutorial](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) or follow along below: 
+**Et si vous avez besoin de commits plus récents du dépôt officiel?**
+
+Imaginez que quelqu'un apporte une modification critique au dépôt officiel,
+que vous voulez inclure dans votre version clonée.
+Il est possible de synchroniser votre fork avec le dépôt officiel. 
+Cela implique l'utilisation du terminal, mais ce n'est pas trop compliqué. 
+Vous devez surtout vous rappeler que :
+- _upstream_ = le dépôt officiel, celui que vous n'avez pas pu modifier.
+- _origin_ = votre version du dépôt sur votre profil Github
 
 
-First, type in your Git terminal (inside your repo):  
+Vous pouvez lire [ce tutoriel] (https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) ou suivre les instructions ci-dessous : 
 
-```{bash, eval = FALSE}
+
+Tout d'abord, tapez dans votre terminal Git (à l'intérieur de votre repo) :  
+
+``{bash, eval = FALSE}
 git remote -v
 ```
  
-If you have not yet configured the upstream repository you should 
-see two lines, beginning by _origin_. They show the remote repo 
-that `fetch` and `push` point to. Remember, _origin_ is the conventional
-nickname for your own version of the repository on Github. For example:  
+Si vous n'avez pas encore configuré le référentiel amont, vous devriez 
+vous devriez voir deux lignes, commençant par _origin_. Elles montrent le dépôt distant 
+vers lequel `fetch` et `push` pointent. Rappelez-vous, _origin_ est le surnom conventionnel
+surnom conventionnel pour votre propre version du dépôt sur Github. Par exemple :  
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_fork_2.png"))
 ```
 
-Now, add a new remote repository:  
+Maintenant, ajoutez un nouveau dépôt distant :  
 
-```{bash, eval = FALSE}
+``{bash, eval = FALSE}
 git remote add upstream https://github.com/epirhandbook/Epi_R_handbook.git
 ```
  
-Here the address is the address that Github generates when you clone
-a repository (see section on cloning). Now you will have four remote pointers:
+Ici, l'adresse est l'adresse que Github génère lorsque vous clonez
+un dépôt (voir la section sur le clonage). Vous aurez maintenant quatre pointeurs distants :
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_fork_3.png"))
 ```
 
-Now that the setup is done, whenever you want to get the changes from 
-the original (_upstream_) repository, you just have to go (_checkout_) to 
-the branch you want to update and type:
+Maintenant que la configuration est faite, chaque fois que vous voulez obtenir les changements de 
+le dépôt original (_upstream_), il suffit d'aller (_checkout_) dans la branche 
+la branche que vous voulez mettre à jour et taper :
 
-```{bash, eval = FALSE}
-git fetch upstream # Get the new commits from the remote repository
-git checkout the_branch_you_want_to_update
-git merge upstream/the_branch_you_want_to_update  # Merge the upstream branch into your branch.
-git push # Update your own version of the remote repo
+``{bash, eval = FALSE}
+git fetch upstream # Obtenir les nouveaux commits du dépôt distant
+git checkout la_branche_que_vous_voulez_mettre_à_jour
+git merge upstream/the_branch_you_want_to_update # Fusionne la branche amont dans votre branche.
+git push # Mettez à jour votre propre version du dépôt distant.
 ```
 
-If there are conflicts, you will have to solve them, as explained 
-in the Resolving conflicts section. 
+S'il y a des conflits, vous devrez les résoudre, comme expliqué 
+dans la section Résoudre les conflits. 
 
 
-**Summary**: forking is cloning, but on the Github server side. 
-The rest of the actions are typical collaboration workflow actions 
-(clone, push, pull, commit, merge, submit pull requests...).
+**Résumé** : forker est un clonage, mais du côté du serveur Github. 
+Le reste des actions sont des actions typiques du flux de travail de collaboration 
+(cloner, pousser, tirer, commettre, fusionner, soumettre des demandes de tirage...).
 
-_Note: while forking is a concept, not a Git command, it also exist on other Web hosts, like [Bitbucket](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow)._
+Remarque : si la bifurcation est un concept et non une commande Git, elle existe aussi sur d'autres hôtes Web, comme [Bitbucket] (https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow).
 
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_fork_4.png"))
 ```
 
 
-## What we learned
+## Ce que nous avons appris
 
-You have learned how to:  
+Vous avez appris à :  
 
-- setup Git to track modifications in your folders,  
-- connect your local repository to a remote online repository,  
-- commit changes,  
-- synchronize your local and remote repositories.  
+- paramétrer Git pour suivre les modifications dans vos dossiers,  
+- connecter votre référentiel local à un référentiel en ligne distant,  
+- livrer les changements,  
+- synchroniser vos dépôts local et distant.  
 
-All this should get you going and be enough for most of your needs as 
-epidemiologists. We usually do not have as advanced usage as developers. 
+Tout cela devrait vous permettre de démarrer et de répondre à la plupart de vos besoins en tant qu'épidémiologistes. 
+épidémiologistes. Nous n'avons généralement pas un usage aussi avancé que les développeurs. 
 
-However, know that should you want (or need) to go further, Git offers more power to simplify 
-commit histories, revert one or several commits, cherry-pick commits, etc. 
-Some of it may sound like pure wizardry, but now that you have the basics, 
-it is easier to build on it.
-
-
-Note that while the Git pane in Rstudio and Github Desktop are good for 
-beginners / day-to-day usage in our line of work, they do not offer an 
-interface to some of the intermediate / advanced Git functions. 
-Some more complete interfaces allows you to do more with point-and-click 
-(usually at the cost of a more complex layout). 
-
-Remember that since you can use any tool at any point to track your repository, 
-you can very easily install an interface to try it out sometimes, 
-or to perform some less common complex task occasionally, 
-while preferring a simplified interface for the rest of time (e.g. using 
-Github Desktop most of the time, and switching to SourceTree or Gitbash for some specific tasks).
+Cependant, sachez que si vous voulez (ou devez) aller plus loin, Git offre plus de puissance pour simplifier 
+l'historique des commits, le retour en arrière d'un ou plusieurs commits, le cherry-pick des commits, etc. 
+Tout cela peut sembler de la pure magie, mais maintenant que vous avez les bases, 
+il est plus facile de s'appuyer dessus.
 
 
-## Git commands {#git}
+Notez que si le panneau Git dans Rstudio et Github Desktop sont bons pour les débutants / l'utilisation quotidienne dans le cadre d'un projet de développement, il n'est pas nécessaire d'avoir des connaissances particulières. 
+pour les débutants et l'utilisation quotidienne dans notre secteur d'activité, ils n'offrent pas d'interface pour certaines fonctions intermédiaires ou avancées. 
+interface pour certaines des fonctions intermédiaires/avancées de Git. 
+Certaines interfaces plus complètes vous permettent d'en faire plus en pointant et en cliquant. 
+(généralement au prix d'une mise en page plus complexe). 
+
+Rappelez-vous que puisque vous pouvez utiliser n'importe quel outil à n'importe quel moment pour suivre votre dépôt, 
+vous pouvez très facilement installer une interface pour l'essayer parfois, 
+ou pour effectuer occasionnellement une tâche complexe moins courante, 
+tout en préférant une interface simplifiée le reste du temps (par exemple en utilisant 
+Github Desktop la plupart du temps, et passer à SourceTree ou Gitbash pour certaines tâches spécifiques).
 
 
-### Recommended learning {.unnumbered}
+### Commandes Git {#git}
 
-To learn Git commands in an interactive tutorial, see [this
-website](https://learngitbranching.js.org/).
 
-### Where to enter commands {.unnumbered}
+### Apprentissage recommandé {.unnumbered}
 
-You enter commands in a Git shell.
+Pour apprendre les commandes Git à l'aide d'un tutoriel interactif, voir [ce
+site web](https://learngitbranching.js.org/).
 
-*Option 1* You can open a new Terminal in RStudio. This tab is next to
-the R Console. If you cannot type any text in it, click on the
-drop-down menu below "Terminal" and select "New terminal". Type the
-commands at the blinking space in front of the dollar sign "\$".
+### Où entrer les commandes {.unnumbered}
 
-```{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
+Vous entrez les commandes dans un shell Git.
+
+*Option 1* Vous pouvez ouvrir un nouveau Terminal dans RStudio. Cet onglet se trouve à côté de
+la Console R. Si vous ne parvenez pas à y taper du texte, cliquez sur le
+menu déroulant sous "Terminal" et sélectionnez "Nouveau terminal". Tapez les
+dans l'espace clignotant situé devant le symbole du dollar "\$".
+
+``{r echo=F, out.width = '100%', out.height='200%', fig.align = "center"}
 knitr::include_graphics(here::here("images", "github_terminal.png"))
 ```
 
-*Option 2* You can also open a *shell* (a terminal to enter commands) by
-clicking the blue "gears" icon in the Git tab (near the RStudio
-Environment). Select "Shell" from the drop-down menu. A new window will
-open where you can type the commands after the dollar sign "\$".
+*Option 2* Vous pouvez également ouvrir un *shell* (un terminal pour entrer des commandes) en
+cliquant sur l'icône bleue "gears" dans l'onglet Git (près de l'environnement RStudio).
+Environnement). Sélectionnez "Shell" dans le menu déroulant. Une nouvelle fenêtre s'ouvre
+Une nouvelle fenêtre s'ouvre dans laquelle vous pouvez saisir les commandes après le signe du dollar "\$".
 
-*Option 3* Right click to open "Git Bash here" which will open the same
-sort of terminal, or open *Git Bash* form your application list.
-[More beginner-friendly informations on Git Bash](https://happygitwithr.com/shell.html), 
-how to find it and some bash commands you will need.
+*Option 3* Cliquez avec le bouton droit de la souris pour ouvrir "Git Bash here", qui ouvrira le même type de terminal.
+qui ouvrira le même type de terminal, ou ouvrez *Git Bash* depuis votre liste d'applications.
+[Plus d'informations pour les débutants sur Git Bash] (https://happygitwithr.com/shell.html), 
+comment le trouver et quelques commandes bash dont vous aurez besoin.
 
-### Sample commands {.unnumbered}
+### Exemples de commandes {.non numéroté}
 
-Below we present a few common git commands. When you use them, keep in mind
-which branch is active (checked-out), as that will change the action!
+Nous présentons ci-dessous quelques commandes git courantes. Lorsque vous les utilisez, gardez à l'esprit
+quelle branche est active (check-out), car cela changera l'action !
 
-In the commands below, <name> represents a branch name. 
-<commit_hash> represents the hash ID of a specific
-commit. <num> represents a number. Do not type the
-\< or \> symbols.
+Dans les commandes ci-dessous, <name> représente un nom de branche. 
+<commit_hash> représente l'ID de hachage d'un commit spécifique.
+spécifique. <num> représente un nombre. Ne tapez pas les symboles
+\< ou \>>.
 
-| Git command              | Action                                                                   |
+| Commande Git | Action |
 |--------------------------|--------------------------------------------------------------------------|
-| `git branch <name>`      | Create a new branch with the name <name>                                 |
-| `git checkout <name>`    | Switch current branch to <name>                                          |
-| `git checkout -b <name>` | Shortcut to create new branch *and* switch to it                         |
-| `git status`             | See untracked changes                                                    |
-| `git add <file>`         | Stage a file                                                             |
-| `git commit -m <message>`| Commit currently staged changes to current branch with message |
-| `git fetch`              | Fetch commits from remote repository                                     |
-| `git pull`               | Pull commits from remote repository in current branch                    |
-| `git push`               | Push local commits to remote directory                          |
-| `git switch`             | An alternative to `git checkout` that is being phased in to Git |
-| `git merge <name>`       | Merge <name> branch into current branch                         |
-| `git rebase <name>`      | Append commits from current branch on to <name> branch          |
+| `git branch <name>` | Créer une nouvelle branche avec le nom <name> |
+| `git checkout <name>` | Bascule de la branche actuelle vers <name>`.
+| `git checkout -b <name>` | Raccourci pour créer une nouvelle branche *et* y basculer |
+| `git status` | Voir les modifications non suivies |
+| `git add <file>` | Mettre en scène un fichier |
+| `git commit -m <message> `Comptabilise les changements actuellement mis en scène dans la branche actuelle avec le message |
+| `git fetch` | Récupérer les commits du dépôt distant |
+| `git pull` | Extraire les commits du dépôt distant dans la branche actuelle |
+| `git push` | Pousse les commits locaux vers le répertoire distant |
+| `git switch` | Une alternative à `git checkout` qui est en train d'être introduite progressivement dans Git |
+| `git merge <name>` | Fusionner la branche <name> dans la branche courante |
+| `git rebase <name>` | Ajoute les commits de la branche courante à la branche <name> |
 
 
 
 <!-- ======================================================= -->
 
-## Resources
+## Ressources
 
-Much of this page was informed by [this "Happy Git with R"
-website](https://happygitwithr.com/) by Jenny Bryan. There is a very helpful
-section of this website that helps you troubleshoot common Git and
-R-related errors.
+Une grande partie de cette page a été informée par [ce site "Happy Git with R"
+site web](https://happygitwithr.com/) par Jenny Bryan. Il y a une section très utile
+très utile qui vous aide à résoudre les erreurs courantes liées à Git et à R.
+R.
 
-The [Github.com documentation and start
-guide](https://docs.github.com/en/github).
+Le [Guide de documentation et de démarrage de Github.com
+guide] (https://docs.github.com/en/github).
 
-The RStudio ["IDE"
-cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
-which includes tips on Git with RStudio.
+La fiche technique de RStudio ["IDE"
+cheatsheet] (https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
+qui comprend des conseils sur Git avec RStudio.
 
 <https://ohi-science.org/news/github-going-back-in-time>
 
-**Git commands for beginners**
+**Les commandes Git pour les débutants**
 
-An [interactive
-tutorial](learngitbranching.js.org) to learn
-Git commands.
+Un [tutoriel
+didacticiel](learngitbranching.js.org) pour apprendre les
+les commandes Git.
 
-<https://www.freecodecamp.org/news/an-introduction-to-git-for-absolute-beginners-86fa1d32ff71/>:
-good for learning the absolute basics to track changes in one folder on
-you own computer.
+<https://www.freecodecamp.org/news/an-introduction-to-git-for-absolute-beginners-86fa1d32ff71/> :
+bon pour apprendre les bases absolues pour suivre les changements dans un dossier sur
+votre propre ordinateur.
 
-Nice schematics to understand branches:
+De beaux schémas pour comprendre les branches :
 <https://speakerdeck.com/alicebartlett/git-for-humans>
 
 
-**Tutorials covering both basic and more advanced subjects**
+**Tutoriels couvrant les sujets de base et plus avancés**.
 
 <https://tutorialzine.com/2016/06/learn-git-in-30-minutes>
 
 <https://dzone.com/articles/git-tutorial-commands-and-operations-in-git>
-<https://swcarpentry.github.io/git-novice/> (short course)
+<https://swcarpentry.github.io/git-novice/> (cours court)
 <https://rsjakob.gitbooks.io/git/content/chapter1.html>
 
-The [Pro Git book](https://git-scm.com/book/en/v2) is considered an official reference. 
-While some chapters are ok, it is usually a bit _technical_. It is probably a good resource 
-once you have used Git a bit and want to learn a bit more precisely 
-what happens and how to go further.
+Le [livre Pro Git](https://git-scm.com/book/en/v2) est considéré comme une référence officielle. 
+Bien que certains chapitres soient corrects, il est généralement un peu _technique_. C'est probablement une bonne ressource 
+une fois que vous avez utilisé Git un peu et que vous voulez apprendre un peu plus précisément 
+ce qui se passe et comment aller plus loin.
