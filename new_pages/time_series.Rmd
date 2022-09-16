@@ -1,157 +1,155 @@
-
-# Time series and outbreak detection {#time_series}  
+# Série temporelle et détection des épidémies {#time_series}  
 
 <!-- ======================================================= -->
-## Overview {  }
+## Aperçu { }
 
-This tab demonstrates the use of several packages for time series analysis. 
-It primarily relies on packages from the [**tidyverts**](https://tidyverts.org/) 
-family, but will also use the RECON [**trending**](https://github.com/reconhub/trending) 
-package to fit models that are more appropriate for infectious disease epidemiology. 
+Cet onglet démontre l'utilisation de plusieurs paquets pour l'analyse des séries temporelles. 
+Il s'appuie principalement sur les paquets de la famille [**tidyverts**](https://tidyverts.org/) 
+mais utilise également le paquet RECON [**trending**](https://github.com/reconhub/trending) 
+pour ajuster des modèles qui sont plus appropriés à l'épidémiologie des maladies infectieuses. 
 
-Note in the below example we use a dataset from the **surveillance** package 
-on Campylobacter in Germany (see the [data chapter](https://epirhandbook.com/download-handbook-and-data.html), 
-of the handbook for details). However, if you wanted to run the same code on a dataset
-with multiple countries or other strata, then there is an example code template for this in the 
+Notez que dans l'exemple ci-dessous, nous utilisons un ensemble de données provenant du paquet **surveillance**. 
+sur Campylobacter en Allemagne (voir le [chapitre sur les données](#data_used), 
+du manuel pour plus de détails). Cependant, si vous vouliez exécuter le même code sur un ensemble de données avec plusieurs pays ou d'autres strates, il y a un exemple de code pour cela dans le fichier 
 [r4epis github repo](https://github.com/R4EPI/epitsa). 
 
-Topics covered include:  
+Les sujets abordés sont les suivants :  
 
-1.  Time series data 
-2.  Descriptive analysis 
-3.  Fitting regressions
-4.  Relation of two time series 
-5.  Outbreak detection
-6.  Interrupted time series
+1.  Données de séries temporelles 
+2.  Analyse descriptive 
+3.  Régressions ajustées
+4.  Relation de deux séries temporelles 
+5.  Détection de l'épidémie
+6.  Séries chronologiques interrompues
 
 
 <!-- ======================================================= -->
-## Preparation {  }
+## Préparation { }
 
-### Packages {.unnumbered}
+### Paquets {.nonnumérotés}
 
-This code chunk shows the loading of packages required for the analyses. In this handbook we emphasize `p_load()` from **pacman**, which installs the package if necessary *and* loads it for use. You can also load packages with `library()` from **base** R. See the page on [R basics](https://epirhandbook.com/r-basics.html) for more information on R packages.  
+Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger des paquets avec `library()` depuis **base** R. Voir la page sur [R basics](#basics) pour plus d'informations sur les paquets R.  
 
 ```{r load_packages}
-pacman::p_load(rio,          # File import
-               here,         # File locator
-               tidyverse,    # data management + ggplot2 graphics
-               tsibble,      # handle time series datasets
-               slider,       # for calculating moving averages
-               imputeTS,     # for filling in missing values
-               feasts,       # for time series decomposition and autocorrelation
-               forecast,     # fit sin and cosin terms to data (note: must load after feasts)
-               trending,     # fit and assess models 
-               tmaptools,    # for getting geocoordinates (lon/lat) based on place names
-               ecmwfr,       # for interacting with copernicus sateliate CDS API
-               stars,        # for reading in .nc (climate data) files
-               units,        # for defining units of measurement (climate data)
-               yardstick,    # for looking at model accuracy
-               surveillance  # for aberration detection
+pacman::p_load(rio, # Importation du fichier
+               here, # Localisation de fichiers
+               tidyverse, # gestion des données + graphiques ggplot2
+               tsibble, # gère les ensembles de données de séries temporelles
+               slider, # pour calculer les moyennes mobiles
+               imputeTS, # pour remplir les valeurs manquantes
+               feasts, # pour la décomposition des séries temporelles et l'autocorrélation
+               forecast, # ajustement des termes sin et cosin aux données (note : doit être chargé après feasts)
+               trending, # ajustement et évaluation des modèles 
+               tmaptools, # pour obtenir des géocoordonnées (lon/lat) à partir de noms de lieux
+               ecmwfr, # pour interagir avec l'API CDS de copernicus sateliate
+               stars, # pour lire les fichiers .nc (données climatiques)
+               units, # pour définir les unités de mesure (données climatiques)
+               yardstick, # pour l'examen de la précision du modèle
+               surveillance # pour la détection des aberrations
                )
 ``` 
 
-### Load data {.unnumbered}
+### Chargement des données {.unnumbered}
 
-You can download all the data used in this handbook via the instructions in the [Download handbook and data] page.  
+Vous pouvez télécharger toutes les données utilisées dans ce manuel en suivant les instructions de la page [Télécharger le manuel et les données](#data_used).  
 
-The example dataset used in this section is weekly counts of campylobacter cases reported in Germany between 2001 and 2011. <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/campylobacter_germany.xlsx' class='download-button'>
-	You can click here to download<span> this data file (.xlsx).</span></a> 
+L'ensemble de données d'exemple utilisé dans cette section est le décompte hebdomadaire des cas de campylobacter signalés en Allemagne entre 2001 et 2011. <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/campylobacter_germany.xlsx' class='download-button'>
+	Vous pouvez cliquer ici pour télécharger<span> ce fichier de données (.xlsx).</span></a>. 
 
-This dataset is a reduced version of the dataset available in the [**surveillance**](https://cran.r-project.org/web/packages/surveillance/) package. 
-(for details load the surveillance package and see `?campyDE`)
+Cet ensemble de données est une version réduite de l'ensemble de données disponible dans le paquet [**surveillance**](https://cran.r-project.org/web/packages/surveillance/). 
+(pour plus de détails, chargez le paquet surveillance et voyez `?campyDE`)
 
-Import these data with the `import()` function from the **rio** package (it handles many file types like .xlsx, .csv, .rds - see the [Import and export] page for details).
+Importez ces données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#importing) pour plus de détails).
 
 ```{r read_data_hide, echo=F}
-# import the counts into R
+# Importez les comptes dans R
 counts <- rio::import(here::here("data", "time_series", "campylobacter_germany.xlsx"))
 ```
 
 ```{r read_data_show, eval=F}
-# import the counts into R
+# Importez les comptes dans R
 counts <- rio::import("campylobacter_germany.xlsx")
 ```
 
-The first 10 rows of the counts are displayed below.
+Les 10 premières lignes des comptages sont affichées ci-dessous.
 
 ```{r inspect_data, message=FALSE, echo=F}
-# display the counts data as a table
+# Affichez les données de comptage sous forme de tableau
 DT::datatable(head(counts, 10), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-### Clean data {.unnumbered}
+### Nettoyer les données {.unnumbered}
 
-The code below makes sure that the date column is in the appropriate format. 
-For this tab we will be using the **tsibble** package and so the `yearweek` 
-function will be used to create a calendar week variable. There are several other
-ways of doing this (see the [Working with dates](https://epirhandbook.com/working-with-dates.html)
-page for details), however for time series its best to keep within one framework (**tsibble**). 
+Le code ci-dessous s'assure que la colonne de date est dans le format approprié. 
+Pour cet onglet, nous utiliserons le package **tsibble** et donc la fonction `yearweek` 
+sera utilisée pour créer une variable de semaine calendaire. Il existe plusieurs autres
+façons de le faire (voir la page [Working with dates](#dates))
+pour plus de détails), mais pour les séries temporelles, il est préférable de rester dans un seul cadre (**tsibble**). 
 
 ```{r clean_data}
 
-## ensure the date column is in the appropriate format
+## s'assurer que la colonne date est dans le format approprié
 counts$date <- as.Date(counts$date)
 
-## create a calendar week variable 
-## fitting ISO definitons of weeks starting on a monday
+## créer une variable de semaine calendaire 
+## adapter les définitions ISO des semaines commençant un lundi
 counts <- counts %>% 
      mutate(epiweek = yearweek(date, week_start = 1))
 
 ```
 
-### Download climate data {.unnumbered} 
+### Télécharger les données climatiques {.unnumbered} 
 
-In the *relation of two time series* section of this page, we will be comparing 
-campylobacter case counts to climate data. 
+Dans la partie *relation de deux séries temporelles* de cette page, nous allons comparer 
+le nombre de cas de campylobacter aux données climatiques. 
 
-Climate data for anywhere in the world can be downloaded from the EU's Copernicus 
-Satellite. These are not exact measurements, but based on a model (similar to 
-interpolation), however the benefit is global hourly coverage as well as forecasts.  
+Les données climatiques de n'importe quel endroit du monde peuvent être téléchargées à partir du satellite Copernicus de l'UE. 
+de l'UE. Il ne s'agit pas de mesures exactes, mais de données basées sur un modèle (similaire à l'interpolation). 
+interpolation), mais l'avantage est une couverture horaire globale ainsi que des prévisions.  
 
-You can download each of these climate data files from the [Download handbook and data] page.  
+Vous pouvez télécharger chacun de ces fichiers de données climatiques à partir de la page [Télécharger le manuel et les données].  
 
-For purposes of demonstration here, we will show R code to use the **ecmwfr** package to pull these data from the Copernicus 
-climate data store. You will need to create a free account in order for this to 
-work. The package website has a useful [walkthrough](https://github.com/bluegreen-labs/ecmwfr#use-copernicus-climate-data-store-cds)
-of how to do this. Below is example code of how to go about doing this, once you 
-have the appropriate API keys. You have to replace the X's below with your account
-IDs. You will need to download one year of data at a time otherwise the server times-out. 
+Pour les besoins de la démonstration, nous allons présenter le code R permettant d'utiliser le paquet **ecmwfr** pour extraire ces données du magasin de données climatiques Copernicus 
+Climate Data Store. Vous devrez créer un compte gratuit pour que cela fonctionne. 
+fonctionner. Le site Web du paquet contient un [walkthrough] utile (https://github.com/bluegreen-labs/ecmwfr#use-copernicus-climate-data-store-cds)
+sur la manière de procéder. Vous trouverez ci-dessous un exemple de code expliquant comment procéder, une fois que vous 
+les clés API appropriées. Vous devez remplacer les X ci-dessous par les identifiants de votre compte
+IDs. Vous devrez télécharger une année de données à la fois, sinon le serveur s'arrête. 
 
-If you are not sure of the coordinates for a location you want to download data 
-for, you can use the **tmaptools** package to pull the coordinates off open street
-maps. An alternative option is the [**photon**](https://github.com/rCarto/photon)
-package, however this has not been released on to CRAN yet; the nice thing about 
-**photon** is that it provides more contextual data for when there are several 
-matches for your search.
+Si vous n'êtes pas sûr des coordonnées d'un lieu pour lequel vous voulez télécharger des données 
+données, vous pouvez utiliser le paquet **tmaptools** pour extraire les coordonnées des cartes routières ouvertes
+ouvertes. Une autre option est le paquet [**photon**](https://github.com/rCarto/photon)
+mais il n'a pas encore été publié sur CRAN. 
+**photon** est qu'il fournit plus de données contextuelles lorsqu'il y a plusieurs correspondances pour votre recherche. 
+plusieurs correspondances pour votre recherche.
 
-```{r weather_data, eval = FALSE}
+```{r données_météo, eval = FALSE}
 
-## retrieve location coordinates
+## récupérer les coordonnées de l'emplacement
 coords <- geocode_OSM("Germany", geometry = "point")
 
-## pull together long/lats in format for ERA-5 querying (bounding box) 
-## (as just want a single point can repeat coords)
+## rassembler les long/lats dans un format pour les requêtes ERA-5 (bounding box) 
+## (comme on ne veut qu'un seul point, on peut répéter les coordonnées)
 request_coords <- str_glue_data(coords$coords, "{y}/{x}/{y}/{x}")
 
 
-## Pulling data modelled from copernicus satellite (ERA-5 reanalysis)
+## Extraction des données modélisées à partir du satellite copernicus (réanalyse ERA-5)
 ## https://cds.climate.copernicus.eu/cdsapp#!/software/app-era5-explorer?tab=app
 ## https://github.com/bluegreen-labs/ecmwfr
 
-## set up key for weather data 
+## Configurer la clé pour les données météo 
 wf_set_key(user = "XXXXX",
-           key = "XXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX",
+           key = "XXXXXXXXX-XXXX-XXXX-XXXX-XXXXXX-XXXXXXXXX",
            service = "cds") 
 
-## run for each year of interest (otherwise server times out)
+## Exécution pour chaque année d'intérêt (sinon le serveur s'arrête)
 for (i in 2002:2011) {
   
-  ## pull together a query 
-  ## see here for how to do: https://bluegreen-labs.github.io/ecmwfr/articles/cds_vignette.html#the-request-syntax
-  ## change request to a list using addin button above (python to list)
-  ## Target is the name of the output file!!
-  request <- request <- list(
+  ## construire une requête 
+  ## voir ici pour savoir comment faire : https://bluegreen-labs.github.io/ecmwfr/articles/cds_vignette.html#the-request-syntax
+  ## changer la requête en une liste en utilisant le bouton addin ci-dessus (python to list)
+  ## La cible est le nom du fichier de sortie ! !!
+   request <- request <- list(
     product_type = "reanalysis",
     format = "netcdf",
     variable = c("2m_temperature", "total_precipitation"),
@@ -168,53 +166,53 @@ for (i in 2002:2011) {
     target = paste0("germany_weather", i, ".nc")
   )
   
-  ## download the file and store it in the current working directory
-  file <- wf_request(user     = "XXXXX",  # user ID (for authentication)
-                     request  = request,  # the request
-                     transfer = TRUE,     # download the file
-                     path     = here::here("data", "Weather")) ## path to save the data
+  ### Télécharger le fichier et le stocker dans le répertoire de travail actuel.
+  file <- wf_request(user = "XXXXX", # ID utilisateur (pour l'authentification)
+                     request = request, # la requête
+                     transfer = TRUE, # télécharger le fichier
+                     path = here::here("data", "Weather")) ## chemin pour sauvegarder les données
   }
 
 ```
 
-### Load climate data {.unnumbered}
+### Charger les données climatiques {.unnumbered}
 
-Whether you downloaded the climate data via our handbook, or used the code above, you now should have 10 years of ".nc" climate data files stored in the same folder on your computer.  
+Que vous ayez téléchargé les données climatiques via notre manuel ou que vous ayez utilisé le code ci-dessus, vous devriez maintenant avoir 10 ans de fichiers de données climatiques ".nc" stockés dans le même dossier sur votre ordinateur.  
 
-Use the code below to import these files into R with the **stars** package. 
+Utilisez le code ci-dessous pour importer ces fichiers dans R avec le paquet **stars**. 
 
 ```{r read_climate, warning = FALSE, message = FALSE}
 
-## define path to weather folder 
+## définir le chemin vers le dossier météo 
 file_paths <- list.files(
-  here::here("data", "time_series", "weather"), # replace with your own file path 
+  here::here("data", "time_series", "weather"), # remplacer par votre propre chemin de fichier 
   full.names = TRUE)
 
-## only keep those with the current name of interest 
+## ne garder que ceux qui ont le nom courant d'intérêt 
 file_paths <- file_paths[str_detect(file_paths, "germany")]
 
-## read in all the files as a stars object 
+## lire tous les fichiers en tant qu'objet stars 
 data <- stars::read_stars(file_paths)
 ```
 
-Once these files have been imported as the object `data`, we will convert them to a data frame.  
+Une fois que ces fichiers ont été importés en tant qu'objet `data`, nous allons les convertir en un cadre de données.  
 
 ```{r}
-## change to a data frame 
+## conversion en cadre de données 
 temp_data <- as_tibble(data) %>% 
-  ## add in variables and correct units
+  ## ajouter des variables et corriger les unités
   mutate(
-    ## create an calendar week variable 
+    ## créer une variable de semaine calendaire 
     epiweek = tsibble::yearweek(time), 
-    ## create a date variable (start of calendar week)
+    ## créer une variable de date (début de la semaine calendaire)
     date = as.Date(epiweek),
-    ## change temperature from kelvin to celsius
+    ## changer la température de kelvin en celsius
     t2m = set_units(t2m, celsius), 
-    ## change precipitation from metres to millimetres 
-    tp  = set_units(tp, mm)) %>% 
-  ## group by week (keep the date too though)
+    ## changer les précipitations de mètres en millimètres 
+    tp = set_units(tp, mm)) %>% 
+  ## regrouper par semaine (en gardant la date aussi)
   group_by(epiweek, date) %>% 
-  ## get the average per week
+  ## obtenir la moyenne par semaine
   summarise(t2m = as.numeric(mean(t2m)), 
             tp = as.numeric(mean(tp)))
 
@@ -224,108 +222,105 @@ temp_data <- as_tibble(data) %>%
 
 
 <!-- ======================================================= -->
-## Time series data {  }
+## Données de séries temporelles { }
 
-There are a number of different packages for structuring and handling time series
-data. As said, we will focus on the **tidyverts** family of packages and so will
-use the **tsibble** package to define our time series object. Having a data set
-defined as a time series object means it is much easier to structure our analysis. 
+Il existe un certain nombre de paquets différents pour structurer et traiter les données de données de séries temporelles. Comme nous l'avons dit, nous nous concentrerons sur la famille de paquets **tidyverts** et nous utiliserons donc le paquet **tsibble** pour définir notre objet série temporelle.
+utiliserons le paquet **tsibble** pour définir notre objet de série temporelle. Avoir un ensemble de données défini comme un objet de série temporelle, il est beaucoup plus facile de structurer notre analyse. 
 
-To do this we use the `tsibble()` function and specify the "index", i.e. the variable
-specifying the time unit of interest. In our case this is the `epiweek` variable. 
+Pour ce faire, nous utilisons la fonction `tsibble()` et spécifions l'"index", c'est-à-dire la variable spécifiant l'unité de temps qui nous intéresse. Dans notre cas, il s'agit de la variable `epiweek`. 
 
-If we had a data set with weekly counts by province, for example, we would also 
-be able to specify the grouping variable using the `key = ` argument. 
-This would allow us to do analysis for each group. 
+Si nous avions un ensemble de données avec des comptages hebdomadaires par province, par exemple, nous pourrions également spécifier la variable de regroupement. 
+nous pourrions également spécifier la variable de regroupement en utilisant l'argument `key = `. 
+Cela nous permettrait d'effectuer une analyse pour chaque groupe. 
 
 
 ```{r ts_object}
 
-## define time series object 
+## Définir un objet de série temporelle 
 counts <- tsibble(counts, index = epiweek)
 
 ```
 
-Looking at `class(counts)` tells you that on top of being a tidy data frame 
-("tbl_df", "tbl", "data.frame"), it has the additional properties of a time series
-data frame ("tbl_ts"). 
+En regardant `class(counts)`, on constate qu'en plus d'être un cadre de données ordonné 
+("tbl_df", "tbl", "data.frame"), il possède les propriétés supplémentaires d'un cadre de données de série temporelle ("tbl_ts").
+de données de séries temporelles ("tbl_ts"). 
 
-You can take a quick look at your data by using **ggplot2**. We see from the plot that
-there is a clear seasonal pattern, and that there are no missings. However, there
-seems to be an issue with reporting at the beginning of each year; cases drop 
-in the last week of the year and then increase for the first week of the next year. 
+Vous pouvez jeter un coup d'oil rapide à vos données en utilisant **ggplot2**. Nous voyons sur le graphique que
+qu'il existe un modèle saisonnier clair, et qu'il n'y a pas de manques. Cependant, il semble
+Cependant, il semble y avoir un problème avec la déclaration au début de chaque année. 
+dans la dernière semaine de l'année, puis augmentent pour la première semaine de l'année suivante. 
 
 ```{r basic_plot}
 
-## plot a line graph of cases by week
+## tracer un graphique linéaire des cas par semaine
 ggplot(counts, aes(x = epiweek, y = case)) + 
      geom_line()
 
 ```
 
 
-<span style="color: red;">**_DANGER:_** Most datasets aren't as clean as this example. 
-You will need to check for duplicates and missings as below. </span>
+<span style="color : red ;">**_ATTENTION:_** La plupart des ensembles de données ne sont pas aussi propres que cet exemple. 
+Vous devrez vérifier les doublons et les manques comme ci-dessous. </span>
 
 <!-- ======================================================= -->
 ### Duplicates {.unnumbered}
 
-**tsibble** does not allow duplicate observations. So each row will need to be
-unique, or unique within the group (`key` variable). 
-The package has a few functions that help to identify duplicates. These include
-`are_duplicated()` which gives you a TRUE/FALSE vector of whether the row is a 
-duplicate, and `duplicates()` which gives you a data frame of the duplicated rows. 
+**tsibble** n'autorise pas les observations en double. Ainsi, chaque ligne devra être
+unique, ou unique au sein du groupe (variable `key`). 
+Le paquet a quelques fonctions qui aident à identifier les doublons. Celles-ci incluent
+`are_duplicated()` qui vous donne un vecteur VRAI/FAUX indiquant si la ligne est un 
+dupliqué, et `duplicates()` qui vous donne un cadre de données des lignes dupliquées. 
 
-See the page on [De-duplication](https://epirhandbook.com/de-duplication.html)
-for more details on how to select rows you want. 
+Voir la page sur [De-duplication](#deduplication)
+pour plus de détails sur la façon de sélectionner les lignes que vous voulez. 
 
 ```{r duplicates, eval = FALSE}
 
-## get a vector of TRUE/FALSE whether rows are duplicates
+## obtient un vecteur de VRAI/FAUX si les lignes sont des doublons
 are_duplicated(counts, index = epiweek) 
 
-## get a data frame of any duplicated rows 
+## Obtenez un cadre de données pour les lignes dupliquées. 
 duplicates(counts, index = epiweek) 
 
 ```
 
 <!-- ======================================================= -->
-### Missings {.unnumbered}
+### Manques {.non numérotés}
 
-We saw from our brief inspection above that there are no missings, but we also 
-saw there seems to be a problem with reporting delay around new year. 
-One way to address this problem could be to set these values to missing and then 
-to impute values. The simplest form of time series imputation is to draw
-a straight line between the last non-missing and the next non-missing value. 
-To do this we will use the **imputeTS** package function `na_interpolation()`. 
+Nous avons vu lors de notre brève inspection ci-dessus qu'il n'y a pas de manques, mais nous avons aussi 
+mais nous avons également vu qu'il semble y avoir un problème de retard de déclaration autour du nouvel an. 
+Une façon de résoudre ce problème pourrait être de définir ces valeurs comme manquantes, puis d'imputer les valeurs. 
+d'imputer les valeurs. La forme la plus simple d'imputation de séries chronologiques consiste à tracer une ligne droite entre les dernières valeurs non manquantes et les valeurs manquantes.
+une ligne droite entre la dernière valeur non manquante et la valeur non manquante suivante. 
+Pour ce faire, nous utiliserons la fonction `na_interpolation()` du package **imputeTS**. 
 
-See the [Missing data](https://epirhandbook.com/missing-data.html) page for other options for imputation.  
+Consultez la page [Données manquantes](#missing_data) pour connaître les autres options d'imputation.  
 
-Another alternative would be to calculate a moving average, to try and smooth
-over these apparent reporting issues (see next section, and the page on [Moving averages](https://epirhandbook.com/moving-averages.html)). 
+Une autre solution consisterait à calculer une moyenne mobile, pour essayer de
+pour tenter d'aplanir ces problèmes de déclaration apparents (voir la section suivante et la page sur les [Moyennes mobiles](#moving_average)). 
 
 ```{r missings}
 
-## create a variable with missings instead of weeks with reporting issues
+## créez une variable avec les manques au lieu des semaines avec des problèmes de déclaration.
 counts <- counts %>% 
      mutate(case_miss = if_else(
-          ## if epiweek contains 52, 53, 1 or 2
+          ## si epiweek contient 52, 53, 1 ou 2
           str_detect(epiweek, "W51|W52|W53|W01|W02"), 
-          ## then set to missing 
+          ## alors définie comme manquante 
           NA_real_, 
-          ## otherwise keep the value in case
+          ## sinon, conservez la valeur dans le cas
           case
      ))
 
-## alternatively interpolate missings by linear trend 
-## between two nearest adjacent points
+## alternativement interpoler les manquants par une tendance linéaire 
+## entre deux points adjacents les plus proches
 counts <- counts %>% 
   mutate(case_int = imputeTS::na_interpolation(case_miss)
          )
 
-## to check what values have been imputed compared to the original
+## pour vérifier quelles valeurs ont été imputées par rapport à l'original.
 ggplot_na_imputations(counts$case_miss, counts$case_int) + 
-  ## make a traditional plot (with black axes and white background)
+  ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic()
 
 ```
@@ -334,33 +329,33 @@ ggplot_na_imputations(counts$case_miss, counts$case_int) +
 
 
 <!-- ======================================================= -->
-## Descriptive analysis {  }
+## Analyse descriptive { }
 
 
 
 <!-- ======================================================= -->
-### Moving averages {#timeseries_moving .unnumbered}
+### Moyennes mobiles {#timeseries_moving .unnumbered}
 
-If data is very noisy (counts jumping up and down) then it can be helpful to 
-calculate a moving average. In the example below, for each week we calculate the 
-average number of cases from the four previous weeks. This smooths the data, to 
-make it more interpretable. In our case this does not really add much, so we will
-stick to the interpolated data for further analysis. 
-See the [Moving averages](https://epirhandbook.com/moving-averages.html) page for more detail. 
+Si les données sont très bruyantes (les comptes sautent en haut et en bas), alors il peut être utile de 
+calculer une moyenne mobile. Dans l'exemple ci-dessous, pour chaque semaine, nous calculons le 
+nombre moyen de cas des quatre semaines précédentes. Cela permet de lisser les données, pour 
+données pour les rendre plus interprétables. Dans notre cas, cela n'apporte pas grand-chose.
+nous nous en tiendrons aux données interpolées pour la suite de l'analyse. 
+Voir la page [Moyennes mobiles](#moving_average) pour plus de détails. 
 
 ```{r moving_averages}
 
-## create a moving average variable (deals with missings)
+## créer une variable de moyenne mobile (traite les manques)
 counts <- counts %>% 
-     ## create the ma_4w variable 
-     ## slide over each row of the case variable
+     ## créer la variable ma_4w 
+     ## glisser sur chaque ligne de la variable case
      mutate(ma_4wk = slider::slide_dbl(case, 
-                               ## for each row calculate the name
+                               ## pour chaque ligne, calculez le nom
                                ~ mean(.x, na.rm = TRUE),
-                               ## use the four previous weeks
+                               ## utiliser les quatre semaines précédentes
                                .before = 4))
 
-## make a quick visualisation of the difference 
+### faire une visualisation rapide de la différence 
 ggplot(counts, aes(x = epiweek)) + 
      geom_line(aes(y = case)) + 
      geom_line(aes(y = ma_4wk), colour = "red")
@@ -369,45 +364,45 @@ ggplot(counts, aes(x = epiweek)) +
 
 
 <!-- ======================================================= -->
-### Periodicity {.unnumbered}
+### Périodicité {.non numéroté}
 
-Below we define a custom function to create a periodogram. See the [Writing functions] page for information about how to write functions in R.  
+Nous définissons ci-dessous une fonction personnalisée pour créer un périodogramme. Voir la page [Writing functions] pour des informations sur la façon d'écrire des fonctions dans R.  
 
-First, the function is defined. Its arguments include a dataset with a column `counts`, `start_week = ` which is the first week of the dataset, a number to indicate how many periods per year (e.g. 52, 12), and lastly the output style (see details in the code below).  
+Tout d'abord, la fonction est définie. Ses arguments incluent un jeu de données avec une colonne `counts`, `start_week = ` qui est la première semaine du jeu de données, un nombre pour indiquer combien de périodes par an (par exemple 52, 12), et enfin le style de sortie (voir les détails dans le code ci-dessous).  
 
 
 ```{r periodogram}
-## Function arguments
+## Arguments de la fonction
 #####################
-## x is a dataset
-## counts is variable with count data or rates within x 
-## start_week is the first week in your dataset
-## period is how many units in a year 
-## output is whether you want return spectral periodogram or the peak weeks
-  ## "periodogram" or "weeks"
+## x est un ensemble de données
+## counts est une variable avec des données de comptage ou des taux dans x 
+## start_week est la première semaine de votre série de données
+## period est le nombre d'unités dans une année. 
+## output indique si vous souhaitez renvoyer le périodogramme spectral ou les semaines de pointe.
+  ## "périodogramme" ou "semaines".
 
-# Define function
+# Définissez la fonction
 periodogram <- function(x, 
-                        counts, 
+                        compte, 
                         start_week = c(2002, 1), 
                         period = 52, 
                         output = "weeks") {
   
 
-    ## make sure is not a tsibble, filter to project and only keep columns of interest
+    ## s'assurer que ce n'est pas un tsibble, filtrer sur le projet et ne garder que les colonnes d'intérêt.
     prepare_data <- dplyr::as_tibble(x)
     
     # prepare_data <- prepare_data[prepare_data[[strata]] == j, ]
     prepare_data <- dplyr::select(prepare_data, {{counts}})
     
-    ## create an intermediate "zoo" time series to be able to use with spec.pgram
+    ## créer une série temporelle "zoo" intermédiaire pour pouvoir l'utiliser avec spec.pgram
     zoo_cases <- zoo::zooreg(prepare_data, 
                              start = start_week, frequency = period)
     
-    ## get a spectral periodogram not using fast fourier transform 
+    ## obtenir un périodogramme spectral n'utilisant pas la transformée de fourier rapide. 
     periodo <- spec.pgram(zoo_cases, fast = FALSE, plot = FALSE)
     
-    ## return the peak weeks 
+    ## retourner les semaines de pointe 
     periodo_weeks <- 1 / periodo$freq[order(-periodo$spec)] * period
     
     if (output == "weeks") {
@@ -418,24 +413,24 @@ periodogram <- function(x,
     
 }
 
-## get spectral periodogram for extracting weeks with the highest frequencies 
-## (checking of seasonality) 
+## obtenir le périodogramme spectral pour extraire les semaines avec les fréquences les plus élevées 
+## (vérification de la saisonnalité) 
 periodo <- periodogram(counts, 
                        case_int, 
                        start_week = c(2002, 1),
                        output = "periodogram")
 
-## pull spectrum and frequence in to a dataframe for plotting
+## Tirez le spectre et la fréquence dans un cadre de données pour le tracé.
 periodo <- data.frame(periodo$freq, periodo$spec)
 
-## plot a periodogram showing the most frequently occuring periodicity 
+## Tracez un périodogramme montrant la périodicité la plus fréquente. 
 ggplot(data = periodo, 
-                aes(x = 1/(periodo.freq/52),  y = log(periodo.spec))) + 
+                aes(x = 1/(periodo.freq/52), y = log(periodo.spec))) + 
   geom_line() + 
-  labs(x = "Period (Weeks)", y = "Log(density)")
+  labs(x = "Period (weeks)", y = "Log(density)")
 
 
-## get a vector weeks in ascending order 
+## obtenir un vecteur semaines dans l'ordre croissant 
 peak_weeks <- periodogram(counts, 
                           case_int, 
                           start_week = c(2002, 1), 
@@ -443,522 +438,451 @@ peak_weeks <- periodogram(counts,
 
 ```
 
-<span style="color: black;">**_NOTE:_** It is possible to use the above weeks to add them to sin and cosine terms, however we will use a function to generate these terms (see regression section below) </span>
+<span style="color : black ;">**_ATTENTION:_** Il est possible d'utiliser les semaines ci-dessus pour les ajouter aux termes sin et cosinus, cependant nous utiliserons une fonction pour générer ces termes (voir la section régression ci-dessous) </span>.
 
 <!-- ======================================================= -->
-### Decomposition {.unnumbered}
+### Décomposition {.non numéroté}
 
-Classical decomposition is used to break a time series down several parts, which
-when taken together make up for the pattern you see. 
-These different parts are:  
+La décomposition classique est utilisée pour décomposer une série temporelle en plusieurs parties, qui
+lorsqu'elles sont prises ensemble constituent le modèle que vous voyez. 
+Ces différentes parties sont :  
 
-* The trend-cycle (the long-term direction of the data)  
-* The seasonality (repeating patterns)  
-* The random (what is left after removing trend and season)  
+* La tendance-cycle (la direction à long terme des données)  
+* La saisonnalité (motifs répétitifs)  
+* L'aléatoire (ce qui reste après avoir retiré la tendance et la saison).  
 
 
 ```{r decomposition, warning=F, message=F}
 
-## decompose the counts dataset 
+## Décomposition de l'ensemble de données counts 
 counts %>% 
-  # using an additive classical decomposition model
-  model(classical_decomposition(case_int, type = "additive")) %>% 
-  ## extract the important information from the model
+  ## en utilisant un modèle additif de décomposition classique
+  model(classical_decomposition(case_int, type = "additive")) %>%
+  ## extraire les informations importantes du modèle
   components() %>% 
-  ## generate a plot 
+  ## générer un graphique 
   autoplot()
 
 ```
 
 <!-- ======================================================= -->
-### Autocorrelation {.unnumbered}
+### Autocorrélation {.unnumbered}
 
-Autocorrelation tells you about the relation between the counts of each week 
-and the weeks before it (called lags).  
+L'autocorrélation vous renseigne sur la relation entre les comptes de chaque semaine 
+et les semaines qui la précèdent (appelées décalages).  
 
-Using the `ACF()` function, we can produce a plot which shows us a number of lines 
-for the relation at different lags. Where the lag is 0 (x = 0), this line would 
-always be 1 as it shows the relation between an observation and itself (not shown here). 
-The first line shown here (x = 1) shows the relation between each observation 
-and the observation before it (lag of 1), the second shows the relation between 
-each observation and the observation before last (lag of 2) and so on until lag of
-52 which shows the relation between each observation and the observation from 1 
-year (52 weeks before).  
+En utilisant la fonction `ACF()`, nous pouvons produire un graphique qui nous montre un certain nombre de lignes 
+pour la relation à différents décalages. Si le décalage est de 0 (x = 0), cette ligne sera toujours égale à 1, car elle montre la relation entre les deux. 
+ligne sera toujours égale à 1, car elle montre la relation entre une observation et elle-même (non représentée ici). 
+La première ligne illustrée ici (x = 1) montre la relation entre chaque observation 
+et l'observation qui la précède (décalage de 1), la seconde montre la relation entre 
+chaque observation et l'avant-dernière (décalage de 2) et ainsi de suite jusqu'à un décalage de
+52 qui montre la relation entre chaque observation et l'observation d'un an (52 semaines avant). 
+an (52 semaines auparavant).  
 
-Using the `PACF()` function (for partial autocorrelation) shows the same type of relation 
-but adjusted for all other weeks between. This is less informative for determining
-periodicity. 
+L'utilisation de la fonction `PACF()` (pour l'autocorrélation partielle) montre le même type de relation, mais ajustée pour toutes les autres semaines intermédiaires. 
+mais ajustée pour toutes les autres semaines intermédiaires. Ceci est moins informatif pour déterminer la
+périodicité. 
 
 ```{r autocorrelation}
 
-## using the counts dataset
+## en utilisant l'ensemble de données counts
 counts %>% 
-  ## calculate autocorrelation using a full years worth of lags
+  ## calculer l'autocorrélation en utilisant une année complète de lags
   ACF(case_int, lag_max = 52) %>% 
-  ## show a plot
+  ## afficher un graphique
   autoplot()
 
-## using the counts data set 
+## en utilisant l'ensemble de données counts 
 counts %>% 
-  ## calculate the partial autocorrelation using a full years worth of lags
+  ## calculer l'autocorrélation partielle en utilisant une année complète de décalages
   PACF(case_int, lag_max = 52) %>% 
-  ## show a plot
+  ## Afficher un graphique
   autoplot()
 
 ```
 
-You can formally test the null hypothesis of independence in a time series (i.e. 
-that it is not autocorrelated) using the Ljung-Box test (in the **stats** package). 
-A significant p-value suggests that there is autocorrelation in the data.
+Vous pouvez tester formellement l'hypothèse nulle d'indépendance d'une série temporelle (c'est à dire 
+qu'elle n'est pas autocorrélée) en utilisant le test de Ljung-Box (dans le paquet **stats**). 
+Une valeur p significative suggère qu'il existe une autocorrélation dans les données.
 
 ```{r ljung_box}
 
-## test for independance 
+## Test d'indépendance 
 Box.test(counts$case_int, type = "Ljung-Box")
 
 ```
 
 
 <!-- ======================================================= -->
-## Fitting regressions {  }
+## Ajustement des régressions { }
 
-It is possible to fit a large number of different regressions to a time series, 
-however, here we will demonstrate how to fit a negative binomial regression - as 
-this is often the most appropriate for counts data in infectious diseases. 
+Il est possible d'ajuster un grand nombre de régressions différentes à une série temporelle, 
+Cependant, nous allons montrer ici comment ajuster une régression binomiale négative, car elle est 
+c'est souvent la plus appropriée pour les données de comptage dans les maladies infectieuses. 
 
 <!-- ======================================================= -->
-### Fourier terms {.unnumbered}
+### Termes de Fourier {.non numéroté}
 
-Fourier terms are the equivalent of sin and cosin curves. The difference is that 
-these are fit based on finding the most appropriate combination of curves to explain
-your data.  
+Les termes de Fourier sont l'équivalent des courbes sin et cosin. La différence est que 
+ceux-ci sont ajustés en fonction de la recherche de la combinaison de courbes la plus appropriée pour expliquer
+vos données.  
 
-If only fitting one fourier term, this would be the equivalent of fitting a sin 
-and a cosin for your most frequently occurring lag seen in your periodogram (in our 
-case 52 weeks). We use the `fourier()` function from the **forecast** package.  
+Si vous n'ajustez qu'un seul terme de Fourier, cela équivaudrait à ajuster une courbe sin 
+et un cosin pour le décalage le plus fréquent de votre périodogramme (dans notre cas, 52 semaines). 
+cas 52 semaines). Nous utilisons la fonction `fourier()` du paquet **forecast**.  
 
-In the below code we assign using the `$`, as `fourier()` returns two columns (one 
-for sin one for cosin) and so these are added to the dataset as a list, called 
-"fourier" - but this list can then be used as a normal variable in regression. 
+Dans le code ci-dessous, nous assignons en utilisant le `$`, car `fourier()` renvoie deux colonnes (une pour le sin et une pour le cosin). 
+(une pour le sin et l'autre pour le cosin) et celles-ci sont ajoutées à l'ensemble de données sous forme de liste, appelée "fourier". 
+"fourier" - mais cette liste peut ensuite être utilisée comme une variable normale dans une régression. 
 
 ```{r fourier}
 
-## add in fourier terms using the epiweek and case_int variabless
+## ajout des termes de fourier en utilisant les variables epiweek et case_int
 counts$fourier <- select(counts, epiweek, case_int) %>% 
   fourier(K = 1)
 ```
 
 <!-- ======================================================= -->
-### Negative binomial {.unnumbered}
+### Binomiale négative {.unnumbered}
 
-It is possible to fit regressions using base **stats** or **MASS**
-functions (e.g. `lm()`, `glm()` and `glm.nb()`). However we will be using those from 
-the **trending** package, as this allows for calculating appropriate confidence
-and prediction intervals (which are otherwise not available). 
-The syntax is the same, and you specify an outcome variable then a tilde (~) 
-and then add your various exposure variables of interest separated by a plus (+). 
+Il est possible d'ajuster des régressions en utilisant les fonctions **stats** ou **MASS** de base.
+(par exemple, `lm()`, `glm()` et `glm.nb()`). Cependant, nous utiliserons celles du 
+paquet **trending**, car cela permet de calculer les intervalles de confiance et de prédiction
+confiance et les intervalles de prédiction appropriés (qui ne sont pas disponibles autrement). 
+La syntaxe est la même, et vous spécifiez une variable de résultat puis un tilde (~) 
+puis vous ajoutez vos diverses variables d'exposition d'intérêt séparées par un plus (+). 
 
-The other difference is that we first define the model and then `fit()` it to the 
-data. This is useful because it allows for comparing multiple different models 
-with the same syntax. 
+L'autre différence est que nous définissons d'abord le modèle et ensuite `fit()` aux données. 
+données. Ceci est utile car cela permet de comparer plusieurs modèles différents avec la même syntaxe. 
+avec la même syntaxe. 
 
-<span style="color: darkgreen;">**_TIP:_** If you wanted to use rates, rather than 
-counts you could include the population variable as a logarithmic offset term, by adding 
-`offset(log(population)`. You would then need to set population to be 1, before 
-using `predict()` in order to produce a rate. </span>
+<span style="color : darkgreen ;">**_ATTENTION:_** Si vous vouliez utiliser des taux, plutôt que des 
+comptes, vous pourriez inclure la variable population comme terme de décalage logarithmique, en ajoutant 
+`offset(log(population)`. Vous auriez alors besoin de définir la population à 1, avant d'utiliser `predict()`. 
+d'utiliser `predict()` afin de produire un taux. </span>
 
-<span style="color: darkgreen;">**_TIP:_** For fitting more complex models such 
-as ARIMA or prophet, see the [**fable**](https://fable.tidyverts.org/index.html) package.</span>
+<span style="color : darkgreen ;">**_ATTENTION:_** Pour l'ajustement de modèles plus complexes tels que les modèles 
+comme ARIMA ou prophète, voir le paquet [**fable**](https://fable.tidyverts.org/index.html).</span>
 
 ```{r nb_reg, warning = FALSE}
 
-## define the model you want to fit (negative binomial) 
+## définissez le modèle que vous voulez ajuster (binomiale négative). 
 model <- glm_nb_model(
-  ## set number of cases as outcome of interest
+  ## définir le nombre de cas comme résultat d'intérêt
   case_int ~
-    ## use epiweek to account for the trend
+    ## utiliser epiweek pour tenir compte de la tendance
     epiweek +
-    ## use the fourier terms to account for seasonality
+    ## utiliser les termes de fourier pour tenir compte de la saisonnalité
     fourier)
 
-## fit your model using the counts dataset
+## ajustez votre modèle en utilisant le jeu de données de comptage
 fitted_model <- trending::fit(model, counts)
 
-## calculate confidence intervals and prediction intervals 
+### calculer les intervalles de confiance et les intervalles de prédiction 
 observed <- predict(fitted_model, simulate_pi = FALSE)
 
-## plot your regression 
+## Tracez votre régression 
 ggplot(data = observed, aes(x = epiweek)) + 
-  ## add in a line for the model estimate
-  geom_line(aes(y = estimate),
-            col = "Red") + 
-  ## add in a band for the prediction intervals 
+  ## ajouter une ligne pour l'estimation du modèle
+  geom_line(aes(y = estimation),
+            col = "red") + 
+  ## ajouter une bande pour les intervalles de prédiction 
   geom_ribbon(aes(ymin = lower_pi, 
                   ymax = upper_pi), 
               alpha = 0.25) + 
-  ## add in a line for your observed case counts
+  ## ajouter une ligne pour le nombre de cas observés
   geom_line(aes(y = case_int), 
             col = "black") + 
-  ## make a traditional plot (with black axes and white background)
+  ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic()
 
 
 ```
 
 <!-- ======================================================= -->
-### Residuals {.unnumbered}
+### Résidus {.non numérotés}
 
-To see how well our model fits the observed data we need to look at the residuals. 
-The residuals are the difference between the observed counts and the counts 
-estimated from the model. We could calculate this simply by using `case_int - estimate`, 
-but the `residuals()` function extracts this directly from the regression for us.
+Pour voir si notre modèle s'adapte bien aux données observées, nous devons examiner les résidus. 
+Les résidus sont la différence entre les comptes observés et les comptes 
+estimés à partir du modèle. Nous pourrions calculer cela simplement en utilisant `case_int - estimate`, 
+mais la fonction `residuals()` l'extrait directement de la régression pour nous.
 
-What we see from the below, is that we are not explaining all of the variation 
-that we could with the model. It might be that we should fit more fourier terms, 
-and address the amplitude. However for this example we will leave it as is. 
-The plots show that our model does worse in the peaks and troughs (when counts are
-at their highest and lowest) and that it might be more likely to underestimate 
-the observed counts. 
-
-```{r, warning=F, message=F}
-
-## calculate the residuals 
-observed <- observed %>% 
-  mutate(resid = residuals(fitted_model$fitted_model, type = "response"))
-
-## are the residuals fairly constant over time (if not: outbreaks? change in practice?)
-observed %>%
-  ggplot(aes(x = epiweek, y = resid)) +
-  geom_line() +
-  geom_point() + 
-  labs(x = "epiweek", y = "Residuals")
-
-## is there autocorelation in the residuals (is there a pattern to the error?)  
-observed %>% 
-  as_tsibble(index = epiweek) %>% 
-  ACF(resid, lag_max = 52) %>% 
-  autoplot()
-
-## are residuals normally distributed (are under or over estimating?)  
-observed %>%
-  ggplot(aes(x = resid)) +
-  geom_histogram(binwidth = 100) +
-  geom_rug() +
-  labs(y = "count") 
-  
-## compare observed counts to their residuals 
-  ## should also be no pattern 
-observed %>%
-  ggplot(aes(x = estimate, y = resid)) +
-  geom_point() +
-  labs(x = "Fitted", y = "Residuals")
-
-## formally test autocorrelation of the residuals
-## H0 is that residuals are from a white-noise series (i.e. random)
-## test for independence 
-## if p value significant then non-random
-Box.test(observed$resid, type = "Ljung-Box")
-
-```
-
-<!-- ======================================================= -->
-## Relation of two time series {  }
-
-Here we look at using weather data (specifically the temperature) to explain 
-campylobacter case counts. 
-
-<!-- ======================================================= -->
-### Merging datasets {.unnumbered}
-
-We can join our datasets using the week variable. For more on merging see the 
-handbook section on [joining](https://epirhandbook.com/joining-data.html).
-
-```{r join}
-
-## left join so that we only have the rows already existing in counts
-## drop the date variable from temp_data (otherwise is duplicated)
-counts <- left_join(counts, 
-                    select(temp_data, -date),
-                    by = "epiweek")
-
-```
-
-<!-- ======================================================= -->
-### Descriptive analysis {.unnumbered}
-
-First plot your data to see if there is any obvious relation. 
-The plot below shows that there is a clear relation in the seasonality of the two
-variables, and that temperature might peak a few weeks before the case number.
-For more on pivoting data, see the handbook section on [pivoting data](https://epirhandbook.com/pivoting-data.html). 
+Ce que nous voyons ci-dessous, c'est que nous n'expliquons pas toutes les variations 
+que nous pourrions expliquer avec le modèle. Il se peut que nous devions ajuster plus de termes de Fourier, 
+et s'attaquer à l'amplitude. Cependant, pour cet exemple, nous allons laisser les choses telles quelles. 
+Les graphiques montrent que notre modèle est moins bon dans les pics et les creux (lorsque les comptages sont
+les plus élevés et les plus bas) et qu'il est plus susceptible de sous-estimer les comptes 
+les comptages observés. 
 
 ```{r basic_plot_bivar}
 
 counts %>% 
-  ## keep the variables we are interested 
+  ## garder les variables qui nous intéressent 
   select(epiweek, case_int, t2m) %>% 
-  ## change your data in to long format
+  ## Changez vos données en format long
   pivot_longer(
-    ## use epiweek as your key
+    ## utiliser epiweek comme clé
     !epiweek,
-    ## move column names to the new "measure" column
+    ## déplacez les noms des colonnes vers la nouvelle colonne "measure".
     names_to = "measure", 
-    ## move cell values to the new "values" column
+    ## déplacez les valeurs des cellules vers la nouvelle colonne "values".
     values_to = "value") %>% 
-  ## create a plot with the dataset above
-  ## plot epiweek on the x axis and values (counts/celsius) on the y 
+  ## créer un graphique avec l'ensemble de données ci-dessus
+  ## Tracez l'epiweek sur l'axe des x et les valeurs (nombres/celsius) sur l'axe des y. 
   ggplot(aes(x = epiweek, y = value)) + 
-    ## create a separate plot for temperate and case counts 
-    ## let them set their own y-axes
+    ## créez un graphique séparé pour les comptages tempérés et les comptages de cas. 
+    ## laissez-les définir leurs propres axes y
     facet_grid(measure ~ ., scales = "free_y") +
-    ## plot both as a line
+    ## Tracez les deux comme une ligne
     geom_line()
 
 ```
 
 <!-- ======================================================= -->
-### Lags and cross-correlation {.unnumbered}
+### Lags et corrélation croisée {.unnumbered}
 
-To formally test which weeks are most highly related between cases and temperature. 
-We can use the cross-correlation function (`CCF()`) from the **feasts** package. 
-You could also visualise (rather than using `arrange`) using the `autoplot()` function. 
+Pour tester formellement quelles semaines sont les plus fortement liées entre les cas et la température. 
+Nous pouvons utiliser la fonction de corrélation croisée (`CCF()`) du paquet **feasts**. 
+Vous pouvez également visualiser (plutôt que d'utiliser `arrange`) en utilisant la fonction `autoplot()`. 
 
 ```{r cross_correlation, warning=FALSE}
 
 counts %>% 
-  ## calculate cross-correlation between interpolated counts and temperature
+  ## calculer la corrélation croisée entre les comptages interpolés et la température
   CCF(case_int, t2m,
-      ## set the maximum lag to be 52 weeks
+      ## fixer le délai maximum à 52 semaines
       lag_max = 52, 
-      ## return the correlation coefficient 
+      ## retourne le coefficient de corrélation 
       type = "correlation") %>% 
-  ## arange in decending order of the correlation coefficient 
-  ## show the most associated lags
+  ## arange dans l'ordre décroissant du coefficient de corrélation 
+  ## montre les décalages les plus associés
   arrange(-ccf) %>% 
-  ## only show the top ten 
+  ## montrer seulement les dix premiers 
   slice_head(n = 10)
 
 ```
 
-We see from this that a lag of 4 weeks is most highly correlated, 
-so we make a lagged temperature variable to include in our regression. 
+Nous voyons qu'un décalage de 4 semaines est le plus fortement corrélé, 
+donc nous créons une variable de température décalée à inclure dans notre régression. 
 
-<span style="color: red;">**_DANGER:_** Note that the first four weeks of our data
-in the lagged temperature variable are missing (`NA`) - as there are not four 
-weeks prior to get data from. In order to use this dataset with the **trending** 
-`predict()` function, we need to use the the `simulate_pi = FALSE` argument within
-`predict()` further down. If we did want to use the simulate option, then 
-we have to drop these missings and store as a new data set by adding `drop_na(t2m_lag4)` 
-to the code chunk below.</span>  
+<span style="color : red ;">**_ATTENTION:_** Notez que les quatre premières semaines de nos données
+dans la variable de température décalée sont manquantes (`NA`) - car il n'y a pas quatre 
+semaines précédentes pour obtenir des données. Afin d'utiliser cet ensemble de données avec la fonction **trending** 
+`predict()`, nous devons utiliser l'argument `simulate_pi = FALSE` dans la fonction
+`predict()` plus bas. Si nous voulions utiliser l'option simulate, alors 
+nous devons supprimer ces manques et les stocker comme un nouvel ensemble de données en ajoutant `drop_na(t2m_lag4)`. 
+au morceau de code ci-dessous.</span>  
  
 
 ```{r lag_tempvar}
 
 counts <- counts %>% 
-  ## create a new variable for temperature lagged by four weeks
+  ## créer une nouvelle variable pour la température décalée de quatre semaines.
   mutate(t2m_lag4 = lag(t2m, n = 4))
 
 ```
 
 
 <!-- ======================================================= -->
-### Negative binomial with two variables {.unnumbered}
+### Binomiale négative avec deux variables {.unnumbered}
 
-We fit a negative binomial regression as done previously. This time we add the 
-temperature variable lagged by four weeks. 
+Nous ajustons une régression binomiale négative comme nous l'avons fait précédemment. Cette fois, nous ajoutons la 
+variable de température retardée de quatre semaines. 
 
-<span style="color: orange;">**_CAUTION:_** Note the use of `simulate_pi = FALSE`
-within the `predict()` argument. This is because the default behaviour of **trending** 
-is to use the **ciTools** package to estimate a prediction interval. This does not 
-work if there are `NA` counts, and also produces more granular intervals. 
-See `?trending::predict.trending_model_fit` for details. </span>  
+<span style="color : orange ;">**_ATTENTION:_** Notez l'utilisation de `simulate_pi = FALSE`
+dans l'argument `predict()`. Ceci est dû au fait que le comportement par défaut de **trending** 
+est d'utiliser le paquet **ciTools** pour estimer un intervalle de prédiction. Cela ne fonctionne pas 
+ne fonctionne pas s'il y a des comptes `NA`, et produit également des intervalles plus granulaires. 
+Voir `?trending::predict.trending_model_fit` pour plus de détails. </span>  
 
 ```{r nb_reg_bivar, warning = FALSE}
 
-## define the model you want to fit (negative binomial) 
+## définissez le modèle que vous voulez ajuster (binomial négatif). 
 model <- glm_nb_model(
-  ## set number of cases as outcome of interest
+  ## définir le nombre de cas comme résultat d'intérêt
   case_int ~
-    ## use epiweek to account for the trend
+    ## utiliser epiweek pour tenir compte de la tendance
     epiweek +
-    ## use the fourier terms to account for seasonality
+    ## utiliser les termes de fourier pour tenir compte de la saisonnalité
     fourier + 
-    ## use the temperature lagged by four weeks 
+    ## utiliser la température retardée de quatre semaines 
     t2m_lag4
     )
 
-## fit your model using the counts dataset
+## ajustez votre modèle en utilisant l'ensemble de données de comptage
 fitted_model <- trending::fit(model, counts)
 
-## calculate confidence intervals and prediction intervals 
+### calculer les intervalles de confiance et les intervalles de prédiction 
 observed <- predict(fitted_model, simulate_pi = FALSE)
 
 ```
 
 
-To investigate the individual terms, we can pull the original negative binomial
-regression out of the **trending** format using `get_model()` and pass this to the
-**broom** package `tidy()` function to retrieve exponentiated estimates and associated
-confidence intervals.  
+Pour étudier les termes individuels, nous pouvons extraire la régression binomiale négative originale
+négative binomiale négative d'origine du format **trending** en utilisant `get_model()` et la passer au paquetage **broom** `tire'.
+fonction `tidy()` du paquetage **broom** pour récupérer les estimations exponentielles et les
+intervalles de confiance associés.  
 
-What this shows us is that lagged temperature, after controlling for trend and seasonality, 
-is similar to the case counts (estimate ~ 1) and significantly associated. 
-This suggests that it might be a good variable for use in predicting future case
-numbers (as climate forecasts are readily available). 
+Ce que cela nous montre est que la température décalée, après avoir contrôlé la tendance et la saisonnalité, 
+est similaire au nombre de cas (estimation ~ 1) et significativement associée. 
+Cela suggère qu'il pourrait s'agir d'une bonne variable à utiliser pour prédire le nombre de cas futurs (les prévisions climatiques étant facilement accessibles).
+nombre de cas (les prévisions climatiques étant facilement disponibles). 
 
 ```{r results_nb_reg_bivar}
 
 fitted_model %>% 
-  ## extract original negative binomial regression
+  ## extraire la régression binomiale négative originale
   get_model() %>% 
-  ## get a tidy dataframe of results
+  ## obtenir un cadre de données ordonné des résultats
   tidy(exponentiate = TRUE, 
        conf.int = TRUE)
 ```
 
-A quick visual inspection of the model shows that it might do a better job of 
-estimating the observed case counts. 
+Une rapide inspection visuelle du modèle montre qu'il pourrait faire un meilleur travail pour 
+d'estimer le nombre de cas observés. 
 
 ```{r plot_nb_reg_bivar, warning=F, message=F}
 
-## plot your regression 
+## Tracez votre régression 
 ggplot(data = observed, aes(x = epiweek)) + 
-  ## add in a line for the model estimate
-  geom_line(aes(y = estimate),
-            col = "Red") + 
-  ## add in a band for the prediction intervals 
+  ## ajouter une ligne pour l'estimation du modèle
+  geom_line(aes(y = estimation),
+            col = "red") + 
+  ## ajouter une bande pour les intervalles de prédiction 
   geom_ribbon(aes(ymin = lower_pi, 
                   ymax = upper_pi), 
               alpha = 0.25) + 
-  ## add in a line for your observed case counts
+  ## ajouter une ligne pour le nombre de cas observés
   geom_line(aes(y = case_int), 
             col = "black") + 
-  ## make a traditional plot (with black axes and white background)
+  ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic()
 
 
 ```
 
 
-#### Residuals {.unnumbered}
+#### Résidus {.unnumbered}
 
-We investigate the residuals again to see how well our model fits the observed data. 
-The results and interpretation here are similar to those of the previous regression, 
-so it may be more feasible to stick with the simpler model without temperature. 
+Nous examinons à nouveau les résidus pour voir si notre modèle s'adapte bien aux données observées. 
+Les résultats et l'interprétation sont ici similaires à ceux de la régression précédente, 
+donc il est peut-être plus judicieux de s'en tenir au modèle plus simple sans température. 
 
 ```{r}
 
-## calculate the residuals 
+## calculer les résidus 
 observed <- observed %>% 
   mutate(resid = case_int - estimate)
 
-## are the residuals fairly constant over time (if not: outbreaks? change in practice?)
+## les résidus sont-ils assez constants dans le temps (si non : épidémies ? changement de pratique ?)
 observed %>%
   ggplot(aes(x = epiweek, y = resid)) +
   geom_line() +
   geom_point() + 
   labs(x = "epiweek", y = "Residuals")
 
-## is there autocorelation in the residuals (is there a pattern to the error?)  
+## Y a-t-il une autocorrélation dans les résidus (y a-t-il un modèle d'erreur ?) ?  
 observed %>% 
   as_tsibble(index = epiweek) %>% 
   ACF(resid, lag_max = 52) %>% 
   autoplot()
 
-## are residuals normally distributed (are under or over estimating?)  
+## les résidus sont-ils normalement distribués (y a-t-il sous-estimation ou surestimation ?)  
 observed %>%
   ggplot(aes(x = resid)) +
-  geom_histogram(binwidth = 100) +
+  geom_histogramme(binwidth = 100) +
   geom_rug() +
   labs(y = "count") 
   
-## compare observed counts to their residuals 
-  ## should also be no pattern 
+## comparer les comptages observés à leurs résidus 
+  ## il ne devrait pas y avoir de modèle 
 observed %>%
   ggplot(aes(x = estimate, y = resid)) +
   geom_point() +
   labs(x = "Fitted", y = "Residuals")
 
-## formally test autocorrelation of the residuals
-## H0 is that residuals are from a white-noise series (i.e. random)
-## test for independence 
-## if p value significant then non-random
+## tester formellement l'autocorrélation des résidus
+## H0 est que les résidus proviennent d'une série à bruit blanc (c'est-à-dire aléatoire)
+## Test d'indépendance 
+### si la valeur p est significative alors non aléatoire
 Box.test(observed$resid, type = "Ljung-Box")
 
 ```
 
 <!-- ======================================================= -->
-## Outbreak detection {  }
+## Détection des épidémies { }
 
-We will demonstrate two (similar) methods of detecting outbreaks here. 
-The first builds on the sections above. 
-We use the **trending** package to fit regressions to previous years, and then
-predict what we expect to see in the following year. If observed counts are above
-what we expect, then it could suggest there is an outbreak. 
-The second method is based on similar principles but uses the **surveillance** package,
-which has a number of different algorithms for aberration detection.
+Nous allons démontrer ici deux méthodes (similaires) de détection des épidémies. 
+La première s'appuie sur les sections précédentes. 
+Nous utilisons le paquet **trending** pour ajuster les régressions aux années précédentes, et puis
+prédire ce que nous nous attendons à voir l'année suivante. Si les comptages observés sont supérieurs
+ce que nous attendons, cela pourrait suggérer qu'il y a une épidémie. 
+La deuxième méthode est basée sur des principes similaires mais utilise le paquet **surveillance**,
+qui possède un certain nombre d'algorithmes différents pour la détection des aberrations.
 
-<span style="color: orange;">**_CAUTION:_** Normally, you are interested in the current year (where you only know counts up to the present week). So in this example we are pretending to be in week 39 of 2011.</span>
-
-<!-- ======================================================= -->
-### **trending** package {.unnumbered}
-
-For this method we define a baseline (which should usually be about 5 years of data). 
-We fit a regression to the baseline data, and then use that to predict the estimates
-for the next year. 
+<span style="color : orange ;">**_ATTENTION:_** Normalement, vous vous intéressez à l'année en cours (où vous ne connaissez que les comptages jusqu'à la semaine actuelle). Donc, dans cet exemple, nous prétendons être dans la semaine 39 de 2011.</span>
 
 <!-- ======================================================= -->
-#### Cut-off date { -}
+### **tendance** paquet {.unnumbered}
 
-It is easier to define your dates in one place and then use these throughout the
-rest of your code.  
+Pour cette méthode, nous définissons une ligne de base (qui devrait généralement être d'environ 5 ans de données). 
+Nous ajustons une régression aux données de base, puis nous l'utilisons pour prédire les estimations pour l'année suivante.
+pour l'année suivante. 
 
-Here we define a start date (when our observations started) and a cut-off date 
-(the end of our baseline period - and when the period we want to predict for starts). 
-~We also define how many weeks are in our year of interest (the one we are going to
-be predicting)~.
-We also define how many weeks are between our baseline cut-off and the end date 
-that we are interested in predicting for. 
+<!-- ======================================================= -->
+#### Date limite { -}
+
+Il est plus facile de définir vos dates à un endroit, puis de les utiliser dans le reste de votre code.
+le reste de votre code.  
+
+Ici nous définissons une date de début (quand nos observations ont commencé) et une date limite 
+(la fin de notre période de référence - et le début de la période pour laquelle nous voulons prédire). 
+~Nous définissons également le nombre de semaines que compte l'année qui nous intéresse (celle que nous allons
+nous allons prédire)~.
+Nous définissons également le nombre de semaines entre la date limite de la période de référence et la date de fin de la période. 
+pour laquelle nous sommes intéressés à prédire. 
 
 
-<span style="color: black;">**_NOTE:_** In this example we pretend to currently be at the end of September 2011 ("2011 W39").</span>  
+<span style="color : black ;">**_ATTENTION:_** Dans cet exemple, nous prétendons être actuellement à la fin du mois de septembre 2011 ("2011 W39").</span>  
 
 ```{r cut_off}
 
-## define start date (when observations began)
+## définir la date de début (quand les observations ont commencé)
 start_date <- min(counts$epiweek)
 
-## define a cut-off week (end of baseline, start of prediction period)
+## définir une semaine de coupure (fin de la ligne de base, début de la période de prédiction)
 cut_off <- yearweek("2010-12-31")
 
-## define the last date interested in (i.e. end of prediction)
+## définir la dernière date qui nous intéresse (c'est-à-dire la fin de la prédiction)
 end_date <- yearweek("2011-12-31")
 
-## find how many weeks in period (year) of interest
+## trouver combien de semaines dans la période (année) d'intérêt.
 num_weeks <- as.numeric(end_date - cut_off)
 
 ```
 
 
 <!-- ======================================================= -->
-#### Add rows {.unnumbered}
+#### Ajoutez des lignes {.non numérotées}.
 
-To be able to forecast in a tidyverse format, we need to have the right number 
-of rows in our dataset, i.e. one row for each week up to the `end_date`defined above. 
-The code below allows you to add these rows for by a grouping variable - for example
-if we had multiple countries in one dataset, we could group by country and then 
-add rows appropriately for each. 
-The `group_by_key()` function from **tsibble** allows us to do this grouping 
-and then pass the grouped data to **dplyr** functions, `group_modify()` and 
-`add_row()`. Then we specify the sequence of weeks between one after the maximum week 
-currently available in the data and the end week. 
+Pour pouvoir faire des prévisions dans un format tidyverse, nous devons avoir le bon nombre de lignes dans notre ensemble de données. 
+de lignes dans notre jeu de données, c'est-à-dire une ligne pour chaque semaine jusqu'à la date de fin définie ci-dessus. 
+Le code ci-dessous vous permet d'ajouter ces lignes par une variable de regroupement - par exemple
+par exemple, si nous avons plusieurs pays dans un même ensemble de données, nous pouvons 
+ajouter des lignes pour chacun d'entre eux. 
+La fonction `group_by_key()` de **tsibble** nous permet d'effectuer ce regroupement. 
+et ensuite de passer les données groupées aux fonctions **dplyr**, `group_modify()` et 
+`add_row()`. Ensuite, nous spécifions la séquence des semaines entre une après la semaine maximale 
+actuellement disponible dans les données et la semaine de fin. 
 
 ```{r add_rows}
 
-## add in missing weeks till end of year 
+## ajouter les semaines manquantes jusqu'à la fin de l'année 
 counts <- counts %>%
-  ## group by the region
+  ## regrouper par région
   group_by_key() %>%
-  ## for each group add rows from the highest epiweek to the end of year
+  ## pour chaque groupe, ajoutez les lignes à partir de la semaine d'épi la plus élevée jusqu'à la fin de l'année
   group_modify(~add_row(.,
                         epiweek = seq(max(.$epiweek) + 1, 
                                       end_date,
@@ -969,42 +893,42 @@ counts <- counts %>%
 
 
 <!-- ======================================================= -->
-#### Fourier terms {.unnumbered}
+#### Termes de Fourier {.non numéroté}
 
-We need to redefine our fourier terms - as we want to fit them to the baseline 
-date only and then predict (extrapolate) those terms for the next year. 
-To do this we need to combine two output lists from the `fourier()` function together; 
-the first one is for the baseline data, and the second one predicts for the 
-year of interest (by defining the `h` argument).  
+Nous devons redéfinir nos termes de Fourier, car nous voulons les adapter à la date de base uniquement, puis prédire (extrapoler) ces termes pour la date suivante. 
+de base uniquement, puis prédire (extrapoler) ces termes pour l'année suivante. 
+Pour ce faire, nous devons combiner deux listes de sortie de la fonction `fourier()` ensemble ; 
+la première est pour les données de base, et la seconde prédit pour l'année qui nous intéresse (en définissant le paramètre `fourier()`). 
+l'année qui nous intéresse (en définissant l'argument `h`).  
 
-*N.b.* to bind rows we have to use `rbind()` (rather than tidyverse `bind_rows`) as
-the fourier columns are a list (so not named individually). 
+*N.b.* pour lier les lignes, nous devons utiliser `rbind()` (plutôt que tidyverse `bind_rows`) car
+les colonnes de fourier sont une liste (et ne sont donc pas nommées individuellement). 
 
 ```{r fourier_terms_pred}
 
 
-## define fourier terms (sincos) 
+## définir les termes de fourier (sincos) 
 counts <- counts %>% 
   mutate(
-    ## combine fourier terms for weeks prior to  and after 2010 cut-off date
-    ## (nb. 2011 fourier terms are predicted)
+    ## combiner les termes de fourier pour les semaines avant et après la date limite de 2010
+    ## (nb. les termes de fourier de 2011 sont prédits)
     fourier = rbind(
-      ## get fourier terms for previous years
+      ## obtenir les termes de fourier pour les années précédentes
       fourier(
-        ## only keep the rows before 2011
+        ## garder uniquement les lignes avant 2011
         filter(counts, 
                epiweek <= cut_off), 
-        ## include one set of sin cos terms 
+        ## inclure un ensemble de termes sin cos 
         K = 1
         ), 
-      ## predict the fourier terms for 2011 (using baseline data)
+      ## prédire les termes de fourier pour 2011 (en utilisant les données de base)
       fourier(
-        ## only keep the rows before 2011
+        ## garder uniquement les lignes avant 2011
         filter(counts, 
                epiweek <= cut_off),
-        ## include one set of sin cos terms 
+        ## inclure un ensemble de termes sin cos 
         K = 1, 
-        ## predict 52 weeks ahead
+        ## prédire 52 semaines à l'avance
         h = num_weeks
         )
       )
@@ -1013,88 +937,88 @@ counts <- counts %>%
 ```
 
 <!-- ======================================================= -->
-#### Split data and fit regression {.unnumbered}
+#### Diviser les données et ajuster la régression {.unnumbered}
 
-We now have to split our dataset in to the baseline period and the prediction 
-period. This is done using the **dplyr** `group_split()` function after `group_by()`, 
-and will create a list with two data frames, one for before your cut-off and one 
-for after.  
+Nous devons maintenant diviser notre ensemble de données en deux périodes : la période de base et la période de prédiction. 
+période de prédiction. Ceci est fait en utilisant la fonction **dplyr** `group_split()` après `group_by()`, 
+et créera une liste avec deux cadres de données, un pour la période avant la coupure et un pour la période après la coupure. 
+pour l'après.  
 
-We then use the **purrr** package `pluck()` function to pull the datasets out of the
-list (equivalent of using square brackets, e.g. `dat[[1]]`), and can then fit 
-our model to the baseline data, and then use the `predict()` function for our data
-of interest after the cut-off.  
+Nous utilisons ensuite la fonction `pluck()` du paquet **purrr** pour extraire les ensembles de données de la liste (ce qui équivaut à utiliser des crochets).
+liste (l'équivalent de l'utilisation de crochets, par exemple `dat[[1]]`), et nous pouvons alors ajuster notre 
+notre modèle aux données de base, et ensuite utiliser la fonction `predict()` pour nos données
+d'intérêt après la coupure.  
 
-See the page on [Iteration, loops, and lists] to learn more about **purrr**.  
+Consultez la page sur [l'itération, les boucles et les listes] pour en savoir plus sur **purrr**.  
 
-<span style="color: orange;">**_CAUTION:_** Note the use of `simulate_pi = FALSE`
-within the `predict()` argument. This is because the default behaviour of **trending** 
-is to use the **ciTools** package to estimate a prediction interval. This does not 
-work if there are `NA` counts, and also produces more granular intervals. 
-See `?trending::predict.trending_model_fit` for details. </span>  
+<span style="color : orange ;">**_ATTENTION:_** Notez l'utilisation de `simulate_pi = FALSE`
+dans l'argument `predict()`. Ceci est dû au fait que le comportement par défaut de **trending** 
+est d'utiliser le paquet **ciTools** pour estimer un intervalle de prédiction. Cela ne fonctionne pas 
+ne fonctionne pas s'il y a des comptes `NA`, et produit également des intervalles plus granulaires. 
+Voir `?trending::predict.trending_model_fit` pour plus de détails. </span>  
 
 ```{r forecast_regression, warning = FALSE}
-# split data for fitting and prediction
+# diviser les données pour l'ajustement et la prédiction
 dat <- counts %>% 
   group_by(epiweek <= cut_off) %>%
   group_split()
 
-## define the model you want to fit (negative binomial) 
+## définir le modèle que vous voulez ajuster (binomial négatif) 
 model <- glm_nb_model(
-  ## set number of cases as outcome of interest
+  ## définir le nombre de cas comme résultat d'intérêt
   case_int ~
-    ## use epiweek to account for the trend
+    ## utiliser epiweek pour tenir compte de la tendance
     epiweek +
-    ## use the furier terms to account for seasonality
+    ## utiliser les termes de fourier pour tenir compte de la saisonnalité
     fourier
 )
 
-# define which data to use for fitting and which for predicting
+# définir les données à utiliser pour l'ajustement et celles pour la prédiction.
 fitting_data <- pluck(dat, 2)
 pred_data <- pluck(dat, 1) %>% 
   select(case_int, epiweek, fourier)
 
-# fit model 
+# ajustement du modèle 
 fitted_model <- trending::fit(model, fitting_data)
 
-# get confint and estimates for fitted data
+# obtenir le confint et les estimations pour les données ajustées
 observed <- fitted_model %>% 
   predict(simulate_pi = FALSE)
 
-# forecast with data want to predict with 
-forecasts <- fitted_model %>% 
+# prévoir avec les données que l'on veut prévoir avec 
+forecast <- fitted_model %>% 
   predict(pred_data, simulate_pi = FALSE)
 
-## combine baseline and predicted datasets
-observed <- bind_rows(observed, forecasts)
+## combiner les ensembles de données de base et prédits
+observed <- bind_rows(observed, forecast)
 
 ```
 
-As previously, we can visualise our model with **ggplot**. We highlight alerts with
-red dots for observed counts above the 95% prediction interval. 
-This time we also add a vertical line to label when the forecast starts. 
+Comme précédemment, nous pouvons visualiser notre modèle avec **ggplot**. Nous mettons en évidence les alertes avec
+points rouges pour les comptes observés au-dessus de l'intervalle de prédiction de 95 %. 
+Cette fois, nous ajoutons également une ligne verticale pour indiquer quand la prévision commence. 
 
 ```{r forecast_plot}
 
-## plot your regression 
+## Tracez votre régression 
 ggplot(data = observed, aes(x = epiweek)) + 
-  ## add in a line for the model estimate
-  geom_line(aes(y = estimate),
+  ## ajoutez une ligne pour l'estimation du modèle
+  geom_line(aes(y = estimation),
             col = "grey") + 
-  ## add in a band for the prediction intervals 
+  ## ajouter une bande pour les intervalles de prédiction 
   geom_ribbon(aes(ymin = lower_pi, 
                   ymax = upper_pi), 
               alpha = 0.25) + 
-  ## add in a line for your observed case counts
+  ## ajouter une ligne pour le nombre de cas observés
   geom_line(aes(y = case_int), 
             col = "black") + 
-  ## plot in points for the observed counts above expected
+  ## Tracez des points pour les nombres observés supérieurs aux prévisions.
   geom_point(
     data = filter(observed, case_int > upper_pi), 
     aes(y = case_int), 
-    colour = "red", 
+    couleur = "red", 
     size = 2) + 
-  ## add vertical line and label to show where forecasting started
+  ## ajouter une ligne verticale et une étiquette pour montrer où la prévision a commencé
   geom_vline(
            xintercept = as.Date(cut_off), 
            linetype = "dashed") + 
@@ -1105,97 +1029,97 @@ ggplot(data = observed, aes(x = epiweek)) +
            angle = 90, 
            vjust = 1
            ) + 
-  ## make a traditional plot (with black axes and white background)
+  ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic()
 ```
 
 
 
 <!-- ======================================================= -->
-#### Prediction validation {.unnumbered}
+#### Validation de la prédiction {.unnumbered}
 
-Beyond inspecting residuals, it is important to investigate how good your model is
-at predicting cases in the future. This gives you an idea of how reliable your 
-threshold alerts are.  
+Au-delà de l'inspection des résidus, il est important d'étudier la capacité de votre modèle à prédire les cas dans le futur.
+pour prédire les cas dans le futur. Cela vous donne une idée de la fiabilité de vos 
+seuils d'alerte.  
 
-The traditional way of validating is to see how well you can predict the latest 
-year before the present one (because you don't yet know the counts for the "current year"). 
-For example in our data set we would use the data from 2002 to 2009 to predict 2010, 
-and then see how accurate those predictions are. Then refit the model to include
-2010 data and use that to predict 2011 counts.  
+La méthode traditionnelle de validation consiste à voir dans quelle mesure vous pouvez prédire l'année la plus récente avant l'année en cours (parce que vous ne pouvez pas prédire l'année en cours). 
+année précédant l'année en cours (car vous ne connaissez pas encore les chiffres de l'"année en cours"). 
+Par exemple, dans notre ensemble de données, nous utiliserions les données de 2002 à 2009 pour prédire 2010, 
+et ensuite voir si ces prédictions sont exactes. Ensuite, nous réajustons le modèle pour inclure
+données de 2010 et les utiliser pour prédire les comptages de 2011.  
 
-As can be seen in the figure below by *Hyndman et al* in ["Forecasting principles 
+Comme on peut le voir dans la figure ci-dessous, réalisée par *Hyndman et al* dans ["Forecasting principles 
 and practice"](https://otexts.com/fpp3/). 
 
 ![](`r "https://otexts.com/fpp3/fpp_files/figure-html/traintest-1.png"`)
-*figure reproduced with permission from the authors* 
+*figure reproduite avec l'autorisation des auteurs*. 
 
-The downside of this is that you are not using all the data available to you, and 
-it is not the final model that you are using for prediction. 
+L'inconvénient de cette méthode est que vous n'utilisez pas toutes les données dont vous disposez et que vous n'obtenez pas le modèle final. 
+ce n'est pas le modèle final que vous utilisez pour la prédiction. 
 
-An alternative is to use a method called cross-validation. In this scenario you 
-roll over all of the data available to fit multiple models to predict one year ahead. 
-You use more and more data in each model, as seen in the figure below from the 
-same [*Hyndman et al* text]((https://otexts.com/fpp3/). 
-For example, the first model uses 2002 to predict 2003, the second uses 2002 and 
-2003 to predict 2004, and so on. 
+Une alternative consiste à utiliser une méthode appelée validation croisée. Dans ce scénario, vous 
+passez en revue toutes les données disponibles pour ajuster plusieurs modèles afin de prédire un an à l'avance. 
+Vous utilisez de plus en plus de données dans chaque modèle, comme le montre la figure ci-dessous tirée de la 
+même [*Hyndman et al* texte]((https://otexts.com/fpp3/). 
+Par exemple, le premier modèle utilise 2002 pour prédire 2003, le second utilise 2002 et 2003 pour prédire 2004, et ainsi de suite. 
+2003 pour prédire 2004, et ainsi de suite. 
 ![](`r "https://otexts.com/fpp2/fpp_files/figure-html/cv1-1.png"`)
-*figure reproduced with permission from the authors*
+*figure reproduite avec l'autorisation des auteurs*.
 
-In the below we use **purrr** package `map()` function to loop over each dataset. 
-We then put estimates in one data set and merge with the original case counts, 
-to use the **yardstick** package to compute measures of accuracy. 
-We compute four measures including: Root mean squared error (RMSE), Mean absolute error	
-(MAE), Mean absolute scaled error (MASE), Mean absolute percent error (MAPE).
+Dans la figure ci-dessous, nous utilisons la fonction `map()` du paquet **purrr** pour boucler sur chaque ensemble de données. 
+Nous mettons ensuite les estimations dans un seul ensemble de données et les fusionnons avec le nombre de cas original, 
+pour utiliser le paquet **yardstick** pour calculer les mesures de précision. 
+Nous calculons quatre mesures, notamment Erreur quadratique moyenne (RMSE), Erreur absolue moyenne (MAE)	
+(MAE), l'erreur absolue moyenne mise à l'échelle (MASE), l'erreur absolue moyenne en pourcentage (MAPE).
 
-<span style="color: orange;">**_CAUTION:_** Note the use of `simulate_pi = FALSE`
-within the `predict()` argument. This is because the default behaviour of **trending** 
-is to use the **ciTools** package to estimate a prediction interval. This does not 
-work if there are `NA` counts, and also produces more granular intervals. 
-See `?trending::predict.trending_model_fit` for details. </span>  
+<span style="color : orange ;">**_CAUTION:_** Notez l'utilisation de `simulate_pi = FALSE`
+dans l'argument `predict()`. Ceci est dû au fait que le comportement par défaut de **trending** 
+est d'utiliser le paquet **ciTools** pour estimer un intervalle de prédiction. Cela ne fonctionne pas 
+ne fonctionne pas s'il y a des comptes `NA`, et produit également des intervalles plus granulaires. 
+Voir `?trending::predict.trending_model_fit` pour plus de détails. </span>  
 
 ```{r cross_validation, warning = FALSE}
 
-## Cross validation: predicting week(s) ahead based on sliding window
+## Validation croisée : prédire la ou les semaines à venir en fonction de la fenêtre glissante.
 
-## expand your data by rolling over in 52 week windows (before + after) 
-## to predict 52 week ahead
-## (creates longer and longer chains of observations - keeps older data)
+## élargissez vos données en les faisant glisser dans des fenêtres de 52 semaines (avant + après). 
+## pour prédire les 52 semaines à venir
+## (crée des chaînes d'observations de plus en plus longues - conserve les données plus anciennes)
 
-## define window want to roll over
+## définir la fenêtre que l'on veut faire glisser
 roll_window <- 52
 
-## define weeks ahead want to predict 
+## Définir les semaines à venir à prévoir 
 weeks_ahead <- 52
 
-## create a data set of repeating, increasingly long data
-## label each data set with a unique id
-## only use cases before year of interest (i.e. 2011)
+## créer un ensemble de données répétitives, de plus en plus longues.
+## étiqueter chaque ensemble de données avec un identifiant unique.
+## utiliser seulement les cas avant l'année d'intérêt (i.e. 2011)
 case_roll <- counts %>% 
   filter(epiweek < cut_off) %>% 
-  ## only keep the week and case counts variables
+  ## Garder uniquement les variables de la semaine et du nombre de cas.
   select(epiweek, case_int) %>% 
-    ## drop the last x observations 
-    ## depending on how many weeks ahead forecasting 
-    ## (otherwise will be an actual forecast to "unknown")
-    slice(1:(n() - weeks_ahead)) %>%
+    ## laisser tomber les x dernières observations 
+    ## en fonction du nombre de semaines d'anticipation de la prévision. 
+    ## (sinon ce sera une prévision réelle à "inconnu")
+    slice(1 :(n() - weeks_ahead)) %>%
     as_tsibble(index = epiweek) %>% 
-    ## roll over each week in x after windows to create grouping ID 
-    ## depending on what rolling window specify
+    ## reconduire chaque semaine dans x après les fenêtres pour créer l'ID de regroupement 
+    ## en fonction de la fenêtre de roulement spécifiée
     stretch_tsibble(.init = roll_window, .step = 1) %>% 
-  ## drop the first couple - as have no "before" cases
+  ## laisser tomber les deux premiers - car il n'y a pas de cas "avant".
   filter(.id > roll_window)
 
 
-## for each of the unique data sets run the code below
+## pour chacun des ensembles de données uniques, exécutez le code ci-dessous
 forecasts <- purrr::map(unique(case_roll$.id), 
                         function(i) {
   
-  ## only keep the current fold being fit 
+  ## garder uniquement le pli courant en cours d'ajustement 
   mini_data <- filter(case_roll, .id == i) %>% 
     as_tibble()
   
-  ## create an empty data set for forecasting on 
+  ## créer un ensemble de données vides pour la prévision sur 
   forecast_data <- tibble(
     epiweek = seq(max(mini_data$epiweek) + 1,
                   max(mini_data$epiweek) + weeks_ahead,
@@ -1204,416 +1128,416 @@ forecasts <- purrr::map(unique(case_roll$.id),
     .id = rep.int(i, weeks_ahead)
   )
   
-  ## add the forecast data to the original 
+  ## ajouter les données de prévision à l'original 
   mini_data <- bind_rows(mini_data, forecast_data)
   
-  ## define the cut off based on latest non missing count data 
+  ## définir le cut off basé sur les dernières données de comptage non manquantes. 
   cv_cut_off <- mini_data %>% 
-    ## only keep non-missing rows
+    ## ne garder que les lignes non manquantes
     drop_na(case_int) %>% 
-    ## get the latest week
+    ## obtenir la dernière semaine
     summarise(max(epiweek)) %>% 
-    ## extract so is not in a dataframe
+    ## extraire ce qui n'est pas dans un dataframe
     pull()
   
-  ## make mini_data back in to a tsibble
+  ## Remettre mini_data dans un tsibble
   mini_data <- tsibble(mini_data, index = epiweek)
   
-  ## define fourier terms (sincos) 
+  ## définir les termes de fourier (sincos) 
   mini_data <- mini_data %>% 
     mutate(
-    ## combine fourier terms for weeks prior to  and after cut-off date
+    ## Combinez les termes de Fourier pour les semaines avant et après la date limite.
     fourier = rbind(
-      ## get fourier terms for previous years
+      ## obtenir les termes de fourier pour les années précédentes
       forecast::fourier(
-        ## only keep the rows before cut-off
-        filter(mini_data, 
+        ### ne conserve que les lignes avant la date butoir
+        filtre(mini_data, 
                epiweek <= cv_cut_off), 
-        ## include one set of sin cos terms 
+        ## inclure un ensemble de termes sin cos 
         K = 1
         ), 
-      ## predict the fourier terms for following year (using baseline data)
+      ## prédire les termes de fourier pour l'année suivante (en utilisant les données de base)
       fourier(
-        ## only keep the rows before cut-off
-        filter(mini_data, 
+        ## conserver uniquement les lignes avant la coupure
+        filtre(mini_data, 
                epiweek <= cv_cut_off),
-        ## include one set of sin cos terms 
+        ## inclure un ensemble de termes sin cos 
         K = 1, 
-        ## predict 52 weeks ahead
+        ## prédire 52 semaines à l'avance
         h = weeks_ahead
         )
       )
     )
   
   
-  # split data for fitting and prediction
+  # diviser les données pour l'ajustement et la prédiction
   dat <- mini_data %>% 
     group_by(epiweek <= cv_cut_off) %>%
     group_split()
 
-  ## define the model you want to fit (negative binomial) 
+  ## définir le modèle que vous voulez ajuster (binomiale négative) 
   model <- glm_nb_model(
-    ## set number of cases as outcome of interest
+    ## définir le nombre de cas comme résultat d'intérêt
     case_int ~
-      ## use epiweek to account for the trend
+      ## utiliser epiweek pour tenir compte de la tendance
       epiweek +
-      ## use the furier terms to account for seasonality
+      ## utiliser les termes de fourier pour tenir compte de la saisonnalité
       fourier
   )
 
-  # define which data to use for fitting and which for predicting
+  # définir les données à utiliser pour l'ajustement et celles pour la prédiction.
   fitting_data <- pluck(dat, 2)
   pred_data <- pluck(dat, 1)
   
-  # fit model 
+  # ajuster le modèle 
   fitted_model <- trending::fit(model, fitting_data)
   
-  # forecast with data want to predict with 
+  # prévoir avec les données que l'on veut prédire avec 
   forecasts <- fitted_model %>% 
     predict(pred_data, simulate_pi = FALSE) %>% 
-    ## only keep the week and the forecast estimate
+    ## garder seulement la semaine et l'estimation de la prévision
     select(epiweek, estimate)
     
   }
   )
 
-## make the list in to a data frame with all the forecasts
+## Transformer la liste en un cadre de données avec toutes les prévisions.
 forecasts <- bind_rows(forecasts)
 
-## join the forecasts with the observed
+## joindre les prévisions aux données observées
 forecasts <- left_join(forecasts, 
                        select(counts, epiweek, case_int),
                        by = "epiweek")
 
-## using {yardstick} compute metrics
-  ## RMSE: Root mean squared error
-  ## MAE:  Mean absolute error	
-  ## MASE: Mean absolute scaled error
-  ## MAPE: Mean absolute percent error
+## en utilisant {yardstick} calculer les métriques
+  ## RMSE : Root mean squared error (erreur quadratique moyenne)
+  ## MAE : Erreur absolue moyenne	
+  ## MASE : Mean absolute scaled error (erreur absolue moyenne mise à l'échelle)
+  ## MAPE : Erreur absolue moyenne en pourcentage
 model_metrics <- bind_rows(
-  ## in your forcasted dataset compare the observed to the predicted
-  rmse(forecasts, case_int, estimate), 
-  mae( forecasts, case_int, estimate),
-  mase(forecasts, case_int, estimate),
-  mape(forecasts, case_int, estimate),
+  ## dans votre ensemble de données forcées, comparez les données observées aux données prédites.
+  rmse(forecasts, case_int, estimation), 
+  mae( forecasts, case_int, estimation),
+  mase(forecasts, case_int, estimation),
+  mape(forecasts, case_int, estimation),
   ) %>% 
-  ## only keep the metric type and its output
-  select(Metric  = .metric, 
+  ### ne conserve que le type de métrique et sa sortie
+  select(Metric = .metric, 
          Measure = .estimate) %>% 
-  ## make in to wide format so can bind rows after
+  ## faire en sorte que le format soit large pour pouvoir lier les lignes ensuite
   pivot_wider(names_from = Metric, values_from = Measure)
 
-## return model metrics 
+## Retourner les métriques du modèle 
 model_metrics
 
 ```
 
 
 <!-- ======================================================= -->
-### **surveillance** package {.unnumbered}
+### **surveillance** paquet {.unnumbered}
 
-In this section we use the **surveillance** package to create alert thresholds 
-based on outbreak detection algorithms. There are several different methods 
-available in the package, however we will focus on two options here. 
-For details, see these papers on the [application](https://cran.r-project.org/web/packages/surveillance/vignettes/monitoringCounts.pdf)
-and [theory](https://cran.r-project.org/web/packages/surveillance/vignettes/glrnb.pdf)
-of the alogirthms used. 
+Dans cette section, nous utilisons le paquet **surveillance** pour créer des seuils d'alerte 
+basés sur des algorithmes de détection d'épidémies. Il existe plusieurs méthodes différentes 
+disponibles dans le paquet, mais nous nous concentrerons ici sur deux options. 
+Pour plus de détails, voir ces articles sur [l'application](https://cran.r-project.org/web/packages/surveillance/vignettes/monitoringCounts.pdf)
+et [théorie](https://cran.r-project.org/web/packages/surveillance/vignettes/glrnb.pdf)
+des alogirths utilisés. 
 
-The first option uses the improved Farrington method. This fits a negative 
-binomial glm (including trend) and down-weights past outbreaks (outliers) to 
-create a threshold level. 
+La première option utilise la méthode améliorée de Farrington. Celle-ci ajuste un glm binomial négatif 
+binomiale négative (y compris la tendance) et pondère à la baisse les épidémies passées (valeurs aberrantes) pour créer un niveau de seuil. 
+pour créer un niveau de seuil. 
 
-The second option use the glrnb method. This also fits a negative binomial glm 
-but includes trend and fourier terms (so is favoured here). The regression is used
-to calculate the "control mean" (~fitted values) - it then uses a computed 
-generalized likelihood ratio statistic to assess if there is shift in the mean 
-for each week. Note that the threshold for each week takes in to account previous
-weeks so if there is a sustained shift an alarm will be triggered. 
-(Also note that after each alarm the algorithm is reset)
+La deuxième option utilise la méthode glrnb. Celle-ci ajuste également un glm binomial négatif 
+binomiale négative, mais inclut la tendance et les termes de Fourier (elle est donc privilégiée ici). La régression est utilisée
+pour calculer la "moyenne de contrôle" (~valeurs ajustées) - elle utilise ensuite une statistique de 
+rapport de vraisemblance généralisé calculé pour évaluer s'il y a un changement de la moyenne pour chaque semaine. 
+pour chaque semaine. Notez que le seuil pour chaque semaine prend en compte les semaines précédentes.
+semaines précédentes, de sorte que s'il y a un changement soutenu, une alarme sera déclenchée. 
+(Notez également qu'après chaque alarme, l'algorithme est réinitialisé).
 
-In order to work with the **surveillance** package, we first need to define a 
-"surveillance time series" object (using the `sts()` function) to fit within the 
-framework. 
+Afin de travailler avec le paquet **surveillance**, nous devons d'abord définir un objet 
+objet "série temporelle de surveillance" (en utilisant la fonction `sts()`) pour s'intégrer dans le 
+cadre. 
 
 ```{r surveillance_obj}
 
-## define surveillance time series object
-## nb. you can include a denominator with the population object (see ?sts)
+## Définir un objet de série temporelle de surveillance
+## nb. vous pouvez inclure un dénominateur avec l'objet population (voir ?sts)
 counts_sts <- sts(observed = counts$case_int[!is.na(counts$case_int)],
                   start = c(
-                    ## subset to only keep the year from start_date 
+                    ## sous-ensemble pour ne garder que l'année de start_date. 
                     as.numeric(str_sub(start_date, 1, 4)), 
-                    ## subset to only keep the week from start_date
+                    ## sous-ensemble pour ne conserver que la semaine à partir de la date de départ
                     as.numeric(str_sub(start_date, 7, 8))), 
-                  ## define the type of data (in this case weekly)
+                  ## définir le type de données (dans ce cas, hebdomadaire)
                   freq = 52)
 
-## define the week range that you want to include (ie. prediction period)
-## nb. the sts object only counts observations without assigning a week or 
-## year identifier to them - so we use our data to define the appropriate observations
+## définir la plage de semaines que vous voulez inclure (c'est-à-dire la période de prédiction)
+## nb. l'objet sts ne compte que les observations sans leur attribuer un identifiant de semaine ou d'année. 
+## d'année - nous utilisons donc nos données pour définir les observations appropriées.
 weekrange <- cut_off - start_date
 
 ```
 
 <!-- ======================================================= -->
-#### Farrington method {.unnumbered}
+#### Méthode Farrington {.non numéroté}
 
-We then define each of our parameters for the Farrington method in a `list`. 
-Then we run the algorithm using `farringtonFlexible()` and then we can extract the 
-threshold for an alert using `farringtonmethod@upperbound`to include this in our 
-dataset. It is also possible to extract a TRUE/FALSE for each week if it triggered 
-an alert (was above the threshold) using `farringtonmethod@alarm`. 
+Nous définissons ensuite chacun de nos paramètres pour la méthode de Farrington dans une `liste`. 
+Ensuite, nous exécutons l'algorithme en utilisant `farringtonFlexible()` et ensuite nous pouvons extraire le 
+seuil d'une alerte en utilisant `farringtonmethod@upperbound` pour l'inclure dans notre 
+données. Il est également possible d'extraire un VRAI/FAUX pour chaque semaine si elle a déclenché une alerte (au-dessus du seuil). 
+une alerte (au-dessus du seuil) en utilisant `farringtonmethod@alarm`. 
 
 ```{r farrington}
 
-## define control
+## définir le contrôle
 ctrl <- list(
-  ## define what time period that want threshold for (i.e. 2011)
+  ## définissez la période pour laquelle vous voulez un seuil (i.e. 2011)
   range = which(counts_sts@epoch > weekrange),
-  b = 9, ## how many years backwards for baseline
-  w = 2, ## rolling window size in weeks
-  weightsThreshold = 2.58, ## reweighting past outbreaks (improved noufaily method - original suggests 1)
-  ## pastWeeksNotIncluded = 3, ## use all weeks available (noufaily suggests drop 26)
+  b = 9, ## nombre d'années en arrière pour la ligne de base
+  w = 2, ## taille de la fenêtre de roulement en semaines
+  weightsThreshold = 2.58, ## repondération des épidémies passées (méthode noufaily améliorée - l'originale suggère 1)
+  ## pastWeeksNotIncluded = 3, ## utilisation de toutes les semaines disponibles (noufaily suggère d'en éliminer 26)
   trend = TRUE,
-  pThresholdTrend = 1, ## 0.05 normally, however 1 is advised in the improved method (i.e. always keep)
+  pThresholdTrend = 1, ## 0.05 normalement, mais 1 est conseillé dans la méthode améliorée (c'est-à-dire toujours garder)
   thresholdMethod = "nbPlugin",
   populationOffset = TRUE
   )
 
-## apply farrington flexible method
+## appliquer la méthode flexible de Farrington
 farringtonmethod <- farringtonFlexible(counts_sts, ctrl)
 
-## create a new variable in the original dataset called threshold
-## containing the upper bound from farrington 
-## nb. this is only for the weeks in 2011 (so need to subset rows)
+## créer une nouvelle variable dans le jeu de données original appelée threshold.
+## contenant la limite supérieure de Farrington. 
+## nb. ceci est seulement pour les semaines de 2011 (donc besoin de sous-ensembler les lignes)
 counts[which(counts$epiweek >= cut_off & 
                !is.na(counts$case_int)),
               "threshold"] <- farringtonmethod@upperbound
 ```
 
-We can then visualise the results in ggplot as done previously. 
+Nous pouvons ensuite visualiser les résultats dans ggplot comme nous l'avons fait précédemment. 
 
 ```{r plot_farrington, warning=F, message=F}
 
 ggplot(counts, aes(x = epiweek)) + 
-  ## add in observed case counts as a line
+  ## ajouter le nombre de cas observés sous forme de ligne
   geom_line(aes(y = case_int, colour = "Observed")) + 
-  ## add in upper bound of aberration algorithm
+  ## ajout de la limite supérieure de l'algorithme d'aberration
   geom_line(aes(y = threshold, colour = "Alert threshold"), 
             linetype = "dashed", 
             size = 1.5) +
-  ## define colours
+  ## définir les couleurs
   scale_colour_manual(values = c("Observed" = "black", 
                                  "Alert threshold" = "red")) + 
-  ## make a traditional plot (with black axes and white background)
+  ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic() + 
-  ## remove title of legend 
+  ## supprimer le titre de la légende 
   theme(legend.title = element_blank())
 
 ```
 
 <!-- ======================================================= -->
-#### GLRNB method {.unnumbered}
+#### Méthode GLRNB {.unnumbered}
 
-Similarly for the GLRNB method we define each of our parameters for the in a `list`, 
-then fit the algorithm and extract the upper bounds.
+De même pour la méthode GLRNB, nous définissons chacun de nos paramètres pour le dans une `liste`, 
+puis nous ajustons l'algorithme et extrayons les limites supérieures.
 
-<span style="color: orange;">**_CAUTION:_** This method uses "brute force" (similar to bootstrapping) for calculating thresholds, so can take a long time!</span>
+<span style="color : orange ;">**_ATTENTION:_** Cette méthode utilise la "force brute" (similaire au bootstrapping) pour calculer les seuils, donc peut prendre beaucoup de temps!</span>.
 
-See the [GLRNB vignette](https://cran.r-project.org/web/packages/surveillance/vignettes/glrnb.pdf) 
-for details. 
+Voir la [vignette GLRNB](https://cran.r-project.org/web/packages/surveillance/vignettes/glrnb.pdf) 
+pour plus de détails. 
 
 ```{r glrnb, warning = FALSE, message = FALSE}
 
-## define control options
+## définir les options de contrôle
 ctrl <- list(
-  ## define what time period that want threshold for (i.e. 2011)
+  ## définir la période pour laquelle on veut un seuil (i.e. 2011)
   range = which(counts_sts@epoch > weekrange),
-  mu0 = list(S = 1,    ## number of fourier terms (harmonics) to include
-  trend = TRUE,   ## whether to include trend or not
-  refit = FALSE), ## whether to refit model after each alarm
-  ## cARL = threshold for GLR statistic (arbitrary)
-     ## 3 ~ middle ground for minimising false positives
-     ## 1 fits to the 99%PI of glm.nb - with changes after peaks (threshold lowered for alert)
+  mu0 = list(S = 1, ## nombre de termes de fourier (harmoniques) à inclure
+  trend = TRUE, ## inclusion ou non de la tendance
+  refit = FALSE), ## si l'on refit le modèle après chaque alarme
+  ## cARL = seuil pour la statistique GLR (arbitraire)
+     ## 3 ~ seuil intermédiaire pour minimiser les faux positifs
+     ## 1 s'ajuste aux 99%PI de glm.nb - avec des changements après les pics (seuil abaissé pour l'alerte)
    c.ARL = 2,
-   # theta = log(1.5), ## equates to a 50% increase in cases in an outbreak
-   ret = "cases"     ## return threshold upperbound as case counts
+   # thêta = log(1.5), ## équivaut à une augmentation de 50% des cas dans une épidémie
+   ret = "cases" ## retourne la limite supérieure du seuil sous forme de nombre de cas
   )
 
-## apply the glrnb method
+## appliquer la méthode glrnb
 glrnbmethod <- glrnb(counts_sts, control = ctrl, verbose = FALSE)
 
-## create a new variable in the original dataset called threshold
-## containing the upper bound from glrnb 
-## nb. this is only for the weeks in 2011 (so need to subset rows)
+## créer une nouvelle variable dans l'ensemble de données original appelée threshold
+## contenant la limite supérieure de glrnb. 
+## nb. ceci est seulement pour les semaines de 2011 (donc besoin de sous-ensembler les lignes)
 counts[which(counts$epiweek >= cut_off & 
                !is.na(counts$case_int)),
               "threshold_glrnb"] <- glrnbmethod@upperbound
 
 ```
 
-Visualise the outputs as previously. 
+Visualisez les sorties comme précédemment. 
 
 ```{r plot_glrnb, message=F, warning=F}
 
 ggplot(counts, aes(x = epiweek)) + 
-  ## add in observed case counts as a line
+  ## ajouter le nombre de cas observés sous forme de ligne
   geom_line(aes(y = case_int, colour = "Observed")) + 
-  ## add in upper bound of aberration algorithm
-  geom_line(aes(y = threshold_glrnb, colour = "Alert threshold"), 
+  ## ajout de la limite supérieure de l'algorithme d'aberration
+  geom_line(aes(y = threshold_glrnb, color = "Alert threshold"), 
             linetype = "dashed", 
             size = 1.5) +
-  ## define colours
+  ## définir les couleurs
   scale_colour_manual(values = c("Observed" = "black", 
                                  "Alert threshold" = "red")) + 
-  ## make a traditional plot (with black axes and white background)
+  ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic() + 
-  ## remove title of legend 
+  ## supprimer le titre de la légende 
   theme(legend.title = element_blank())
 
 ```
 
 <!-- ======================================================= -->
-## Interrupted timeseries {  }
+## Série chronologique interrompue { }
 
-Interrupted timeseries (also called segmented regression or intervention analysis), 
-is often used in assessing the impact of vaccines on the incidence of disease. 
-But it can be used for assessing impact of a wide range of interventions or introductions. 
-For example changes in hospital procedures or the introduction of a new disease 
-strain to a population. 
-In this example we will pretend that a new strain of Campylobacter was introduced
-to Germany at the end of 2008, and see if that affects the number of cases. 
-We will use negative binomial regression again. The regression this time will be 
-split in to two parts, one before the intervention (or introduction of new strain here) 
-and one after (the pre and post-periods). This allows us to calculate an incidence rate ratio comparing the
-two time periods. Explaining the equation might make this clearer (if not then just
-ignore!). 
+Les séries chronologiques interrompues (également appelées régression segmentée ou analyse d'intervention), 
+est souvent utilisée pour évaluer l'impact des vaccins sur l'incidence des maladies. 
+Mais elle peut être utilisée pour évaluer l'impact d'un large éventail d'interventions ou d'introductions. 
+Par exemple, des changements dans les procédures hospitalières ou l'introduction d'une nouvelle souche de maladie dans une population. 
+souche de maladie dans une population. 
+Dans cet exemple, nous supposerons qu'une nouvelle souche de Campylobacter a été introduite en Allemagne fin 2008.
+en Allemagne à la fin de l'année 2008, et nous verrons si cela affecte le nombre de cas. 
+Nous utiliserons à nouveau la régression binomiale négative. Cette fois-ci, la régression sera 
+divisée en deux parties, l'une avant l'intervention (ou l'introduction de la nouvelle souche ici) 
+et une autre après (les périodes pré et post). Cela nous permet de calculer un ratio de taux d'incidence comparant les deux périodes.
+deux périodes. Une explication de l'équation pourrait rendre les choses plus claires (sinon, ignorez-la !).
+ignorez !). 
 
-The negative binomial regression can be defined as follows: 
+La régression binomiale négative peut être définie comme suit : 
 
 $$\log(Y_t)= Î²_0 + Î²_1 \times t+ Î²_2 \times Î´(t-t_0) + Î²_3\times(t-t_0 )^+ + log(pop_t) + e_t$$
 
-Where:
-$Y_t$is the number of cases observed at time $t$  
-$pop_t$ is the population size in 100,000s at time $t$ (not used here)  
-$t_0$ is the last year of the of the pre-period (including transition time if any)  
-$Î´(x$ is the indicator function (it is 0 if xâ‰¤0 and 1 if x>0)  
-$(x)^+$ is the cut off operator (it is x if x>0 and 0 otherwise)  
-$e_t$ denotes the residual 
-Additional terms trend and season can be added as needed. 
+Où :
+$Y_t$ est le nombre de cas observés au temps $t$.  
+$pop_t$ est la taille de la population en 100 000 au moment $t$ (non utilisé ici)  
+$t_0$ est la dernière année de la pré-période (y compris la période de transition, le cas échéant).  
+$Î'(x$ est la fonction indicatrice (elle vaut 0 si xâ¤0 et 1 si x>0)  
+$(x)^+$ est l'opérateur de coupure (il vaut x si x>0 et 0 sinon)  
+$e_t$ désigne le résidu 
+Des termes supplémentaires, tendance et saison, peuvent être ajoutés si nécessaire. 
 
-$Î²_2 \times Î´(t-t_0) + Î²_3\times(t-t_0 )^+$ is the generalised linear 
-part of the post-period and is zero in the pre-period. 
-This means that the $Î²_2$ and $Î²_3$ estimates are the effects of the intervention. 
+$Î²_2 \times Î'(t-t_0) + Î²_3\times(t-t_0 )^+$ est la partie linéaire généralisée de la post-période et est 
+de la post-période et est nulle dans la pré-période. 
+Cela signifie que les estimations de $Î²_2$ et $Î²_3$ sont les effets de l'intervention. 
 
-We need to re-calculate the fourier terms without forecasting here, as we will use
-all the data available to us (i.e. retrospectively). Additionally we need to calculate
-the extra terms needed for the regression. 
+Nous devons recalculer les termes de fourier sans faire de prévision ici, car nous utiliserons
+toutes les données dont nous disposons (c'est-à-dire rétrospectivement). De plus, nous devons calculer
+les termes supplémentaires nécessaires à la régression. 
 
 ```{r define_terms_interrupted}
 
-## add in fourier terms using the epiweek and case_int variabless
+## ajouter les termes de fourier en utilisant les variabless epiweek et case_int
 counts$fourier <- select(counts, epiweek, case_int) %>% 
-  as_tsibble(index = epiweek) %>% 
+  as_tsibble(indice = epiweek) %>% 
   fourier(K = 1)
 
-## define intervention week 
+## définir la semaine d'intervention 
 intervention_week <- yearweek("2008-12-31")
 
-## define variables for regression 
+## définir les variables pour la régression 
 counts <- counts %>% 
   mutate(
-    ## corresponds to t in the formula
-      ## count of weeks (could probably also just use straight epiweeks var)
+    ## correspond à t dans la formule
+      ## nombre de semaines (on pourrait probablement aussi utiliser la variable epiweeks)
     # linear = row_number(epiweek), 
-    ## corresponds to delta(t-t0) in the formula
-      ## pre or post intervention period
+    ## correspond au delta(t-t0) dans la formule
+      ## période de pré ou post intervention
     intervention = as.numeric(epiweek >= intervention_week), 
-    ## corresponds to (t-t0)^+ in the formula
-      ## count of weeks post intervention
-      ## (choose the larger number between 0 and whatever comes from calculation)
+    ## correspond à (t-t0)^+ dans la formule
+      ## nombre de semaines après l'intervention
+      ## (choisir le plus grand nombre entre 0 et ce qui ressort du calcul)
     time_post = pmax(0, epiweek - intervention_week + 1))
 
 ```
 
-We then use these terms to fit a negative binomial regression, and produce a 
-table with percentage change. What this example shows is that there was no 
-significant change. 
+Nous utilisons ensuite ces termes pour ajuster une régression binomiale négative, et produisons un tableau avec le pourcentage de changement. 
+tableau avec le pourcentage de changement. Cet exemple montre qu'il n'y a pas eu de changement 
+changement significatif. 
 
-<span style="color: orange;">**_CAUTION:_** Note the use of `simulate_pi = FALSE`
-within the `predict()` argument. This is because the default behaviour of **trending** 
-is to use the **ciTools** package to estimate a prediction interval. This does not 
-work if there are `NA` counts, and also produces more granular intervals. 
-See `?trending::predict.trending_model_fit` for details. </span>  
+<span style="color : orange ;">**_ATTENTION:_** Notez l'utilisation de `simulate_pi = FALSE`
+dans l'argument `predict()`. Ceci est dû au fait que le comportement par défaut de **trending** 
+est d'utiliser le paquet **ciTools** pour estimer un intervalle de prédiction. Cela ne fonctionne pas 
+ne fonctionne pas s'il y a des comptes `NA`, et produit également des intervalles plus granulaires. 
+Voir `?trending::predict.trending_model_fit` pour plus de détails. </span>  
 
 ```{r interrupted_regression, warning = FALSE}
 
 
-## define the model you want to fit (negative binomial) 
+## définissez le modèle que vous voulez ajuster (binomial négatif). 
 model <- glm_nb_model(
-  ## set number of cases as outcome of interest
+  ## définir le nombre de cas comme résultat d'intérêt
   case_int ~
-    ## use epiweek to account for the trend
+    ## utiliser epiweek pour tenir compte de la tendance
     epiweek +
-    ## use the furier terms to account for seasonality
+    ## utiliser les termes fourier pour tenir compte de la saisonnalité
     fourier + 
-    ## add in whether in the pre- or post-period 
+    ## ajouter si dans la pré ou post-période 
     intervention + 
-    ## add in the time post intervention 
+    ## ajouter le temps après l'intervention 
     time_post
     )
 
-## fit your model using the counts dataset
+## ajustez votre modèle en utilisant l'ensemble de données de comptage
 fitted_model <- trending::fit(model, counts)
 
-## calculate confidence intervals and prediction intervals 
+### calculer les intervalles de confiance et les intervalles de prédiction 
 observed <- predict(fitted_model, simulate_pi = FALSE)
 
 
 
-## show estimates and percentage change in a table
+## Afficher les estimations et le pourcentage de changement dans un tableau
 fitted_model %>% 
-  ## extract original negative binomial regression
+  ## extraire la régression binomiale négative originale
   get_model() %>% 
-  ## get a tidy dataframe of results
+  ## obtenir un cadre de données ordonné des résultats
   tidy(exponentiate = TRUE, 
-       conf.int = TRUE) %>% 
-  ## only keep the intervention value 
+       conf.int = TRUE) %>% ### ne conserve que les valeurs d'intervention 
+  ### ne conserve que la valeur d'intervention 
   filter(term == "intervention") %>% 
-  ## change the IRR to percentage change for estimate and CIs 
+  ## changer le IRR en pourcentage de changement pour l'estimation et les ICs 
   mutate(
-    ## for each of the columns of interest - create a new column
+    ## pour chacune des colonnes d'intérêt - créer une nouvelle colonne
     across(
-      all_of(c("estimate", "conf.low", "conf.high")), 
-      ## apply the formula to calculate percentage change
+      all_of(c("estimation", "conf.low", "conf.high")), 
+      ## appliquer la formule pour calculer le pourcentage de changement
             .f = function(i) 100 * (i - 1), 
-      ## add a suffix to new column names with "_perc"
+      ## ajouter un suffixe aux nouveaux noms de colonnes avec "_perc".
       .names = "{.col}_perc")
     ) %>% 
-  ## only keep (and rename) certain columns 
-  select("IRR" = estimate, 
+  ## ne garder (et renommer) que certaines colonnes 
+  select( "IRR" = estimate, 
          "95%CI low" = conf.low, 
          "95%CI high" = conf.high,
-         "Percentage change" = estimate_perc, 
+         "Variation in percentag" = estimate_perc, 
          "95%CI low (perc)" = conf.low_perc, 
          "95%CI high (perc)" = conf.high_perc,
          "p-value" = p.value)
 ```
 
-As previously we can visualise the outputs of the regression. 
+Comme précédemment, nous pouvons visualiser les résultats de la régression. 
 
 ```{r plot_interrupted}
 
 ggplot(observed, aes(x = epiweek)) + 
-  ## add in observed case counts as a line
+  ## ajouter le nombre de cas observés sous forme de ligne
   geom_line(aes(y = case_int, colour = "Observed")) + 
-  ## add in a line for the model estimate
+  ## ajout d'une ligne pour l'estimation du modèle
   geom_line(aes(y = estimate, col = "Estimate")) + 
-  ## add in a band for the prediction intervals 
+  ## ajouter une bande pour les intervalles de prédiction 
   geom_ribbon(aes(ymin = lower_pi, 
                   ymax = upper_pi), 
               alpha = 0.25) + 
-  ## add vertical line and label to show where forecasting started
+  ## ajouter une ligne verticale et une étiquette pour montrer où la prévision a commencé
   geom_vline(
            xintercept = as.Date(intervention_week), 
            linetype = "dashed") + 
@@ -1624,24 +1548,19 @@ ggplot(observed, aes(x = epiweek)) +
            angle = 90, 
            vjust = 1
            ) + 
-  ## define colours
+  ## définir les couleurs
   scale_colour_manual(values = c("Observed" = "black", 
-                                 "Estimate" = "red")) + 
-  ## make a traditional plot (with black axes and white background)
+                                 "Estimation" = "red")) + 
+  ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic()
 
 ```
 
 
 <!-- ======================================================= -->
-## Resources {  }
+## Ressources { }
 
-[forecasting: principles and practice textbook](https://otexts.com/fpp3/)  
-[EPIET timeseries analysis case studies](https://github.com/EPIET/TimeSeriesAnalysis)  
-[Penn State course](https://online.stat.psu.edu/stat510/lesson/1) 
-[Surveillance package manuscript](https://www.jstatsoft.org/article/view/v070i10)
-
-
-
-
-
+[Prévision : principes et pratique - manuel](https://otexts.com/fpp3/)  
+[Études de cas d'analyse de séries temporelles EPIET](https://github.com/EPIET/TimeSeriesAnalysis)  
+[Cours de Penn State](https://online.stat.psu.edu/stat510/lesson/1) 
+[Manuscrit du paquet de surveillance](https://www.jstatsoft.org/article/view/v070i10)

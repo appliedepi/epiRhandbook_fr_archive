@@ -631,7 +631,7 @@ words
 str_length("abc")
 ```
 
-Alternativement, utilisez la fonction `nchar()` de **base** R
+Alternativement, utilisez la fonction `nchar()` de **base** R.
 
 
 
@@ -972,7 +972,7 @@ Les quantificateurs sont des nombres écrits entre accolades `{ }` *après* le car
 * Faites précéder d'un astérisque `*` pour obtenir **zéro ou plus** de correspondances (utile si vous n'êtes pas sûr que le motif soit présent).  
 
 
-En utilisant le symbole plus `+` comme quantificateur, la correspondance se fera jusqu'à ce qu'un caractère différent soit rencontré. Par exemple, cette expression retournera tous les *mots* (caractères alpha : `"[A-Za-z]+"`)
+En utilisant le symbole plus `+` comme quantificateur, la correspondance se fera jusqu'à ce qu'un caractère différent soit rencontré. Par exemple, cette expression retournera tous les *mots* (caractères alpha : `"[A-Za-z]+"`).
 
 
 ```{r}
