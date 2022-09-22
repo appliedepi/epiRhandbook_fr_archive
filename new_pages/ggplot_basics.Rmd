@@ -256,7 +256,7 @@ ggplot(data = linelist, mapping = aes(x = age))+       # définir les données e
 
 L'alternative consiste à relier l'attribut de l'objet graphique aux valeurs d'une variable. Dans cette approche, l'affichage de cet attribut dépendra des valeurs prises dans cette variable. Si les valeurs de la variable sont continues, l'échelle d'affichage (légende) de cet attribut sera continue. Si les valeurs de la variable sont discrètes, la légende affichera chaque valeur et les données représentées apparaîtront comme "groupées" de manière distincte (pour en savoir plus, consultez la section [groupage](#ggplotgroups) de cette page).  
 
-Pour ce faire, nous devons associer l'attribut du graphique à un *nom de variable de notre jeu de données* (sans guillemets) ie le "mapper". Ceci doit donc être fait dans une fonction `mapping = aes()` (note : il y a plusieurs endroits dans le code où nous pouvons faire ces assignations (de mapping), comme discuté [ci-dessous](##ggplot_basics_map_loc)).  
+Pour ce faire, nous devons associer l'attribut du graphique à un *nom de variable de notre jeu de données* (sans guillemets) ie le "mapper". Ceci doit donc être fait dans une fonction `mapping = aes()` (note : il y a plusieurs endroits dans le code où nous pouvons faire ces assignations (de mapping), comme discuté [ci-dessous](#ggplot_basics_map_loc)).  
 
 Deux exemples sont présentés ci-dessous.  
 
@@ -307,10 +307,6 @@ ggplot(data = linelist,
     method = "lm",              # avec une méthode linéaire
     size = 2)                   # taille (largeur de la ligne) de 2
 ```
-
-
-
-
 
 
 ### Comment et quand faire le mappage {#ggplot_basics_map_loc .unnumbered}
