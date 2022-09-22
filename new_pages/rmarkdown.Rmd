@@ -451,9 +451,9 @@ rmarkdown::render(
 
 Au fur et à mesure de l'exécution du fichier Rmarkdown, la console RStudio vous montrera la progression du rendu jusqu'à 100%, et un message final pour indiquer que l'exécution est achevée.
 
-### Option 3 : "package" **reportfactory** {.unnumbered} (non numéroté)
+### Option 3 : "package" **reportfactory** {.unnumbered}
 
-Le "package" R **reportfactory** offre une méthode alternative d'organisation et de compilation de rapports R Markdown *adapté aux cas où vous exécutez des rapports régulièrement (par exemple, quotidiennement, hebdomadairement...).* Il facilite la compilation de plusieurs fichiers R Markdown et l'organisation de leurs sorties. En substance, il fournit une "usine" à partir de laquelle vous pouvez exécuter les rapports R Markdown, obtenir des dossiers automatiquement horodatés pour les résultats, et avoir un contrôle de version "léger".
+Le "package" R **reportfactory** offre une méthode alternative d'organisation et de compilation de rapports R Markdown *adapté aux cas où vous exécutez des rapports régulièrement (par exemple, quotidiennement, hebdomadairement...).* Il facilite la compilation de plusieurs fichiers R Markdown et l'organisation de leurs sorties. Essentiellement, il fournit une "usine" à partir de laquelle vous pouvez exécuter les rapports R Markdown, obtenir des dossiers automatiquement horodatés pour les fichiers de sortie, et avoir un contrôle de version "léger".
 
 Pour en savoir plus sur ce flux de travail, consultez la page [Organisation des rapports de routine].
 
@@ -506,7 +506,7 @@ rmarkdown::render(
   params = list(date = "2021-04-10", hospital  = "Central Hospital"))
 ```
 
-#### Option 3 : Définir les paramètres à l'aide d'une interface utilisateur graphique {.non numéroté}
+#### Option 3 : Définir les paramètres à l'aide d'une interface utilisateur graphique {.unnumbered}
 
 Pour une sensation plus interactive, vous pouvez également utiliser l'interface utilisateur graphique (GUI) pour sélectionner manuellement les valeurs des paramètres. Pour ce faire, nous pouvons cliquer sur le menu déroulant à côté du bouton "Knit" et choisir "Knit with parameters".
 
@@ -721,7 +721,7 @@ knitr::include_graphics(here::here("images", "markdown/9_html.png"))
 
 Dans une sortie HTML, le contenu de votre rapport peut être dynamique. Voici quelques exemples :
 
-### Tableaux {.non numérotés}
+### Tableaux {.unnumbered}
 
 Dans un rapport HTML, vous pouvez imprimer des tableaux de données de telle sorte que le contenu soit dynamique, avec des filtres et des barres de défilement. Il existe plusieurs "packages" qui offrent cette possibilité.
 
