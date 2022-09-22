@@ -1,4 +1,4 @@
-# Reports with R Markdown {#rmarkdown}
+# Production de rapports avec R Markdown {#rmarkdown}
 
 ```{r out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "markdown/rmarkdown_overview.png"))
