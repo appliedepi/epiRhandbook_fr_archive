@@ -396,7 +396,7 @@ rmarkdown::render(input = "create_output.Rmd")   # Creer le fichier Rmd
 ### Structure du dossier {.unnumbered}
 
 
-Le flux de travail concerne également la structure globale des dossiers, par exemple un dossier "output" pour les documents et figures créés, et des dossiers "data" ou "inputs" pour les données nettoyées. Nous n'entrerons pas dans les détails ici, mais consultez la page [Organisation des rapports de routine].
+Le flux de travail concerne également la structure globale des dossiers, par exemple un dossier "output" pour les documents et figures créés, et des dossiers "data" ou "inputs" pour les données nettoyées. Nous n'entrerons pas dans les détails ici, mais consultez la page [Organisation des rapports de routine](#reportfactory).
 
 ## Produire le document {#production}
 
@@ -455,7 +455,7 @@ Au fur et à mesure de l'exécution du fichier Rmarkdown, la console RStudio vou
 
 Le "package" R **reportfactory** offre une méthode alternative d'organisation et de compilation de rapports R Markdown *adapté aux cas où vous exécutez des rapports régulièrement (par exemple, quotidiennement, hebdomadairement...).* Il facilite la compilation de plusieurs fichiers R Markdown et l'organisation de leurs sorties. Essentiellement, il fournit une "usine" à partir de laquelle vous pouvez exécuter les rapports R Markdown, obtenir des dossiers automatiquement horodatés pour les fichiers de sortie, et avoir un contrôle de version "léger".
 
-Pour en savoir plus sur ce flux de travail, consultez la page [Organisation des rapports de routine].
+Pour en savoir plus sur ce flux de travail, consultez la page [Organisation des rapports de routine](#reportfactory).
 
 <!-- ======================================================= -->
 
