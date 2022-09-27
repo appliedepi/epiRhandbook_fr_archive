@@ -32,7 +32,7 @@ Pour créer une nouvelle fabrique ("factory"), exécutez la fonction `new_factor
 * Votre session RStudio s'installera dans ce projet R.  
 
 ```{r, eval=F}
-# Ceci créera la "factory"dans le répertoire de travail
+# Ceci créera la "factory" dans le répertoire de travail
 new_factory()
 ```
 
@@ -111,7 +111,7 @@ Dans ce script simple, il y a des commandes pour :
 linelist <- import(here("data", "clean", "linelist_cleaned.rds"))
 ```
 
-* Imprimez un tableau récapitulatif des cas, et exportez-le avec `export()` comme un fichier .csv.  
+* Imprimer un tableau récapitulatif des cas, et exportez-le avec `export()` comme un fichier .csv.  
 * Imprimer une courbe épidemiologique, et l'exporter avec `ggsave()` comme un fichier .png.  
 
 
