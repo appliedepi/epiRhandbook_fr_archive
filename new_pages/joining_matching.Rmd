@@ -240,9 +240,9 @@ df1 <- df1 %>%
 <!-- ======================================================= -->
 ### Jointures à gauche et droite {.unnumbered}  
 
-**Une jointure à gauche ou droite est une opération très couramment utilisée pour ajouter des informations à un cadre de données**, en particulier dans les analyses épidémiologiques. Les nouvelles informations sont ajoutées uniquement aux lignes qui existaient déjà dans le dataframe de "référence".  
+**Une jointure à gauche ou droite est une opération très couramment utilisée pour ajouter des informations à un dataframe**, en particulier dans les analyses épidémiologiques. Les nouvelles informations sont ajoutées uniquement aux lignes qui existaient déjà dans le dataframe de "référence".  
 
-*En utilisant ces jointures, l'ordre d'écriture des cadres de données dans la commande est important*.  
+*En utilisant ces jointures, l'ordre d'écriture des dataframes dans la commande est important*.  
 
 
 * Dans une *jointure à gauche*, le *premier* dataframe écrit est utilisé comme "référence" à laquelle on adjoint les informations venant de l'autre table.  
@@ -591,7 +591,7 @@ La fonction `fastLink()` du paquet **fastLink** peut être utilisée pour appliq
 * Dans `stringdist.match = `, donner les colonnes sur lesquelles effectuer le calcul de la distance de similarité entre les chaînes de caractère (ce ou ces colonnes doivent être présentes dans  `varnames`).  
 * Dans `numeric.match = `, donner les colonnes sur lesquelles calculer une mesure de distance numérique (ce ou ces colonnes doivent être présentes dans  `varnames`).  
 * Les valeurs manquantes sont ignorées.  
-* Par défaut, chaque ligne de l'un des deux cadres de données est comparée à une ligne au maximum de l'autre cadre de données. Si vous voulez voir toutes les correspondances évaluées, choisissez `dedupe.matches = FALSE`. La dé-duplication est faite en utilisant la technique de programmation linéaire de Winkler. 
+* Par défaut, chaque ligne de l'un des deux dataframes est comparée à une ligne au maximum de l'autre dataframe. Si vous voulez voir toutes les correspondances évaluées, choisissez `dedupe.matches = FALSE`. La dé-duplication est faite en utilisant la technique de programmation linéaire de Winkler. 
 
 
 *Astuce : divisez une colonne de date en trois colonnes numériques distinctes en utilisant `day()`, `month()`, et `year()` du package **lubridate***.  
@@ -616,7 +616,7 @@ fl_output <- fastLink::fastLink(
 
 L'objet `fl_output` contient la sortie de la fonction `fastLink()`. Cet objet est une liste (classe `list`) qui contient plusieurs dataframes détaillant les résultats de l'analyse des correspondances. Le dataframe `matches` contient les correspondances les plus probables entre `cases` et `results`. On peut y accéder avec la commande `fl_output$matches`. Ci-dessous, nous l'enregistrons sous le nom de `my_matches` pour faciliter son accès ultérieur.    
 
-Le dataframe `my_matches` contient deux colonnes contenant les numéros de lignes/indices (aussi appelés "rownames") de `cases` ("inds.a") et de `results` ("inds.b"), représentant les meilleures correspondances. Si un numéro de ligne d'un cadre de données est manquant, alors aucune correspondance n'a été trouvée dans l'autre cadre de données au seuil de correspondance spécifié.    
+Le dataframe `my_matches` contient deux colonnes contenant les numéros de lignes/indices (aussi appelés "rownames") de `cases` ("inds.a") et de `results` ("inds.b"), représentant les meilleures correspondances. Si un numéro de ligne d'un dataframe est manquant, alors aucune correspondance n'a été trouvée dans l'autre dataframe au seuil de correspondance spécifié.    
 
 
 ```{r}
@@ -921,7 +921,7 @@ Notez que les hôpitaux sont les mêmes, mais dans un ordre différent dans les 
 
 #### Utiliser `match()` pour homogénéiser l'ordre des lignes {.unnumbered}  
 
-Comme l'ordre des lignes est différent, un simple `bind_cols()` entraînerait une mauvaise correspondance des données. Pour résoudre ce problème, nous pouvons utiliser la fonction `match()` de **base** R pour aligner les lignes d'un cadre de données dans le même ordre que dans un autre. Pour cette approche, nous supposons qu'il n'y a pas de doublons dans les dataframes.  
+Comme l'ordre des lignes est différent, un simple `bind_cols()` entraînerait une mauvaise correspondance des données. Pour résoudre ce problème, nous pouvons utiliser la fonction `match()` de **base** R pour aligner les lignes d'un dataframes dans le même ordre que dans un autre. Pour cette approche, nous supposons qu'il n'y a pas de doublons dans les dataframes.  
 
 Lorsque nous utilisons `match()`, la syntaxe est `match(vecteur/colonne dans l'ordre désiré, colonne de dataframe à ordonner)`, où le premier argument est l'ordre souhaité (soit un vecteur autonome, soit une colonne d'un dataframe), et le second argument est la colonne du dataframe qui sera réordonnée. La sortie de `match()` est un vecteur de nombres représentant l'ordre correct des positions. Vous pouvez en savoir plus avec `?match`. 
 
@@ -930,7 +930,8 @@ Lorsque nous utilisons `match()`, la syntaxe est `match(vecteur/colonne dans l'o
 match(case_info$hospital, contact_fu$hospital)
 ```
 
-On peut utiliser ce vecteur numérique pour réorganiser le dataframe : placez-le entre des crochets `[ ]` *avant la virgule*. Pour en savoir plus sur la syntaxe des crochets pour séléctionner les lignes et/ou colonnes d'un dataframe en **base** R, consultez la page [Bases de R](#rbasics). La commande ci-dessous crée un nouveau cadre de données, défini comme l'ancien cadre dans lequel les lignes sont ordonnées selon le tableau numérique ci-dessus. 
+On peut utiliser ce vecteur numérique pour réorganiser le dataframe : placez-le entre des crochets `[ ]` *avant la virgule*. Pour en savoir plus sur la syntaxe des crochets pour séléctionner les lignes et/ou colonnes d'un dataframe en **base** R, consultez la page [Bases de R](#rbasics). La commande ci-dessous crée un nouveau dataframe, défini comme l'ancien dataframe dans lequel les lignes sont ordonnées selon le tableau numérique ci-dessus. 
+
 ```{r}
 contact_fu_aligned <- contact_fu[match(case_info$hospital, contact_fu$hospital),]
 ```
