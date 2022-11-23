@@ -716,7 +716,7 @@ ggplot() +
 <!-- ======================================================= -->
 ## Projection de l'incidence { }
 
-### EpiNow2 {.non numéroté}
+### EpiNow2 {.unnumbered}
 
 En plus de l'estimation de R<sub>t</sub>, **EpiNow2** permet également la prévision de
 R<sub>t</sub> et les projections du nombre de cas par l'intégration avec le paquetage
@@ -800,7 +800,7 @@ effectif de reproduction R<sub>t</sub> et de l'intervalle de série. Nous verron
 l'utilisation des estimations d'intervalle sériel de la littérature et comment utiliser nos propres estimations
 de la liste de diffusion.
 
-#### Utiliser les estimations d'intervalles sériels de la littérature {.non numéroté}
+#### Utiliser les estimations d'intervalles sériels de la littérature {.unnumbered}
 
 **projections** nécessite une distribution d'intervalle série discrétisée de la classe
 `distcrete` du paquetage **distcrete**. Nous utiliserons une distribution gamma

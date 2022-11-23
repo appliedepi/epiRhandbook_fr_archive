@@ -1,67 +1,67 @@
 
-# Courbes épidémiques {#epicurves}  
+# Courbes Ã©pidÃ©miques {#epicurves}  
 
 ```{r, out.width=c('75%'), echo=F, message=F}
 knitr::include_graphics(here::here("images", "epicurve_top.png"))
 ```    
 
 
-Une courbe épidémique (également connue sous le nom de "courbe épi") est un graphique épidémiologique de base généralement utilisé pour visualiser le schéma temporel d'apparition de la maladie parmi un groupe de cas ou une épidémie.  
+Une courbe Ã©pidÃ©mique (Ã©galement connue sous le nom de "courbe Ã©pi") est un graphique Ã©pidÃ©miologique de base gÃ©nÃ©ralement utilisÃ© pour visualiser le schÃ©ma temporel d'apparition de la maladie parmi un groupe de cas ou une Ã©pidÃ©mie.  
 
-L'analyse de la courbe épi peut révéler des tendances temporelles, des valeurs aberrantes, l'ampleur de l'épidémie, la période d'exposition la plus probable, les intervalles de temps entre les générations de cas, et peut même aider à identifier le mode de transmission d'une maladie non identifiée (par exemple, source ponctuelle, source commune continue, propagation de personne à personne). Une leçon en ligne sur l'interprétation des courbes épi est disponible sur le site Web du [US CDC] (https://www.cdc.gov/training/quicklearns/epimode/index.html).    
+L'analyse de la courbe Ã©pi peut rÃ©vÃ©ler des tendances temporelles, des valeurs aberrantes, l'ampleur de l'Ã©pidÃ©mie, la pÃ©riode d'exposition la plus probable, les intervalles de temps entre les gÃ©nÃ©rations de cas, et peut mÃªme aider Ã  identifier le mode de transmission d'une maladie non identifie (par exemple, source ponctuelle, source commune continue, propagation de personne Ã  personne). Une leÃ§on en ligne sur l'interprÃ©tation des courbes Ã©pi est disponible sur le site Web du [US CDC](https://www.cdc.gov/training/quicklearns/epimode/index.html).    
 
-Dans cette page, nous démontrons deux approches pour produire des épicurves dans R :  
+Dans cette page, nous dÃ©montrons deux approches pour produire des Ã©picurves dans R :  
 
-* Le paquet **incidence2**, qui peut produire une courbe épi avec des commandes simples.  
-* Le paquet **ggplot2**, qui permet une personnalisation avancée via des commandes plus complexes.  
+* Le paquet **incidence2**, qui peut produire une courbe Ã©pi avec des commandes simples.  
+* Le paquet **ggplot2**, qui permet une personnalisation avancÃ© via des commandes plus complexes.  
 
-Sont également abordés des cas d'utilisation spécifiques tels que :  
+Nous abordons Ã©galement des cas d'utilisation spÃ©cifiques tels que : 
 
-* le tracé de données de comptage agrégées  
+* Les tracÃ©s de donnÃ©es de comptages agrÃ©gÃ©es  
 * Le facettage ou la production de petits multiples  
 * Application de moyennes mobiles  
-* Montrer quelles données sont "provisoires" ou sujettes à des retards de déclaration.  
-* superposer l'incidence cumulative des cas à l'aide d'un deuxième axe.  
+* Montrer quelles donnÃ©es sont "provisoires" ou sujettes Ã  des retards de rapport  
+* Superposer l'incidence cumulative des cas Ã  l'aide d'un deuxiÃ©me axe  
 
 <!-- ======================================================= -->
-## Préparation
+## PrÃ©paration
 
 
-### Paquets {.non numérotés}  
+### Paquets {.unnumbered}  
 
-Ce chunk de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
+Ce chunk de code montre le chargement des paquets nÃ©cessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nÃ©cessaire *et* le charge pour l'utiliser. Vous pouvez Ã©galement charger les paquets installs avec `library()` de **base** R. Voir la page sur [R basics](#rbasics) pour plus d'informations sur les paquets R.  
 
 ```{r message=F, warning=F}
 pacman::p_load(
-  rio, # import/export de fichiers
-  here, # chemins de fichiers relatifs 
-  lubridate, # travailler avec des dates/epiweeks
-  aweek, # paquet alternatif pour travailler avec les dates/semaines d'été
-  incidence2, # épicurves de données linelist
-  i2extras, # supplément à incidence2
-  stringr, # recherche et manipulation de chaînes de caractères
-  forcats, # travail avec des facteurs
+  rio,         # import/export de fichiers
+  here,        # chemins de fichiers relatifs 
+  lubridate,   # travailler avec des dates/epiweeks
+  aweek,       # paquet alternatif pour travailler avec les dates/semaines
+  incidence2,  # Ã©picurves de donnÃ©es linelist
+  i2extras,    # supplÃ©ment Ã  incidence2
+  stringr,      # recherche et manipulation de chaÃ®nes de caractÃ¨res
+  forcats,      # travail avec des facteurs
   RColorBrewer, # palettes de couleurs de colorbrewer2.org
-  tidyverse # gestion des données + graphiques ggplot2
+  tidyverse     # gestion des donnÃ©es + graphiques ggplot2
 ) 
 ```
 
 
-### Importer des données {.unnumbered}
+### Importer des donnÃ©es {.unnumbered}
 
-Deux exemples de jeux de données sont utilisés dans cette section :  
+Deux exemples de jeux de donnÃ©es sont utilisÃ©s dans cette section :  
 
-* Liste de cas individuels d'une épidémie simulée.  
-* Comptage agrégé par hôpital à partir de la même épidémie simulée.  
+* Liste de cas individuels d'une Ã©pidÃ©mie simulÃ©e.  
+* Comptage agrÃ©gÃ© par hÃ´pital Ã  partir de la mÃªme Ã©pidÃ©mie simulÃ©e.  
 
-Les jeux de données sont importés à l'aide de la fonction `import()` du paquetage **rio**. Voir la page [Importation et exportation] pour les différentes manières d'importer des données.  
+Les jeux de donnÃ©es sont importÃ©s Ã  l'aide de la fonction `import()` du paquetage **rio**. Voir la page [Importation et exportation](#import_export) pour les diffÃ©rentes maniÃ©res d'importer des donnÃ©es.  
 
 
 ```{r, echo=F, message=F}
 # Importez la linelist dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 
-# importer les données de comptage dans R
+# importer les donnÃ©es de comptage dans R
 count_data <- linelist %>% 
   group_by(hospital, date_hospitalisation) %>% 
   summarize(n_cases = dplyr::n()) %>% 
@@ -72,27 +72,27 @@ count_data <- linelist %>%
 
 **Liste de cas**
 
-Nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous souhaitez télécharger les données pour les suivre pas à pas, consultez les instructions de la page [Télécharger le manuel et les données]. Nous supposons que le fichier est dans le répertoire de travail, donc aucun sous-dossier n'est spécifié dans ce chemin de fichier.  
+Nous importons le jeu de donnÃ©es des cas d'une Ã©pidÃ©mie d'Ebola simulÃ©e. Si vous souhaitez tÃ©lÃ©charger les donnÃ©es pour les suivre pas Ã  pas, consultez les instructions de la page [TÃ©lÃ©charger le manuel et les donnÃ©es](#date_used). Nous supposons que le fichier est dans le rÃ©pertoire de travail, donc aucun sous-dossier n'est spÃ©cifiÃ© dans ce chemin de fichier.  
 
-``{r, eval=F}
+```{r, eval=F}
 linelist <- import("linelist_cleaned.xlsx")
 ```
 
-Les 50 premières lignes sont affichées ci-dessous.
+Les 50 premiÃ©res lignes sont affichÃ©es ci-dessous.
 
-``{r, message=FALSE, echo=F}
-# affiche les données de la liste de lignes sous forme de tableau
-DT::datatable(head(linelist, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+```{r, message=FALSE, echo=F}
+# affiche les donnÃ©es de la liste de lignes sous forme de tableau
+DT::datatable(head(linelist, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
 
 
-**Comptes de cas agrégés par hôpital**  
+**Comptes de cas agrÃ©gÃ©s par hÃ´pital**  
 
-Pour les besoins du manuel, le jeu de données des comptages hebdomadaires agrégés par hôpital est créé à partir de la `linelist` avec le code suivant. 
+Pour les besoins du manuel, le jeu de donnÃ©es des comptages hebdomadaires agrÃ©gÃ©s par hÃ´pital est crÃ©Ã© Ã  partir de la `linelist` avec le code suivant. 
 
 ```{r, eval=F}
-# Importez les données de comptage dans R
+# Importez les donnÃ©es de comptage dans R
 count_data <- linelist %>% 
   group_by(hospital, date_hospitalisation) %>% 
   summarize(n_cases = dplyr::n()) %>% 
@@ -100,36 +100,36 @@ count_data <- linelist %>%
   ungroup()
 ```
 
-Les 50 premières lignes sont affichées ci-dessous :  
+Les 50 premiÃ©res lignes sont affichÃ©es ci-dessous :  
 
 ```{r message=FALSE, echo=F}
-# afficher les données de la liste de lignes sous forme de tableau
+# afficher les donnÃ©es de la liste de lignes sous forme de tableau
 DT::datatable(head(count_data, 50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
 
 
 
-### Définir les paramètres {.unnumbered} (sans numéro)
+### DÃ©finir les paramÃ©tres {.unnumbered} 
 
-Pour la production d'un rapport, vous pouvez souhaiter définir des paramètres modifiables tels que la date à laquelle les données sont actuelles (la "date des données"). Vous pouvez ensuite faire référence à l'objet `data_date` dans votre code lorsque vous appliquez des filtres ou dans des légendes dynamiques.
+Pour la production d'un rapport, vous pouvez souhaiter dÃ©finir des paramÃ©tres modifiables tels que la date Ã  laquelle les donnÃ©es sont actuelles (la "date des donnÃ©es"). Vous pouvez ensuite faire rÃ©fÃ©rence Ã  l'objet `data_date` dans votre code lorsque vous appliquez des filtres ou dans des lÃ©gendes dynamiques.
 
-```{r set_paramètres}
-## définit la date du rapport pour le rapport
-## note : peut être défini à Sys.Date() pour la date actuelle
+```{r set_parameters}
+## dÃ©finit la date du rapport pour le rapport
+## note : peut Ã©tre dÃ©fini Ã  Sys.Date() pour la date actuelle
 data_date <- as.Date("2015-05-15")
 ```
 
 
 
-### Vérifier les dates {.unnumbered}
+### VÃ©rifier les dates {.unnumbered}
 
-Vérifiez que chaque colonne de date pertinente est de la classe Date et possède une plage de valeurs appropriée. Vous pouvez le faire simplement en utilisant `hist()` pour les histogrammes, ou `range()` avec `na.rm=TRUE`, ou avec `ggplot()` comme ci-dessous.  
+VÃ©rifiez que chaque colonne de date pertinente est de la classe Date et possÃ©de une plage de valeurs appropriÃ©e. Vous pouvez le faire simplement en utilisant `hist()` pour les histogrammes, ou `range()` avec `na.rm=TRUE`, ou avec `ggplot()` comme ci-dessous.  
 
 ```{r, out.width = c('50%', '50%', '50%'), fig.show='hold', warning=F, message=F}
-# vérifier la plage de dates d'apparition
+# vÃ©rifier la plage de dates d'apparition
 ggplot(data = linelist)+
-  geom_histogramme(aes(x = date_onset))
+  geom_histogram(aes(x = date_onset))
 ```
 
 
@@ -137,30 +137,30 @@ ggplot(data = linelist)+
 <!-- ======================================================= -->
 ## Epicurves avec le paquet **incidence2** { }
 
-Nous démontrons ci-dessous comment faire des épicurves en utilisant le paquet **incidence2**. Les auteurs de ce paquet ont essayé de permettre à l'utilisateur de créer et de modifier des épicurves sans avoir besoin de connaître la syntaxe de **ggplot2**. Une grande partie de cette page est adaptée des vignettes du paquet, qui peuvent être trouvées sur la page **incidence2** [github](https://github.com/reconhub/incidence2).   
+Nous dÃ©montrons ci-dessous comment faire des Ã©picurves en utilisant le paquet **incidence2**. Les auteurs de ce paquet ont essayÃ© de permettre Ã  l'utilisateur de crÃ©er et de modifier des Ã©picurves sans avoir besoin de connaÃ®tre la syntaxe de **ggplot2**. Une grande partie de cette page est adaptÃ©e des vignettes du paquet, qui peuvent Ã©tre trouvÃ©es sur la page **incidence2** [github](https://github.com/reconhub/incidence2).   
 
 
 <!-- ======================================================= -->
-### Exemple simple {.non numéroté}
+### Exemple simple {.unnumbered}
 
-**2 étapes sont nécessaires pour tracer une courbe épidémique avec le paquet *incidence2*:**.  
+**2 Ã©tapes sont nÃ©cessaires pour tracer une courbe Ã©pidÃ©mique avec le paquet *incidence2*:** 
 
-1) **Créer** un objet *incidence* (en utilisant la fonction `incidence()`).  
-    + Fournir les données  
-    + Spécifiez la colonne de date à `date_index = `.  
-    + Spécifiez l'"intervalle" dans lequel les cas doivent être agrégés (quotidien, hebdomadaire, mensuel..).  
-    + Spécifiez toutes les colonnes de regroupement (par exemple, sexe, hôpital, résultat).  
-2) **Player** l'objet d'incidence  
-    + Spécifier les étiquettes, les couleurs, les titres, etc.  
+1) **CrÃ©er** un objet *incidence* (en utilisant la fonction `incidence()`)  
+    + Fournir les donnÃ©es  
+    + SpÃ©cifiez la colonne de date Ã  `date_index = `  
+    + SpÃ©cifiez l'"intervalle" dans lequel les cas doivent Ã©tre agrÃ©gÃ©s (quotidien, hebdomadaire, mensuel..)
+    + SpÃ©cifiez toutes les colonnes de regroupement (par exemple, sexe, hÃ´pital, rÃ©sultat).  
+2) **Graphique** de l'objet d'incidence  
+    + SpÃ©cifier les Ã©tiquettes, les couleurs, les titres, etc.  
 
 
-Ci-dessous, nous chargeons le paquet **incidence2**, créons l'objet incidence à partir de la `linelist` sur la colonne `date_onset` et agrégeons les cas par jour. Nous imprimons ensuite un résumé de l'objet d'incidence. 
+Ci-dessous, nous chargeons le paquet **incidence2**, crÃ©ons l'objet incidence Ã  partir de la `linelist` sur la colonne `date_onset` et agrÃ©geons les cas par jour. Nous imprimons ensuite un rÃ©sumÃ© de l'objet d'incidence. 
 
 ```{r, warning=F, message=F}
 # Chargement du paquet incidence2
 pacman::p_load(incidence2)
 
-# crée l'objet incidence, en agrégeant les cas par jour
+# crÃ©e l'objet incidence, en agrÃ©geant les cas par jour
 epi_day <- incidence( # create incidence object
   x = linelist, # dataset
   date_index = date_onset, # colonne de date
@@ -168,69 +168,69 @@ epi_day <- incidence( # create incidence object
   )
 ```
 
-L'objet **incidence2** lui-même ressemble à un tibble (comme un cadre de données) et peut être imprimé ou manipulé comme un cadre de données.  
+L'objet **incidence2** lui-mÃªme ressemble Ã  un tibble (comme un cadre de donnÃ©es) et peut Ã©tre imprimÃ© ou manipulÃ© comme un cadre de donnÃ©es.  
 
 ```{r}
-classe(epi_day)
+class(epi_day)
 ```
 
-Voici à quoi il ressemble une fois imprimé. Il possède une colonne `date_index` et une colonne `count`.  
+Voici Ã  quoi il ressemble une fois imprimÃ©. Il possÃ©de une colonne `date_index` et une colonne `count`.  
 
 ```{r}
 epi_day
 ```
 
-Vous pouvez également imprimer un résumé de l'objet :  
+Vous pouvez Ã©galement imprimer un rÃ©sumÃ© de l'objet :  
 
 ```{r}
-# imprimer le résumé de l'objet incidence
+# imprimer le rÃ©sumÃ© de l'objet incidence
 summary(epi_day)
 ```
 
-Pour *tracer* l'objet *incidence*, utilisez `plot()` sur le *nom de l'objet incidence*. En arrière-plan, la fonction `plot.incidence2()` est appelée, donc pour lire la documentation spécifique à **incidence2**, vous devez exécuter `?plot.incidence2`.  
+Pour *tracer* l'objet *incidence*, utilisez `plot()` sur le *nom de l'objet incidence*. En arriÃ©re-plan, la fonction `plot.incidence2()` est appelÃ©e, donc pour lire la documentation spÃ©cifique Ã  **incidence2**, vous devez exÃ©cuter `Ã©plot.incidence2`.  
 
 ```{r}
 # Trace l'objet incidence
 plot(epi_day)
 ```
 
-Si vous remarquez beaucoup de petites lignes verticales blanches, essayez d'ajuster la taille de votre image. Par exemple, si vous exportez votre tracé avec `ggsave()`, vous pouvez fournir des nombres à `width = ` et `height = `. Si vous élargissez le tracé, ces lignes peuvent disparaître.    
+Si vous remarquez beaucoup de petites lignes verticales blanches, essayez d'ajuster la taille de votre image. Par exemple, si vous exportez votre tracÃ© avec `ggsave()`, vous pouvez fournir des nombres Ã  `width = ` et `height = `. Si vous Ã©largissez le tracÃ©, ces lignes peuvent disparaÃ©tre.    
 
 
 
-### Changer l'intervalle de temps de l'agrégation des cas {.unnumbered}  
-L'argument `interval = ` de `incidence()` définit comment les observations sont regroupées en barres verticales. 
+### Changer l'intervalle de temps de l'agrÃ©gation des cas {.unnumbered}  
+L'argument `interval = ` de `incidence()` dÃ©finit comment les observations sont regroupÃ©es en barres verticales. 
 
-**Spécifier l'intervalle**  
+**SpÃ©cifier l'intervalle**  
 
-**incidence2** offre une flexibilité et une syntaxe compréhensible pour spécifier comment vous voulez regrouper vos cas en barres épicurves. Fournissez une valeur comme celles ci-dessous à l'argument `interval = `. Vous pouvez écrire n'importe laquelle des valeurs ci-dessous au pluriel (par exemple "semaine**s**"), et vous pouvez ajouter des chiffres avant (par exemple "3 mois").  
+**incidence2** offre une flexibilitÃ© et une syntaxe comprÃ©hensible pour spÃ©cifier comment vous voulez regrouper vos cas en barres Ã©picurves. Fournissez une valeur comme celles ci-dessous Ã  l'argument `interval = `. Vous pouvez Ã©crire n'importe laquelle des valeurs ci-dessous au pluriel (par exemple "semaine**s**"), et vous pouvez ajouter des chiffres avant (par exemple "3 mois").  
 
-Argument option | Explication complémentaire 
+Argument option | Explication complÃ©mentaire 
 ------------------- | ------------------------------------ |
 Nombre (1, 7, 13, 14, etc.) | Nombre de jours par intervalle  
-"semaine | Note : le jour de départ du lundi est la valeur par défaut
+"semaine" | Note : le jour de dÃ©part du lundi est la valeur par dÃ©faut
 "2 semaines" | ou 3, 4, 5...
-"semaine du dimanche" | semaines commençant le dimanche (pourrait aussi utiliser le jeudi, etc.)
+"semaine du dimanche" | semaines commenÃ§ant le dimanche (pourrait aussi utiliser le jeudi, etc.)
 "2 semaines de dimanche" | ou 3, 4, 5...
-"MMWRweek | semaine commençant le dimanche - voir US CDC
+"MMWRweek" | semaine commenÃ§ant le dimanche - voir US CDC
 "mois" | 1er du mois
 "trimestre" | 1er du mois du trimestre
-"2 mois | ou 3, 4, 5...
-"année | 1er jour de l'année civile
+"2 mois" | ou 3, 4, 5...
+"annÃ©e" | 1er jour de l'annÃ©e civile
 
 
-Vous trouverez ci-dessous des exemples de l'aspect des différents intervalles lorsqu'ils sont appliqués à la liste de lignes. Notez comment le format et la fréquence par défaut des *étiquettes* de date sur l'axe des x changent lorsque l'intervalle de date change.  
+Vous trouverez ci-dessous des exemples de l'aspect des diffÃ©rents intervalles lorsqu'ils sont appliquÃ©s Ã  la liste de lignes. Notez comment le format et la frÃ©quence par dÃ©faut des *Ã©tiquettes* de date sur l'axe des x changent lorsque l'intervalle de date change.  
 
 ```{r incidence, out.width=c('50%', '50%', '50%', '50%'), fig.show='hold', warning=F, message=F}
-# Créez les objets d'incidence (avec différents intervalles)
+# CrÃ©ez les objets d'incidence (avec diffÃ©rents intervalles)
 ##############################
-# Hebdomadaire (semaine du lundi par défaut)
+# Hebdomadaire (semaine du lundi par dÃ©faut)
 epi_wk <- incidence(linelist, date_onset, interval = "Monday week")
 
 # Semaine du dimanche
 epi_Sun_wk <- incidence(linelist, date_onset, interval = "Sunday week")
 
-# Trois semaines (semaines de lundi par défaut)
+# Trois semaines (semaines de lundi par dÃ©faut)
 epi_2wk <- incidence(linelist, date_onset, interval = "2 weeks")
 
 # Mensuel
@@ -239,133 +239,133 @@ epi_month <- incidence(linelist, date_onset, interval = "month")
 # Trimestrielle
 epi_quarter <- incidence(linelist, date_onset, interval = "quarter")
 
-# Années
+# AnnÃ©es
 epi_year <- incidence(linelist, date_onset, interval = "year")
 
 
-# Tracez les objets d'incidence (+ titres pour plus de clarté)
+# Tracez les objets d'incidence (+ titres pour plus de clartÃ©)
 ############################
 plot(epi_wk)+ labs(title = "Monday weeks")
 plot(epi_Sun_wk)+ labs(title = "Sunday weeks")
 plot(epi_2wk)+ labs(title = "2 (Monday) weeks")
-plot(epi_month)+ labs(title = "Mois")
-plot(epi_quarter)+ labs(title = "Trimestres")
+plot(epi_month)+ labs(title = "Month")
+plot(epi_quarter)+ labs(title = "Quarters")
 plot(epi_year)+ labs(title = "Years")
 
 ```
 
 
-<!-- **Débuter au premier cas** -->
+<!-- **DÃ©buter au premier cas** -->
 
-<!-- Si vous voulez que les intervalles commencent au premier cas, vous pouvez ajouter l'argument `standard = TRUE` à la commande `incidence()`. Cela ne fonctionne que si l'intervalle est soit "semaine", "mois", "trimestre" ou "année".   -->
+<!-- Si vous voulez que les intervalles commencent au premier cas, vous pouvez ajouter l'argument `standard = TRUE` Ã  la commande `incidence()`. Cela ne fonctionne que si l'intervalle est soit "semaine", "mois", "trimestre" ou "annÃ©e".   -->
 
-**Première date**
+**PremiÃ©re date**
 
-Vous pouvez optionnellement spécifier une valeur de la classe Date (par exemple `as.Date("2016-05-01")`) à `firstdate = ` dans la commande `incidence()`. Si elle est donnée, les données seront rognées à cette plage et les intervalles commenceront à cette date. 
+Vous pouvez optionnellement spÃ©cifier une valeur de la classe Date (par exemple `as.Date("2016-05-01")`) Ã  `firstdate = ` dans la commande `incidence()`. Si elle est donnÃ©e, les donnÃ©es seront rognÃ©es Ã  cette plage et les intervalles commenceront Ã  cette date. 
 
 
 
 ### Groupes {.unnumbered}
 
-Les groupes sont spécifiés dans la commande `incidence()`, et peuvent être utilisés pour colorer les barres ou pour facetter les données. Pour spécifier des groupes dans vos données, fournissez le(s) nom(s) de colonne(s) à l'argument `groups =` de la commande `incidence()` (sans guillemets autour du nom de colonne). Si vous spécifiez plusieurs colonnes, mettez leurs noms dans `c()`.
+Les groupes sont spÃ©cifiÃ©s dans la commande `incidence()`, et peuvent Ã©tre utilisÃ©s pour colorer les barres ou pour facetter les donnÃ©es. Pour spÃ©cifier des groupes dans vos donnÃ©es, fournissez le(s) nom(s) de colonne(s) Ã  l'argument `groups =` de la commande `incidence()` (sans guillemets autour du nom de colonne). Si vous spÃ©cifiez plusieurs colonnes, mettez leurs noms dans `c()`.
 
-Vous pouvez spécifier que les cas avec des valeurs manquantes dans les colonnes de regroupement soient listés comme un groupe distinct `NA` en mettant `na_as_group = TRUE`. Sinon, ils seront exclus du graphique.   
+Vous pouvez spÃ©cifier que les cas avec des valeurs manquantes dans les colonnes de regroupement soient listÃ©s comme un groupe distinct `NA` en mettant `na_as_group = TRUE`. Sinon, ils seront exclus du graphique.   
 
-* Pour *colorer les barres par une colonne de regroupement*, vous devez à nouveau fournir le nom de la colonne à `fill = ` dans la commande `plot()`.  
+* Pour *colorer les barres par une colonne de regroupement*, vous devez Ã  nouveau fournir le nom de la colonne Ã  `fill = ` dans la commande `plot()`.  
 
-* Pour *faire des facettes basées sur une colonne de regroupement*, voir la section ci-dessous sur les facettes avec **incidence2**.  
+* Pour *faire des facettes basÃ©es sur une colonne de regroupement*, voir la section ci-dessous sur les facettes avec **incidence2**.  
 
-Dans l'exemple ci-dessous, les cas de l'ensemble de l'épidémie sont groupés par leur catégorie d'âge. Les valeurs manquantes sont incluses en tant que groupe. L'intervalle d'épicurve est des semaines.  
+Dans l'exemple ci-dessous, les cas de l'ensemble de l'Ã©pidÃ©mie sont groupÃ©s par leur catÃ©gorie d'Ã¢ge. Les valeurs manquantes sont incluses en tant que groupe. L'intervalle d'Ã©picurve est des semaines.  
 
 
 ```{r, message=F, warning=F}
-# Créez un objet incidence, avec des données groupées par catégorie d'âge
+# CrÃ©ez un objet incidence, avec des donnÃ©es groupÃ©es par catÃ©gorie d'Ã¢ge
 age_outbreak <- incidence(
-  linelist, # jeu de données
+  linelist, # jeu de donnÃ©es
   date_index = date_onset, # colonne de date
-  interval = "week", # agrégation hebdomadaire des cas du lundi
-  groups = age_cat, # age_cat est défini comme un groupe
+  interval = "week", # agrÃ©gation hebdomadaire des cas du lundi
+  groups = age_cat, # age_cat est dÃ©fini comme un groupe
   na_as_group = TRUE) # les valeurs manquantes se voient attribuer leur propre groupe
 
-# Tracez l'objet d'incidence groupée
+# Tracez l'objet d'incidence groupÃ©e
 plot(
   age_outbreak, # objet d'incidence avec age_cat comme groupe
-  fill = age_cat)+ # age_cat est utilisé pour la couleur de remplissage des barres (doit avoir été défini comme une colonne de groupes ci-dessus)
-labs(fill = "Age Category") # change le titre de la légende de "age_cat" par défaut (c'est une modification de ggplot2)
+  fill = age_cat)+ # age_cat est utilisÃ© pour la couleur de remplissage des barres (doit avoir Ã©tÃ© dÃ©fini comme une colonne de groupes ci-dessus)
+labs(fill = "Age Category") # change le titre de la lÃ©gende de "age_cat" par dÃ©faut (c'est une modification de ggplot2)
 ```
-<span style="color : darkgreen ;">**_TIP:_** Changez le titre de la légende en ajoutant `+` la commande **ggplot2** `labs(fill = "your title")` à votre graphe **incidence2**.</span>  
+<span style="color : darkgreen ;">**_ATTENTION:_** Changez le titre de la lÃ©gende en ajoutant `+` la commande **ggplot2** `labs(fill = "your title")` Ã  votre graphe **incidence2**.</span>  
 
-Vous pouvez également afficher les barres groupées côte à côte en définissant `stack = FALSE` dans `plot()`, comme indiqué ci-dessous :  
+Vous pouvez Ã©galement afficher les barres groupÃ©es cÃ´te Ã  cÃ´te en dÃ©finissant `stack = FALSE` dans `plot()`, comme indiquÃ© ci-dessous :  
 
 ```{r, warning=F, message=F}
-# Créez un objet d'incidence pour les comptes mensuels. 
+# CrÃ©ez un objet d'incidence pour les comptes mensuels. 
 monthly_gender <- incidence(
  linelist,
  date_index = date_onset,
  interval = "month",
- groups = gender # définit le genre comme colonne de regroupement
+ groups = gender # dÃ©finit le genre comme colonne de regroupement
 )
 
 plot(
   monthly_gender, # objet d'incidence
-  fill = gender, # affichage de barres colorées par sexe
-  stack = FALSE) # côte à côte (non empilées)
+  fill = gender, # affichage de barres colorÃ©es par sexe
+  stack = FALSE) # cÃ´te Ã  cÃ´te (non empilÃ©es)
 ``` 
 
-Vous pouvez définir l'argument `na_as_group = ` à FALSE dans la commande `incidence()` pour supprimer les lignes avec des valeurs manquantes du graphique.  
+Vous pouvez dÃ©finir l'argument `na_as_group = ` Ã  FALSE dans la commande `incidence()` pour supprimer les lignes avec des valeurs manquantes du graphique.  
 
 
 
 
-### Données filtrées {.unnumbered}
+### DonnÃ©es filtrÃ©es {.unnumbered}
 
-Pour tracer l'épicurve d'un sous-ensemble de données :  
+Pour tracer l'Ã©picurve d'un sous-ensemble de donnÃ©es :  
 
-1) Filtrer les données de la liste de lignes  
-2) Fournissez les données filtrées à la commande `incidence()`.  
+1) Filtrer les donnÃ©es de la liste de lignes  
+2) Fournissez les donnÃ©es filtrÃ©es Ã  la commande `incidence()`.  
 3) Tracez l'objet d'incidence
 
-L'exemple ci-dessous utilise des données filtrées pour ne montrer que les cas de l'hôpital central.  
+L'exemple ci-dessous utilise des donnÃ©es filtrÃ©es pour ne montrer que les cas de l'hÃ´pital central.  
 
 ```{r, warning=F, message=F}
 # filtrez la liste de lignes
 central_data <- linelist %>% 
   filter(hospital == "Central Hospital")
 
-# créez un objet d'incidence en utilisant les données filtrées
+# crÃ©ez un objet d'incidence en utilisant les donnÃ©es filtrÃ©es
 central_outbreak <- incidence(central_data, date_index = date_onset, interval = "week")
 
 # tracer l'objet d'incidence
-plot(central_outbreak, title = "Incidence hebdomadaire des cas à l'hôpital central")
+plot(central_outbreak, title = "Incidence hebdomadaire des cas Ã  l'hÃ´pital central")
 ```
 
 
 
 
-### Comptages agrégés {.unnumbered}
+### Comptages agrÃ©gÃ©s {.unnumbered}
 
-Si vos données d'origine sont agrégées (comptes), fournissez le nom de la colonne qui contient les comptes de cas à l'argument `count = ` lorsque vous créez l'objet d'incidence avec `incidence()`.  
+Si vos donnÃ©es d'origine sont agrÃ©gÃ©es (comptes), fournissez le nom de la colonne qui contient les comptes de cas Ã  l'argument `count = ` lorsque vous crÃ©ez l'objet d'incidence avec `incidence()`.  
 
-Par exemple, ce cadre de données `count_data` est la liste de lignes agrégée en comptes quotidiens par hôpital. Les 50 premières lignes ressemblent à ceci :  
+Par exemple, ce cadre de donnÃ©es `count_data` est la liste de lignes agrÃ©gÃ©e en comptes quotidiens par hÃ´pital. Les 50 premiÃ©res lignes ressemblent Ã  ceci :  
 
 ```{r message=FALSE, echo=F}
-DT::datatable(head(count_data,50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+DT::datatable(head(count_data,50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Si vous commencez votre analyse avec des données de comptage quotidiennes comme l'ensemble de données ci-dessus, votre commande `incidence()` pour convertir ces données en une épicurve hebdomadaire par hôpital ressemblerait à ceci :  
+Si vous commencez votre analyse avec des donnÃ©es de comptage quotidiennes comme l'ensemble de donnÃ©es ci-dessus, votre commande `incidence()` pour convertir ces donnÃ©es en une Ã©picurve hebdomadaire par hÃ´pital ressemblerait Ã  ceci :  
 
 ```{r}
-epi_counts <- incidence( # créer un objet d'incidence hebdomadaire
-  count_data, # ensemble de données avec les comptes agrégés par jour
+epi_counts <- incidence( # crÃ©er un objet d'incidence hebdomadaire
+  count_data, # ensemble de donnÃ©es avec les comptes agrÃ©gÃ©s par jour
   date_index = date_hospitalisation, # colonne avec les dates
   count = n_cases, # colonne avec les comptages
-  interval = "week", # agréger les comptages quotidiens jusqu'aux semaines
-  groups = hospital # groupe par hôpital
+  interval = "week", # agrÃ©ger les comptages quotidiens jusqu'aux semaines
+  groups = hospital # groupe par hÃ´pital
   )
 
-# Tracez la courbe d'incidence hebdomadaire de l'épi, avec des barres empilées par hôpital.
+# Tracez la courbe d'incidence hebdomadaire de l'Ã©pi, avec des barres empilÃ©es par hÃ´pital.
 plot(epi_counts, # objet incidence
-     fill = hôpital) # colorer les barres par hôpital
+     fill = hospital) # colorer les barres par hÃ´pital
 ```
 
 
@@ -373,21 +373,21 @@ plot(epi_counts, # objet incidence
 
 ### Facettes/petits multiples {.unnumbered}  
 
-Pour facetter les données par groupe (i.e. produire des "petits multiples") :  
+Pour facetter les donnÃ©es par groupe (i.e. produire des "petits multiples") :  
 
-1) Spécifiez la colonne de facettes à `groups = ` lorsque vous créez l'objet d'incidence.  
+1) SpÃ©cifiez la colonne de facettes Ã  `groups = ` lorsque vous crÃ©ez l'objet d'incidence.  
 2) Utilisez la commande `facet_plot()` au lieu de `plot()`.  
-3) Spécifiez les colonnes de regroupement à utiliser comme `fill = ` et celles à utiliser comme `facets = `.  
+3) spÃ©cifiez les colonnes de regroupement Ã  utiliser comme `fill = ` et celles Ã  utiliser comme `facets = `.  
 
-Ci-dessous, nous avons défini les deux colonnes `hospital` et `outcome` comme colonnes de regroupement dans la commande `incidence()`. Ensuite, dans `facet_plot()` nous traçons l'épicurve, en spécifiant que nous voulons une épicurve différente pour chaque hôpital et que dans chaque épicurve les barres doivent être empilées et colorées par résultat.  
+Ci-dessous, nous avons dÃ©fini les deux colonnes `hospital` et `outcome` comme colonnes de regroupement dans la commande `incidence()`. Ensuite, dans `facet_plot()` nous traÃ§ons l'Ã©picurve, en spÃ©cifiant que nous voulons une Ã©picurve diffÃ©rente pour chaque hÃ´pital et que dans chaque Ã©picurve les barres doivent Ã©tre empilÃ©es et colorÃ©es par rÃ©sultat.  
  
 
 ```{r, warning=F, message=F}
 epi_wks_hosp_out <- incidence(
-  linelist, # ensemble de données
+  linelist, # ensemble de donnÃ©es
   date_index = date_onset, # colonne de date
   interval = "month", # barres mensuelles  
-  groups = c(outcome, hospital) # le résultat et l'hôpital sont donnés comme colonnes de regroupement
+  groups = c(outcome, hospital) # le rÃ©sultat et l'hÃ´pital sont donnÃ©es comme colonnes de regroupement
   )
 
 # tracer
@@ -398,68 +398,68 @@ incidence2::facet_plot(
 
 ```
 
-Notez que le package **ggtree** (utilisé pour afficher les arbres phylogénétiques) possède également une fonction `facet_plot()` - c'est pourquoi nous avons spécifié `incidence2::facet_plot()`` ci-dessus.  
+Notez que le package **ggtree** (utilisÃ© pour afficher les arbres phylogÃ©nÃ©tiques) possÃ©de Ã©galement une fonction `facet_plot()` - c'est pourquoi nous avons spÃ©cifiÃ© `incidence2::facet_plot()`` ci-dessus.  
 
 
 
 ### Modifications avec `plot()` {.unnumbered} 
 
-Une épicurve produite par **incidence2** peut être modifiée via ces arguments *dans la fonction `plot()`*.  
+Une Ã©picurve produite par **incidence2** peut Ã©tre modifiÃ©e via ces arguments *dans la fonction `plot()`*.  
 
 **Voici les arguments de `plot()` qui modifient l'apparence des barres:**  
 
 Argument | Description | Exemples
 ------------------|---------------------------------------|-------------------
-`fill = `|Couleur des barres. Soit un nom de couleur ou un nom de colonne préalablement spécifié à `groups = ` dans la commande `incidence()`|fill = "red"`, ou `fill = gender`  
+`fill = `|Couleur des barres. Soit un nom de couleur ou un nom de colonne probablement spÃ©cifiÃ© Ã  `groups = ` dans la commande `incidence()`|fill = "red"`, ou `fill = gender`  
 `color = ` |Couleur autour de chaque barre, ou autour de chaque groupement dans une barre|`border = "white"` 
-`legend = `|Localisation de la légende|Une des options suivantes : "bottom", "top", "left", "right" ou "none".  
-`alpha = `|Transparence des barres/boîtes|1 est totalement opaque, 0 est totalement transparent
-`width = `Valeur entre 0 et 1 indiquant la taille relative des barres par rapport à leur intervalle de temps|`width = .7`  
-`show_cases = `|Logique ; si VRAI, chaque cas s'affiche sous forme de boîte. L'affichage est meilleur pour les petites épidémies.  
+`legend = `|Localisation de la lÃ©gende|Une des options suivantes : "bottom", "top", "left", "right" ou "none".  
+`alpha = `|Transparence des barres/boÃ®tes|1 est totalement opaque, 0 est totalement transparent
+`width = `Valeur entre 0 et 1 indiquant la taille relative des barres par rapport Ã  leur intervalle de temps|`width = .7`  
+`show_cases = `|Logique ; si VRAI, chaque cas s'affiche sous forme de boÃ®te. L'affichage est meilleur pour les petites Ã©pidÃ©mies.  
 
 **Voici les arguments de `plot()` qui modifient l'axe des dates:**  
 
 Argument(s)|Description
 ----------------------|----------------------------------------------------
-`centre_dates = `|TRUE/FALSE pour savoir si les dates sont affichées au centre des barres ou au début des barres.  
-`date_format = `|Régler le format d'affichage de la date en utilisant la syntaxe strptime ("%"). Ne fonctionne que si `centre_dates = FALSE` (détails ci-dessous).  
-`n.breaks = `|Nombre approximatif de ruptures d'étiquettes sur l'axe des x souhaité.  
-`angle = `|Angle des étiquettes de date sur l'axe des x (nombre de degrés)  
+`centre_dates = `|TRUE/FALSE pour savoir si les dates sont affichÃ´es au centre des barres ou au dÃ©but des barres.  
+`date_format = `|RÃ©gler le format d'affichage de la date en utilisant la syntaxe strptime ("%"). Ne fonctionne que si `centre_dates = FALSE` (dÃ©tails ci-dessous).  
+`n.breaks = `|Nombre approximatif de ruptures d'Ã©tiquettes sur l'axe des x souhaitÃ©.  
+`angle = `|Angle des Ã©tiquettes de date sur l'axe des x (nombre de degrÃ©s)  
 `size = `|Taille du texte en points  
 
-Notez que l'argument `date_breaks = ` ne fonctionne que si `centre_dates = FALSE`. Fournissez une valeur entre guillemets en utilisant la syntaxe strptime ci-dessous, comme détaillé dans la page [Working with dates]. Vous pouvez utiliser `\n` pour une "nouvelle ligne".  
+Notez que l'argument `date_breaks = ` ne fonctionne que si `centre_dates = FALSE`. Fournissez une valeur entre guillemets en utilisant la syntaxe strptime ci-dessous, comme dÃ©taillÃ© dans la page [travailler avec des dates](#dates). Vous pouvez utiliser `\n` pour une "nouvelle ligne".  
 
-%d = Numéro du jour du mois (5, 17, 28, etc.)  
-%j = Numéro du jour de l'année (jour julien 001-366)  
-%a = Jour de semaine abrégé (Lun, Mar, Mer, etc.)  
+%d = NumÃ©ro du jour du mois (5, 17, 28, etc.)  
+%j = NumÃ©ro du jour de l'annÃ©e (jour julien 001-366)  
+%a = Jour de semaine abrÃ©gÃ© (Lun, Mar, Mer, etc.)  
 %A = Jour de la semaine complet (lundi, mardi, etc.)  
-%w = Numéro du jour de la semaine (0-6, le dimanche est 0)  
-%u = Numéro du jour de la semaine (1-7, le lundi est 1)  
-%W = Numéro de la semaine (00-53, le lundi est le début de la semaine)  
-%U = Numéro de la semaine (01-53, le dimanche est le début de la semaine)  
-%m = Numéro du mois (par exemple 01, 02, 03, 04)  
-%b = Mois abrégé (Jan, Feb, etc.)  
-%B = Mois complet (janvier, février, etc.)  
-%y = Année à 2 chiffres (ex. 89)  
-%Y = Année à 4 chiffres (ex. 1989)  
+%w = NumÃ©ro du jour de la semaine (0-6, le dimanche est 0)  
+%u = NumÃ©ro du jour de la semaine (1-7, le lundi est 1)  
+%W = NumÃ©ro de la semaine (00-53, le lundi est le dÃ©but de la semaine)  
+%U = NumÃ©ro de la semaine (01-53, le dimanche est le dÃ©but de la semaine)  
+%m = NumÃ©ro du mois (par exemple 01, 02, 03, 04)  
+%b = Mois abrÃ©gÃ© (Jan, Feb, etc.)  
+%B = Mois complet (janvier, fÃ©vrier, etc.)  
+%y = AnnÃ©e Ã  2 chiffres (ex. 89)  
+%Y = AnnÃ©e Ã  4 chiffres (ex. 1989)  
 %h = heures (horloge de 24 heures)  
 %m = minutes  
 %s = secondes  
-%z = décalage par rapport à GMT  
-%Z = fuseau horaire (caractère)
+%z = dÃ©calage par rapport Ã  GMT  
+%Z = fuseau horaire (caractÃ¨re)
 
 
-<!-- <span style="color : darkgreen ;">**_TIP:_** Pour des pauses tous les "n" intervalles (par exemple tous les 4), utilisez `n.breaks = nrow(i)/n` (où âiâ est le nom de votre objet d'incidence et ânâ est un nombre). Si vos données sont groupées, vous devrez multiplier "n" par le nombre de groupes uniques.</span> -->
+<!-- <span style="color : darkgreen ;">**_TIP:_** Pour des pauses a tous les "n" intervalles (par exemple tous les 4), utilisez `n.breaks = nrow(i)/n` (oÃ¹ "i" est le nom de votre objet d'incidence et "n" est un nombre). Si vos donnÃ©es sont groupÃ©es, vous devrez multiplier "n" par le nombre de groupes uniques.</span> -->
 
 
 
-**Voici les arguments de `plot()` qui modifient les étiquettes des graphiques:**
+**Voici les arguments de `plot()` qui modifient les Ã©tiquettes des graphiques:**
 
 Argument(s)|Description
 ----------------------|----------------------------------------------------
-`title = `|Titre du graphique|`title = "Courbe épidémique du syndrome de la jaunisse aiguë (SJA)"`
-`xlab = `|Titre de l'axe des x|`xlab = "Date d'apparition"`  
-`ylab = `|Titre de l'axe des y|`ylab = "Cas quotidien"`  
+`title = `|Titre du graphique|`title = "Epidemic curve of Acute Jaundice Syndrome (AJS)"`
+`xlab = `|Titre de l'axe des x|`xlab = "Date of onset"`  
+`ylab = `|Titre de l'axe des y|`ylab = "Daily case"`  
 `size = `|Taille du texte de l'axe des x en pts (utilisez theme() de ggplot pour ajuster les autres tailles)  
 
 
@@ -470,27 +470,27 @@ Un exemple utilisant plusieurs des arguments ci-dessus :
 central_data <- linelist %>% 
   filter(hospital == "Central Hospital")
 
-# créez un objet d'incidence en utilisant les données filtrées
+# crÃ©ez un objet d'incidence en utilisant les donnÃ©es filtrÃ©es
 central_outbreak <- incidence(
-  données_centrales,
+  central_data,
   date_index = date_onset,
-  intervalle = "semaine",
-  groupes = résultat)
+  interval = "week",
+  groups = outcome)
 
 # tracer l'objet incidence
 plot(
   central_outbreak,
-  fill = outcome, # couleur de la boîte/barre
-  legend = "top", # légende en haut de page
-  title = "Cas à l'hôpital central", # titre
-  xlab = "Week of onset", # étiquette de l'axe des x
-  ylab = "Week of onset", # étiquette de l'axe des y
-  show_cases = TRUE, # afficher chaque cas comme une boîte individuelle
+  fill = outcome, # couleur de la boÃ©te/barre
+  legend = "top", # lÃ©gende en haut de page
+  title = "Cas Ã  l'hÃ´pital central", # titre
+  xlab = "Semaine d'apparition", # Ã©tiquette de l'axe des x
+  ylab = "Incidence", # Ã©tiquette de l'axe des y
+  show_cases = TRUE, # afficher chaque cas comme une boÃ®te individuelle
   alpha = 0.7, # transparence 
-  border = "grey", # bordure de la boîte
-  angle = 30, # angle des étiquettes de date
-  centre_dates = FALSE, # étiquettes de date au bord de la barre
-  date_format = "%a %d %b %Y\n(Semaine %W)" # ajuste la façon dont les dates sont affichées
+  border = "grey", # bordure de la boÃ®te
+  angle = 30, # angle des Ã©tiquettes de date
+  centre_dates = FALSE, # Ã©tiquettes de date au bord de la barre
+  date_format = "%a %d %b %Y\n(Week %W)" # ajuste la faÃ§on dont les dates sont affichÃ´es
   )
 ```
 
@@ -503,60 +503,60 @@ Pour ajuster davantage l'apparence du graphique, consultez la section ci-dessous
 
 ### Modifications avec ggplot2 {.unnumbered}
 
-Vous pouvez modifier davantage un graphique **incidence2** en ajoutant des modifications **ggplot2** avec un `+` après la fin de la fonction `plot()` d'incidence, comme démontré ci-dessous.  
+Vous pouvez modifier davantage un graphique **incidence2** en ajoutant des modifications **ggplot2** avec un `+` aprÃ©s la fin de la fonction `plot()` d'incidence, comme dÃ©montrÃ© ci-dessous.  
 
-Ci-dessous, le tracé **incidence2** se termine, puis les commandes **ggplot2** sont utilisées pour modifier les axes, ajouter une légende et ajuster la police en gras et la taille du texte.  
+Ci-dessous, le tracÃ© **incidence2** se termine, puis les commandes **ggplot2** sont utilisÃ©es pour modifier les axes, ajouter une lÃ©gende et ajuster la police en gras et la taille du texte.  
 
-Notez que si vous ajoutez `scale_x_date()`, la plupart des formatages de date de `plot()` seront écrasés. Voir la section sur les épicurves de `ggplot()` et la page du manuel [ggplot tips] pour plus d'options.  
+Notez que si vous ajoutez `scale_x_date()`, la plupart des formatages de date de `plot()` seront Ã©crasÃ©s. Voir la section sur les Ã©picurves de `ggplot()` et la page du manuel [ggplot tips](#ggplot_tips) pour plus d'options.  
 
 ```{r, warning=F, message=F}
 # filtrez la liste des lignes
 central_data <- linelist %>% 
   filter(hospital == "Central Hospital")
 
-# créez un objet d'incidence en utilisant les données filtrées
+# crÃ©ez un objet d'incidence en utilisant les donnÃ©es filtrÃ©es
 central_outbreak <- incidence(
-  données_centrales,
+  central_data,
   date_index = date_onset,
-  intervalle = "semaine",
-  groupes = c(outcome))
+  interval = "week",
+  groups = c(outcome))
 
 # tracer l'objet incidence
 plot(
   central_outbreak,
-  fill = outcome, # couleur de la boîte/barre
-  legend = "top", # légende sur le dessus
-  title = "Cas à l'hôpital central", # titre
-  xlab = "Week of onset", # étiquette de l'axe des x
-  ylab = "Week of onset", # étiquette de l'axe des y
-  show_cases = TRUE, # afficher chaque cas comme une boîte individuelle
+  fill = outcome, # couleur de la boÃ®te/barre
+  legend = "top", # lÃ©gende sur le dessus
+  title = "Cas Ã  l'hÃ´pital central", # titre
+  xlab = "Semaine d'apparition", # Ã©tiquette de l'axe des x
+  ylab = "Incidence", # Ã©tiquette de l'axe des y
+  show_cases = TRUE, # afficher chaque cas comme une boÃ®te individuelle
   alpha = 0.7, # transparence 
-  border = "grey", # bordure de la boîte
+  border = "grey", # bordure de la boÃ®te
   centre_dates = FALSE,                   
   date_format = "%a %d %b\n%Y (Week %W)", 
-  angle = 30 # angle des étiquettes de date
+  angle = 30 # angle des Ã©tiquettes de date
   )+
   
   scale_y_continuous(
-    breaks = seq(from = 0, to = 30, by = 5), # spécifie les incréments de l'axe des y par 5
-    expand = c(0,0))+ # supprime l'espace excédentaire en dessous de 0 sur l'axe des y
+    breaks = seq(from = 0, to = 30, by = 5), # spÃ©cifie les incrÃ©ments de l'axe des y par 5
+    expand = c(0,0))+ # supprime l'espace excÃ©dentaire en dessous de 0 sur l'axe des y
   
-  # ajouter une légende dynamique
+  # ajouter une lÃ©gende dynamique
   labs(
-    fill = "Patient outcome", # Titre de la légende
-    caption = stringr::str_glue( # légende dynamique - voir la page sur les caractères et les chaînes de caractères pour plus de détails
-      "n = {central_cases} de l'hôpital central
-      Les débuts de cas vont de {date la plus ancienne} à {date la plus récente}. Les cas {missing_onset} n'ont pas de date d'apparition et ne sont pas représentés",
+    fill = "RÃ©sultat pour le patient", # Titre de la lÃ©gende
+    caption = stringr::str_glue( # lÃ©gende dynamique - voir la page sur les caractÃ¨res et les chaÃ®ne de caractÃ¨res pour plus de dÃ©tails
+      "n = {central_cases} de l'hÃ´pital central
+      L'apparition des cas va de {earliest_date} Ã  {latest_date}. {missing_onset} cas n'ont pas de date d'apparition et ne sont pas reprÃ©sentÃ©s ici.",
       central_cases = nrow(central_data),
       earliest_date = format(min(central_data$date_onset, na.rm=T), format = '%a %d %b %Y'),
       latest_date = format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y'),      
       missing_onset = nrow(central_data %>% filter(is.na(date_onset)))))+
   
-  # ajuster le caractère gras et la position de la légende
-  thème(
+  # ajuster le caractÃ¨re gras et la position de la lÃ©gende
+  theme(
     axis.title = element_text(size = 12, face = "bold"), # titres des axes plus grands et plus gras
     axis.text = element_text(size = 10, face = "bold"), # taille du texte de l'axe et gras
-    plot.caption = element_text(hjust = 0, face = "italic") # déplacer la légende vers la gauche
+    plot.caption = element_text(hjust = 0, face = "italic") # dÃ©placer la lÃ©gende vers la gauche
   )
   
 ```
@@ -566,36 +566,36 @@ plot(
 
 ### Changer les couleurs {.unnumbered}  
 
-#### Spécifier une palette {.unnumbered}  
+#### spÃ©cifier une palette {.unnumbered}  
 
-Fournissez le nom d'une palette prédéfinie à l'argument `col_pal = ` dans `plot()`. Le paquet **incidence2** est livré avec 2 palettes prédéfinies : "vibrant" et "muted". Dans "vibrant" les 6 premières couleurs sont distinctes et dans "muted" les 9 premières couleurs sont distinctes. Après ces chiffres, les couleurs sont des interpolations/intermédiaires d'autres couleurs. Ces palettes prédéfinies sont disponibles sur [ce site] (https://personal.sron.nl/~pault/#sec:qualitative). Les palettes excluent le gris, qui est réservé aux données manquantes (utilisez `na_color = ` pour modifier cette valeur par défaut).  
+Fournissez le nom d'une palette prÃ©dÃ©finie Ã  l'argument `col_pal = ` dans `plot()`. Le paquet **incidence2** est livrÃ© avec 2 palettes prÃ©dÃ©finies : "vibrant" et "muted". Dans "vibrant" les 6 premiÃ©res couleurs sont distinctes et dans "muted" les 9 premiÃ©res couleurs sont distinctes. AprÃ©s ces chiffres, les couleurs sont des interpolations/intermÃ©diaires d'autres couleurs. Ces palettes prÃ©dÃ©finies sont disponibles sur [ce site](https://personal.sron.nl/~pault/#sec:qualitative). Les palettes excluent le gris, qui est rÃ©servÃ© aux donnÃ©es manquantes (utilisez `na_color = ` pour modifier cette valeur par dÃ©faut).  
 
 ```{r out.width = c('50%', '50%'), fig.show='hold', warning = F, message = F}
-# Créez un objet incidence, avec des données groupées par catégorie d'âge  
+# crÃ©ez un objet incidence, avec des donnÃ©es groupÃ©es par catÃ©gorie d'Ã¢ge  
 age_outbreak <- incidence(
   linelist,
   date_index = date_onset, # date d'apparition pour l'axe des x
-  interval = "week", # agrégation hebdomadaire des cas
-  groupes = age_cat)
+  interval = "week", # agrÃ©gation hebdomadaire des cas
+  groups = age_cat)
 
-# tracer l'épicurve avec la palette par défaut
-plot(age_outbreak, fill = age_cat, title = "'vibrant' default incidence2 palette")
+# tracer l'Ã©picurve avec la palette par dÃ©faut
+plot(age_outbreak, fill = age_cat, title = "'vibrant' incidence2 palette par dÃ©faut")
 
-# tracer avec une palette de couleurs différente
+# tracer avec une palette de couleurs diffÃ©rente
 #plot(age_outbreak, fill = age_cat, col_pal = muted, title = "'muted' incidence2 palette")
 ```
 
-Vous pouvez également utiliser l'une des palettes **base** de R (mettez le nom de la palette *sans* guillemets).  
+Vous pouvez Ã©galement utiliser l'une des palettes **base** de R (mettez le nom de la palette *sans* guillemets).  
 
 ```{r out.width = c('50%', '50%'), fig.show='hold', warning = F, message = F}
 # tracer avec la palette R de base
 plot(age_outbreak, fill = age_cat, col_pal = heat.colors, title = "base R heat.colors palette")
 
-# tracé avec la palette R de base
+# tracÃ© avec la palette R de base
 plot(age_outbreak, fill = age_cat, col_pal = rainbow, title = "base R rainbow palette")
 ```
 
-Vous pouvez également ajouter une palette de couleurs à partir du paquet **viridis** ou du paquet **RColorBrewer**. Vous devez d'abord charger ces paquets, puis ajouter leurs fonctions respectives `scale_fill_*()` avec un `+`, comme indiqué ci-dessous.
+Vous pouvez Ã©galement ajouter une palette de couleurs Ã  partir du paquet **viridis** ou du paquet **RColorBrewer**. Vous devez d'abord charger ces paquets, puis ajouter leurs fonctions respectives `scale_fill_*()` avec un `+`, comme indiquÃ© ci-dessous.
 
 ```{r out.width = c('50%', '50%'), fig.show='hold', warning = F, message = F}
 pacman::p_load(RColorBrewer, viridis)
@@ -603,67 +603,67 @@ pacman::p_load(RColorBrewer, viridis)
 # tracer avec une palette de couleurs
 plot(age_outbreak, fill = age_cat, title = "Palette Viridis")+
   scale_fill_viridis_d(
-    option = "inferno", # schéma de couleurs, essayez aussi "plasma" ou la valeur par défaut
-    name = "Age Category", # nom de la légende
+    option = "inferno", # schÃ´ma de couleurs, essayez aussi "plasma" ou la valeur par dÃ©faut
+    name = "Age Category", # nom de la lÃ©gende
     na.value = "grey")      # pour les valeurs manquantes
 
 # tracer avec la palette de couleurs
 plot(age_outbreak, fill = age_cat, title = "RColorBrewer palette")+
   scale_fill_brewer(
     palette = "Dark2", # palette de couleurs, essayez aussi Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3
-    name = "Age Category", # nom de la légende
+    name = "Age Category", # nom de la lÃ©gende
     na.value = "grey")      # pour les valeurs manquantes
 ```
 
 
-#### Spécifier manuellement {.unnumbered}  
+#### spÃ©cifier manuellement {.unnumbered}  
 
-Pour spécifier les couleurs manuellement, ajoutez la fonction **ggplot2** `scale_fill_manual()` à la fonction `plot()` avec un `+` et fournissez le vecteur de noms de couleurs ou de codes HEX à l'argument `values = `. Le nombre de couleurs listées doit être égal au nombre de groupes. Faites attention si les valeurs manquantes sont un groupe - elles peuvent être converties en une valeur de caractère comme "Missing" pendant votre préparation de données avec la fonction `fct_explicit_na()` comme expliqué dans la page sur [Factors].  
+Pour spÃ©cifier les couleurs manuellement, ajoutez la fonction **ggplot2** `scale_fill_manual()` Ã  la fonction `plot()` avec un `+` et fournissez le vecteur de noms de couleurs ou de codes HEX Ã  l'argument `values = `. Le nombre de couleurs listÃ©es doit Ã©tre Ã©gal au nombre de groupes. Faites attention si les valeurs manquantes sont un groupe - elles peuvent Ã©tre converties en une valeur de caractÃ¨re comme "Missing" pendant votre prÃ©paration de donnÃ©es avec la fonction `fct_explicit_na()` comme expliquÃ© dans la page sur [les facteurs](#factors).  
 
 ```{r out.width = c('50%', '50%'), fig.show='hold', warning=F, message=F}
 # couleurs manuelles
 plot(age_outbreak, fill = age_cat, title = "Manually-specified colors")+
   scale_fill_manual(
     values = c("darkgreen", "darkblue", "purple", "grey", "yellow", "orange", "red", "lightblue"), # colors
-    name = "Catégorie d'âge")      # Nom pour la légende
+    name = "Age category")      # Nom pour la lÃ©gende
 ```
 
-Comme mentionné dans la page [ggplot tips], vous pouvez créer vos propres palettes en utilisant `colorRampPalette()` sur un vecteur de couleurs et en spécifiant le nombre de couleurs que vous voulez en retour. C'est un bon moyen d'obtenir de nombreuses couleurs dans une rampe en n'en spécifiant que quelques-unes.  
+Comme mentionnÃ© dans la page [ggplot tips](#ggplot_tips), vous pouvez crÃ©er vos propres palettes en utilisant `colorRampPalette()` sur un vecteur de couleurs et en spÃ©cifiant le nombre de couleurs que vous voulez en retour. C'est un bon moyen d'obtenir de nombreuses couleurs dans une rampe en n'en spÃ©cifiant que quelques-unes.  
 
 ```{r}
 my_cols <- c("darkgreen", "darkblue", "purple", "grey", "yellow", "orange")
-my_palette <- colorRampPalette(my_cols)(12) # étendez les 6 couleurs ci-dessus à 12 couleurs
-ma_palette
+my_palette <- colorRampPalette(my_cols)(12) # Ã©tendez les 6 couleurs ci-dessus Ã  12 couleurs
+my_palette
 ```
           
           
 ### Ajuster l'ordre des niveaux {.unnumbered}  
 
-Pour ajuster l'ordre d'apparition des groupes (sur le graphe et dans la légende), la colonne de regroupement doit être de classe Facteur. Voir la page sur les [Facteurs] pour plus d'informations.  
+Pour ajuster l'ordre d'apparition des groupes (sur le graphe et dans la lÃ©gende), la colonne de regroupement doit Ã©tre de classe Facteur. Voir la page sur les [facteurs](#factors) pour plus d'informations.  
 
-Tout d'abord, voyons une épicurve hebdomadaire par hôpital avec l'ordre par défaut :  
+Tout d'abord, voyons une Ã©picurve hebdomadaire par hÃ´pital avec l'ordre par dÃ©faut :  
 
 ```{r, message=F, warning=F}
-# ORIGINAL - hôpital PAS comme facteur
+# ORIGINAL - hÃ´pital PAS comme facteur
 ###################################
 
-# créer un objet d'incidence hebdomadaire, lignes groupées par hôpital et semaine
+# crÃ©er un objet d'incidence hebdomadaire, lignes groupÃ©es par hÃ´pital et semaine
 hospital_outbreak <- incidence(
   linelist,
   date_index = date_onset, 
-  intervalle = "semaine", 
-  groupes = hôpital)
+  interval = "week", 
+  groups = hospital)
 
 # tracer l'objet incidence
-plot(hospital_outbreak, fill = hospital, title = "ORIGINAL - hospital not a factor")
+plot(hospital_outbreak, fill = hospital, title = "ORIGINAL - l'hÃ´pital n'est pas un facteur")
 ```
 
-Maintenant, pour ajuster l'ordre de sorte que "Missing" et "Other" soient en haut de l'épicurve, nous pouvons faire ce qui suit :  
+Maintenant, pour ajuster l'ordre de sorte que "Missing" et "Other" soient en haut de l'Ã©picurve, nous pouvons faire ce qui suit :  
 
 * Charger le paquet **forcats**, pour travailler avec les facteurs.  
-* Ajustez l'ensemble de données - dans ce cas, nous définirons un nouvel ensemble de données (`plot_data`) dans lequel :  
-  * la colonne `gender` est définie comme un facteur l'ordre des niveaux est défini avec `fct_relevel()` de sorte que "Other" et "Missing" soient les premiers, ils apparaissent donc en haut des barres  
-* L'objet d'incidence est créé et tracé comme précédemment.  
+* Ajustez l'ensemble de donnÃ©es - dans ce cas, nous dÃ©finirons un nouvel ensemble de donnÃ©es (`plot_data`) dans lequel :  
+  * la colonne `gender` est dÃ©finie comme un facteur l'ordre des niveaux est dÃ©fini avec `fct_relevel()` de sorte que "Other" et "Missing" soient les premiers, ils apparaissent donc en haut des barres  
+* L'objet d'incidence est crÃ©Ã© et tracÃ© comme prÃ©cÃ©demment.  
 * Nous ajoutons les modifications **ggplot2**.  
   * `scale_fill_manual()` pour assigner manuellement les couleurs de sorte que "Missing" soit gris et "Other" soit beige.  
  
@@ -671,80 +671,80 @@ Maintenant, pour ajuster l'ordre de sorte que "Missing" et "Other" soient en hau
 
 
 ```{r, message=F, warning=F}
-# MODIFIED - l'hôpital comme facteur
+# MODIFIED - l'hÃ´pital comme facteur
 ###############################
 
 # charger le paquet forcats pour travailler avec les facteurs
 pacman::p_load(forcats)
 
-# Convertir la colonne hôpital en facteur et ajuster les niveaux
+# Convertir la colonne hÃ´pital en facteur et ajuster les niveaux
 plot_data <- lineelist %>% 
-  mutate(hospital = fct_relevel(hospital, c("Missing", "Other"))) # Définir "Missing" et "Other" comme niveaux supérieurs.
+  mutate(hospital = fct_relevel(hospital, c("Missing", "Other"))) # dÃ©finir "Missing" et "Other" comme niveaux supÃ©rieurs.
 
 
-# Créez un objet d'incidence hebdomadaire, groupé par hôpital et par semaine.
+# crÃ©ez un objet d'incidence hebdomadaire, groupÃ© par hÃ´pital et par semaine.
 hospital_outbreak_mod <- incidence(
   plot_data,
   date_index = date_onset, 
-  intervalle = "semaine", 
-  groupes = hôpital)
+  interval = "week", 
+  groups = hospital)
 
 # tracer l'objet d'incidence
 plot(hospital_outbreak_mod, fill = hospital)+
   
-  # spécifier manuellement les couleurs
+  # spÃ©cifier manuellement les couleurs
   scale_fill_manual(values = c("grey", "beige", "darkgreen", "green2", "orange", "red", "pink"))+                      
 
-  # étiquettes ajoutées via ggplot
+  # Ã©tiquettes ajoutÃ©es via ggplot
   labs(
-      title = "MODIFIED - hospital as factor", # titre du graphique
-      subtitle = "Other & Missing at top of epicurve",
-      y = "Incidence hebdomadaire des cas", # titre de l'axe des y  
-      x = "Semaine d'apparition des symptômes", # titre de l'axe des x
-      fill = "Hospital") # titre de la légende     
+      title = "MODIFIÃ‰ - l'hÃ´pital comme facteur", # titre du graphique
+      subtitle = "Autre & Manquant en haut de l'Ã©picurve",
+      y = "Incidence hebdomadaire des cas ", # titre de l'axe des y  
+      x = "Semaine d'apparition des symptÃ´mes", # titre de l'axe des x
+      fill = "HÃ´pital") # titre de la lÃ©gende     
 ```
 
-<span style="color : darkgreen ;">**_TIP:_** Si vous voulez inverser l'ordre de la légende uniquement, ajoutez cette commande **ggplot2** `guides(fill = guide_legend(reverse = TRUE))`.</span>  
+<span style="color : darkgreen ;">**_ATTENTION:_** Si vous voulez inverser l'ordre de la lÃ©gende uniquement, ajoutez cette commande **ggplot2** `guides(fill = guide_legend(reverse = TRUE))`.</span>  
 
 
 
-### Lignes de grille verticales {.non numérotées}  
+### Lignes de grille verticales {.unnumbered}  
 
-Si vous tracez avec les paramètres par défaut de **incidence2**, vous pouvez remarquer que les lignes de grille verticales apparaissent à chaque étiquette de date et une fois entre chaque étiquette de date. Cela peut entraîner l'intersection des lignes de grille avec le haut de certaines barres.  
+Si vous tracez avec les paramÃ©tres par dÃ©faut de **incidence2**, vous pouvez remarquer que les lignes de grille verticales apparaissent Ã  chaque Ã©tiquette de date et une fois entre chaque Ã©tiquette de date. Cela peut entraÃ®ner l'intersection des lignes de grille avec le haut de certaines barres.  
 
-<Remarque : ce paragraphe n'est pas applicable avec la version 1.0.0 de incidence2). Vous pouvez spécifier l'intervalle des lignes de grille en ajoutant la commande `scale_x_date()` de **ggplot2** à votre graphe **incidence2**. Dans celle-ci, spécifiez les intervalles pour `date_breaks = ` et `date_minor_breaks = ` (par exemple "semaines" ou "3 semaines" ou "mois"). Notez que l'utilisation de `scale_x_date()` remplacera tout formatage des étiquettes de date dans `plot()`, donc vous devrez spécifier tout format de chaîne à `date_labels = ` comme ci-dessous.   -->
+<Remarque : ce paragraphe n'est pas applicable avec la version 1.0.0 de incidence2). Vous pouvez spÃ©cifier l'intervalle des lignes de grille en ajoutant la commande `scale_x_date()` de **ggplot2** Ã  votre graphe **incidence2**. Dans celle-ci, spÃ©cifiez les intervalles pour `date_breaks = ` et `date_minor_breaks = ` (par exemple "semaines" ou "3 semaines" ou "mois"). Notez que l'utilisation de `scale_x_date()` remplacera tout formatage des Ã©tiquettes de date dans `plot()`, donc vous devrez spÃ©cifier tout format de chaÃ®ne Ã  `date_labels = ` comme ci-dessous.   -->
 
 Vous pouvez supprimer toutes les lignes de grille en ajoutant la commande **ggplot2** `theme_classic()`.  
 
 ```{r, warning=F, message=F, out.width = c('50%', '50%', '50%'), fig.show='hold'}
 # fabrique un objet d'incidence
 a <- incidence(
-  données_centrales,
+  central_data,
   date_index = date_onset,
-  intervalle = "lundi semaines".
+  interval = "Monday weeks"
 )
 
-# Lignes de grille par défaut
-plot(a, title = "Lignes par défaut")
+# Lignes de grille par dÃ©faut
+plot(a, title = "Lignes par dÃ©faut")
 
-# Intervalles de lignes de grille spécifiés
+# Intervalles de lignes de grille spÃ©cifiÃ©s
 # NE FONCTIONNE PAS AVEC INCIDENCE2 1.0.0
 # plot(a, title = "Lignes hebdomadaires")+
 # scale_x_date(
 # date_breaks = "4 weeks", # major vertical lines align on weeks
 # date_minor_breaks = "weeks", # lignes verticales mineures chaque semaine
-# date_labels = "%a\n%d\n%b") # format des étiquettes de date
+# date_labels = "%a\n%d\n%b") # format des Ã©tiquettes de date
 
 # Pas de lignes de grille
-plot(a, title = "No lines")+
+plot(a, title = "Aucune ligne")+
   theme_classic() # supprime toutes les lignes du quadrillage
 ```
 
-Notez cependant que si vous utilisez des semaines, les arguments `date_breaks` et `date_minor_breaks` ne fonctionnent que pour les semaines *lundi*. Si vos semaines sont d'un autre jour de la semaine, vous devrez fournir manuellement un vecteur de dates aux arguments `breaks = ` et `minor_breaks = ` à la place. Voir la section **ggplot2** pour des exemples de ceci en utilisant `seq.Date()`.
+Notez cependant que si vous utilisez des semaines, les arguments `date_breaks` et `date_minor_breaks` ne fonctionnent que pour les semaines *lundi*. Si vos semaines sont d'un autre jour de la semaine, vous devrez fournir manuellement un vecteur de dates aux arguments `breaks = ` et `minor_breaks = ` Ã  la place. Voir la section **ggplot2** pour des exemples de ceci en utilisant `seq.Date()`.
 
-### Incidence cumulée {.unnumbered}  
+### Incidence cumulÃ©e {.unnumbered}  
 
-Vous pouvez facilement produire un graphique de l'incidence cumulée en passant l'objet incidence à la commande **incidence2** `cumulate()` et ensuite à `plot()`. Cela fonctionne également avec `facet_plot()`.  
+Vous pouvez facilement produire un graphique de l'incidence cumulÃ©e en passant l'objet incidence Ã  la commande **incidence2** `cumulate()` et ensuite Ã  `plot()`. Cela fonctionne Ã©galement avec `facet_plot()`.  
 
 ```{r}
 # fabrique un objet d'incidence hebdomadaire
@@ -753,25 +753,25 @@ wkly_inci <- incidence(
   date_index = date_onset,
   interval = "week")
 
-# tracer l'incidence cumulée
+# tracer l'incidence cumulÃ©e
 wkly_inci %>% 
-  cumuler() %>% 
+  cumulate() %>% 
   plot()
 ```
 
 
-Voir la section plus bas sur cette page pour une méthode alternative pour tracer l'incidence cumulative avec **ggplot2** - par exemple pour superposer une ligne d'incidence cumulative sur une épicurve.  
+Voir la section plus bas sur cette page pour une mÃ©thode alternative pour tracer l'incidence cumulative avec **ggplot2** - par exemple pour superposer une ligne d'incidence cumulative sur une Ã©picurve.  
 
 ### Moyenne glissante {.unnumbered}
 
-Vous pouvez ajouter une moyenne glissante à un graphique **incidence2** facilement avec `add_rolling_average()` du paquet **i2extras**. Passez votre objet incidence2 à cette fonction, puis à `plot()`. Définissez `before = ` comme le nombre de jours précédents que vous voulez inclure dans la moyenne glissante (par défaut, 2). Si vos données sont groupées, la moyenne mobile sera calculée par groupe. 
+Vous pouvez ajouter une moyenne glissante Ã  un graphique **incidence2** facilement avec `add_rolling_average()` du paquet **i2extras**. Passez votre objet incidence2 Ã  cette fonction, puis Ã  `plot()`. dÃ©finissez `before = ` comme le nombre de jours prÃ©cÃ©dents que vous voulez inclure dans la moyenne glissante (par dÃ©faut, 2). Si vos donnÃ©es sont groupÃ©es, la moyenne mobile sera calculÃ©e par groupe. 
 
 ```{r, warning=F, message=F}
 rolling_avg <- incidence( # make incidence object
   linelist,
   date_index = date_onset,
-  intervalle = "semaine",
-  groupes = sexe) %>% 
+  interval = "week",
+  groups = gender) %>% 
   
   i2extras::add_rolling_average(before = 6) # ajouter des moyennes glissantes (dans ce cas, par sexe)
 
@@ -779,17 +779,17 @@ rolling_avg <- incidence( # make incidence object
 plot(rolling_avg, n.breaks = 3) # facettes automatiquement car moyenne glissante sur les groupes
 ```
 
-Pour apprendre à appliquer des moyennes glissantes de manière plus générale sur des données, voir la page du manuel sur les [Moyennes glissantes].  
+Pour apprendre Ã  appliquer des moyennes glissantes de maniÃ©re plus gÃ©nÃ©rale sur des donnÃ©es, voir la page du manuel sur les [moyennes glissantes](#moving_average).  
 
 
 <!-- ======================================================= -->
 ## Epicurves avec ggplot2 { }
 
-L'utilisation de `ggplot()` pour construire votre épicurve permet plus de flexibilité et de personnalisation, mais nécessite plus d'efforts et de compréhension du fonctionnement de `ggplot()`.  
+L'utilisation de `ggplot()` pour construire votre Ã©picurve permet plus de flexibilitÃ© et de personnalisation, mais nÃ©cessite plus d'efforts et de comprÃ©hension du fonctionnement de `ggplot()`.  
 
-Contrairement à l'utilisation du paquet **incidence2**, vous devez *manuellement* contrôler l'agrégation des cas par temps (en semaines, mois, etc.) *et* les intervalles des étiquettes sur l'axe des dates. Ceci doit être soigneusement géré.  
+Contrairement Ã  l'utilisation du paquet **incidence2**, vous devez *manuellement* contrÃ´ler l'agrÃ©gation des cas par temps (en semaines, mois, etc.) *et* les intervalles des Ã©tiquettes sur l'axe des dates. Ceci doit Ã©tre soigneusement gÃ©rÃ©.  
 
-Ces exemples utilisent un sous-ensemble de l'ensemble de données `linelist` - seulement les cas de l'hôpital central.  
+Ces exemples utilisent un sous-ensemble de l'ensemble de donnÃ©es `linelist` - seulement les cas de l'hÃ´pital central.  
 
 
 ```{r, echo=F}
@@ -799,7 +799,7 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 
 ```{r}
 central_data <- linelist %>% 
-  filtre(hospital == "Hospital Central")
+  filter(hospital == "Central Hospital")
 ```
 
 ```{r, eval=F, echo=F}
@@ -808,49 +808,49 @@ library(tidyverse)
 ```
 
 
-Pour produire une épicurve avec `ggplot()`, il y a trois éléments principaux :  
+Pour produire une Ã©picurve avec `ggplot()`, il y a trois Ã©lÃ©ments principaux :  
 
-* Un histogramme, avec les cas de la liste de lignes agrégés en "bins" distingués par des points de "rupture" spécifiques.  
-* Des échelles pour les axes et leurs étiquettes  
-* Des thèmes pour l'apparence du graphique, y compris les titres, les étiquettes, les légendes, etc.
+* Un histogramme, avec les cas de la liste de lignes agrÃ©gÃ©s en "bins" distinguÃ©s par des points de "rupture" spÃ©cifiques.  
+* Des Ã©chelles pour les axes et leurs Ã©tiquettes  
+* Des thÃ¨mes pour l'apparence du graphique, y compris les titres, les Ã©tiquettes, les lÃ©gendes, etc.
 
 
-### Spécifier les cas en bacs {.unnumbered}  
+### spÃ©cifier les cas en bacs {.unnumbered}  
 
-Nous montrons ici comment spécifier la façon dont les cas seront agrégés dans des cases d'histogramme ("barres"). Il est important de reconnaître que l'agrégation des cas dans les cases de l'histogramme n'est **pas** nécessairement les mêmes intervalles que les dates qui apparaîtront sur l'axe des abscisses. 
+Nous montrons ici comment spÃ©cifier la faÃ§on dont les cas seront agrÃ©gÃ©s dans des cases d'histogramme ("barres"). Il est important de reconnaÃ©tre que l'agrÃ©gation des cas dans les cases de l'histogramme n'est **pas** nÃ©cessairement les mÃªmes intervalles que les dates qui apparaÃ®tront sur l'axe des abscisses. 
 
-Vous trouverez ci-dessous le code le plus simple pour produire des épicurves quotidiennes et hebdomadaires.  
+Vous trouverez ci-dessous le code le plus simple pour produire des Ã©picurves quotidiennes et hebdomadaires.  
 
-Dans la commande globale `ggplot()`, le jeu de données est fourni avec `data = `. Sur cette base, la géométrie d'un histogramme est ajoutée avec un `+`. Dans la commande `geom_histogram()`, nous mappons l'esthétique de telle sorte que la colonne `date_onset` soit mappée sur l'axe des x. Toujours dans `geom_histogram()` mais *non* dans `aes()`, nous définissons la `binwidth =` des bins de l'histogramme, en jours. Si cette syntaxe **ggplot2** est confuse, revoyez la page sur [les bases de ggplot].  
+Dans la commande globale `ggplot()`, le jeu de donnÃ©es est fourni avec `data = `. Sur cette base, la gÃ©omÃ©trie d'un histogramme est ajoutÃ©e avec un `+`. Dans la commande `geom_histogram()`, nous mappons l'esthÃ©tique de telle sorte que la colonne `date_onset` soit mappÃ©e sur l'axe des x. Toujours dans `geom_histogram()` mais *non* dans `aes()`, nous dÃ©finissons la `binwidth =` des bins de l'histogramme, en jours. Si cette syntaxe **ggplot2** est confuse, revoyez la page sur [les bases de ggplot](#ggplot_basics).  
 
-<span style="color : orange ;">**_CAUTION:_** Tracer des cas hebdomadaires en utilisant `binwidth = 7` fait démarrer le premier bin de 7 jours au premier cas, qui pourrait être n'importe quel jour de la semaine ! Pour créer des semaines spécifiques, voir la section ci-dessous .</span>
+<span style="color : orange ;">**_CAUTION:_** Tracer des cas hebdomadaires en utilisant `binwidth = 7` fait dÃ©marrer le premier bin de 7 jours au premier cas, qui pourrait Ã©tre n'importe quel jour de la semaine ! Pour crÃ©er des semaines spÃ©cifiques, voir la section ci-dessous .</span>
 
 
 ```{r ggplot_simple, out.width = c('50%', '50%'), fig.show='hold', warning= F, message = F}
 # quotidien 
 ggplot(data = central_data) + # set data
-  geom_histogramme( # ajouter un histogramme
+  geom_histogram( # ajouter un histogramme
     mapping = aes(x = date_onset), # map date column to x-axis
-    binwidth = 1)+ # cas groupés par 1 jour 
-  labs(title = "Central Hospital - Daily") # titre
+    binwidth = 1)+ # cas groupÃ©s par 1 jour 
+  labs(title = "Central Hospital - Quotidiennement") # titre
 
 # hebdomadaire
 ggplot(data = central_data) + # set data 
-  geom_histogramme( # ajouter un histogramme
+  geom_histogram( # ajouter un histogramme
       mapping = aes(x = date_onset), # mappage de la colonne date sur l'axe des x
-      binwidth = 7)+ # cas classés tous les 7 jours, à partir du premier cas ( !) 
-  labs(title = "Central Hospital - 7-day bins, starting at first case") # titre
+      binwidth = 7)+ # cas classÃ©s tous les 7 jours, Ã  partir du premier cas ( !) 
+  labs(title = "Central Hospital - Tranches de 7 jours, Ã  partir du premier cas") # titre
 ```
 
-Notons que le premier cas de cet ensemble de données de l'Hôpital Central a vu ses symptômes apparaître le :  
+Notons que le premier cas de cet ensemble de donnÃ©es de l'hÃ´pital Central a vu ses symptÃ´mes apparaÃ®tre le :  
 
 ```{r}
 format(min(central_data$date_onset, na.rm=T), "%A %d %b, %Y")
 ```
 
-**Pour spécifier manuellement les ruptures des cases de l'histogramme, n'utilisez pas l'argument `binwidth = `, mais fournissez un vecteur de dates à `breaks = `.**.  
+**Pour spÃ©cifier manuellement les ruptures des cases de l'histogramme, n'utilisez pas l'argument `binwidth = `, mais fournissez un vecteur de dates Ã  `breaks = `.**.  
 
-Créez le vecteur de dates avec la fonction R **base** `seq.Date()`. Cette fonction attend les arguments `to = `, `from = `, et `by = `. Par exemple, la commande ci-dessous renvoie les dates mensuelles commençant le 15 janvier et se terminant le 28 juin.
+crÃ©ez le vecteur de dates avec la fonction R **base** `seq.Date()`. Cette fonction attend les arguments `to = `, `from = `, et `by = `. Par exemple, la commande ci-dessous renvoie les dates mensuelles commenÃ§ant le 15 janvier et se terminant le 28 juin.
 
 ```{r}
 monthly_breaks <- seq.Date(from = as.Date("2014-02-01"),
@@ -860,18 +860,18 @@ monthly_breaks <- seq.Date(from = as.Date("2014-02-01"),
 monthly_breaks # print
 ```
 
-Ce vecteur peut être fourni à `geom_histogram()` sous la forme `breaks = ` :  
+Ce vecteur peut Ã©tre fourni Ã  `geom_histogram()` sous la forme `breaks = ` :  
 
 ```{r, warning=F, message=F}
 # mensuel 
 ggplot(data = central_data) +  
-  geom_histogramme(
+  geom_histogram(
     mapping = aes(x = date_onset),
-    breaks = monthly_breaks)+ # fournit le vecteur prédéfini de breaks                    
-  labs(title = "Monthly case bins") # titre
+    breaks = monthly_breaks)+ # fournit le vecteur prÃ©dÃ©fini de breaks                    
+  labs(title = "Bins de cas mensuels") # titre
 ```
 
-Une simple séquence de date hebdomadaire peut être retournée en définissant `by = "week"`. Par exemple : 
+Une simple sÃ©quence de date hebdomadaire peut Ã©tre retournÃ©e en dÃ©finissant `by = "week"`. Par exemple : 
 
 ```{r}
 weekly_breaks <- seq.Date(from = as.Date("2014-02-01"),
@@ -880,134 +880,134 @@ weekly_breaks <- seq.Date(from = as.Date("2014-02-01"),
 ```
 
  
-Une alternative à la fourniture de dates de début et de fin spécifiques consiste à écrire un code *dynamique* pour que les bacs hebdomadaires commencent *le lundi précédant le premier cas*. **Nous utiliserons ces vecteurs de date dans les exemples ci-dessous.  
+Une alternative Ã  la fourniture de dates de dÃ©but et de fin spÃ©cifiques consiste Ã  Ã©crire un code *dynamique* pour que les bacs hebdomadaires commencent *le lundi prÃ©cÃ©dant le premier cas*. **Nous utiliserons ces vecteurs de date dans les exemples ci-dessous.  
      
 ```{r}
-# Séquence de dates hebdomadaires du lundi pour CENTRAL HOSPITAL
+# SÃ©quence de dates hebdomadaires du lundi pour CENTRAL HOSPITAL
 weekly_breaks_central <- seq.Date(
   from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 1), # lundi avant le premier cas
-  to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 1), # lundi après la dernière affaire
+  to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 1), # lundi aprÃ©s la derniÃ©re affaire
   by = "week")
 ```  
 
-Décortiquons le code plutôt déconcertant ci-dessus :  
+DÃ©cortiquons le code plutÃ´t dÃ©concertant ci-dessus :  
 
-* La valeur "from" (date la plus ancienne de la séquence) est créée comme suit : la valeur minimale de la date (`min()` avec `na.rm=TRUE`) dans la colonne `date_onset` est introduite dans `floor_date()` du paquet **lubridate**. `floor_date()` défini sur "week" renvoie la date de début de la "semaine" de ce cas, étant donné que le jour de début de chaque semaine est un lundi (`week_start = 1`).  
-* De même, la valeur "to" (date de fin de la séquence) est créée en utilisant la fonction inverse `ceiling_date()` pour retourner le lundi *après* le dernier cas.  
-* L'argument "by" de `seq.Date()` peut être défini sur un nombre quelconque de jours, de semaines ou de mois.   
+* La valeur "from" (date la plus ancienne de la sÃ©quence) est crÃ©e comme suit : la valeur minimale de la date (`min()` avec `na.rm=TRUE`) dans la colonne `date_onset` est introduite dans `floor_date()` du paquet **lubridate**. `floor_date()` dÃ©fini sur "week" renvoie la date de dÃ©but de la "semaine" de ce cas, Ã©tant donnÃ© que le jour de dÃ©but de chaque semaine est un lundi (`week_start = 1`).  
+* De mÃªme, la valeur "to" (date de fin de la sÃ©quence) est crÃ©Ã©e en utilisant la fonction inverse `ceiling_date()` pour retourner le lundi *aprÃ©s* le dernier cas.  
+* L'argument "by" de `seq.Date()` peut Ã©tre dÃ©fini sur un nombre quelconque de jours, de semaines ou de mois.   
 * Utilisez `week_start = 7` pour les semaines de dimanche.  
 
-Comme nous utiliserons ces vecteurs de date tout au long de cette page, nous en définissons également un pour l'ensemble du foyer (ce qui précède ne concerne que l'hôpital central).  
+Comme nous utiliserons ces vecteurs de date tout au long de cette page, nous en dÃ©finissons Ã©galement un pour l'ensemble du foyer (ce qui prÃ©cÃ©de ne concerne que l'hÃ´pital central).  
 
 ```{r}
-# Séquence pour l'ensemble du foyer
+# SÃ©quence pour l'ensemble du foyer
 weekly_breaks_all <- seq.Date(
   from = floor_date(min(linelist$date_onset, na.rm=T), "week", week_start = 1), # lundi avant le premier cas
-  to = ceiling_date(max(linelist$date_onset, na.rm=T), "week", week_start = 1), # lundi après la dernière affaire
-  by = "semaine")
+  to = ceiling_date(max(linelist$date_onset, na.rm=T), "week", week_start = 1), # lundi aprÃ©s la derniÃ©re affaire
+  by = "week")
 ```
 
-Ces sorties `seq.Date()` peuvent être utilisées pour créer les ruptures des cases de l'histogramme, mais aussi les ruptures pour les étiquettes de date, qui peuvent être indépendantes des cases. Vous en saurez plus sur les étiquettes de date dans les sections suivantes.  
+Ces sorties `seq.Date()` peuvent Ã©tre utilisÃ©es pour crÃ©er les ruptures des cases de l'histogramme, mais aussi les ruptures pour les Ã©tiquettes de date, qui peuvent Ã©tre indÃ©pendantes des cases. Vous en saurez plus sur les Ã©tiquettes de date dans les sections suivantes.  
 
-<span style="color : darkgreen ;">**_TIP:_** Pour une commande `ggplot()` plus simple, sauvegardez à l'avance les ruptures de bacs et les ruptures d'étiquettes de dates en tant que vecteurs nommés, et fournissez simplement leurs noms à `breaks = `.</span>.  
-
-
+<span style="color : darkgreen ;">**_TIP:_** Pour une commande `ggplot()` plus simple, sauvegardez Ã  l'avance les ruptures de bacs et les ruptures d'Ã©tiquettes de dates en tant que vecteurs nommÃ©s, et fournissez simplement leurs noms Ã  `breaks = `.</span>.  
 
 
 
 
 
-### Exemple d'épicurve hebdomadaire {.unnumbered}  
 
-**Vous trouverez ci-dessous un exemple de code détaillé pour produire des épicurves hebdomadaires pour les semaines du lundi, avec des barres alignées, des étiquettes de date et des lignes de grille verticales.** Cette section est destinée à l'utilisateur qui a besoin de code rapidement. Pour comprendre en profondeur chaque aspect (thèmes, étiquettes de date, etc.), passez aux sections suivantes. A noter :  
 
-* Les *cassures de l'histogramme* sont définies avec `seq.Date()` comme expliqué ci-dessus pour commencer le lundi avant le premier cas et pour finir le lundi après le dernier cas.  
-* L'intervalle des *étiquettes de date* est spécifié par `date_breaks =` dans `scale_x_date()`.  
-* L'intervalle des petites lignes verticales entre les étiquettes de date est spécifié par `date_minor_breaks = `.  
-* `expand = c(0,0)` dans les échelles x et y supprime l'espace excédentaire de chaque côté des axes, ce qui garantit également que les étiquettes de date commencent à partir de la première barre.  
+### Exemple d'Ã©picurve hebdomadaire {.unnumbered}  
+
+**Vous trouverez ci-dessous un exemple de code dÃ©taillÃ© pour produire des Ã©picurves hebdomadaires pour les semaines du lundi, avec des barres alignÃ©es, des Ã©tiquettes de date et des lignes de grille verticales.** Cette section est destinÃ©e Ã  l'utilisateur qui a besoin de code rapidement. Pour comprendre en profondeur chaque aspect (thÃ¨mes, Ã©tiquettes de date, etc.), passez aux sections suivantes. A noter :  
+
+* Les *cassures de l'histogramme* sont dÃ©finies avec `seq.Date()` comme expliquÃ© ci-dessus pour commencer le lundi avant le premier cas et pour finir le lundi aprÃ©s le dernier cas.  
+* L'intervalle des *Ã©tiquettes de date* est spÃ©cifiÃ© par `date_breaks =` dans `scale_x_date()`.  
+* L'intervalle des petites lignes verticales entre les Ã©tiquettes de date est spÃ©cifiÃ© par `date_minor_breaks = `.  
+* `expand = c(0,0)` dans les Ã©chelles x et y supprime l'espace excÃ©dentaire de chaque cÃ´te des axes, ce qui garantit Ã©galement que les Ã©tiquettes de date commencent Ã  partir de la premiÃ©re barre.  
 
 ```{r, warning=F, message=F}
 # ALIGNEMENT TOTAL DE LA SEMAINE DU LUNDI
 #############################
-# Définir la séquence des pauses hebdomadaires
+# dÃ©finir la sÃ©quence des pauses hebdomadaires
 weekly_breaks_central <- seq.Date(
-      from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 1), # lundi avant la première affaire
-      to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 1), # lundi après la dernière affaire
+      from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 1), # lundi avant la premiÃ©re affaire
+      to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 1), # lundi aprÃ©s la derniÃ©re affaire
       by = "week")    # les bins sont de 7 jours 
 
 
 ggplot(data = central_data) + 
   
-  # créer un histogramme : spécifier les points de rupture des bacs : commence le lundi avant le premier cas, se termine le lundi après le dernier cas
-  geom_histogramme(
+  # crÃ©er un histogramme : spÃ©cifier les points de rupture des bacs : commence le lundi avant le premier cas, se termine le lundi aprÃ©s le dernier cas
+  geom_histogram(
     
-    # esthétique de la cartographie
-    mapping = aes(x = date_onset), # colonne de date mappée sur l'axe des x
+    # esthÃ©tique de la mapping
+    mapping = aes(x = date_onset), # colonne de date mappÃ©e sur l'axe des x
     
     # ruptures de la case de l'histogramme
-    breaks = weekly_breaks_central, # pauses des cases de l'histogramme définies précédemment
+    breaks = weekly_breaks_central, # pauses des cases de l'histogramme dÃ©finies prÃ©cÃ©demment
     
     # barres
     color = "darkblue", # couleur des lignes autour des barres
     fill = "lightblue" # couleur de remplissage dans les barres
   )+ 
     
-  # étiquettes de l'axe des x
+  # Ã©tiquettes de l'axe des x
   scale_x_date(
-    expand = c(0,0), # suppression de l'espace excédentaire sur l'axe des x avant et après les barres de cas
-    date_breaks = "4 weeks", # les étiquettes de date et les principales lignes de grille verticales apparaissent toutes les 3 semaines du lundi
+    expand = c(0,0), # suppression de l'espace excÃ©dentaire sur l'axe des x avant et aprÃ©s les barres de cas
+    date_breaks = "4 weeks", # les Ã©tiquettes de date et les principales lignes de grille verticales apparaissent toutes les 3 semaines du lundi
     date_minor_breaks = "week", # les lignes verticales mineures apparaissent chaque lundi de semaine
-    date_labels = "%a\n%d %b\n%Y")+ # format des étiquettes de date
+    date_labels = "%a\n%d %b\n%Y")+ # format des Ã©tiquettes de date
   
   # Axe des y
   scale_y_continuous(
-    expand = c(0,0))+ # suppression de l'espace excédentaire sur l'axe des y en dessous de 0 (alignement de l'histogramme sur l'axe des x)
+    expand = c(0,0))+ # suppression de l'espace excÃ©dentaire sur l'axe des y en dessous de 0 (alignement de l'histogramme sur l'axe des x)
   
-  # thèmes esthétiques
+  # thÃ¨mes esthÃ©tiques
   theme_minimal()+ # simplifie le fond du graphique
   
-  thème(
-    plot.caption = element_text(hjust = 0, # légende sur le côté gauche
-                                face = "italic"), # légende en italique
+  theme(
+    plot.caption = element_text(hjust = 0, # lÃ©gende sur le cÃ´te gauche
+                                face = "italic"), # lÃ©gende en italique
     axis.title = element_text(face = "bold"))+ # titres des axes en gras
   
-  # Étiquettes incluant une légende dynamique
+  # Ã©tiquettes incluant une lÃ©gende dynamique
   labs(
     title = "Incidence hebdomadaire des cas (semaines de lundi)",
-    subtitle = "Notez l'alignement des barres, des lignes de grille verticales et des étiquettes d'axe sur les semaines du lundi",
-    x = "Semaine d'apparition des symptômes",
-    y = "Incidence hebdomadaire des cas signalés",
-    caption = stringr::str_glue("n = {nrow(central_data)} from Central Hospital ; Case onsets range from {format(min(central_data$date_onset, na. rm=T), format = '%a %d %b %Y')} à {format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y')}{nrow(central_data %>% filter(is.na(date_onset)))} cas dont la date d'apparition est manquante et qui ne sont pas indiqués"))
+    subtitle = "Notez l'alignement des barres, des lignes de grille verticales et des Ã©tiquettes d'axe sur les semaines du lundi",
+    x = "Semaine d'apparition des symptÃ´mes",
+    y = "Incidence hebdomadaire des cas signalÃ©s",
+    caption = stringr::str_glue("n = {nrow(central_data)} de Central Hospital ; Les occurrences de cas ranges de {format(min(central_data$date_onset, na. rm=T), format = '%a %d %b %Y')} Ã  {format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y')}{nrow(central_data %>% filter(is.na(date_onset)))} cas dont la date d'apparition est manquante et qui ne sont pas indiquÃ©s"))
 ```
 
 
-#### semaines du dimanche {.non numérotées}  
+#### Semaines de dimanche {.unnumbered}  
 
-Pour obtenir le graphique ci-dessus pour les semaines de dimanche, quelques modifications sont nécessaires, car les `date_breaks = "weeks"` ne fonctionnent que pour les semaines de lundi.  
+Pour obtenir le graphique ci-dessus pour les semaines de dimanche, quelques modifications sont nÃ©cessaires, car les `date_breaks = "weeks"` ne fonctionnent que pour les semaines de lundi.  
 
-* Les points de rupture des *bins de l'histogramme* doivent être fixés au dimanche (`week_start = 7`)  
-* Dans `scale_x_date()`, les ruptures de date similaires doivent être fournies à `breaks =` et `minor_breaks = ` pour s'assurer que les étiquettes de date et les lignes de grille verticales s'alignent sur les dimanches.  
+* Les points de rupture des *bins de l'histogramme* doivent Ã©tre fixÃ©s au dimanche (`week_start = 7`)  
+* Dans `scale_x_date()`, les ruptures de date similaires doivent Ã©tre fournies Ã  `breaks =` et `minor_breaks = ` pour s'assurer que les Ã©tiquettes de date et les lignes de grille verticales s'alignent sur les dimanches.  
 
-Par exemple, la commande `scale_x_date()` pour les semaines du dimanche pourrait ressembler à ceci :  
+Par exemple, la commande `scale_x_date()` pour les semaines du dimanche pourrait ressembler Ã  ceci :  
 
 ```{r, eval=F}
 scale_x_date(
     expand = c(0,0),
     
-    # spécifie l'intervalle des étiquettes de date et des principales lignes de grille verticales
+    # spÃ©cifie l'intervalle des Ã©tiquettes de date et des principales lignes de grille verticales
     breaks = seq.Date(
-      from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 7), # dimanche avant la première affaire
-      to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 7), # dimanche après la dernière affaire
-      by = "4 semaines"),
+      from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 7), # dimanche avant la premiÃ©re affaire
+      to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 7), # dimanche aprÃ©s la derniÃ©re affaire
+      by = "4 weeks"),
     
-    # spécifier l'intervalle de la ligne de grille verticale mineure 
+    # spÃ©cifier l'intervalle de la ligne de grille verticale mineure 
     minor_breaks = seq.Date(
       from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 7), # dimanche avant le premier cas
-      to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 7), # dimanche après la dernière affaire
-      by = "semaine"),
+      to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 7), # dimanche aprÃ©s la derniÃ©re affaire
+      by = "week"),
    
-    # format des étiquettes de date
-    date_labels = "%a\n%d %b\n%Y")+ # jour, au-dessus abréviation du mois, au-dessus année à 2 chiffres
+    # format des Ã©tiquettes de date
+    date_labels = "%a\n%d %b\n%Y")+ # jour, au-dessus abrÃ©viation du mois, au-dessus annÃ©e Ã  2 chiffres
 
 ```
 
@@ -1015,33 +1015,34 @@ scale_x_date(
 
 ### Grouper/colorer par valeur {.unnumbered}
 
-Les barres de l'histogramme peuvent être colorées par groupe et "empilées". Pour désigner la colonne de regroupement, effectuez les modifications suivantes. Voir la page [ggplot basics] pour plus de détails.  
+Les barres de l'histogramme peuvent Ã©tre colorÃ©es par groupe et "empilÃ©es". Pour dÃ©signer la colonne de regroupement, effectuez les modifications suivantes. Voir la page [ggplot basics](#ggplot_basics) pour plus de dÃ©tails.  
 
-* Dans le mappage esthétique de l'histogramme `aes()`, mettez en correspondance le nom de la colonne avec les arguments `group = ` et `fill = `.  
-* Supprimez tout argument `fill = ` à l'extérieur de `aes()`, car il remplacera celui qui se trouve à l'intérieur.  
-* Les arguments *inside* de `aes()` s'appliqueront *par groupe*, alors que les arguments *outside* s'appliqueront à toutes les barres (par exemple, vous pouvez toujours vouloir `color = ` à l'extérieur, pour que chaque barre ait la même bordure).  
+* Dans le mappage esthÃ©tique de l'histogramme `aes()`, mettez en correspondance le nom de la colonne avec les arguments `group = ` et `fill = `.  
+* Supprimez tout argument `fill = ` Ã  l'extÃ©rieur de `aes()`, car il remplacera celui qui se trouve Ã  l'intÃ©rieur.  
+* Les arguments *inside* de `aes()` s'appliqueront *par groupe*, alors que les arguments *outside* s'appliqueront Ã  toutes les barres (par exemple, vous pouvez toujours vouloir `color = ` Ã  l'extÃ©rieur, pour que chaque barre ait la mÃªme bordure).  
 
-Voici à quoi ressemblerait la commande `aes()` pour grouper et colorer les barres par sexe :  
+Voici Ã  quoi ressemblerait la commande `aes()` pour grouper et colorer les barres par sexe :  
 
 ```{r, eval=F}
 aes(x = date_onset, group = gender, fill = gender)
 ```
 
-Le voici appliqué :  
+Le voici appliquÃ© :  
 
 ```{r, warning=F, message=F}
 ggplot(data = linelist) + # commencer avec linelist (many hospitals)
   
-  # faire un histogramme : spécifier les points de rupture de la benne : commence le lundi avant le premier cas, se termine le lundi après le dernier cas
-  geom_histogramme(
-    cartographie = aes(
+  # faire un histogramme : spÃ©cifier les points de rupture de la benne : commence le lundi avant le premier cas, se termine le lundi aprÃ©s le dernier cas
+  geom_histogram(
+    mapping = aes(
       x = date_onset,
-      group = hospital, # définir les données pour qu'elles soient groupées par hôpital
-      fill = hôpital), # remplissage des barres (couleur intérieure) par hôpital
+      group = hospital, # dÃ©finir les donnÃ©es pour qu'elles soient groupÃ©es par hÃ´pital
+      fill = hospital), # remplissage des barres (couleur intÃ©rieure) par hÃ´pital
     
     # les pauses sont les semaines de lundi
-    breaks = weekly_breaks_all, # séquence de pauses hebdomadaires du lundi pour toute l'épidémie, définie dans le code précédent.       
+    breaks = weekly_breaks_all, # sÃ©quence de pauses hebdomadaires du lundi pour toute l'Ã©pidÃ©mie, dÃ©finie dans le code prÃ©cÃ©dent 
     
+    closed = "left", # Compter les cas Ã  partir du dÃ©but du point d'arrÃªt
     # Couleur autour des barres
     color = "black")
 ```
@@ -1049,33 +1050,35 @@ ggplot(data = linelist) + # commencer avec linelist (many hospitals)
 
 ### Ajuster les couleurs {.unnumbered}  
 
-* Pour *manuellement* régler le remplissage pour chaque groupe, utilisez `scale_fill_manual()` (note : `scale_color_manual()` est différent !).
+* Pour *manuellement* rÃ©gler le remplissage pour chaque groupe, utilisez `scale_fill_manual()` (note : `scale_color_manual()` est diffÃ©rent !).
   * Utilisez l'argument `values = ` pour appliquer un vecteur de couleurs.  
-  * Utilisez `na.value = ` pour spécifier une couleur pour les valeurs `NA`.  
-  * Utilisez l'argument `labels = ` pour changer le texte des éléments de la légende. Pour être sûr, fournissez un vecteur nommé comme `c("old" = "new", "old" = "new")` ou ajustez les valeurs dans les données elles-mêmes.  
-  * Utilisez `name = ` pour donner un titre correct à la légende.  
-* Pour plus d'informations sur les échelles et les palettes de couleurs, consultez la page sur [les bases de ggplot].  
+  * Utilisez `na.value = ` pour spÃ©cifier une couleur pour les valeurs `NA`.  
+  * Utilisez l'argument `labels = ` pour changer le texte des Ã©lÃ©ments de la lÃ©gende. Pour Ã©tre sur, fournissez un vecteur nommÃ© comme `c("old" = "new", "old" = "new")` ou ajustez les valeurs dans les donnÃ©es elles-mÃªmes.  
+  * Utilisez `name = ` pour donner un titre correct Ã  la lÃ©gende.  
+* Pour plus d'informations sur les Ã©chelles et les palettes de couleurs, consultez la page sur [les bases de ggplot](#ggplot_basics).  
 
 ```{r, warning=F, message=F}
-ggplot(data = linelist)+ # commencer avec linelist (plusieurs hôpitaux)
+ggplot(data = linelist)+ # commencer avec linelist (plusieurs hÃ´pitaux)
   
   # faire un histogramme
-  geom_histogramme(
+  geom_histogram(
     mapping = aes(x = date_onset,
-        group = hospital, # cas groupés par hôpital
-        fill = hôpital), # remplissage des barres par hôpital
+        group = hospital, # cas groupÃ©s par hÃ´pital
+        fill = hospital), # remplissage des barres par hÃ´pital
     
     # bin breaks
-    breaks = weekly_breaks_all, # séquence de bin breaks hebdomadaires du lundi, définie dans le code précédent
+    breaks = weekly_breaks_all, # sÃ©quence de bin breaks hebdomadaires du lundi, dÃ©finie dans le code prÃ©cÃ©dent
     
-    # Couleur autour des barres
+    closed = "left", # Compter les cas Ã  partir du dÃ©but du point d'arrÃªt
+  
     color = "black")+ # couleur de la bordure de chaque barre
   
-  # spécification manuelle des couleurs
+  # spÃ©cification manuelle des couleurs
   scale_fill_manual(
     values = c("black", "orange", "grey", "beige", "blue", "brown"),
-    labels = c("St. Mark's Maternity Hospital (SMMH)" = "St,)
-    name = "Hospital") # spécifier les couleurs de remplissage ("values") - attention à l'ordre !
+    labels = c("St. Mark's Maternity Hospital (SMMH)" = "St.Mark's"),
+    name = "Hospital") # spÃ©cifier les couleurs de remplissage ("values") - attention Ã  l'ordre !
+
 ```
 
 
@@ -1083,137 +1086,139 @@ ggplot(data = linelist)+ # commencer avec linelist (plusieurs hôpitaux)
 
 ### Ajuster l'ordre des niveaux {.unnumbered}  
 
-Le meilleur moyen d'ajuster l'ordre dans lequel les barres groupées sont empilées est de classer la colonne de groupage en tant que classe Facteur. Vous pouvez alors désigner l'ordre des niveaux de facteurs (et leurs étiquettes d'affichage). Voir la page sur [Factors] ou [ggplot tips] pour plus de détails.  
+Le meilleur moyen d'ajuster l'ordre dans lequel les barres groupÃ©es sont empilÃ©es est de classer la colonne de groupage en tant que classe Facteur. Vous pouvez alors dÃ©signer l'ordre des niveaux de facteurs (et leurs Ã©tiquettes d'affichage). Voir la page sur [facteurs](#factors) ou [ggplot tips](#ggplot_tips) pour plus de dÃ©tails.  
 
-Avant de réaliser le tracé, utilisez la fonction `fct_relevel()` du paquet **forcats** pour convertir la colonne de regroupement en classe facteur et ajuster manuellement l'ordre des niveaux, comme détaillé dans la page sur [Factors].  
+Avant de rÃ©aliser le tracÃ©, utilisez la fonction `fct_relevel()` du paquet **forcats** pour convertir la colonne de regroupement en classe facteur et ajuster manuellement l'ordre des niveaux, comme dÃ©taillÃ© dans la page sur les [facteurs](#factors).  
 
 ```{r}
 # charger le paquet forcats pour travailler avec les facteurs
 pacman::p_load(forcats)
 
-# Définir un nouvel ensemble de données avec l'hôpital comme facteur
+# dÃ©finir un nouvel ensemble de donnÃ©es avec l'hÃ´pital comme facteur
 plot_data <- linelist %>% 
-  mutate(hospital = fct_relevel(hospital, c("Missing", "Other"))) # Convertir en facteur et définir "Manquant" et "Autre" comme niveaux supérieurs pour apparaître sur le sommet de l'épicurve.
+  mutate(hospital = fct_relevel(hospital, c("Missing", "Other"))) # Convertir en facteur et dÃ©finir "Manquant" et "Autre" comme niveaux supÃ©rieurs pour apparaÃ©tre sur le sommet de l'Ã©picurve.
 
 levels(plot_data$hospital) # Imprime les niveaux dans l'ordre
 ```
 
-Dans le graphique ci-dessous, les seules différences par rapport au précédent sont que la colonne `hospital` a été consolidée comme ci-dessus, et que nous utilisons `guides()` pour inverser l'ordre de la légende, de sorte que "Missing" se trouve en bas de la légende.  
+Dans le graphique ci-dessous, les seules diffÃ©rences par rapport au prÃ©cÃ©dent sont que la colonne `hospital` a Ã©tÃ© consolidÃ©e comme ci-dessus, et que nous utilisons `guides()` pour inverser l'ordre de la lÃ©gende, de sorte que "Missing" se trouve en bas de la lÃ©gende.  
 
 ```{r, warning=F, message=F}
-ggplot(plot_data) + # Utiliser le NOUVEL ensemble de données avec les hôpitaux comme facteurs réordonnés.
+ggplot(plot_data) + # Utiliser le NOUVEL ensemble de donnÃ©es avec les hÃ´pitaux comme facteurs rÃ©ordonnÃ©s.
   
-  # Créer un histogramme
-  geom_histogramme(
+  # crÃ©er un histogramme
+  geom_histogram(
     mapping = aes(x = date_onset,
-        group = hospital, # cas groupés par hôpital
-        fill = hôpital), # remplissage des barres (couleur) par hôpital
+        group = hospital, # cas groupÃ©s par hÃ´pital
+        fill = hÃ´pital), # remplissage des barres (couleur) par hÃ´pital
     
-    breaks = weekly_breaks_all, # séquence de pauses hebdomadaires du lundi pour toute l'épidémie, définie en haut de la section ggplot
+    breaks = weekly_breaks_all, # sÃ©quence de pauses hebdomadaires du lundi pour toute l'Ã©pidÃ©mie, dÃ©finie en haut de la section ggplot
     
     color = "black")+ # couleur de la bordure autour de chaque barre
     
-  # étiquettes de l'axe des x
+  # Ã©tiquettes de l'axe des x
   scale_x_date(
-    expand = c(0,0), # supprimer l'espace excédentaire sur l'axe des x avant et après les barres de cas
-    date_breaks = "3 weeks", # les étiquettes apparaissent toutes les 3 semaines du lundi
+    expand = c(0,0), # supprimer l'espace excÃ©dentaire sur l'axe des x avant et aprÃ©s les barres de cas
+    date_breaks = "3 weeks", # les Ã©tiquettes apparaissent toutes les 3 semaines du lundi
     date_minor_breaks = "week", # les lignes verticales apparaissent tous les lundis de la semaine
-    date_labels = "%d\n%b\n'%y")+ # format des étiquettes de date
+    date_labels = "%d\n%b\n'%y")+ # format des Ã©tiquettes de date
   
   # Axe des y
   scale_y_continuous(
-    expand = c(0,0))+ # suppression de l'espace excédentaire sur l'axe des y en dessous de 0
+    expand = c(0,0))+ # suppression de l'espace excÃ©dentaire sur l'axe des y en dessous de 0
   
-  # spécification manuelle des couleurs, ! attention à l'ordre
+  # spÃ©cification manuelle des couleurs, ! attention Ã  l'ordre
   scale_fill_manual(
     values = c("grey", "beige", "black", "orange", "blue", "brown"),
-    labels = c("St. Mark's Maternity Hospital (SMMH)" = "St,)
-    nom = "Hôpital")+ 
+    labels = c("St. Mark's Maternity Hospital (SMMH)" = "St.Marks"),
+    nom = "Hospital")+ 
   
-  # thèmes esthétiques
+  # thÃ¨mes esthÃ©tiques
   theme_minimal()+ # simplifier le fond du graphique
   
   theme(
-    plot.caption = element_text(face = "italic", # légende à gauche en italique
+    plot.caption = element_text(face = "italic", # lÃ©gende Ã  gauche en italique
                                 hjust = 0), 
     axis.title = element_text(face = "bold"))+ # titres des axes en gras
   
-  # Étiquettes
+  # Ã©tiquettes
   labs(
-    title = "Incidence hebdomadaire des cas par hôpital",
+    title = "Incidence hebdomadaire des cas par hÃ´pital",
     subtitle = "Hospital as re-ordered factor",
-    x = "Semaine d'apparition des symptômes",
+    x = "Semaine d'apparition des symptÃ´mes",
     y = "Cas hebdomadaires")
 ```
 
-<span style="color : darkgreen ;">**_TIP:_** Pour inverser l'ordre de la légende uniquement, ajoutez cette commande **ggplot2** : `guides(fill = guide_legend(reverse = TRUE))`.</span>  
+<span style="color : darkgreen ;">**_TIP:_** Pour inverser l'ordre de la lÃ©gende uniquement, ajoutez cette commande **ggplot2** : `guides(fill = guide_legend(reverse = TRUE))`.</span>  
 
 
 
 
 
-### Ajuster la légende {.unnumbered}
+### Ajuster la lÃ©gende {.unnumbered}
 
-Pour en savoir plus sur les légendes et les échelles, consultez la page [ggplot tips]. Voici quelques points saillants :  
+Pour en savoir plus sur les lÃ©gendes et les Ã©chelles, consultez la page [ggplot tips](#ggplot_tips). Voici quelques points saillants :  
 
-* Modifiez le titre de la légende soit dans la fonction d'échelle, soit avec `labs(fill = "Legend title")` (si vous utilisez `color = ` esthétique, alors utilisez `labs(color = "")`).  
-* `theme(legend.title = element_blank())` pour ne pas avoir de titre de légende  
-* `theme(legend.position = "top")` ("bottom", "left", "right", ou "none" pour supprimer la légende)
-* `theme(legend.direction = "horizontal")` légende horizontale 
-* `guides(fill = guide_legend(reverse = TRUE))` pour inverser l'ordre de la légende  
-
-
+* Modifiez le titre de la lÃ©gende soit dans la fonction d'Ã©chelle, soit avec `labs(fill = "Legend title")` (si vous utilisez `color = ` esthÃ©tique, alors utilisez `labs(color = "")`).  
+* `theme(legend.title = element_blank())` pour ne pas avoir de titre de lÃ©gende  
+* `theme(legend.position = "top")` ("bottom", "left", "right", ou "none" pour supprimer la lÃ©gende)
+* `theme(legend.direction = "horizontal")` lÃ©gende horizontale 
+* `guides(fill = guide_legend(reverse = TRUE))` pour inverser l'ordre de la lÃ©gende  
 
 
 
 
 
-### Bars side-by-side {.unnumbered} (barres côte à côte)  
 
-L'affichage côte à côte des barres de groupe (par opposition à l'empilement) est spécifié dans `geom_histogram()` avec `position = "dodge"` placé en dehors de `aes()`.  
 
-S'il y a plus de deux groupes de valeurs, ceux-ci peuvent devenir difficiles à lire. Envisagez plutôt d'utiliser un graphique à facettes (petits multiples). Pour améliorer la lisibilité dans cet exemple, les valeurs de sexe manquantes sont supprimées.  
+### Bars side-by-side {.unnumbered} (barres cÃ´te Ã  cÃ´te)  
+
+L'affichage cÃ´te Ã  cÃ´te des barres de groupe (par opposition Ã  l'empilement) est spÃ©cifiÃ© dans `geom_histogram()` avec `position = "dodge"` placÃ© en dehors de `aes()`.  
+
+S'il y a plus de deux groupes de valeurs, ceux-ci peuvent devenir difficiles Ã  lire. Envisagez plutÃ´t d'utiliser un graphique Ã  facettes (petits multiples). Pour amÃ©liorer la lisibilitÃ© dans cet exemple, les valeurs de sexe manquantes sont supprimÃ©es.  
 
 ```{r, warning=F, message=F}
-ggplot(central_data %>% drop_na(gender))+ # Commencez par les cas de l'hôpital central en supprimant les valeurs manquantes pour le sexe.
-    geom_histogramme(
-        cartographie = aes(
+ggplot(central_data %>% drop_na(gender))+ # Commencez par les cas de l'hÃ´pital central en supprimant les valeurs manquantes pour le sexe.
+    geom_histogram(
+        mapping = aes(
           x = date_onset,
-          group = gender, # cas groupés par sexe
+          group = gender, # cas groupÃ©s par sexe
           fill = gender), # barres remplies par sexe
         
         # histogramme bin breaks
-        breaks = weekly_breaks_central, # séquence de dates hebdomadaires pour le foyer central - définie en haut de la section ggplot
+        breaks = weekly_breaks_central, # sÃ©quence de dates hebdomadaires pour le foyer central - dÃ©finie en haut de la section ggplot
+        
+        closed = "left",
         
         color = "black", # couleur du bord des barres
         
         position = "dodge")+ # barres SIDE-BY-SIDE
                       
   
-  # Les étiquettes sur l'axe des x
-  scale_x_date(expand = c(0,0), # supprimer l'espace excédentaire de l'axe des x sous et après les barres de cas
-               date_breaks = "3 weeks", # les étiquettes apparaissent toutes les 3 semaines du lundi
+  # Les Ã©tiquettes sur l'axe des x
+  scale_x_date(expand = c(0,0), # supprimer l'espace excÃ©dentaire de l'axe des x sous et aprÃ©s les barres de cas
+               date_breaks = "3 weeks", # les Ã©tiquettes apparaissent toutes les 3 semaines du lundi
                date_minor_breaks = "week", # les lignes verticales apparaissent tous les lundis de la semaine
-               date_labels = "%d\n%b\n'%y")+ # format des étiquettes de date
+               date_labels = "%d\n%b\n'%y")+ # format des Ã©tiquettes de date
   
   # Axe des y
-  scale_y_continuous(expand = c(0,0))+ # supprime l'espace excédentaire sur l'axe des y entre le bas des barres et les étiquettes
+  scale_y_continuous(expand = c(0,0))+ # supprime l'espace excÃ©dentaire sur l'axe des y entre le bas des barres et les Ã©tiquettes
   
-  #échelle des couleurs et des étiquettes de légende
-  scale_fill_manual(values = c("brown", "orange"), # spécifie les couleurs de remplissage ("values") - attention à l'ordre !
+  #Ã©chelle des couleurs et des Ã©tiquettes de lÃ©gende
+  scale_fill_manual(values = c("brown", "orange"), # spÃ©cifie les couleurs de remplissage ("values") - attention Ã  l'ordre !
                     na.value = "grey" )+     
 
-  # thèmes esthétiques
-  theme_minimal()+ # un ensemble de thèmes pour simplifier le graphe
-  theme(plot.caption = element_text(face = "italic", hjust = 0), # légende à gauche en italique
+  # thÃ¨mes esthÃ©tiques
+  theme_minimal()+ # un ensemble de thÃ¨mes pour simplifier le graphe
+  theme(plot.caption = element_text(face = "italic", hjust = 0), # lÃ©gende Ã  gauche en italique
         axis.title = element_text(face = "bold"))+ # titres des axes en gras
   
-  # Étiquettes
+  # Ã©tiquettes
   labs(title = "Incidence hebdomadaire des cas, par sexe",
        subtitle = "Sous-titre",
-       fill = "Gender", # fournir un nouveau titre pour la légende
-       x = "Semaine d'apparition des symptômes",
-       y = "Incidence hebdomadaire des cas signalés")
+       fill = "Gender", # fournir un nouveau titre pour la lÃ©gende
+       x = "Semaine d'apparition des symptÃ´mes",
+       y = "Incidence hebdomadaire des cas signalÃ©s")
 ```
 
 
@@ -1221,191 +1226,198 @@ ggplot(central_data %>% drop_na(gender))+ # Commencez par les cas de l'hôpital c
 
 ### Limites de l'axe {.unnumbered}  
 
-Il existe deux façons de limiter l'étendue des valeurs des axes.  
+Il existe deux faÃ§ons de limiter l'Ã©tendue des valeurs des axes.  
 
-Généralement, la méthode préférée est d'utiliser la commande `coord_cartesian()`, qui accepte `xlim = c(min, max)` et `ylim = c(min, max)` (où vous fournissez les valeurs min et max). Ceci agit comme un "zoom" sans réellement supprimer de données, ce qui est important pour les statistiques et les mesures sommaires.  
+GÃ©nÃ©ralement, la mÃ©thode prÃ©fÃ©rÃ©e est d'utiliser la commande `coord_cartesian()`, qui accepte `xlim = c(min, max)` et `ylim = c(min, max)` (oÃ¹ vous fournissez les valeurs min et max). Ceci agit comme un "zoom" sans rÃ©ellement supprimer de donnÃ©es, ce qui est important pour les statistiques et les mesures sommaires.  
 
-Alternativement, vous pouvez définir les valeurs maximales et minimales de la date en utilisant `limits = c()` dans `scale_x_date()`. Par exemple :  
-
-```{r eval=F}
-scale_x_date(limits = c(as.Date("2014-04-01")), NA)) # définit une date minimum mais laisse la date maximum ouverte.  
-```
-
-De même, si vous souhaitez que l'axe des abscisses s'étende jusqu'à une date spécifique (par exemple, la date du jour), même si aucun nouveau cas n'a été signalé, vous pouvez utiliser :  
+Alternativement, vous pouvez dÃ©finir les valeurs maximales et minimales de la date en utilisant `limits = c()` dans `scale_x_date()`. Par exemple :  
 
 ```{r eval=F}
-scale_x_date(limits = c(NA, Sys.Date()) # garantit que l'axe des dates s'étendra jusqu'à la date du jour  
+scale_x_date(limits = c(as.Date("2014-04-01"), NA)) # dÃ©finit une date minimum mais laisse la date maximum ouverte.  
 ```
 
-<span style="color : red ;">**_DANGER:_** Soyez prudent en fixant les ruptures d'échelle ou les limites de l'axe des y (par exemple, 0 à 30 par 5 : `seq(0, 30, 5)`). De tels nombres statiques peuvent couper votre tracé trop court si les données changent pour dépasser la limite !</span>.
+Si vous souhaitez que l'axe des abscisses s'tende jusqu'Ã© une date spÃ©cifique (par exemple, la date du jour), mÃªme si aucun nouveau cas n'a Ã©tÃ© signalÃ©, vous pouvez utiliser :  
+
+```{r eval=F}
+scale_x_date(limits = c(NA, Sys.Date())) # garantit que l'axe des dates s'Ã©tendra jusqu'Ã  la date du jour  
+```
+
+<span style="color : red ;">**_DANGER:_** Soyez prudent en fixant les ruptures d'Ã©chelle ou les limites de l'axe des y (par exemple, 0 Ã  30 par 5 : `seq(0, 30, 5)`). De tels nombres statiques peuvent couper votre tracÃ© trop court si les donnÃ©es changent pour dÃ©passer la limite !</span>.
 
 
 
-### Libellés des axes de date / lignes de grille {.unnumbered} 
+### LibellÃ©s des axes de date / lignes de grille {.unnumbered} 
 
-<span style="color : darkgreen ;">**_TIP:_** Rappelez-vous que les **étiquettes de l'axe des dates** sont indépendantes de l'agrégation des données en barres, mais visuellement, il peut être important d'aligner les bacs, les étiquettes de date et les lignes de grille verticales.</span>
+<span style="color : darkgreen ;">**_TIP:_** Rappelez-vous que les **Ã©tiquettes de l'axe des dates** sont indÃ©pendantes de l'agrÃ©gation des donnÃ©es en barres, mais visuellement, il peut Ã©tre important d'aligner les bacs, les Ã©tiquettes de date et les lignes de grille verticales.</span>
 
-Pour **modifier les étiquettes de date et les lignes de grille**, utilisez `scale_x_date()` de l'une de ces façons :  
+Pour **modifier les Ã©tiquettes de date et les lignes de grille**, utilisez `scale_x_date()` de l'une de ces faÃ§ons :  
 
-* **Si vos bins d'histogramme sont des jours, lundi des semaines, des mois ou des années** :  
-  * Utilisez `date_breaks = ` pour spécifier l'intervalle des étiquettes et des lignes de grille principales (par exemple "jour", "semaine", "3 semaines", "mois" ou "année").
-  * Utilisez `date_minor_breaks = ` pour spécifier l'intervalle des lignes verticales mineures (entre les étiquettes de date)  
-  * Ajoutez `expand = c(0,0)` pour que les étiquettes commencent à la première barre.  
-  * Utilisez `date_labels = ` pour spécifier le format des étiquettes de date - voir la page Dates pour des conseils (utilisez `\n` pour une nouvelle ligne).  
+* **Si vos bins d'histogramme sont des jours, lundi des semaines, des mois ou des annÃ©es** :  
+  * Utilisez `date_breaks = ` pour spÃ©cifier l'intervalle des Ã©tiquettes et des lignes de grille principales (par exemple "jour", "semaine", "3 semaines", "mois" ou "annÃ©e").
+  * Utilisez `date_minor_breaks = ` pour spÃ©cifier l'intervalle des lignes verticales mineures (entre les Ã©tiquettes de date)  
+  * Ajoutez `expand = c(0,0)` pour que les Ã©tiquettes commencent Ã  la premiÃ©re barre.  
+  * Utilisez `date_labels = ` pour spÃ©cifier le format des Ã©tiquettes de date - voir la page Dates pour des conseils (utilisez `\n` pour une nouvelle ligne).  
 * **Si les cases de votre histogramme sont des semaines de dimanche** :  
-  * Utilisez `breaks = ` et `minor_breaks = ` en fournissant une séquence de ruptures de date pour chacun d'entre eux.
-  * Vous pouvez toujours utiliser `date_labels = ` et `expand = ` pour le formatage comme décrit ci-dessus.  
+  * Utilisez `breaks = ` et `minor_breaks = ` en fournissant une sÃ©quence de ruptures de date pour chacun d'entre eux.
+  * Vous pouvez toujours utiliser `date_labels = ` et `expand = ` pour le formatage comme dÃ©crit ci-dessus.  
 
 Quelques notes :  
 
-* Voir la section ggplot d'ouverture pour des instructions sur la façon de créer une séquence de dates en utilisant `seq.Date()`.  
-* Voir [cette page] (https://rdrr.io/r/base/strptime.html) ou la page [Working with dates] pour des conseils sur la création d'étiquettes de date.  
+* Voir la section ggplot d'ouverture pour des instructions sur la faÃ§on de crÃ©er une sÃ©quence de dates en utilisant `seq.Date()`.  
+* Voir [cette page](https://rdrr.io/r/base/strptime.html) ou la page [travailler avec des dates](#working_dates) pour des conseils sur la crÃ©ation d'Ã©tiquettes de date.  
 
 
 
 
-#### Démonstrations {.non numéroté}
+#### DÃ©monstrations {.unnumbered}
 
-Vous trouverez ci-dessous une démonstration de tracés où les bacs et les étiquettes/grilles sont alignés et non alignés :  
+Vous trouverez ci-dessous une dÃ©monstration de tracÃ©s oÃ¹ les bacs et les Ã©tiquettes/grilles sont alignÃ©s et non alignÃ©s :  
 
 ```{r fig.show='hold', class.source = 'fold-hide', warning=F, message=F}
-# Bacs de 7 jours + étiquettes du lundi
+# Bacs de 7 jours + Ã©tiquettes du lundi
 #############################
 ggplot(central_data) +
-  geom_histogramme(
+  geom_histogram(
     mapping = aes(x = date_onset),
-    binwidth = 7, # bins de 7 jours avec début au premier cas
+    binwidth = 7, # bins de 7 jours avec dÃ©but au premier cas
     color = "darkblue",
     fill = "lightblue") +
   
   scale_x_date(
-    expand = c(0,0), # supprime l'espace excédentaire sur l'axe des x en dessous et après les barres de cas
+    expand = c(0,0), # supprime l'espace excÃ©dentaire sur l'axe des x en dessous et aprÃ©s les barres de cas
     date_breaks = "3 weeks", # Lundi toutes les 3 semaines
     date_minor_breaks = "week", # lundi semaines
-    date_labels = "%a\n%d\n%b\n'%y")+ # format des étiquettes
+    date_labels = "%a\n%d\n%b\n'%y")+ # format des Ã©tiquettes
   
   scale_y_continuous(
-    expand = c(0,0))+ # suppression de l'espace excédentaire sous l'axe des x, mise à plat
+    expand = c(0,0))+ # suppression de l'espace excÃ©dentaire sous l'axe des x, mise Ã  plat
   
   labs(
-    title = "MISALIGNED",
-    sous-titre = " ! ATTENTION : Les barres de 7 jours commencent le jeudi au début de l'affaire. Les étiquettes de date et les lignes de la grille sont le lundi.)
+    title = "MAL ALIGNÃ‰",
+    sous-titre = " ! ATTENTION : Les barres de 7 jours commencent le jeudi avec le premier cas.\n Grandes lignes de grille et Ã©tiquettes de date au 1er de chaque mois.\n Lignes de grille mineures chaque lundi.")
 
 
 
 # Tranches de 7 jours + Mois
 #####################
 ggplot(central_data) +
-  geom_histogramme(
+  geom_histogram(
     mapping = aes(x = date_onset),
     binwidth = 7,
     color = "darkblue",
     fill = "lightblue") +
   
   scale_x_date(
-    expand = c(0,0), # supprime l'espace excédentaire de l'axe des x sous et après les barres de cas
+    expand = c(0,0), # supprime l'espace excÃ©dentaire de l'axe des x sous et aprÃ©s les barres de cas
     date_breaks = "months", # 1er du mois
     date_minor_breaks = "week", # semaines de lundi
-    date_labels = "%a\n%d %b\n%Y")+ # format des étiquettes
+    date_labels = "%a\n%d %b\n%Y")+ # format des Ã©tiquettes
   
   scale_y_continuous(
-    expand = c(0,0))+ # Suppression de l'espace excédentaire sous l'axe des x, mise à plat des données 
+    expand = c(0,0)) + # Suppression de l'espace excÃ©dentaire sous l'axe des x, mise Ã  plat des donnÃ©es 
   
   labs(
-    titre = "MISALIGNED",
-    sous-titre = " ! ATTENTION : Les barres de 7 jours commencent le jeudi avec le premier cas\nLes lignes de grille principales et les étiquettes de date au 1er de chaque mois\nLes lignes de grille mineures sont hebdomadaires le lundi\nNotez l'espacement inégal de certaines lignes de grille et les tics non alignés avec les barres")
+    titre = "MAL ALIGNÃ‰",
+    sous-titre = " ! ATTENTION : Les barres de 7 jours commencent le jeudi avec le premier cas\nLes lignes de grille principales et les Ã©tiquettes de date au 1er de chaque mois\nLes lignes de grille mineures sont hebdomadaires le lundi\nNotez l'espacement inÃ©gal de certaines lignes de grille et les tics non alignÃ©s avec les barres"
+    )
 
 
-# ALIGNEMENT TOTAL DU LUNDI : spécifier que les pauses manuelles sont des lundis
+# ALIGNEMENT TOTAL DU LUNDI : spÃ©cifier que les pauses manuelles sont des lundis
 #################################################################
 ggplot(central_data) + 
-  geom_histogramme(
+  geom_histogram(
     mapping = aes(x = date_onset),
     
-    # les ruptures d'histogramme sont fixées à 7 jours commençant le lundi avant le premier cas
-    breaks = weekly_breaks_central, # défini plus tôt dans cette page
+    # les ruptures d'histogramme sont fixÃ©es Ã  7 jours commenÃ§ant le lundi avant le premier cas
+    breaks = weekly_breaks_central, # dÃ©fini plus tÃ´t dans cette page
+    
+    closed = "left",
     
     color = "darkblue",
     
     fill = "lightblue") + 
   
   scale_x_date(
-    expand = c(0,0), # supprime l'espace excédentaire sur l'axe x en dessous et après les barres de cas
+    expand = c(0,0), # supprime l'espace excÃ©dentaire sur l'axe x en dessous et aprÃ©s les barres de cas
     date_breaks = "4 weeks", # Lundi toutes les 4 semaines
     date_minor_breaks = "week", # lundi semaines 
-    date_labels = "%a\n%d %b\n%Y")+ # format des étiquettes
+    date_labels = "%a\n%d %b\n%Y")+ # format des Ã©tiquettes
   
   scale_y_continuous(
-    expand = c(0,0))+ # Suppression de l'espace excédentaire sous l'axe des x, mise à plat des données 
+    expand = c(0,0))+ # Suppression de l'espace excÃ©dentaire sous l'axe des x, mise Ã  plat des donnÃ©es 
   
   labs(
-    title = "Lundis ALIGNÉS",
-    subtitle = "Les intervalles de 7 jours sont réglés manuellement pour commencer le lundi avant le premier cas (28 avr.)\NLes étiquettes de date et les lignes de grille sont aussi sur les lundis")
+    title = "Lundis ALIGNÃ‰S",
+    subtitle = "Les intervalles de 7 jours sont rÃ©glÃ©s manuellement pour commencer le lundi avant le premier cas (28 avr.)\n Les Ã©tiquettes de date et les lignes de grille sont aussi sur les lundis")
 
 
-# ALIGNEMENT TOTAL DES LUNDIS AVEC LES ÉTIQUETTES DE MOIS :
+# ALIGNEMENT TOTAL DES LUNDIS AVEC LES Ã©tiQUETTES DE MOIS :
 ############################################
 ggplot(central_data) + 
-  geom_histogramme(
+  geom_histogram(
     mapping = aes(x = date_onset),
     
-    # ruptures d'histogramme fixées à 7 jours commençant le lundi avant le premier cas
-    breaks = weekly_breaks_central, # défini plus tôt dans cette page
+    # ruptures d'histogramme fixÃ©es Ã  7 jours commenÃ§ant le lundi avant le premier cas
+    breaks = weekly_breaks_central, # dÃ©fini plus tÃ´t dans cette page
     
     color = "darkblue",
+    
+    closed = "left",
     
     fill = "lightblue") + 
   
   scale_x_date(
-    expand = c(0,0), # supprime l'espace excédentaire sur l'axe x en dessous et après les barres de cas
+    expand = c(0,0), # supprime l'espace excÃ©dentaire sur l'axe x en dessous et aprÃ©s les barres de cas
     date_breaks = "months", # Lundi toutes les 4 semaines
     date_minor_breaks = "week", # lundi semaines 
-    date_labels = "%b\n%Y")+ # format des étiquettes
+    date_labels = "%b\n%Y")+ # format des Ã©tiquettes
   
   scale_y_continuous(
-    expand = c(0,0))+ # suppression de l'espace excédentaire sous l'axe des x, mise à plat 
+    expand = c(0,0))+ # suppression de l'espace excÃ©dentaire sous l'axe des x, mise Ã  plat 
   
   theme(panel.grid.major = element_blank())+ # Suppression des lignes de grille principales (tombent le 1er du mois)
           
   labs(
-    title = "Lundis ALIGNÉS avec étiquettes MONTHLY",
-    subtitle = "Bacs de 7 jours réglés manuellement pour commencer le lundi avant le premier cas (28 avril) - Étiquettes de date le 1er du mois - Suppression des principaux quadrillages mensuels")
+    title = "Lundis ALIGNÃ‰S avec Ã©tiquettes MONTHLY",
+    subtitle = "Bacs de 7 jours rÃ©glÃ©s manuellement pour commencer le lundi avant le premier cas (28 avril) - Ã©tiquettes de date le 1er du mois - Suppression des principaux quadrillages mensuels")
 
 
-# ALIGNEMENT TOTAL DU DIMANCHE : spécifier les ruptures manuelles des bacs ET les étiquettes pour les dimanches
+# ALIGNEMENT TOTAL DU DIMANCHE : spÃ©cifier les ruptures manuelles des bacs ET les Ã©tiquettes pour les dimanches
 ############################################################################
 ggplot(central_data) + 
-  geom_histogramme(
+  geom_histogram(
     mapping = aes(x = date_onset),
     
-    # ruptures d'histogramme fixées à 7 jours commençant le dimanche avant le premier cas
+    # ruptures d'histogramme fixÃ©es Ã  7 jours commenÃ§ant le dimanche avant le premier cas
     breaks = seq.Date(from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 7),
                       to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 7),
                       by = "7 days"),
     
     color = "darkblue",
     
+    closed = "left",
+    
     fill = "lightblue") + 
   
   scale_x_date(
     expand = c(0,0),
-    # les ruptures de l'étiquette de date et les principales lignes de la grille sont fixées à toutes les 3 semaines, en commençant le dimanche avant le premier cas.
+    # les ruptures de l'Ã©tiquette de date et les principales lignes de la grille sont fixÃ©es Ã  toutes les 3 semaines, en commenÃ§ant le dimanche avant le premier cas.
     breaks = seq.Date(from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 7),
                       to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 7),
-                      by = "3 semaines"),
+                      by = "3 weeks"),
     
-    # grilles mineures fixées à la semaine commençant le dimanche avant le premier cas
+    # grilles mineures fixÃ©es Ã  la semaine commenÃ§ant le dimanche avant le premier cas
     minor_breaks = seq.Date(from = floor_date(min(central_data$date_onset, na.rm=T), "week", week_start = 7),
                             to = ceiling_date(max(central_data$date_onset, na.rm=T), "week", week_start = 7),
                             by = "7 days"),
     
-    date_labels = "%a\n%d\n%b\n'%y")+ # format des étiquettes
+    date_labels = "%a\n%d\n%b\n'%y")+ # format des Ã©tiquettes
   
   scale_y_continuous(
-    expand = c(0,0))+ # suppression de l'espace excédentaire sous l'axe des x, mise à plat 
+    expand = c(0,0))+ # suppression de l'espace excÃ©dentaire sous l'axe des x, mise Ã  plat 
   
-  labs(title = "ALIGNED Sundays",
-       subtitle = "Les intervalles de 7 jours ont été réglés manuellement pour commencer le dimanche avant le premier cas (27 avril)\NLes étiquettes de date et les lignes de grille ont également été réglées manuellement sur les dimanches")
+  labs(title = "Dimanches ALIGNÃ‰S",
+       subtitle = "Les intervalles de 7 jours ont Ã©tÃ© rÃ©glÃ©s manuellement pour commencer le dimanche avant le premier cas (27 avril)\n Les Ã©tiquettes de date et les lignes de grille ont Ã©galement Ã©tÃ© rÃ©glÃ©es manuellement sur les dimanches")
 
 ```
 
@@ -1413,74 +1425,74 @@ ggplot(central_data) +
 
 
 
-### Données agrégées {.unnumbered} 
+### donnÃ©es agrÃ©gÃ©es {.unnumbered} 
 
-Souvent, au lieu d'une liste de lignes, vous commencez par des comptages agrégés d'établissements, de districts, etc. Vous pouvez faire une épicurve avec `ggplot()` mais le code sera légèrement différent. Cette section va utiliser le jeu de données `count_data` qui a été importé plus tôt, dans la section de préparation des données. Ce jeu de données est la `linelist` agrégée au nombre de jours d'hospitalisation. Les 50 premières lignes sont affichées ci-dessous.  
+Souvent, au lieu d'une liste de lignes, vous commencez par des comptages agrÃ©gÃ©s d'Ã©tablissements, de districts, etc. Vous pouvez faire une Ã©picurve avec `ggplot()` mais le code sera lÃ©gÃ©rement diffÃ©rent. Cette section va utiliser le jeu de donnÃ©es `count_data` qui a Ã©tÃ© importÃ© plus tÃ´t, dans la section de prÃ©paration des donnÃ©es. Ce jeu de donnÃ©es est la `linelist` agrÃ©gÃ©e au nombre de jours d'hospitalisation. Les 50 premiÃ©res lignes sont affichÃ´es ci-dessous.  
 
 ```{r message=FALSE, warning=F, echo=F}
-# affichez les données de la liste de diffusion sous forme de tableau
-DT::datatable(head(count_data, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+# affichez les donnÃ©es de la liste de diffusion sous forme de tableau
+DT::datatable(head(count_data, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
 
-#### Tracer des épicentres quotidiens {.unnumbered}  
+#### Tracer des Ã©picentres quotidiens {.unnumbered}  
 
-Nous pouvons tracer une épicurve quotidienne à partir de ces *comptes quotidiens*. Voici les différences par rapport au code :  
+Nous pouvons tracer une Ã©picurve quotidienne Ã  partir de ces *comptes quotidiens*. Voici les diffÃ©rences par rapport au code :  
 
-* Dans le mappage esthétique `aes()`, spécifiez `y = ` comme colonne de comptage (dans ce cas, le nom de la colonne est `n_cases`).
-* Ajoutez l'argument `stat = "identity"` dans `geom_histogram()`, qui spécifie que la hauteur de la barre doit être la valeur `y = `, et non le nombre de lignes comme c'est le cas par défaut.  
-* Ajoutez l'argument `width = ` pour éviter les lignes blanches verticales entre les barres. Pour les données quotidiennes, fixez la valeur à 1. Pour les données de comptage hebdomadaire, fixez la valeur à 7. Pour les données de comptage mensuel, les lignes blanches sont un problème (chaque mois a un nombre de jours différent) - envisagez de transformer votre axe des x en un facteur ordonné catégorique (mois) et utilisez `geom_col()``.
+* Dans le mappage esthÃ©tique `aes()`, spÃ©cifiez `y = ` comme colonne de comptage (dans ce cas, le nom de la colonne est `n_cases`).
+* Ajoutez l'argument `stat = "identity"` dans `geom_histogram()`, qui spÃ©cifie que la hauteur de la barre doit Ã©tre la valeur `y = `, et non le nombre de lignes comme c'est le cas par dÃ©faut.  
+* Ajoutez l'argument `width = ` pour Ã©viter les lignes blanches verticales entre les barres. Pour les donnÃ©es quotidiennes, fixez la valeur Ã  1. Pour les donnÃ©es de comptage hebdomadaire, fixez la valeur Ã  7. Pour les donnÃ©es de comptage mensuel, les lignes blanches sont un problÃ©me (chaque mois a un nombre de jours diffÃ©rent) - envisagez de transformer votre axe des x en un facteur ordonnÃ© catÃ©gorique (mois) et utilisez `geom_col()``.
 
 
 ```{r, message=FALSE, warning=F}
-ggplot(data = count_data)+
-  geom_histogramme(
-   mapping = aes(x = date_hospitalisation, y = n_cases),
-   stat = "identité",
-   width = 1)+ # pour les comptages quotidiens, définir width = 1 pour éviter les espaces blancs entre les barres
+ggplot(data = count_data) +
+  geom_histogram(
+    mapping = aes(x = date_hospitalisation, y = n_cases),
+    stat = "identity",
+    width = 1) + # pour les comptages quotidiens, dÃ©finir width = 1 pour Ã©viter les espaces blancs entre les barres
   labs(
     x = "Date du rapport", 
     y = "Nombre de cas",
-    title = "Incidence quotidienne des cas, à partir des données de comptage quotidiennes")
+    title = "Incidence quotidienne des cas, Ã  partir des donnÃ©es de comptage quotidiennes")
 ```
 
 #### Tracer les comptages hebdomadaires {.unnumbered}
 
-Si vos données sont déjà des comptages de cas par semaine, elles peuvent ressembler à cet ensemble de données (appelé `count_data_weekly`) :  
+Si vos donnÃ©es sont dÃ©jÃ  des comptages de cas par semaine, elles peuvent ressembler Ã  cet ensemble de donnÃ©es (appelÃ© `count_data_weekly`) :  
 
 ```{r, warning=F, message=F, echo=F}
-# Créer un jeu de données hebdomadaire avec la colonne epiweek
+# crÃ©er un jeu de donnÃ©es hebdomadaire avec la colonne epiweek
 count_data_weekly <- count_data %>%
   mutate(epiweek = lubridate::floor_date(date_hospitalisation, "week")) %>% 
   group_by(hospital, epiweek, .drop=F) %>% 
   summarize(n_cases_weekly = sum(n_cases, na.rm=T))   
 ```
 
-Les 50 premières lignes de `count_data_weekly` sont affichées ci-dessous. Vous pouvez voir que les comptes ont été agrégés en semaines. Chaque semaine est affichée par le premier jour de la semaine (lundi par défaut).  
+Les 50 premiÃ©res lignes de `count_data_weekly` sont affichÃ©es ci-dessous. Vous pouvez voir que les comptes ont Ã©tÃ© agrÃ©gÃ©s en semaines. Chaque semaine est affichÃ©e par le premier jour de la semaine (lundi par dÃ©faut).  
 
 ```{r message=FALSE, echo=F}
-# affiche les données de la liste des lignes sous forme de tableau
-DT::datatable(count_data_weekly, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+# affiche les donnÃ©es de la liste des lignes sous forme de tableau
+DT::datatable(count_data_weekly, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Maintenant, tracez le graphique de façon à ce que `x = ` la colonne epiweek. N'oubliez pas d'ajouter `y = ` la colonne des comptes à la cartographie esthétique, et ajoutez `stat = "identity"` comme expliqué ci-dessus.  
+Maintenant, tracez le graphique de faÃ§on Ã  ce que `x = ` la colonne epiweek. N'oubliez pas d'ajouter `y = ` la colonne des comptes Ã  la mapping esthÃ©tique, et ajoutez `stat = "identity"` comme expliquÃ© ci-dessus.  
 
 ```{r, warning=F, message=F}
 ggplot(data = count_data_weekly)+
   
-  geom_histogramme(
-    cartographie = aes(
+  geom_histogram(
+    mapping = aes(
       x = epiweek, # l'axe des x est l'epiweek (en tant que classe Date)
       y = n_cases_weekly, # l'axe des y est la hauteur du nombre de cas hebdomadaires
-      group = hospital, # nous regroupons les barres et les couleurs par hôpital
-      fill = hôpital),
-    stat = "identity")+ # ceci est également nécessaire lorsque l'on trace des données de comptage
+      group = hospital, # nous regroupons les barres et les couleurs par hÃ´pital
+      fill = hospital),
+    stat = "identity")+ # ceci est Ã©galement nÃ©cessaire lorsque l'on trace des donnÃ©es de comptage
      
-  # étiquettes pour l'axe des x
+  # Ã©tiquettes pour l'axe des x
   scale_x_date(
-    date_breaks = "2 months", # étiquettes tous les 2 mois 
-    date_minor_breaks = "1 mois", # grilles tous les mois
-    date_labels = '%b\n%Y')+ # étiqueté par mois avec l'année en dessous
+    date_breaks = "2 months", # Ã©tiquettes tous les 2 mois 
+    date_minor_breaks = "1 month", # grilles tous les mois
+    date_labels = '%b\n%Y')+ # Ã©tiquetÃ© par mois avec l'annÃ©e en dessous
      
   # Choisissez la palette de couleurs (utilise le paquet RColorBrewer)
   scale_fill_brewer(palette = "Pastel2")+ 
@@ -1491,7 +1503,7 @@ ggplot(data = count_data_weekly)+
     x = "Semaine d'apparition", 
     y = "Incidence hebdomadaire des cas",
     fill = "Hospital",
-    title = "Incidence hebdomadaire des cas, à partir des données de comptage agrégées par hôpital")
+    title = "Incidence hebdomadaire des cas, Ã  partir des donnÃ©es de comptage agrÃ©gÃ©es par hÃ´pital")
 ```
 
 
@@ -1499,20 +1511,20 @@ ggplot(data = count_data_weekly)+
 
 ### Moyennes mobiles {.unnumbered}
 
-Voir la page sur les [Moyennes mobiles] pour une description détaillée et plusieurs options. Vous trouverez ci-dessous une option pour calculer des moyennes mobiles avec le package **slider**. Dans cette approche, *la moyenne mobile est calculée dans l'ensemble de données avant le tracé* :  
+Voir la page sur les [Moyennes mobiles](#moving_average) pour une description dÃ©taillÃ©e et plusieurs options. Vous trouverez ci-dessous une option pour calculer des moyennes mobiles avec le package **slider**. Dans cette approche, *la moyenne mobile est calculÃ©e dans l'ensemble de donnÃ©es avant le tracÃ©* :  
 
-1) Regroupez les données en comptes si nécessaire (quotidien, hebdomadaire, etc.) (voir la page [Grouping data]).  
-2) Créez une nouvelle colonne pour contenir la moyenne mobile, créée avec `slide_index()` du paquet **slider**.  
-3) Tracez la moyenne mobile comme une `geom_line()` au-dessus (après) l'histogramme épicurvien  
+1) Regroupez les donnÃ©es en comptes si nÃ©cessaire (quotidien, hebdomadaire, etc.) (voir la page sur [groupage des donnÃ©es](#grouping_data)).  
+2) crÃ©ez une nouvelle colonne pour contenir la moyenne mobile, crÃ©Ã©e avec `slide_index()` du paquet **slider**.  
+3) Tracez la moyenne mobile comme une `geom_line()` au-dessus (aprÃ©s) l'histogramme Ã©picurvien  
 
 Voir l'utile [vignette pour le paquet **slider**](https://cran.r-project.org/web/packages/slider/vignettes/slider.html)  
 
 
 ```{r, warning=F, message=F}
 # charger le paquet
-pacman::p_load(slider) # slider utilisé pour calculer les moyennes mobiles
+pacman::p_load(slider) # slider utilisÃ© pour calculer les moyennes mobiles
 
-# créer un jeu de données de comptages quotidiens et de moyennes mobiles sur 7 jours
+# crÃ©er un jeu de donnÃ©es de comptages quotidiens et de moyennes mobiles sur 7 jours
 #######################################################
 ll_counts_7day <- linelist %>% # commencer avec linelist
   
@@ -1520,48 +1532,48 @@ ll_counts_7day <- linelist %>% # commencer avec linelist
   count(date_onset, name = "new_cases") %>% # nommer une nouvelle colonne avec les comptages comme "new_cases".
   drop_na(date_onset) %>% # supprime les cas dont la date_onset est manquante
   
-  ## calculer le nombre moyen de cas dans la fenêtre de 7 jours
+  ## calculer le nombre moyen de cas dans la fenÃ©tre de 7 jours
   mutate(
-    avg_7day = slider::slide_index( # créer une nouvelle colonne
-      new_cases, # calcul basé sur la valeur de la colonne new_cases
-      .i = date_onset, # l'index est la colonne date_onset, donc les dates non présentes sont incluses dans la fenêtre 
-      .f = ~mean(.x, na.rm = TRUE), # La fonction est mean() avec les valeurs manquantes supprimées.
-      .before = 6, # la fenêtre est le jour et les 6 jours précédents
-      .complete = FALSE), # doit être FALSE pour que unlist() fonctionne à l'étape suivante
-    avg_7day = unlist(avg_7day)) # convertit la liste des classes en classes numériques
+    avg_7day = slider::slide_index( # crÃ©er une nouvelle colonne
+      new_cases, # calcul basÃ© sur la valeur de la colonne new_cases
+      .i = date_onset, # l'index est la colonne date_onset, donc les dates non prÃ©sentes sont incluses dans la fenÃ©tre 
+      .f = ~mean(.x, na.rm = TRUE), # La fonction est mean() avec les valeurs manquantes supprimÃ©es.
+      .before = 6, # la fenÃ©tre est le jour et les 6 jours prÃ©cÃ©dents
+      .complete = FALSE), # doit Ã©tre FALSE pour que unlist() fonctionne Ã  l'Ã©tape suivante
+    avg_7day = unlist(avg_7day)) # convertit la liste des classes en classes numÃ©riques
 
 
 # tracer
 ######
-ggplot(data = ll_counts_7day) + # commencer avec le nouvel ensemble de données défini ci-dessus 
-    geom_histogramme( # crée un histogramme épicurve
+ggplot(data = ll_counts_7day) + # commencer avec le nouvel ensemble de donnÃ©es dÃ©fini ci-dessus 
+    geom_histogram( # crÃ©e un histogramme Ã©picurve
       mapping = aes(
         x = date_onset, # colonne de date comme axe des x
         y = new_cases), # la hauteur est le nombre de nouveaux cas quotidiens
         stat = "identity", # la hauteur est la valeur y
         fill="#92a8d1", # couleur froide pour les barres
-        colour = "#92a8d1", # même couleur pour la bordure des barres
+        colour = "#92a8d1", # mÃªme couleur pour la bordure des barres
         )+ 
-    geom_line( # créer une ligne pour la moyenne mobile
-      cartographie = aes(
+    geom_line( # crÃ©er une ligne pour la moyenne mobile
+      mapping = aes(
         x = date_onset, # colonne de date pour l'axe des x
-        y = avg_7day, # valeur y définie dans la colonne de la moyenne mobile
-        lty = "7-day \nrolling avg"), # nom de la ligne dans la légende
+        y = avg_7day, # valeur y dÃ©finie dans la colonne de la moyenne mobile
+        lty = "7-day \nrolling avg"), # nom de la ligne dans la lÃ©gende
       color="red", # couleur de la ligne
       size = 1) + # largeur de la ligne
-    scale_x_date( # échelle de date
-      date_breaks = "1 mois",
+    scale_x_date( # Ã©chelle de date
+      date_breaks = "1 month",
       date_labels = '%d/%m',
       expand = c(0,0)) +
-    scale_y_continuous( # échelle de l'axe des y
+    scale_y_continuous( # Ã©chelle de l'axe des y
       expand = c(0,0),
       limits = c(0, NA)) +       
     labs(
       x="",
-      y = "Nombre de cas confirmés",
-      fill = "Legend")+ 
+      y = "Nombre de cas confirmÃ©s",
+      fill = "Legende")+ 
     theme_minimal()+
-    theme(legend.title = element_blank()) # supprime le titre de la légende
+    theme(legend.title = element_blank()) # supprime le titre de la lÃ©gende
 ```
 
 
@@ -1569,35 +1581,35 @@ ggplot(data = ll_counts_7day) + # commencer avec le nouvel ensemble de données d
 
 ### Facettes/petits-multiples {.unnumbered}
 
-Comme pour les autres ggplots, vous pouvez créer des graphiques à facettes ("petits multiples"). Comme expliqué dans la page [ggplot tips] de ce manuel, vous pouvez utiliser soit `facet_wrap()` soit `facet_grid()`. Ici, nous faisons une démonstration avec `facet_wrap()`. Pour les épicurves, `facet_wrap()` est typiquement plus facile car il est probable que vous n'ayez besoin de faire une facette que sur une seule colonne.  
+Comme pour les autres ggplots, vous pouvez crÃ©er des graphiques Ã  facettes ("petits multiples"). Comme expliquÃ© dans la page [ggplot tips](#ggplot_tips) de ce manuel, vous pouvez utiliser soit `facet_wrap()` soit `facet_grid()`. Ici, nous faisons une dÃ©monstration avec `facet_wrap()`. Pour les Ã©picurves, `facet_wrap()` est typiquement plus facile car il est probable que vous n'ayez besoin de faire une facette que sur une seule colonne.  
 
-La syntaxe générale est `facet_wrap(rows ~ cols)`, où à gauche du tilde (~) est le nom d'une colonne à répartir sur les "rows" du graphique à facettes, et à droite du tilde est le nom d'une colonne à répartir sur les "columns" du graphique à facettes. Plus simplement, il suffit d'utiliser un seul nom de colonne, à droite du tilde : `facet_wrap(~age_cat)`.  
+La syntaxe gÃ©nÃ©rale est `facet_wrap(rows ~ cols)`, oÃ¹ Ã  gauche du tilde (~) est le nom d'une colonne Ã  rÃ©partir sur les "rows" du graphique Ã  facettes, et Ã  droite du tilde est le nom d'une colonne Ã  rÃ©partir sur les "columns" du graphique Ã  facettes. Plus simplement, il suffit d'utiliser un seul nom de colonne, Ã  droite du tilde : `facet_wrap(~age_cat)`.  
 
 
 **Axes libres**  
-Vous devrez décider si les échelles des axes pour chaque facette sont "fixées" aux mêmes dimensions (par défaut), ou "libres" (ce qui signifie qu'elles changeront en fonction des données de la facette). Faites-le avec l'argument `scales = ` dans `facet_wrap()` en spécifiant "free_x" ou "free_y", ou "free".  
+Vous devrez dÃ©cider si les Ã©chelles des axes pour chaque facette sont "fixÃ©es" aux mÃªmes dimensions (par dÃ©faut), ou "libres" (ce qui signifie qu'elles changeront en fonction des donnÃ©es de la facette). Faites-le avec l'argument `scales = ` dans `facet_wrap()` en spÃ©cifiant "free_x" ou "free_y", ou "free".  
 
 
 **Nombre de cols et de rangs de facettes**  
-Cela peut être spécifié avec `ncol = ` et `nrow = ` dans `facet_wrap()`. 
+Cela peut Ã©tre spÃ©cifiÃ© avec `ncol = ` et `nrow = ` dans `facet_wrap()`. 
 
 
 **Ordre des facettes**  
-Pour changer l'ordre d'apparition, changez l'ordre sous-jacent des niveaux de la colonne de facteurs utilisée pour créer les facettes.  
+Pour changer l'ordre d'apparition, changez l'ordre sous-jacent des niveaux de la colonne de facteurs utilisÃ©e pour crÃ©er les facettes.  
 
 
-**Esthétique**  
-La taille et le visage de la police, la couleur de la bande, etc. peuvent être modifiés par `theme()` avec des arguments comme :  
+**esthÃ©tique**  
+La taille et le visage de la police, la couleur de la bande, etc. peuvent Ã©tre modifiÃ©s par `theme()` avec des arguments comme :  
 
 * `strip.text = element_text()` (taille, couleur, face, angle...)
 * `strip.background = element_rect()` (par exemple element_rect(fill="grey"))  
 * `strip.position = ` (position de la bande "bas", "haut", "gauche" ou "droite")  
 
 
-**Libellés des bandes**  
-Les étiquettes des graphiques à facettes peuvent être modifiées par les "étiquettes" de la colonne comme facteur, ou par l'utilisation d'un "labeller".  
+**LibellÃ©s des bandes**  
+Les Ã©tiquettes des graphiques Ã  facettes peuvent Ã©tre modifiÃ©es par les "Ã©tiquettes" de la colonne comme facteur, ou par l'utilisation d'un "labeller".  
 
-Faites une étiquette comme celle-ci, en utilisant la fonction `as_labeller()` de **ggplot2**. Puis fournissez l'étiqueteuse à l'argument `labeller = ` de `facet_wrap()` comme indiqué ci-dessous.  
+Faites une Ã©tiquette comme celle-ci, en utilisant la fonction `as_labeller()` de **ggplot2**. Puis fournissez l'Ã©tiqueteuse Ã  l'argument `labeller = ` de `facet_wrap()` comme indiquÃ© ci-dessous.  
 
 ```{r, class.source = 'fold-show'}
 mes_labels <- as_labeller(c(
@@ -1611,7 +1623,7 @@ mes_labels <- as_labeller(c(
      "70+" = "Plus de 70 ans"))
 ```
 
-**Un exemple de graphique à facettes** - facetté par la colonne `age_cat`.
+**Un exemple de graphique Ã  facettes** - facettÃ© par la colonne `age_cat`.
 
 
 ```{r, warning=F, message=F}
@@ -1619,125 +1631,125 @@ mes_labels <- as_labeller(c(
 ###########
 ggplot(central_data) + 
   
-  geom_histogramme(
-    cartographie = aes(
+  geom_histogram(
+    mapping = aes(
       x = date_onset,
-      groupe = age_cat,
-      fill = age_cat), # les arguments à l'intérieur de aes() s'appliquent par groupe
+      group = age_cat,
+      fill = age_cat), # les arguments Ã  l'intÃ©rieur de aes() s'appliquent par groupe
       
-    color = "black", # les arguments hors aes() s'appliquent à toutes les données
+    color = "black", # les arguments hors aes() s'appliquent Ã  toutes les donnÃ©es
         
     # ruptures d'histogramme
-    breaks = weekly_breaks_central)+ # vecteur de date prédéfini (voir plus haut dans cette page)
+    breaks = weekly_breaks_central)+ # vecteur de date prÃ©dÃ©fini (voir plus haut dans cette page)
                       
-  # Les étiquettes sur l'axe des x
+  # Les Ã©tiquettes sur l'axe des x
   scale_x_date(
-    expand = c(0,0), # supprimez l'espace excédentaire sur l'axe des x en dessous et après les barres de cas
-    date_breaks = "2 months", # les étiquettes apparaissent tous les 2 mois
+    expand = c(0,0), # supprimez l'espace excÃ©dentaire sur l'axe des x en dessous et aprÃ©s les barres de cas
+    date_breaks = "2 months", # les Ã©tiquettes apparaissent tous les 2 mois
     date_minor_breaks = "1 month", # les lignes verticales apparaissent tous les 1 mois 
-    date_labels = "%b\n'%y")+ # format des étiquettes de date
+    date_labels = "%b\n'%y")+ # format des Ã©tiquettes de date
   
   # Axe des y
-  scale_y_continuous(expand = c(0,0))+ # supprime l'espace excédentaire sur l'axe des y entre le bas des barres et les étiquettes
+  scale_y_continuous(expand = c(0,0))+ # supprime l'espace excÃ©dentaire sur l'axe des y entre le bas des barres et les Ã©tiquettes
   
-  # thèmes esthétiques
-  theme_minimal()+ # un ensemble de thèmes pour simplifier le graphique
-  thème(
-    plot.caption = element_text(face = "italic", hjust = 0), # légende à gauche en italique
+  # thÃ¨mes esthÃ©tiques
+  theme_minimal()+ # un ensemble de thÃ¨mes pour simplifier le graphique
+  theme(
+    plot.caption = element_text(face = "italic", hjust = 0), # lÃ©gende Ã  gauche en italique
     axis.title = element_text(face = "bold"),
     legend.position = "bottom",
     strip.text = element_text(face = "bold", size = 10),
     strip.background = element_rect(fill = "grey"))+ # titres des axes en gras
   
-  # créer des facettes
+  # crÃ©er des facettes
   facet_wrap(
     ~age_cat,
     ncol = 4,
     strip.position = "top",
     labeller = my_labels)+             
   
-  # étiquettes
+  # Ã©tiquettes
   labs(
-    title = "Incidence hebdomadaire des cas, par catégorie d'âge",
+    title = "Incidence hebdomadaire des cas, par catÃ©gorie d'Ã¢ge",
     subtitle = "Sous-titre",
-    fill = "Catégorie d'âge", # fournir un nouveau titre pour la légende
-    x = "Semaine d'apparition des symptômes",
-    y = "Cas incidents hebdomadaires signalés",
-    caption = stringr::str_glue("n = {nrow(central_data)} from Central Hospital ; Case onsets range from {format(min(central_data$date_onset, na. rm=T), format = '%a %d %b %Y')} à {format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y')}{nrow(central_data %>% filter(is.na(date_onset)))} cas dont la date d'apparition est manquante et qui ne sont pas indiqués"))
+    fill = "CatÃ©gorie d'Ã¢ge", # fournir un nouveau titre pour la lÃ©gende
+    x = "Semaine d'apparition des symptÃ´mes",
+    y = "Cas incidents hebdomadaires signalÃ©s",
+    caption = stringr::str_glue("n = {nrow(central_data)} from Central Hospital ; Case onsets range from {format(min(central_data$date_onset, na. rm=T), format = '%a %d %b %Y')} Ã  {format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y')}{nrow(central_data %>% filter(is.na(date_onset)))} cas dont la date d'apparition est manquante et qui ne sont pas indiquÃ©s"))
 ```
 
-Voir ce [lien](https://ggplot2.tidyverse.org/reference/labellers.html) pour plus d'informations sur les étiqueteuses.  
+Voir ce [lien](https://ggplot2.tidyverse.org/reference/labellers.html) pour plus d'informations sur les Ã©tiqueteuses.  
 
 
 
 
-#### Épidémie totale dans l'arrière-plan de la facette {.non numéroté}
+#### Ã‰pidÃ©mie totale dans l'arriÃ©re-plan de la facette {.unnumbered}
 
-Pour afficher l'épidémie totale en arrière-plan de chaque facette, ajoutez la fonction `gghighlight()` avec des parenthèses vides au ggplot. Cette fonction provient du paquet **gghighlight**. Notez que le maximum de l'axe des y dans toutes les facettes est maintenant basé sur le pic de l'épidémie entière. Il y a plus d'exemples de ce package dans la page [ggplot tips].  
+Pour afficher l'Ã©pidÃ©mie totale en arriÃ©re-plan de chaque facette, ajoutez la fonction `gghighlight()` avec des parenthÃ´ses vides au ggplot. Cette fonction provient du paquet **gghighlight**. Notez que le maximum de l'axe des y dans toutes les facettes est maintenant basÃ© sur le pic de l'Ã©pidÃ©mie entiÃ©re. Il y a plus d'exemples de ce package dans la page [ggplot tips](#ggplot_tips).  
 
 ```{r, warning=F, message=F}
 ggplot(central_data) + 
   
   # Epicurves par groupe
-  geom_histogramme(
-    cartographie = aes(
+  geom_histogram(
+    mapping = aes(
       x = date_onset,
-      groupe = age_cat,
-      fill = age_cat), # les arguments à l'intérieur de aes() s'appliquent par groupe
+      group = age_cat,
+      fill = age_cat), # les arguments Ã  l'intÃ©rieur de aes() s'appliquent par groupe
     
-    color = "black", # les arguments hors aes() s'appliquent à toutes les données
+    color = "black", # les arguments hors aes() s'appliquent Ã  toutes les donnÃ©es
     
     # ruptures d'histogramme
-    breaks = weekly_breaks_central)+ # vecteur de dates prédéfini (voir en haut de la section ggplot)                
+    breaks = weekly_breaks_central)+ # vecteur de dates prÃ©dÃ©fini (voir en haut de la section ggplot)                
   
-  # ajoute une épidémie grise en arrière-plan à chaque facette
+  # ajoute une Ã©pidÃ©mie grise en arriÃ©re-plan Ã  chaque facette
   gghighlight::gghighlight()+
   
-  # étiquettes sur l'axe des x
+  # Ã©tiquettes sur l'axe des x
   scale_x_date(
-    expand = c(0,0), # Suppression de l'espace excédentaire sur l'axe des x sous et après les barres de cas
-    date_breaks = "2 months", # les étiquettes apparaissent tous les 2 mois
+    expand = c(0,0), # Suppression de l'espace excÃ©dentaire sur l'axe des x sous et aprÃ©s les barres de cas
+    date_breaks = "2 months", # les Ã©tiquettes apparaissent tous les 2 mois
     date_minor_breaks = "1 month", # les lignes verticales apparaissent tous les 1 mois 
-    date_labels = "%b\n'%y")+ # format des étiquettes de date
+    date_labels = "%b\n'%y")+ # format des Ã©tiquettes de date
   
   # Axe des y
-  scale_y_continuous(expand = c(0,0))+ # supprime l'espace excédentaire de l'axe des y en dessous de 0
+  scale_y_continuous(expand = c(0,0))+ # supprime l'espace excÃ©dentaire de l'axe des y en dessous de 0
   
-  # thèmes esthétiques
-  theme_minimal()+ # un ensemble de thèmes pour simplifier le graphique
-  thème(
-    plot.caption = element_text(face = "italic", hjust = 0), # légende à gauche en italique
+  # thÃ¨mes esthÃ©tiques
+  theme_minimal()+ # un ensemble de thÃ¨mes pour simplifier le graphique
+  theme(
+    plot.caption = element_text(face = "italic", hjust = 0), # lÃ©gende Ã  gauche en italique
     axis.title = element_text(face = "bold"),
     legend.position = "bottom",
     strip.text = element_text(face = "bold", size = 10),
     strip.background = element_rect(fill = "white"))+ # titres des axes en gras
   
-  # créer des facettes
+  # crÃ©er des facettes
   facet_wrap(
     ~age_cat, # chaque facette est une valeur de age_cat
     ncol = 4, # nombre de colonnes
     strip.position = "top", # position du titre/strip de la facette
-    labeller = my_labels)+ # labeller définit ci-dessus
+    labeller = my_labels)+ # labeller dÃ©finit ci-dessus
   
-  # étiquettes
+  # Ã©tiquettes
   labs(
-    title = "Incidence hebdomadaire des cas, par catégorie d'âge",
+    title = "Incidence hebdomadaire des cas, par catÃ©gorie d'Ã¢ge",
     subtitle = "Sous-titre",
-    fill = "Catégorie d'âge", # fournit un nouveau titre pour la légende
-    x = "Semaine d'apparition des symptômes",
-    y = "Cas incidents hebdomadaires signalés",
-    caption = stringr::str_glue("n = {nrow(central_data)} from Central Hospital ; Case onsets range from {format(min(central_data$date_onset, na. rm=T), format = '%a %d %b %Y')} à {format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y')}{nrow(central_data %>% filter(is.na(date_onset)))} cas dont la date d'apparition est manquante et qui ne sont pas indiqués"))
+    fill = "CatÃ©gorie d'Ã¢ge", # fournit un nouveau titre pour la lÃ©gende
+    x = "Semaine d'apparition des symptÃ´mes",
+    y = "Cas incidents hebdomadaires signalÃ©s",
+    caption = stringr::str_glue("n = {nrow(central_data)} from Central Hospital ; Case onsets range from {format(min(central_data$date_onset, na. rm=T), format = '%a %d %b %Y')} Ã  {format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y')}{nrow(central_data %>% filter(is.na(date_onset)))} cas dont la date d'apparition est manquante et qui ne sont pas indiquÃ©s"))
 ```
 
 
-#### Une facette avec des données {.unnumbered}  
+#### Une facette avec des donnÃ©es {.unnumbered}  
 
-Si vous voulez avoir une seule boîte à facettes qui contient toutes les données, dupliquez l'ensemble des données et traitez les doublons comme une seule valeur de facette. La fonction "helper" `CreateAllFacet()` ci-dessous peut vous aider (grâce à cet [article de blog](https://stackoverflow.com/questions/18933575/easily-add-an-all-facet-to-facet-wrap-in-ggplot2)). Quand elle est exécutée, le nombre de lignes double et il y aura une nouvelle colonne appelée `facet` dans laquelle les lignes dupliquées auront la valeur "all", et les lignes originales auront la valeur originale de la colonne de facettes. Il ne vous reste plus qu'à effectuer la facette sur la colonne `facet`.   
+Si vous voulez avoir une seule boÃ®te Ã  facettes qui contient toutes les donnÃ©es, dupliquez l'ensemble des donnÃ©es et traitez les doublons comme une seule valeur de facette. La fonction "helper" `CreateAllFacet()` ci-dessous peut vous aider (grÃ ce Ã  cet [article de blog](https://stackoverflow.com/questions/18933575/easily-add-an-all-facet-to-facet-wrap-in-ggplot2)). Quand elle est exÃ©cutÃ©e, le nombre de lignes double et il y aura une nouvelle colonne appelÃ©e `facet` dans laquelle les lignes dupliquÃ©es auront la valeur "all", et les lignes originales auront la valeur originale de la colonne de facettes. Il ne vous reste plus qu'Ã  effectuer la facette sur la colonne `facet`.   
 
-Voici la fonction d'aide. Exécutez-la pour qu'elle soit disponible pour vous.  
+Voici la fonction d'aide. ExÃ©cutez-la pour qu'elle soit disponible pour vous.  
 
 ```{r}
-# Définir la fonction d'aide
+# dÃ©finir la fonction d'aide
 CreateAllFacet <- function(df, col){
      df$facet <- df[[col]]
      temp <- df
@@ -1751,69 +1763,72 @@ CreateAllFacet <- function(df, col){
 }
 ```
 
-Appliquez maintenant la fonction d'aide à l'ensemble de données, sur la colonne `age_cat` :  
+Appliquez maintenant la fonction d'aide Ã  l'ensemble de donnÃ©es, sur la colonne `age_cat` :  
 
 ```{r}
-# Créez un jeu de données dupliqué et avec une nouvelle colonne "facet" pour afficher "toutes" les catégories d'âge comme autre niveau de facette.
+# crÃ©ez un jeu de donnÃ©es dupliquÃ© et avec une nouvelle colonne "facet" pour afficher "toutes" les catÃ©gories d'Ã¢ge comme autre niveau de facette.
 central_data2 <- CreateAllFacet(central_data, col = "age_cat") %>%
   
-  # définir les niveaux de facteurs
+  # dÃ©finir les niveaux de facteurs
   mutate(facet = fct_relevel(facet, "all", "0-4", "5-9",
                              "10-14", "15-19", "20-29",
                              "30-49", "50-69", "70+"))
 
-# vérifier les niveaux
+# vÃ©rifier les niveaux
 table(central_data2$facet, useNA = "always")
 ```
 
 Les changements notables de la commande `ggplot()` sont les suivants :  
 
-* Les données utilisées sont maintenant central_data2 (deux fois plus de lignes, avec une nouvelle colonne "facet").
-* L'étiqueteuse devra être mise à jour, si elle est utilisée.  
-* Optionnel : pour obtenir des facettes empilées verticalement : la colonne facette est déplacée vers les lignes de l'équation et remplacée à droite par "." (`facet_wrap(facet~.)`), et `ncol = 1`. Vous pouvez aussi avoir besoin d'ajuster la largeur et la hauteur de l'image du graphique en png (voir `ggsave()` dans [ggplot tips]).  
+* Les donnÃ©es utilisÃ©es sont maintenant central_data2 (deux fois plus de lignes, avec une nouvelle colonne "facet").
+* L'Ã©tiqueteuse devra Ã©tre mise Ã  jour, si elle est utilisÃ©e.  
+* Optionnel : pour obtenir des facettes empilÃ©es verticalement : la colonne facette est dÃ©placÃ©e vers les lignes de l'Ã©quation et remplacÃ©e Ã  droite par "." (`facet_wrap(facet~.)`), et `ncol = 1`. Vous pouvez aussi avoir besoin d'ajuster la largeur et la hauteur de l'image du graphique en png (voir `ggsave()` dans [ggplot tips](#ggplot_tips)).  
 
 ```{r, fig.height=12, fig.width=5, warning=F, message=F}
 ggplot(central_data2) + 
   
-  # Epicurves réelles par groupe
-  geom_histogramme(
-        cartographie = aes(
+  # Epicurves rÃ©elles par groupe
+  geom_histogram(
+        mapping = aes(
           x = date_onset,
-          groupe = age_cat,
-          fill = age_cat), # les arguments à l'intérieur de aes() s'appliquent par groupe
-        color = "black", # les arguments hors aes() s'appliquent à toutes les données
+          group = age_cat,
+          fill = age_cat), # les arguments Ã  l'intÃ©rieur de aes() s'appliquent par groupe
+        color = "black", # les arguments hors aes() s'appliquent Ã  toutes les donnÃ©es
         
         # ruptures d'histogramme
-        breaks = weekly_breaks_central)+ # vecteur de dates prédéfini (voir en haut de la section ggplot)
+        breaks = weekly_breaks_central)+ # vecteur de dates prÃ©dÃ©fini (voir en haut de la section ggplot)
                      
-  # Étiquettes sur l'axe des x
+  # Ã©tiquettes sur l'axe des x
   scale_x_date(
-    expand = c(0,0), # supprime l'espace excédentaire de l'axe des x sous et après les barres de cas
-    date_breaks = "2 months", # les étiquettes apparaissent tous les 2 mois
+    expand = c(0,0), # supprime l'espace excÃ©dentaire de l'axe des x sous et aprÃ©s les barres de cas
+    date_breaks = "2 months", # les Ã©tiquettes apparaissent tous les 2 mois
     date_minor_breaks = "1 month", # les lignes verticales apparaissent tous les 1 mois 
-    date_labels = "%b\n'%y")+ # format des étiquettes de date
+    date_labels = "%b\n'%y")+ # format des Ã©tiquettes de date
   
   # Axe des y
-  scale_y_continuous(expand = c(0,0))+ # supprime l'espace excédentaire sur l'axe des y entre le bas des barres et les étiquettes
+  scale_y_continuous(expand = c(0,0))+ # supprime l'espace excÃ©dentaire sur l'axe des y entre le bas des barres et les Ã©tiquettes
   
-  # thèmes esthétiques
-  theme_minimal()+ # un ensemble de thèmes pour simplifier le graphique
-  thème(
-    plot.caption = element_text(face = "italic", hjust = 0), # légende à gauche en italique
+  # thÃ¨mes esthÃ©tiques
+  theme_minimal()+ # un ensemble de thÃ¨mes pour simplifier le graphique
+  theme(
+    plot.caption = element_text(face = "italic", hjust = 0), # lÃ©gende Ã  gauche en italique
     axis.title = element_text(face = "bold"),
     legend.position = "bottom")+               
   
-  # créer des facettes
+  # crÃ©er des facettes
   facet_wrap(facet~. , # chaque parcelle est une valeur de la facette
              ncol = 1)+            
 
-  # étiquettes
-  labs(title = "Incidence hebdomadaire des cas, par catégorie d'âge",
+  # Ã©tiquettes
+  labs(title = "Incidence hebdomadaire des cas, par catÃ©gorie d'Ã¢ge",
        subtitle = "Sous-titre",
-       fill = "Catégorie d'âge", # fournit un nouveau titre pour la légende
-       x = "Semaine d'apparition des symptômes",
-       y = "Cas incidents hebdomadaires signalés",
-       caption = stringr::str_glue("n = {nrow(central_data)} from Central Hospital ; Case onsets range from {format(min(central_data$date_onset, na. rm=T), format = '%a %d %b %Y')} à {format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y')}{nrow(central_data %>% filter(is.na(date_onset)))} cas dont la date d'apparition est manquante et qui ne sont pas indiqués"))
+       fill = "CatÃ©gorie d'Ã¢ge", # fournit un nouveau titre pour la lÃ©gende
+       x = "Semaine d'apparition des symptÃ´mes",
+       y = "Cas incidents hebdomadaires signalÃ©s",
+       caption = stringr::str_glue("n = {nrow(central_data)} from Central Hospital ; Case onsets range from
+                                   {format(min(central_data$date_onset, na. rm=T), format = '%a %d %b %Y')} Ã 
+                                   {format(max(central_data$date_onset, na.rm=T), format = '%a %d %b %Y')}\n{nrow(central_data %>% filter(is.na(date_onset)))} cas dont la date d'apparition est manquante et qui ne sont pas indiquÃ©s"))
+
 ```
 
 
@@ -1823,97 +1838,99 @@ ggplot(central_data2) +
 
 
 
-## Données provisoires  
+## DonnÃ©es provisoires  
 
 
-Les données les plus récentes présentées dans les épicurves doivent souvent être marquées comme provisoires, ou sujettes à des retards de déclaration. Ceci peut être fait en ajoutant une ligne verticale et/ou un rectangle sur un nombre de jours spécifié. Voici deux options :  
+Les donnÃ©es les plus rÃ©centes prÃ©sentÃ©es dans les Ã©picurves doivent souvent Ã©tre marquÃ©es comme provisoires, ou sujettes Ã  des retards de dÃ©claration. Ceci peut Ã©tre fait en ajoutant une ligne verticale et/ou un rectangle sur un nombre de jours spÃ©cifiÃ©. Voici deux options :  
 
 1) Utilisez `annotate()` :  
     + Pour une ligne, utilisez `annotate(geom = "segment")`. Fournissez `x`, `xend`, `y`, et `yend`. Ajustez la taille, le type de ligne (`lty`) et la couleur.  
     + Pour un rectangle, utilisez `annotate(geom = "rect")`. Fournissez xmin/xmax/ymin/ymax. Ajustez la couleur et l'alpha.  
-2) Regroupez les données par statut provisoire et colorez ces barres différemment.  
+2) Regroupez les donnÃ©es par statut provisoire et colorez ces barres diffÃ©remment.  
 
-<span style="color : orange ;">**_CAUTION:_** Vous pourriez essayer `geom_rect()` pour dessiner un rectangle, mais l'ajustement de la transparence ne fonctionne pas dans un contexte de linelist. Cette fonction superpose un rectangle pour chaque observation/rangée ! Utilisez soit un alpha très faible (par exemple 0,01), soit une autre approche. </span>
+<span style="color : orange ;">**_CAUTION:_** Vous pourriez essayer `geom_rect()` pour dessiner un rectangle, mais l'ajustement de la transparence ne fonctionne pas dans un contexte de linelist. Cette fonction superpose un rectangle pour chaque observation/rangÃ©e ! Utilisez soit un alpha trÃ©s faible (par exemple 0,01), soit une autre approche. </span>
 
 ### Utilisation de `annotate()` {.unnumbered}
 
-* Dans `annotate(geom = "rect")`, les arguments `xmin` et `xmax` doivent recevoir des entrées de la classe Date.  
-* Notez que, comme ces données sont agrégées en barres hebdomadaires et que la dernière barre s'étend jusqu'au lundi suivant le dernier point de données, la région ombrée peut sembler couvrir 4 semaines.  
-* Voici un "annotate()`" [exemple en ligne] (https://ggplot2.tidyverse.org/reference/annotate.html)
+* Dans `annotate(geom = "rect")`, les arguments `xmin` et `xmax` doivent recevoir des entrÃ©es de la classe Date.  
+* Notez que, comme ces donnÃ©es sont agrÃ©gÃ©es en barres hebdomadaires et que la derniÃ©re barre s'Ã©tend jusqu'au lundi suivant le dernier point de donnÃ©es, la rÃ©gion ombrÃ©e peut sembler couvrir 4 semaines.  
+* Voici un `annotate()` [exemple en ligne](https://ggplot2.tidyverse.org/reference/annotate.html)
 
 
 ```{r, warning=F, message=F}
 ggplot(central_data) + 
   
   # histogramme
-  geom_histogramme(
+  geom_histogram(
     mapping = aes(x = date_onset),
     
-    breaks = weekly_breaks_central, # vecteur de date prédéfini - voir en haut de la section ggplot
+    breaks = weekly_breaks_central, # vecteur de date prÃ©dÃ©fini - voir en haut de la section ggplot
     
     color = "darkblue",
     
+    closed = "left",
+    
     fill = "lightblue") +
 
-  # échelles
+  # Ã©chelles
   scale_y_continuous(expand = c(0,0))+
-  échelle_x_date(
-    expand = c(0,0), # Suppression de l'espace excédentaire sur l'axe des x sous et après les barres de cas
-    date_breaks = "1 mois", # 1er du mois
-    date_minor_breaks = "1 mois", # 1er du mois
-    date_labels = "%b\n'%y")+ # format des étiquettes
+  scale_x_date(
+    expand = c(0,0), # Suppression de l'espace excÃ©dentaire sur l'axe des x sous et aprÃ©s les barres de cas
+    date_breaks = "1 month", # 1er du mois
+    date_minor_breaks = "1 month", # 1er du mois
+    date_labels = "%b\n'%y")+ # format des Ã©tiquettes
   
-  # étiquettes et thème
+  # Ã©tiquettes et theme
   labs(
-    title = "Using annotate()\nRectangle et ligne montrant que les données des 21 derniers jours sont provisoires",
-    x = "Semaine d'apparition des symptômes",
+    title = "Utilisant annotate()\nRectangle et ligne montrant que les donnÃ©es des 21 derniers jours sont provisoires",
+    x = "Semaine d'apparition des symptÃ´mes",
     y = "Indication hebdomadaire des cas")+ 
   theme_minimal()+
   
-  # ajoute un rectangle rouge semi-transparent aux données provisoires
+  # ajoute un rectangle rouge semi-transparent aux donnÃ©es provisoires
   annotate(
     "rect",
-    xmin = as.Date(max(central_data$date_onset, na.rm = T) - 21), # la note doit être enveloppée dans as.Date()
-    xmax = as.Date(Inf), # la note doit être enveloppée dans as.Date()
+    xmin = as.Date(max(central_data$date_onset, na.rm = T) - 21), # la note doit Ã©tre enveloppÃ©e dans as.Date()
+    xmax = as.Date(Inf), # la note doit Ã©tre enveloppÃ©e dans as.Date()
     ymin = 0,
     ymax = Inf,
-    alpha = 0.2, # alpha facile et intuitif à ajuster en utilisant annotate()
+    alpha = 0.2, # alpha facile et intuitif Ã  ajuster en utilisant annotate()
     fill = "red")+
   
   # ajoute une ligne verticale noire au-dessus des autres couches
   annotate(
     "segment",
-    x = max(central_data$date_onset, na.rm = T) - 21, # 21 jours avant les dernières données
+    x = max(central_data$date_onset, na.rm = T) - 21, # 21 jours avant les derniÃ©res donnÃ©es
     xend = max(central_data$date_onset, na.rm = T) - 21, 
-    y = 0, # la ligne commence à y = 0
+    y = 0, # la ligne commence Ã  y = 0
     yend = Inf, # ligne jusqu'au sommet du graphique
     size = 2, # taille de la ligne
     color = "black",
     lty = "solid")+ # type de ligne, par exemple "solid", "dashed".
 
   # ajouter du texte dans le rectangle
-  annoter(
-    "texte",
+  annotate(
+    "text",
     x = max(central_data$date_onset, na.rm = T) - 15,
     y = 15,
-    label = "Sujet à des délais de déclaration",
+    label = "Sujet Ã  des dÃ©lais de dÃ©claration",
     angle = 90)
 ```
 
 
-La même ligne verticale noire peut être obtenue avec le code ci-dessous, mais en utilisant `geom_vline()` vous perdez la possibilité de contrôler la hauteur :  
+La mÃªme ligne verticale noire peut Ã©tre obtenue avec le code ci-dessous, mais en utilisant `geom_vline()` vous perdez la possibilitÃ© de contrÃ´ler la hauteur :  
 
 ```{r, eval=F}
 geom_vline(xintercept = max(central_data$date_onset, na.rm = T) - 21,
-           taille = 2,
-           couleur = "noir")
+           size = 2,
+           color = "black")
 ```
 
 
 
 ### Couleur des barres {.unnumbered}  
 
-Une autre approche pourrait consister à ajuster la couleur ou l'affichage des barres de données provisoires elles-mêmes. Vous pouvez créer une nouvelle colonne dans l'étape de préparation des données et l'utiliser pour regrouper les données, de sorte que les " aes(fill = )`" des données provisoires puissent avoir une couleur ou un alpha différent des autres barres. 
+Une autre approche pourrait consister Ã  ajuster la couleur ou l'affichage des barres de donnÃ©es provisoires elles-mÃªmes. Vous pouvez crÃ©er une nouvelle colonne dans l'Ã©tape de prÃ©paration des donnÃ©es et l'utiliser pour regrouper les donnÃ©es, de sorte que les " aes(fill = )`" des donnÃ©es provisoires puissent avoir une couleur ou un alpha diffÃ©rent des autres barres. 
 
 ```{r, message=F, warning=F}
 # ajouter une colonne
@@ -1921,59 +1938,61 @@ Une autre approche pourrait consister à ajuster la couleur ou l'affichage des ba
 plot_data <- central_data %>% 
   mutate(tentative = case_when(
     date_onset >= max(date_onset, na.rm=T) - 7 ~ "Tentative", # tenative si dans les 7 derniers jours
-    VRAI ~ "Fiable")) # tout le reste est fiable
+    TRUE ~ "Reliable")) # tout le reste est fiable
 
-# tracé
+# tracÃ©
 ######
 ggplot(plot_data, aes(x = date_onset, fill = tentative)) + 
   
   # histogramme
-  geom_histogramme(
-    breaks = weekly_breaks_central, # vecteur de données prédéfini, voir en haut de la page ggplot
+  geom_histogram(
+    breaks = weekly_breaks_central, # vecteur de donnÃ©es prÃ©dÃ©fini, voir en haut de la page ggplot
     color = "black") +
 
-  # échelles
+  # Ã©chelles
   scale_y_continuous(expand = c(0,0))+
   scale_fill_manual(values = c("lightblue", "grey"))+
-  échelle_x_date(
-    expand = c(0,0), # Supprimez l'espace excédentaire de l'axe des x sous et après les barres de cas
+  scale_x_date(
+    expand = c(0,0), # Supprimez l'espace excÃ©dentaire de l'axe des x sous et aprÃ©s les barres de cas
     date_breaks = "3 weeks", # Lundi toutes les 3 semaines
     date_minor_breaks = "week", # lundi semaines 
-    date_labels = "%d\n%b\n'%y")+ # format des étiquettes
+    date_labels = "%d\n%b\n'%y")+ # format des Ã©tiquettes
   
-  # étiquettes et thème
-  labs(title = "Show days that are tentative reporting",
+  # Ã©tiquettes et theme
+  labs(title = "Afficher les jours de dÃ©claration provisoire",
     subtitle = "")+ 
   theme_minimal()+
-  theme(legend.title = element_blank()) # supprimer le titre de la légende
+  theme(legend.title = element_blank()) # supprimer le titre de la lÃ©gende
   
 ```
 
 
-## Étiquettes de date à plusieurs niveaux  
+## Ã‰tiquettes de date Ã  plusieurs niveaux  
 
-Si vous voulez des étiquettes de date à plusieurs niveaux (par exemple, le mois et l'année) *sans dupliquer les niveaux d'étiquette inférieurs*, envisagez l'une des approches ci-dessous :  
+Si vous voulez des Ã©tiquettes de date Ã  plusieurs niveaux (par exemple, le mois et l'annÃ©e) *sans dupliquer les niveaux d'Ã©tiquette infÃ©rieurs*, envisagez l'une des approches ci-dessous :  
 
-Rappelez-vous - vous pouvez utiliser des outils comme `\n` *avec* les arguments `date_labels` ou `labels` pour mettre des parties de chaque étiquette sur une nouvelle ligne en dessous. Cependant, le code ci-dessous vous aide à prendre les années ou les mois (par exemple) sur une ligne inférieure *et seulement une fois*. Quelques notes sur le code ci-dessous :  
-
-* Le nombre de cas est agrégé en semaines pour des raisons esthétiques. Voir la page Epicurves (onglet données agrégées) pour plus de détails.  
-* Une ligne `geom_area()` est utilisée au lieu d'un histogramme, car l'approche par facettes ci-dessous ne fonctionne pas bien avec les histogrammes.  
+Rappelez-vous - vous pouvez utiliser des outils comme `\n` *avec* les arguments `date_labels` ou `labels` pour mettre des parties de chaque Ã©tiquette sur une nouvelle ligne en dessous. Cependant, le code ci-dessous vous aide Ã  prendre les annÃ©es ou les mois (par exemple) sur une ligne infÃ©rieure *et seulement une fois*. Quelques notes sur le code ci-dessous :  
 
 
-**Aggréger en comptages hebdomadaires**
+
+* Le nombre de cas est agrÃ©gÃ© en semaines pour des raisons esthÃ©tiques. Voir la page Epicurves (onglet donnÃ©es agrÃ©gÃ©es) pour plus de dÃ©tails.  
+* Une ligne `geom_area()` est utilisÃ©e au lieu d'un histogramme, car l'approche par facettes ci-dessous ne fonctionne pas bien avec les histogrammes.  
+
+
+**AggrÃ©ger en comptages hebdomadaires**
 
 ```{r out.width = c('50%', '50%'), fig.show='hold', warning=F, message=F}
 
-# Créez un ensemble de données sur le nombre de cas par semaine.
+# crÃ©ez un ensemble de donnÃ©es sur le nombre de cas par semaine.
 #######################################
 central_weekly <- linelist %>%
   filter(hospital == "Central Hospital") %>% # Filtrer linelist
   mutate(week = lubridate::floor_date(date_onset, unit = "weeks")) %>% # count(week) %>% # count(week)  
-  count(week) %>% # résume le nombre de cas hebdomadaires
+  count(week) %>% # rÃ©sume le nombre de cas hebdomadaires
   drop_na(week) %>% # Suppression des cas dont la date d'apparition est manquante
-  complete( # remplir toutes les semaines où aucun cas n'a été signalé
+  complete( # remplir toutes les semaines oÃ¹ aucun cas n'a Ã©tÃ© signalÃ©
     week = seq.Date(
-      from = min(semaine),   
+      from = min(week),   
       to = max(week),
       by = "week"),
     fill = list(n = 0))                        # convertir les nouvelles valeurs NA en comptage 0
@@ -1982,56 +2001,56 @@ central_weekly <- linelist %>%
 **Faire des graphiques**  
 
 ```{r, warning=F, message=F}
-# tracer avec une bordure de boîte sur l'année
+# tracer avec une bordure de boÃ®te sur l'annÃ©e
 ##############################
 ggplot(central_weekly) +
-  geom_area(aes(x = week, y = n), # faire une ligne, spécifier x et y
-            stat = "identity") + # car la hauteur de la ligne est un nombre compté
-  scale_x_date(date_labels="%b", # le format des étiquettes de date montre le mois 
-               date_breaks="month", # étiquettes de date au 1er de chaque mois
-               expand=c(0,0)) + # suppression de l'espace excédentaire à chaque extrémité
+  geom_area(aes(x = week, y = n), # faire une ligne, spÃ©cifier x et y
+            stat = "identity") + # car la hauteur de la ligne est un nombre comptÃ©
+  scale_x_date(date_labels="%b", # le format des Ã©tiquettes de date montre le mois 
+               date_breaks="month", # Ã©tiquettes de date au 1er de chaque mois
+               expand=c(0,0)) + # suppression de l'espace excÃ©dentaire Ã  chaque extrÃ©mitÃ©
   scale_y_continuous(
-    expand = c(0,0))+ # Suppression de l'espace excédentaire sous l'axe des x
-  facet_grid(~lubridate::year(week), # facette sur l'année (de la colonne de la classe Date)
+    expand = c(0,0))+ # Suppression de l'espace excÃ©dentaire sous l'axe des x
+  facet_grid(~lubridate::year(week), # facette sur l'annÃ©e (de la colonne de la classe Date)
              space="free_x",                
-             scales="free_x", # les axes x s'adaptent à la plage de données (pas "fixe")
-             switch="x") + # étiquettes des facettes (année) en bas de page
+             scales="free_x", # les axes x s'adaptent Ã  la plage de donnÃ©es (pas "fixe")
+             switch="x") + # Ã©tiquettes des facettes (annÃ©e) en bas de page
   theme_bw() +
-  theme(strip.placement = "outside", # placement des étiquettes de facettes
+  theme(strip.placement = "outside", # placement des Ã©tiquettes de facettes
         strip.background = element_rect(fill = NA, # facet labels no fill grey border
                                         couleur = "gris50"),
         panel.spacing = unit(0, "cm"))+ # pas d'espace entre les panneaux de facettes
-  labs(title = "Étiquettes d'année imbriquées, bordure d'étiquette grise")
+  labs(title = "Ã‰tiquettes d'annÃ©e imbriquÃ©es, bordure d'Ã©tiquette grise")
 
 
-# tracé sans bordure sur l'année
+# tracÃ© sans bordure sur l'annÃ©e
 #################################
 ggplot(central_weekly,
-       aes(x = week, y = n)) + # établir x et y pour tout le graphique
-  geom_line(stat = "identity", # créer une ligne, la hauteur de la ligne est le nombre de comptage
+       aes(x = week, y = n)) + # Ã©tablir x et y pour tout le graphique
+  geom_line(stat = "identity", # crÃ©er une ligne, la hauteur de la ligne est le nombre de comptage
             color = "#69b3a2") + # couleur de la ligne
-  geom_point(size=1, color="#69b3a2") + # faire des points aux points de données hebdomadaires
+  geom_point(size=1, color="#69b3a2") + # faire des points aux points de donnÃ©es hebdomadaires
   geom_area(fill = "#69b3a2", # zone de remplissage sous la ligne
             alpha = 0.4)+ # transparence du remplissage
-  scale_x_date(date_labels="%b", # format de l'étiquette de la date pour montrer le mois 
-               date_breaks="month", # étiquettes de date au 1er de chaque mois
-               expand=c(0,0)) + # supprimer l'espace excédentaire
+  scale_x_date(date_labels="%b", # format de l'Ã©tiquette de la date pour montrer le mois 
+               date_breaks="month", # Ã©tiquettes de date au 1er de chaque mois
+               expand=c(0,0)) + # supprimer l'espace excÃ©dentaire
   scale_y_continuous(
-    expand = c(0,0))+ # suppression de l'espace excédentaire sous l'axe des x
-  facet_grid(~lubridate::year(week), # facette sur l'année (de la colonne de la classe Date)
+    expand = c(0,0))+ # suppression de l'espace excÃ©dentaire sous l'axe des x
+  facet_grid(~lubridate::year(week), # facette sur l'annÃ©e (de la colonne de la classe Date)
              space="free_x",                
-             scales="free_x", # les axes x s'adaptent à la plage de données (pas "fixe")
-             switch="x") + # étiquettes des facettes (année) en bas de page
+             scales="free_x", # les axes x s'adaptent Ã  la plage de donnÃ©es (pas "fixe")
+             switch="x") + # Ã©tiquettes des facettes (annÃ©e) en bas de page
   theme_bw() +
-  theme(strip.placement = "outside", # placement des étiquettes de facettes
-          strip.background = element_blank(), # pas de fond d'étiquette de facette
+  theme(strip.placement = "outside", # placement des Ã©tiquettes de facettes
+          strip.background = element_blank(), # pas de fond d'Ã©tiquette de facette
           panel.grid.minor.x = element_blank(),          
           panel.border = element_rect(color="grey40"), # bordure grise du PANEL de la facette
-          panel.spacing=unit(0, "cm"))+ # Pas d'espace entre les panneaux à facettes
-  labs(title = "Étiquettes annuelles imbriquées - points, ombrées, pas de bordure d'étiquette")
+          panel.spacing=unit(0, "cm"))+ # Pas d'espace entre les panneaux Ã  facettes
+  labs(title = "Ã‰tiquettes annuelles imbriquÃ©es - points, ombrÃ©es, pas de bordure d'Ã©tiquette")
 ```
 
-Les techniques ci-dessus ont été adaptées de [this](https://stackoverflow.com/questions/44616530/axis-labels-on-two-lines-with-nested-x-variables-year-below-months) et [this](https://stackoverflow.com/questions/20571306/multi-row-x-axis-labels-in-ggplot-line-chart) post sur stackoverflow.com.  
+Les techniques ci-dessus ont Ã©tÃ© adaptÃ©es de [this](https://stackoverflow.com/questions/44616530/axis-labels-on-two-lines-with-nested-x-variables-year-below-months) et [this](https://stackoverflow.com/questions/20571306/multi-row-x-axis-labels-in-ggplot-line-chart) post sur stackoverflow.com.  
 
 
 
@@ -2041,169 +2060,177 @@ Les techniques ci-dessus ont été adaptées de [this](https://stackoverflow.com/qu
 <!-- ======================================================= -->
 ## Double axe { }  
 
-Bien qu'il y ait des discussions acharnées sur la validité des doubles axes au sein de la communauté de visualisation des données, de nombreux superviseurs d'épi veulent toujours voir une épicurve ou un graphique similaire avec un pourcentage superposé à un deuxième axe. Ce sujet est abordé plus en détail dans la page [ggplot tips], mais un exemple utilisant la méthode **cowplot** est présenté ci-dessous :  
+Bien qu'il y ait des discussions acharnÃ©es sur la validitÃ© des doubles axes au sein de la communautÃ© de visualisation des donnÃ©es, de nombreux superviseurs d'Ã©pi veulent toujours voir une Ã©picurve ou un graphique similaire avec un pourcentage superposÃ© Ã  un deuxiÃ©me axe. Ce sujet est abordÃ© plus en dÃ©tail dans la page [ggplot tips](#ggplot_tips), mais un exemple utilisant la mÃ©thode **cowplot** est prÃ©sentÃ© ci-dessous :  
 
-* Deux graphiques distincts sont créés, puis combinés avec le paquet **cowplot**.  
-* Les graphiques doivent avoir exactement le même axe des x (limites définies), sinon les données et les étiquettes ne seront pas alignées.  
-* Chacun utilise `theme_cowplot()` et l'un d'entre eux a l'axe des y déplacé sur le côté droit du graphique  
+* Deux graphiques distincts sont crÃ©Ã©s, puis combinÃ©s avec le paquet **cowplot**.  
+* Les graphiques doivent avoir exactement le mÃªme axe des x (limites dÃ©finies), sinon les donnÃ©es et les Ã©tiquettes ne seront pas alignÃ©es.  
+* Chacun utilise `theme_cowplot()` et l'un d'entre eux a l'axe des y dÃ©placÃ© sur le cÃ´te droit du graphique  
 
 ```{r, warning=F, message=F}
 #Chargez le paquet
 pacman::p_load(cowplot)
 
-# Faire le premier tracé de l'histogramme épicurve
+# Faire le premier tracÃ© de l'histogramme Ã©picurve
 #######################################
-plot_cases <- linelist %>% (en anglais) 
+plot_cases <- linelist %>% 
   
   # Tracer les cas par semaine
   ggplot()+
   
-  # Créer un histogramme  
-  geom_histogramme(
+  # crÃ©er un histogramme  
+  geom_histogram(
     
     mapping = aes(x = date_onset),
     
-    # bin breaks chaque semaine en commençant le lundi avant le premier cas, jusqu'au lundi après le dernier cas
-    breaks = weekly_breaks_all)+ # vecteur prédéfini de dates hebdomadaires (voir en haut de la section ggplot)
+    # bin breaks chaque semaine en commenÃ§ant le lundi avant le premier cas, jusqu'au lundi aprÃ©s le dernier cas
+    breaks = weekly_breaks_all)+ # vecteur prÃ©dÃ©fini de dates hebdomadaires (voir en haut de la section ggplot)
         
-  # spécifier le début et la fin de l'axe des dates pour l'aligner avec les autres graphiques
+  # spÃ©cifier le dÃ©but et la fin de l'axe des dates pour l'aligner avec les autres graphiques
   scale_x_date(
-    limits = c(min(weekly_breaks_all), max(weekly_breaks_all)))+ # min/max des pauses hebdomadaires prédéfinies de l'histogramme
+    limits = c(min(weekly_breaks_all), max(weekly_breaks_all)))+ # min/max des pauses hebdomadaires prÃ©dÃ©finies de l'histogramme
   
-  # étiquettes
+  # Ã©tiquettes
   labs(
       y = "Cas quotidiens",
-      x = "Date d'apparition des symptômes".
+      x = "Date d'apparition des symptÃ´mes"
     )+
   theme_cowplot()
 
 
-# faire un second tracé du pourcentage de décès par semaine
+# faire un second tracÃ© du pourcentage de dÃ©cÃ©s par semaine
 ###########################################
 plot_deaths <- linelist %>% # commence avec linelist
-  group_by(week = floor_date(date_onset, "week")) %>% # créer une colonne semaine
+  group_by(week = floor_date(date_onset, "week")) %>% # crÃ©er une colonne semaine
   
-  # résumer pour obtenir le pourcentage hebdomadaire de cas décédés
-  résumer(n_cases = n(),
+  # rÃ©sumer pour obtenir le pourcentage hebdomadaire de cas dÃ©cÃ©dÃ©s
+  summarise(n_cases = n(),
             died = sum(outcome == "Death", na.rm=T),
-            pct_décès = 100*décès/n_cas) %>% 
+            pct_died = 100*died/n_cases) %>% 
   
-  # commencer le tracé
+  # commencer le tracÃ©
   ggplot()+
   
-  # ligne du pourcentage hebdomadaire de décès
-  geom_line( # créer une ligne de pourcentage de décès
-    mapping = aes(x = week, y = pct_died), # spécifie la hauteur des y comme colonne pct_died
-    stat = "identity", # fixer la hauteur de la ligne à la valeur de la colonne pct_death, et non au nombre de lignes (par défaut)
+  # ligne du pourcentage hebdomadaire de dÃ©cÃ©s
+  geom_line( # crÃ©er une ligne de pourcentage de dÃ©cÃ©s
+    mapping = aes(x = week, y = pct_died), # spÃ©cifie la hauteur des y comme colonne pct_died
+    stat = "identity", # fixer la hauteur de la ligne Ã  la valeur de la colonne pct_death, et non au nombre de lignes (par dÃ©faut)
     size = 2,
     color = "black")+
   
-  # Mêmes limites de l'axe des dates que l'autre graphique - alignement parfait
+  # mÃªmes limites de l'axe des dates que l'autre graphique - alignement parfait
   scale_x_date(
-    limits = c(min(weekly_breaks_all), max(weekly_breaks_all)))+ # min/max des pauses hebdomadaires prédéfinies de l'histogramme
+    limits = c(min(weekly_breaks_all), max(weekly_breaks_all)))+ # min/max des pauses hebdomadaires prÃ©dÃ©finies de l'histogramme
   
   
   # ajustements de l'axe des y
   scale_y_continuous( # ajuster l'axe des y
-    breaks = seq(0,100, 10), # définit les intervalles de rupture de l'axe des pourcentages
-    limits = c(0, 100), # définit l'étendue de l'axe des pourcentages
-    position = "right")+ # déplace l'axe des pourcentages vers la droite
+    breaks = seq(0,100, 10), # dÃ©finit les intervalles de rupture de l'axe des pourcentages
+    limits = c(0, 100), # dÃ©finit l'Ã©tendue de l'axe des pourcentages
+    position = "right")+ # dÃ©place l'axe des pourcentages vers la droite
   
-  # étiquette pour l'axe des Y, pas d'étiquette pour l'axe des X
+  # Ã©tiquette pour l'axe des Y, pas d'Ã©tiquette pour l'axe des X
   labs(x = "",
-       y = "Percent deceased")+ # étiquette de l'axe des pourcentages
+       y = "Pourcentage dÃ©cÃ©dÃ©") +  # Ã©tiquette de l'axe des pourcentages
   
   theme_cowplot() # ajoutez ceci pour que les deux graphiques fusionnent bien ensemble
 ```
 
-Utilisez maintenant **cowplot** pour superposer les deux graphiques. Une attention particulière a été portée à l'alignement de l'axe des x, au côté de l'axe des y et à l'utilisation de `theme_cowplot()`.  
+Utilisez maintenant **cowplot** pour superposer les deux graphiques. Une attention particuliÃ©re a Ã©tÃ© portÃ©e Ã  l'alignement de l'axe des x, au cÃ´te de l'axe des y et Ã  l'utilisation de `theme_cowplot()`.  
 
 ```{r, warning=F, message=F}
+
 aligned_plots <- cowplot::align_plots(plot_cases, plot_deaths, align="hv", axis="tblr")
+
 ggdraw(aligned_plots[[1]]) + draw_plot(aligned_plots[[2]])
+
 ```
 
 
 
 
-## Incidence cumulée {}
+## Incidence cumulÃ©e {}
 
-Note : Si vous utilisez **incidence2**, consultez la section sur la façon dont vous pouvez produire l'incidence cumulée avec une fonction simple. Cette page traitera de la façon de calculer l'incidence cumulée et de la tracer avec `ggplot()`.  
+Note : Si vous utilisez **incidence2**, consultez la section sur la faÃ§on dont vous pouvez produire l'incidence cumulÃ©e avec une fonction simple. Cette page traitera de la faÃ§on de calculer l'incidence cumulÃ©e et de la tracer avec `ggplot()`.  
 
-Si vous commencez avec une liste de cas, créez une nouvelle colonne contenant le nombre cumulé de cas par jour dans une épidémie en utilisant `cumsum()` de **base** R :    
+Si vous commencez avec une liste de cas, crÃ©ez une nouvelle colonne contenant le nombre cumulÃ© de cas par jour dans une Ã©pidÃ©mie en utilisant `cumsum()` de **base** R :    
 
 ```{r}
 cumulative_case_counts <- linelist %>% 
-  count(date_onset) %>% # nombre de lignes par jour (retourné dans la colonne "n")   
+  count(date_onset) %>% # nombre de lignes par jour (retournÃ© dans la colonne "n")   
   mutate(                         
-    cumulative_cases = cumsum(n) # nouvelle colonne du nombre cumulé de lignes à chaque date
+    cumulative_cases = cumsum(n) # nouvelle colonne du nombre cumulÃ© de lignes Ã  chaque date
     )
 ```
 
-Les 10 premières lignes sont affichées ci-dessous :  
+Les 10 premiÃ©res lignes sont affichÃ´es ci-dessous :  
 
 ```{r message=FALSE, echo=F}
-# affichez les données de la liste des lignes sous forme de tableau
-DT::datatable(head(cumulative_case_counts, 10), rownames = FALSE, options = list(pageLength = 10, scrollX=T), class = 'white-space : nowrap' )
+# affichez les donnÃ©es de la liste des lignes sous forme de tableau
+DT::datatable(head(cumulative_case_counts, 10), rownames = FALSE, options = list(pageLength = 10, scrollX=T), class = 'white-space: nowrap' )
 ```
 
 
 
-Cette colonne cumulative peut ensuite être tracée en fonction de la `date_onset`, en utilisant `geom_line()`` :
+Cette colonne cumulative peut ensuite Ã©tre tracÃ©e en fonction de la `date_onset`, en utilisant `geom_line()`` :
 
 ```{r, warning=F, message=F}
 plot_cumulative <- ggplot()+
   geom_line(
-    données = cumulative_case_counts,
+    data = cumulative_case_counts,
     aes(x = date_onset, y = cumulative_cases),
-    taille = 2,
-    couleur = "bleu")
+    size = 2,
+    color = "blue")
 
-tracer_cumulatif
+plot_cumulative
 ```
 
 
-On peut aussi le superposer à l'épicurve, avec un double axe en utilisant la méthode **cowplot** décrite ci-dessus et dans la page [ggplot tips] :
+On peut aussi le superposer Ã  l'Ã©picurve, avec un double axe en utilisant la mÃ©thode **cowplot** dÃ©crite ci-dessus et dans la page [ggplot tips](#ggplot_tips) :
 
 ```{r, warning=F, message=F}
 #charger le paquet
+
 pacman::p_load(cowplot)
 
-# Faire le premier tracé de l'histogramme épicurve
+
+# Faire le premier tracÃ© de l'histogramme Ã©picurve
 plot_cases <- ggplot()+
-  geom_histogramme(          
-    données = linelist,
+  geom_histogram(          
+    data = linelist,
     aes(x = date_onset),
     binwidth = 1)+
   labs(
     y = "Cas quotidiens",
-    x = "Date d'apparition des symptômes".
-  )+
+    x = "Date d'apparition des symptÃ´mes"
+  ) +
   theme_cowplot()
 
-# créer un second tracé de la ligne des cas cumulés
+# crÃ©er un second tracÃ© de la ligne des cas cumulÃ©s
 plot_cumulative <- ggplot()+
   geom_line(
-    données = cumulative_case_counts,
-    aes(x = date_onset, y = cas_cumulatifs),
-    taille = 2,
-    couleur = "bleu")+
+    data = cumulative_case_counts,
+    aes(x = date_onset, y = cumulative_case_counts),
+    size = 2,
+    color = "blue")+
   scale_y_continuous(
-    position = "droite")+
+    position = "right")+
   labs(x = "",
-       y = "Cas cumulés")+
+       y = "Cas cumulÃ©s")+
   theme_cowplot()+
-  thème(
+  theme(
     axis.line.x = element_blank(),
     axis.text.x = element_blank(),
     axis.title.x = element_blank(),
     axis.ticks = element_blank())
+
 ```
 
-Utilisez maintenant **cowplot** pour superposer les deux graphiques. Une attention particulière a été portée à l'alignement de l'axe des x, au côté de l'axe des y et à l'utilisation de `theme_cowplot()`.  
+Utilisez maintenant **cowplot** pour superposer les deux graphiques. Une attention particuliÃ©re a Ã©tÃ© portÃ©e Ã  l'alignement de l'axe des x, au cÃ´te de l'axe des y et Ã  l'utilisation de `theme_cowplot()`.  
 
 ```{r, warning=F, message=F}
+
 aligned_plots <- cowplot::align_plots(plot_cases, plot_cumulative, align="hv", axis="tblr")
+
 ggdraw(aligned_plots[[1]]) + draw_plot(aligned_plots[[2]])
 ```
 
