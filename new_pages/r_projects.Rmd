@@ -1,74 +1,74 @@
 
-# Projets R{}  
+# Projets R {#r_projects}  
 
 
-Un projet R permet de regrouper votre travail dans un dossier portable et autonome. À l'intérieur du projet, tous les scripts, fichiers de données, figures/sorties et historiques pertinents sont stockés dans des sous-dossiers et, surtout, le *répertoire de travail* est le dossier racine du projet.   
+Un projet R permet de regrouper votre travail dans un dossier portable et autonome. A l'intÃ©rieur du projet, tous les scripts, fichiers de donnÃ©es, figures/sorties et historiques pertinents sont stockÃ©s dans des sous-dossiers et, surtout, le *rÃ©pertoire de travail* est le dossier racine du projet.   
 
 
-## Utilisation suggérée  
+## Utilisation suggÃ©rÃ©e  
 
-Une façon courante, efficace et sans problème d'utiliser R consiste à combiner ces 3 éléments. Un projet de travail discret est hébergé dans un projet R. Chaque élément est décrit dans les sections ci-dessous.  
+Une faÃ§on courante, efficace et sans problÃ©me d'utiliser R consiste Ã  combiner ces 3 Ã©lÃ©ments. Un projet de travail discret est hÃ©bergÃ©lÃ© dans un projet R. Chaque Ã©lÃ©ment est dÃ©crit dans les sections ci-dessous.  
 
 1) Un **projet R**  
-     - Un environnement de travail autonome avec des dossiers pour les données, les scripts, les résultats, etc.    
+     - Un environnement de travail autonome avec des dossiers pour les donnÃ©es, les scripts, les rÃ©sultats, etc.    
 2) Le paquet **here** pour les chemins de fichiers relatifs  
-     - Les chemins de fichiers sont écrits par rapport au dossier racine du projet R - voir [Importation et exportation] pour plus d'informations.  
+     - Les chemins de fichiers sont Ã©crits par rapport au dossier racine du projet R - voir [Importation et exportation](#import_export) pour plus d'informations.  
 3) Le paquet **rio** pour les importations/exportations  
      - `import()` et `export()` traitent tout type de fichier par son extension (par exemple .csv, .xlsx, .png).  
      
 
 
 <!-- ======================================================= -->
-## Créer un projet R {}
+## CrÃ©er un projet R {}
 
-Pour créer un projet R, sélectionnez "Nouveau projet" dans le menu Fichier.
+Pour crÃ©er un projet R, sÃ©lectionnez "Nouveau projet" dans le menu Fichier.
 
-* Si vous voulez créer un nouveau dossier pour le projet, sélectionnez "Nouveau répertoire" et indiquez où vous voulez qu'il soit créé.  
-* Si vous voulez créer le projet dans un dossier existant, cliquez sur "Répertoire existant" et indiquez le dossier.  
-* Si vous voulez cloner un dépôt Github, sélectionnez la troisième option "Version Control" et ensuite "Git". Voir la page [Contrôle de version et collaboration avec Git et Github] pour plus de détails. 
+* Si vous voulez crÃ©er un nouveau dossier pour le projet, sÃ©lectionnez "Nouveau rÃ©pertoire" et indiquez oÃ¹ vous voulez qu'il soit crÃ©Ã©.  
+* Si vous voulez crÃ©er le projet dans un dossier existant, cliquez sur "RÃ©pertoire existant" et indiquez le dossier.  
+* Si vous voulez cloner un dÃ©pÃ´t Github, sÃ©lectionnez la troisiÃ©me option "Version Control" et ensuite "Git". Voir la page [contrÃ´le de version et collaboration avec Git et Github](#collaboration) pour plus de dÃ©tails. 
 
 
 ```{r out.width = "75%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "create_project.png"))
 ```
 
-Le projet R que vous créez se présente sous la forme d'un dossier contenant un fichier *.Rproj*. Ce fichier est un raccourci et probablement la principale façon d'ouvrir votre projet. Vous pouvez également ouvrir un projet en sélectionnant "Ouvrir un projet" dans le menu Fichier. Alternativement, sur le côté supérieur droit de RStudio, vous verrez une icône de projet R et un menu déroulant des projets R disponibles. 
+Le projet R que vous crÃ©ez se prÃ©sente sous la forme d'un dossier contenant un fichier *.Rproj*. Ce fichier est un raccourci et probablement la principale faÃ§on d'ouvrir votre projet. Vous pouvez Ã©galement ouvrir un projet en sÃ©lectionnant "Ouvrir un projet" dans le menu Fichier. Alternativement, sur le cÃ´tÃ© supÃ©rieur droit de RStudio, vous verrez une icÃ´ne de projet R et un menu dÃ©roulant des projets R disponibles. 
 
 Pour quitter un projet R, vous pouvez soit ouvrir un nouveau projet, soit fermer le projet (Fichier - Fermer le projet).  
 
 
 ### Changer de projet {.unnumbered}
 
-Pour passer d'un projet à l'autre, cliquez sur l'icône et le menu déroulant du projet R tout en haut à droite de RStudio. Vous verrez les options Fermer le projet, Ouvrir le projet, et une liste de projets récents. 
+Pour passer d'un projet Ã  l'autre, cliquez sur l'icÃ´ne et le menu dÃ©roulant du projet R tout en haut Ã  droite de RStudio. Vous verrez les options Fermer le projet, Ouvrir le projet, et une liste de projets rÃ©cents. 
 
 ```{r out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "Rproject_dropdown.png"))
 ```
 
 
-### Paramètres {.unnumbered}  
+### ParamÃ©tres {.unnumbered}  
 
-Il est généralement conseillé de démarrer RStudio à chaque fois avec une "ardoise propre" - c'est-à-dire avec votre espace de travail **non** préservé de votre session précédente. Cela signifie que vos objets et résultats ne persisteront pas d'une session à l'autre (vous devrez les recréer en exécutant vos scripts). C'est une bonne chose, car cela vous obligera à écrire de meilleurs scripts et à éviter les erreurs à long terme.  
+Il est gÃ©nÃ©ralement conseillÃ© de dÃ©marrer RStudio Ã  chaque fois avec une "ardoise propre" - c'est-Ã -dire avec votre espace de travail **non** prÃ©servÃ© de votre session prÃ©cÃ©dente. Cela signifie que vos objets et rÃ©sultats ne persisteront pas d'une session Ã  l'autre (vous devrez les recrÃ©er en exÃ©cutant vos scripts). C'est une bonne chose, car cela vous obligera Ã  Ã©crire de meilleurs scripts et Ã  Ã©viter les erreurs Ã  long terme.  
 
-Pour configurer RStudio de manière à ce qu'il fasse "table rase" à chaque démarrage :  
+Pour configurer RStudio de maniÃ©re Ã  ce qu'il fasse "table rase" Ã  chaque dÃ©marrage :  
 
-* Sélectionnez "Options du projet" dans le menu Outils.  
-* Dans l'onglet "Général", configurez RStudio pour **ne pas** restaurer les .RData dans l'espace de travail au démarrage, et pour **ne pas** sauvegarder l'espace de travail en .RData à la sortie.  
+* SÃ©lectionnez "Options du projet" dans le menu Outils.  
+* Dans l'onglet "GÃ©nÃ©ral", configurez RStudio pour **ne pas** restaurer les .RData dans l'espace de travail au dÃ©marrage, et pour **ne pas** sauvegarder l'espace de travail en .RData Ã  la sortie.  
 
 
 
 ### Organisation {.unnumbered}  
 
-Il est courant d'avoir des sous-dossiers dans votre projet. Pensez à avoir des dossiers tels que "données", "scripts", "figures", "présentations". Vous pouvez ajouter des dossiers de la même manière que vous ajouteriez un nouveau dossier sur votre ordinateur. Vous pouvez également consulter la page sur les [Directory interactions] pour apprendre à créer de nouveaux dossiers à l'aide de commandes R.  
+Il est courant d'avoir des sous-dossiers dans votre projet. Pensez Ã  avoir des dossiers tels que "donnÃ©es", "scripts", "figures", "prÃ©sentations". Vous pouvez ajouter des dossiers de la mÃªme maniÃ©re que vous ajouteriez un nouveau dossier sur votre ordinateur. Vous pouvez Ã©galement consulter la page sur les [Interactions avec les rÃ©pertoires](#directories) pour apprendre Ã  crÃ©er de nouveaux dossiers Ã  l'aide de commandes R.  
 
 
-### Contrôle de version {.unnumbered}  
+### ContrÃ´le de version {.unnumbered}  
 
-Pensez à un système de contrôle de version. Cela pourrait être quelque chose d'aussi simple que d'avoir des dates sur les noms des scripts (par exemple "transmission_analysis_2020-10-03.R") et un dossier "archive". Vous pouvez également envisager d'avoir un texte d'en-tête commenté en haut de chaque script avec une description, des balises, des auteurs et un journal des modifications.  
+Pensez Ã  un systÃ©me de contrÃ´le de version. Cela pourrait Ã©tre quelque chose d'aussi simple que d'avoir des dates sur les noms des scripts (par exemple "transmission_analysis_2020-10-03.R") et un dossier "archive". Vous pouvez Ã©galement envisager d'avoir un texte d'en-tÃ©te commentÃ© en haut de chaque script avec une description, des balises, des auteurs et un journal des modifications.  
 
-Une méthode plus complexe consisterait à utiliser Github ou une plateforme similaire pour le contrôle de version. Voir la page [Version control and collaboration with Git and Github].  
+Une mÃ©thode plus complexe consisterait Ã  utiliser Github ou une plateforme similaire pour le contrÃ´le de version. Voir la page [contrÃ´le de version et collaboration avec Git et Github](#collaboration).  
 
-Une astuce : vous pouvez effectuer une recherche dans l'ensemble d'un projet ou d'un dossier à l'aide de l'outil "Rechercher dans les fichiers" (menu Édition). Il peut rechercher et même remplacer des chaînes de caractères dans plusieurs fichiers.  
+Une astuce : vous pouvez effectuer une recherche dans l'ensemble d'un projet ou d'un dossier Ã  l'aide de l'outil "Rechercher dans les fichiers" (menu Ã©dition). Il peut rechercher et mÃªme remplacer des chaÃ®nes de caractÃ¨res dans plusieurs fichiers.  
 
 
 
@@ -77,7 +77,7 @@ Une astuce : vous pouvez effectuer une recherche dans l'ensemble d'un projet ou 
 
 ## Exemples  
 
-Voici quelques exemples d'importation/exportation/sauvegarde utilisant `here()` à partir d'un projet R. Pour en savoir plus sur l'utilisation du paquet **here**, consultez la page [Import and export].  
+Voici quelques exemples d'importation/exportation/sauvegarde utilisant `here()` Ã  partir d'un projet R. Pour en savoir plus sur l'utilisation du paquet **here**, consultez la page [Import and export](#import_export).  
 
 *Importer `linelist_raw.xlsx` du dossier "data" de votre projet R*
 
@@ -91,7 +91,7 @@ linelist <- import(here("data", "linelist_raw.xlsx"))
 export(linelist, here("data","clean", "my_linelist.rds"))
 ```
 
-*Enregistrement du tracé le plus récemment imprimé sous le nom de "epicurve_2021-02-15.png" dans le dossier "epicurves" du dossier "outputs" de votre projet R.*  
+*Enregistrement du tracÃ© le plus rÃ©cemment imprimÃ© sous le nom de "epicurve_2021-02-15.png" dans le dossier "epicurves" du dossier "outputs" de votre projet R.*  
 
 
 ```{r, eval=F}

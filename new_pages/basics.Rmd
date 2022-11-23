@@ -398,7 +398,7 @@ R est un langage orienté autour des fonctions, vous devez donc vous sentir capa
 -   Remplacer le copier-coller répétitif, qui peut être source d'erreurs\
 -   Donner des noms mémorisables aux morceaux de code
 
-L'écriture d'une fonction est traitée en détail à la page [Écriture de fonctions].
+L'écriture d'une fonction est traitée en détail à la page [Écriture de fonctions](#writing_functions).
 
 <!-- ======================================================= -->
 
@@ -584,7 +584,7 @@ Consultez ce [guide](https://support.rstudio.com/hc/en-us/articles/219949047-Ins
 
 ### Paquets suggérés {.unnumbered}
 
-Voir la page [Paquets suggérés] pour une liste de paquets que nous recommandons pour l'épidémiologie quotidienne.
+Voir la page [Paquets suggérés](#suggested_packages) pour une liste de paquets que nous recommandons pour l'épidémiologie quotidienne.
 
 <!-- ======================================================= -->
 
@@ -956,7 +956,7 @@ Tous les objets stockés dans R ont une *classe* qui indique à R comment gérer
 +------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
 | Facteur    | Ce sont des vecteurs qui ont un **ordre spécifié** ou une hiérarchie de valeurs                                                                                                                                                  | Une variable de statut économique à valeurs ordonnées                                                              |
 +------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------+
-| Des dates  | **Une fois que R est informé que certaines données sont des dates**, ces données peuvent être manipulées et affichées de manière spéciale. Voir la page sur [Working with dates] pour plus d'informations.                       | 2018-04-12 ou                                                                                                      |
+| Des dates  | **Une fois que R est informé que certaines données sont des dates**, ces données peuvent être manipulées et affichées de manière spéciale. Voir la page sur [Manipuler les dates](#working_dates) pour plus d'informations.                       | 2018-04-12 ou                                                                                                      |
 |            |                                                                                                                                                                                                                                  |                                                                                                                    |
 |            |                                                                                                                                                                                                                                  | 15/3/1954 ou                                                                                                       |
 |            |                                                                                                                                                                                                                                  |                                                                                                                    |
@@ -1399,7 +1399,7 @@ Nous conseillons également d'entourer ces opérateurs d'espaces, pour plus de l
 
 **`<<-`**
 
-Si [Fonctions d'écriture], ou si vous utilisez R de manière interactive avec des scripts sourcés, vous devrez peut-être utiliser cet opérateur d'affectation `<<-` (de **base** R). Cet opérateur est utilisé pour définir un objet dans un environnement R « parent » supérieur. Voir ceci [référence en ligne](https://stat.ethz.ch/R-manual/R-devel/library/base/html/assignOps.html).
+Si [Fonctions d'écriture](#writing_functions), ou si vous utilisez R de manière interactive avec des scripts sourcés, vous devrez peut-être utiliser cet opérateur d'affectation `<<-` (de **base** R). Cet opérateur est utilisé pour définir un objet dans un environnement R « parent » supérieur. Voir ceci [référence en ligne](https://stat.ethz.ch/R-manual/R-devel/library/base/html/assignOps.html).
 
 **`%<>%`**
 

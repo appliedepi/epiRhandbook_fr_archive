@@ -15,7 +15,7 @@ Pour expliquer le nettoyage des données, cette page commence par l'importation 
 
 Ce manuel met l'accent sur l'utilisation des fonctions  provenant  du package [**tidyverse**](https://www.tidyverse.org/), appartenant à la famille des packages de R. L'essentiel des fonctions de R présentées dans cette page sont listées ci-dessous.  
 
-Beaucoup de ces fonctions appartiennent au package R [**dplyr**](https://dplyr.tidyverse.org/), qui fournit des fonctions "verbes" pour résoudre les problèmes de manipulation des données (le nom fait référence à un "dataframe-[plier](https://www.thefreedictionary.com/plier#:~:text=also%20ply%C2%B7er%20(pl%C4%AB%E2%80%B2,holding%2C%20bending%2C%20or%20cutting.)"). **dplyr** fait partie de la famille de packages R **tidyverse** (qui comprend également **ggplot2**, **tidyr**, **stringr**, **tibble**, **purrr**, **magrittr**, et **forcats** entre autres).  
+Beaucoup de ces fonctions appartiennent au package R [**dplyr**](https://dplyr.tidyverse.org/), qui fournit des fonctions "verbes" pour résoudre les problèmes de manipulation des données (le nom fait référence à un ["dataframe"- plier](https://en.wikipedia.org/wiki/Pliers). **dplyr** fait partie de la famille de packages R **tidyverse** (qui qui consiste de **ggplot2**, **tidyr**, **stringr**, **tibble**, **purrr**, **magrittr**, et **forcats** entre autres).  
 
 
 
@@ -49,7 +49,7 @@ Vous pouvez rencontrer une méthode alternative de gestion des données à parti
 
 ### Nomenclature {.unnumbered}  
 
-Dans ce manuel, nous faisons généralement référence aux "colonnes" et aux "lignes" au lieu des "variables" et des "observations". Comme l'explique cet introduction sur ["tidy data"] (https://tidyr.tidyverse.org/articles/tidy-data.html), la plupart des jeux de données statistiques épidémiologiques sont sous le format de lignes, de colonnes et de valeurs.  
+Dans ce manuel, nous faisons généralement référence aux "colonnes" et aux "lignes" au lieu des "variables" et des "observations". Comme l'explique cet introduction sur ["tidy data"](https://tidyr.tidyverse.org/articles/tidy-data.html), la plupart des jeux de données statistiques épidémiologiques sont sous le format de lignes, de colonnes et de valeurs.  
 
 *Les variables* contiennent les valeurs qui mesurent le même attribut sous-jacent (comme le groupe d'âge, le résultat ou la date d'apparition). *Les observations* contiennent toutes les valeurs mesurées sur la même unité (par exemple, une personne, un site ou un échantillon de laboratoire). Ces aspects peuvent donc être plus difficiles à définir de manière précise.  
 
@@ -166,7 +166,7 @@ skimr::skim_without_charts(linelist_raw)
 
 En R, les *noms* de colonnes sont la valeur "d'en-tête" ou la "première cellule" d'une colonne. Ils sont utilisés pour faire référence aux colonnes dans le code et servent de labels par défaut dans les figures.  
 
-D'autres logiciels statistiques tels que SAS et STATA utilisent des *"labels"* qui représentent un format plus long et détaillé des noms de colonnes plus courts existants. Bien que R offre la possibilité d'ajouter des étiquettes de colonne aux données, cela n'est pas mis en avant en pratique. Pour rendre les noms de colonne explicites et descriptifs pour les figures, on ajuste généralement leur affichage dans les commandes de qui créent les graphiques (par exemple, les titres des axes ou des légendes d'une graphique, ou les en-têtes de colonne dans un tableau imprimé - voir la section [scales section of the ggplot tips page](#ggplot_tips_scales) et les pages [Tableaux pour la présentation](#presentation_tables)). Si vous souhaitez attribuer des étiquettes de colonne dans les données, lisez la suite en ligne [ici](https://cran.r-project.org/web/packages/expss/vignettes/labels-support.html) et [ici](https://cran.r-project.org/web/packages/labelled/vignettes/intro_labelled.html).  
+D'autres logiciels statistiques tels que SAS et STATA utilisent des *"labels"* qui représentent un format plus long et détaillé des noms de colonnes plus courts existants. Bien que R offre la possibilité d'ajouter des étiquettes de colonne aux données, cela n'est pas mis en avant en pratique. Pour rendre les noms de colonne explicites et descriptifs pour les figures, on ajuste généralement leur affichage dans les commandes de qui créent les graphiques (par exemple, les titres des axes ou des légendes d'une graphique, ou les en-têtes de colonne dans un tableau imprimé - voir la section [section échelles de la page Astuces de ggplot](#ggplot_tips_scales) et les pages [Tableaux pour la présentation](#tables_presentation)). Si vous souhaitez attribuer des étiquettes de colonne dans les données, lisez la suite en ligne [ici](https://cran.r-project.org/web/packages/expss/vignettes/labels-support.html) et [ici](https://cran.r-project.org/web/packages/labelled/vignettes/intro_labelled.html).  
 
 Comme les noms de colonnes sur R sont utilisés très souvent, ils doivent avoir une syntaxe "propre". Nous suggérons ce qui suit :  
 
@@ -260,7 +260,7 @@ Vous pouvez également renommer par position de colonne, au lieu du nom de colon
 
 #### Renommer via `select()` et `summarise()` {.unnumbered}  
 
-Comme raccourci, vous pouvez aussi renommer les colonnes dans les fonctions **dplyr** `select()` et `summarise()`. `select()` est utilisé pour ne garder que certaines colonnes (et est couvert plus loin dans cette page). La fonction `summarise()` est traitée dans les pages [Regroupement des données] et [Tableaux descriptifs]. Ces fonctions utilisent également le format `nouveau_nom = ancien_nom`. Voici un exemple :  
+Comme raccourci, vous pouvez aussi renommer les colonnes dans les fonctions **dplyr** `select()` et `summarise()`. `select()` est utilisé pour ne garder que certaines colonnes (et est couvert plus loin dans cette page). La fonction `summarise()` est traitée dans les pages [Regroupement des données](#grouping_data) et [Tableaux descriptifs](#descriptive_tables). Ces fonctions utilisent également le format `nouveau_nom = ancien_nom`. Voici un exemple :  
 
 ```{r, eval=F}
 linelist_raw %>% 
@@ -286,7 +286,7 @@ Vous pouvez nettoyer ces noms manuellement en faisant référence à leur numér
 
 #### Fusion des noms de colonnes et de cellules sur Excel {.unnumbered}  
 
-La fusion de cellules dans un fichier Excel est un phénomène courant lors de la réception de données. Comme expliqué dans [Transition vers R], les cellules fusionnées peuvent être agréables pour la lecture humaine des données, mais ne sont pas des "tidy data" et posent de nombreux problèmes pour la lecture automatique des données. R ne peut pas prendre en compte les cellules fusionnées.  
+La fusion de cellules dans un fichier Excel est un phénomène courant lors de la réception de données. Comme expliqué dans [Transition vers R](#transition_to_R), les cellules fusionnées peuvent être agréables pour la lecture humaine des données, mais ne sont pas des "tidy data" et posent de nombreux problèmes pour la lecture automatique des données. R ne peut pas prendre en compte les cellules fusionnées.  
 
 Rappelez aux personnes chargées de la saisie des données que **les données lisibles par l'homme ne sont pas les mêmes que celles lisibles par la machine**. Efforcez-vous de former les utilisateurs aux principes des [**Tidy Data**] (https://r4ds.had.co.nz/tidy-data.html). Dans la mesure du possible, essayez de modifier les procédures pour que les données arrivent dans un format tidy, sans cellules fusionnées.  
 
@@ -392,7 +392,7 @@ linelist %>%
   names()
 ```
 
-La fonction `matches()` fonctionne de la même manière que `contains()` mais on peut lui fournir une expression régulière (voir la page sur les [Caractères et chaînes de caractères]), comme plusieurs chaînes de caractères séparées par des barres OR à l'intérieur des parenthèses :  
+La fonction `matches()` fonctionne de la même manière que `contains()` mais on peut lui fournir une expression régulière (voir la page sur les [Caractères et chaînes de caractères](#character_strings)), comme plusieurs chaînes de caractères séparées par des barres OR à l'intérieur des parenthèses :  
 
 ```{r}
 # searched for multiple character matches
@@ -487,7 +487,7 @@ linelist <- linelist_raw %>%
 ## Deduplication
 
 
-Voir la page du manuel sur la [déduplication] pour de nombreuses options sur la façon de dédupliquer les données. Seul un exemple très simple de déduplication de lignes est présenté ici.  
+Voir la page du manuel sur la [déduplication](#deduplication) pour de nombreuses options sur la façon de dédupliquer les données. Seul un exemple très simple de déduplication de lignes est présenté ici.  
 
 Le package **dplyr** offre la fonction `distinct()`. Cette fonction examine chaque ligne et réduit le dataframe à seulement les lignes uniques. C'est-à-dire qu'elle supprime les lignes qui sont à 100% des doublons.  
 
@@ -567,7 +567,7 @@ linelist <- linelist %>%
   mutate(bmi = wt_kg / (ht_cm/100)^2)
 ```
 
-Si vous créez plusieurs nouvelles colonnes, séparez-les par une virgule et une nouvelle ligne. Vous trouverez ci-dessous des exemples de nouvelles colonnes, y compris celles qui sont constituées de valeurs provenant d'autres colonnes combinées à l'aide de `str_glue()` du package **stringr** (voir la page sur [Caractères et chaînes de caractères].  
+Si vous créez plusieurs nouvelles colonnes, séparez-les par une virgule et une nouvelle ligne. Vous trouverez ci-dessous des exemples de nouvelles colonnes, y compris celles qui sont constituées de valeurs provenant d'autres colonnes combinées à l'aide de `str_glue()` du package **stringr** (voir la page sur [Caractères et chaînes de caractères](#character_strings).  
 
 ```{r}
 new_col_demo <- linelist %>%                       
@@ -610,7 +610,7 @@ DT::datatable(head(new_col_demo,50), rownames = FALSE, options = list(pageLength
   
 Les colonnes contenant des valeurs qui sont des dates, des nombres ou des valeurs logiques (VRAI/FAUX) ne se comporteront comme prévu que si elles sont dans la classe appropriée. Il y a une différence entre "2" de classe caractère et 2 de classe numérique !  
 
-Il existe des moyens de définir la classe des colonnes avec les commandes d'importation, mais cela est souvent fastidieux. Consultez la section [Bases de R] sur les classes d'objets pour en savoir plus sur la conversion de la classe des objets et des colonnes.  
+Il existe des moyens de définir la classe des colonnes avec les commandes d'importation, mais cela est souvent fastidieux. Consultez la section [Bases de R](#rbasics) sur les classes d'objets pour en savoir plus sur la conversion de la classe des objets et des colonnes.  
 
 Tout d'abord, effectuons quelques vérifications sur les colonnes importantes pour voir si elles sont de la bonne classe. Nous avons également vu cela au début lorsque nous avons lancé `skim()`.  
 
@@ -634,16 +634,16 @@ linelist <- linelist %>%
   mutate(age = as.numeric(age))
 ```
 
-De la même manière, vous pouvez utiliser `as.character()` et `as.logical()`. Pour convertir en classe Factor, vous pouvez utiliser `factor()` de **base** R ou `as_factor()` de **forcats**. Pour en savoir plus, consultez la page [Factors].  
+De la même manière, vous pouvez utiliser `as.character()` et `as.logical()`. Pour convertir en classe Factor, vous pouvez utiliser `factor()` de **base** R ou `as_factor()` de **forcats**. Pour en savoir plus, consultez la page [Facteurs](#factors).  
 
-Vous devez faire attention lorsque vous convertissez en classe Date. Plusieurs méthodes sont expliquées sur la page [Working with dates]. En général, les valeurs brutes de la date doivent toutes être dans le même format pour que la conversion fonctionne correctement (par exemple "MM/JJ/AAAA", ou "JJ MM AAAA"). Après la conversion en classe Date, vérifiez vos données pour confirmer que chaque valeur a été convertie correctement.  
+Vous devez faire attention lorsque vous convertissez en classe Date. Plusieurs méthodes sont expliquées sur la page [Manipuler les dates](#working_dates). En général, les valeurs brutes de la date doivent toutes être dans le même format pour que la conversion fonctionne correctement (par exemple "MM/JJ/AAAA", ou "JJ MM AAAA"). Après la conversion en classe Date, vérifiez vos données pour confirmer que chaque valeur a été convertie correctement.  
 
 
 
 
 ### Données groupées {.unnumbered}  
 
-Si votre dataframe est déjà *groupée* (voir la page sur [Grouping data]), `mutate()` peut se comporter différemment que si la base de données n'est pas groupée. Toutes les fonctions de résumé, comme `mean()`, `median()`, `max()`, etc. seront calculées par groupe, et non par toutes les lignes.     
+Si votre dataframe est déjà *groupée* (voir la page sur [Travailler sur des données groupées](#grouping_data)), `mutate()` peut se comporter différemment que si la base de données n'est pas groupée. Toutes les fonctions de résumé, comme `mean()`, `median()`, `max()`, etc. seront calculées par groupe, et non par toutes les lignes.     
 
 ```{r, eval=F}
 # Normalisation de l'age en fonction la moyenne
@@ -664,7 +664,7 @@ Pour en savoir plus sur l'utilisation de `mutate ()` sur des blocs de données g
 ### Transformer plusieurs colonnes {#clean_across .unnumbered}
 
 
-Souvent, pour écrire un code concis, vous voulez appliquer la même transformation à plusieurs colonnes à la fois. Une transformation peut être appliquée à plusieurs colonnes à la fois en utilisant la fonction `across()` du package **dplyr** (également contenu dans le package **tidyverse**). `across()` peut être utilisé avec n'importe quelle fonction **dplyr**, mais est couramment utilisé dans `select()`, `mutate()`, `filter()`, ou `summarise()`. Voir comment il est appliqué à `summarise()` dans la page sur les [Tableaux descriptifs].  
+Souvent, pour écrire un code concis, vous voulez appliquer la même transformation à plusieurs colonnes à la fois. Une transformation peut être appliquée à plusieurs colonnes à la fois en utilisant la fonction `across()` du package **dplyr** (également contenu dans le package **tidyverse**). `across()` peut être utilisé avec n'importe quelle fonction **dplyr**, mais est couramment utilisé dans `select()`, `mutate()`, `filter()`, ou `summarise()`. Voir comment il est appliqué à `summarise()` dans la page sur les [Tableaux descriptifs](#decriptive_tables).  
 
 Spécifiez les colonnes à l'argument `.cols = ` et la ou les fonctions à appliquer à `.fns = `. Tout argument supplémentaire à fournir à la fonction `.fns` peut être inclus après une virgule, toujours dans `across()`.   
 
@@ -712,9 +712,9 @@ linelist <- linelist %>%
 Vous pouvez lire la documentation avec `?across` pour des détails sur la façon de fournir des fonctions à `across()`. Quelques points récapitulatifs : il y a plusieurs façons de spécifier la ou les fonctions à exécuter sur une colonne et vous pouvez même définir vos propres fonctions :  
 
 * Vous pouvez fournir le nom de la fonction seul (par exemple `mean` ou `as.character`)  
-* Vous pouvez fournir la fonction dans le style **purrr** (par exemple `~ mean(.x, na.rm = TRUE)`) (voir [cette page][Itération, boucles et listes])  
+* Vous pouvez fournir la fonction dans le style **purrr** (par exemple `~ mean(.x, na.rm = TRUE)`) (voir [cette page][#iteration])  
 * Vous pouvez spécifier plusieurs fonctions en fournissant une liste (par exemple, `list(mean = mean, n_miss = ~ sum(is.na(.x))`).  
-  * Si vous fournissez plusieurs fonctions, plusieurs colonnes transformées seront retournées par colonne d'entrée, avec des noms uniques dans le format `col_fn`. Vous pouvez ajuster la façon dont les nouvelles colonnes sont nommées avec l'argument `.names =` en utilisant la syntaxe **glue** (voir la page sur [Characters and strings]) où `{.col}` et `{.fn}` sont des raccourcis pour la colonne d'entrée et la fonction.  
+  * Si vous fournissez plusieurs fonctions, plusieurs colonnes transformées seront retournées par colonne d'entrée, avec des noms uniques dans le format `col_fn`. Vous pouvez ajuster la façon dont les nouvelles colonnes sont nommées avec l'argument `.names =` en utilisant la syntaxe **glue** (voir la page sur [Caractères et chaînes de caractères](#character_strings)) où `{.col}` et `{.fn}` sont des raccourcis pour la colonne d'entrée et la fonction.  
   
   
 Voici quelques ressources en ligne sur l'utilisation de `across()` : [creator Hadley Wickham's thoughts/rationale](https://www.tidyverse.org/blog/2020/04/dplyr-1-0-0-colwise/)
@@ -993,7 +993,7 @@ Lorsque chaque ligne des données est évaluée, les critères sont appliqués/�
 Dans le même ordre d'idées, dans votre dernière ligne de code, placez `TRUE` sur le côté gauche, ce qui permettra de capturer toute ligne qui ne répond à aucun des critères précédents. Le côté droit de cette déclaration pourrait se voir attribuer une valeur comme "vérifiez-moi !" ou manquante.  
 
 
-<span style="color: red;">**_DANGER:_** **Les valeurs du côté droit doivent toutes être de la même classe** - soit numérique, caractère, date, logique, etc. Pour attribuer des valeurs manquantes (`NA`), Il est dnas certaine situation important d'utiliser  des variantes spéciales de `NA` telles que `NA_caracter_`, `NA_real_` (pour les numériques ou POSIX), et `as.Date(NA)`. Pour en savoir plus, lisez [Working with dates].</span>  
+<span style="color: red;">**_DANGER:_** **Les valeurs du côté droit doivent toutes être de la même classe** - soit numérique, caractère, date, logique, etc. Pour attribuer des valeurs manquantes (`NA`), Il est dnas certaine situation important d'utiliser  des variantes spéciales de `NA` telles que `NA_caracter_`, `NA_real_` (pour les numériques ou POSIX), et `as.Date(NA)`. Pour en savoir plus, lisez [Manipuler les dates](#working_dates).</span>  
 
 
 
@@ -1017,7 +1017,7 @@ linelist <- linelist %>%
 
 **fct_explicit_na()**  
 
-C'est une fonction du package **forcats** qui permet de manipuler les colonnes de la classe Factor. Les facteurs constitue  la facon dont  R  gère les valeurs *ordonnées* telles que `c("Premier", "Deuxieme", "Troisieme")` ou pour définir l'ordre dans lequel les valeurs (par exemple les hôpitaux) apparaissent dans les tableaux et les graphiques. Voir la page sur les [Facteurs].  
+C'est une fonction du package **forcats** qui permet de manipuler les colonnes de la classe Factor. Les facteurs constitue  la facon dont  R  gère les valeurs *ordonnées* telles que `c("Premier", "Deuxieme", "Troisieme")` ou pour définir l'ordre dans lequel les valeurs (par exemple les hôpitaux) apparaissent dans les tableaux et les graphiques. Voir la page sur les [Facteurs](#factors).  
 
 Si vos données sont de la classe Factor et que vous essayez de convertir `NA` en "Missing" en utilisant `replace_na()`, vous obtiendrez cette erreur : `invalid factor level, NA generated`. Vous avez essayé d'ajouter "Missing" comme valeur, alors qu'il n'était pas défini comme un niveau possible du facteur, et il a été rejeté.  
 
@@ -1057,7 +1057,7 @@ linelist <- linelist %>%
 
 ### Dictionnaire contenant les parametres de nettoyage {.unnumbered}
 
-Utilisez le package **linelist** et sa fonction `clean_variable_spelling()` pour nettoyer un dataframe avec un *dictionnaire de nettoyage*. **linelist** est un package développé par [RECON] (https://github.com/reconhub/linelist) - le R Epidemics Consortium.  
+Utilisez le package **linelist** et sa fonction `clean_variable_spelling()` pour nettoyer un dataframe avec un *dictionnaire de nettoyage*. **linelist** est un package développé par [RECON](https://github.com/reconhub/linelist) - le R Epidemics Consortium.  
 
 1) Créez un dictionnaire de nettoyage avec 3 colonnes :  
     * Une colonne "from" (la valeur incorrecte)  
@@ -1071,7 +1071,7 @@ knitr::include_graphics(here::here("images", "cleaning_dict.png"))
 ```
 
 
-2) Importez le fichier du dictionnaire dans R. Cet exemple peut être téléchargé via les instructions de la page [Télécharger le manuel et les données].  
+2) Importez le fichier du dictionnaire dans R. Cet exemple peut être téléchargé via les instructions de la page [Télécharger le manuel et les données](#download_book_data).  
 
 ```{r, echo=F}
 cleaning_dict <- rio::import(here("data", "case_linelists", "cleaning_dict.csv"))
@@ -1197,7 +1197,7 @@ Pour cet exemple, nous allons créer une colonne `age_cat` en utilisant la colon
 class(linelist$age_years)
 ```
 
-Tout d'abord, examinez la distribution de vos données, afin de définir limites  appropriés. Voir la page sur [les bases de ggplot].  
+Tout d'abord, examinez la distribution de vos données, afin de définir limites  appropriés. Voir la page sur [les bases de ggplot](#ggplot_basics).  
 
 ```{r, out.height='50%'}
 # examine the distribution
@@ -1352,7 +1352,7 @@ table("Numeric Values" = linelist$age_years,   # names specified in table for cl
 
 **Réétiquetage des valeurs `NA` **.
 
-Vous pouvez vouloir attribuer aux valeurs `NA` une étiquette telle que "Missing". Comme la nouvelle colonne est de la classe Factor (valeurs restreintes), vous ne pouvez pas simplement la muter avec `replace_na()`, car cette valeur sera rejetée. A la place, utilisez `fct_explicit_na()` de **forcats** comme expliqué dans la page [Factors].   
+Vous pouvez vouloir attribuer aux valeurs `NA` une étiquette telle que "Missing". Comme la nouvelle colonne est de la classe Factor (valeurs restreintes), vous ne pouvez pas simplement la muter avec `replace_na()`, car cette valeur sera rejetée. A la place, utilisez `fct_explicit_na()` de **forcats** comme expliqué dans la page [Facteurs](#factors).   
 
 ```{r}
 linelist <- linelist %>% 
@@ -1380,7 +1380,7 @@ table(linelist$age_cat, useNA = "always")
 
 **Créer des seuils de rupture et des étiquettes**  
 
-Pour une manière rapide de faire des pauses et de labelliser des vecteurs, utilisez quelque chose comme ci-dessous. Voir la page [R basics] pour les références sur `seq()` et `rep()`.  
+Pour une manière rapide de faire des pauses et de labelliser des vecteurs, utilisez quelque chose comme ci-dessous. Voir la page [Bases de R](#rbasics) pour les références sur `seq()` et `rep()`.  
 
 ```{r, eval=F}
 # Make break points from 0 to 90 by 5
@@ -1422,7 +1422,7 @@ quantile(linelist$age_years,              #specifier le vecteur numerique sur le
   na.rm = TRUE)                            # ignorer les valeurs manquantes 
 ```
 
-Vous pouvez utiliser les résultats de `quantile()` comme points de rupture dans `age_categories()` ou `cut()`. Ci-dessous, nous créons une nouvelle colonne `déciles` en utilisant `cut()` où les ruptures sont définies en utilisant `quantiles()` sur `age_years`. Ci-dessous, nous affichons les résultats en utilisant `tabyl()` de **janitor** pour que vous puissiez voir les pourcentages (voir la page [Descriptive tables]). Notez comment ils ne sont pas exactement 10% dans chaque groupe.  
+Vous pouvez utiliser les résultats de `quantile()` comme points de rupture dans `age_categories()` ou `cut()`. Ci-dessous, nous créons une nouvelle colonne `déciles` en utilisant `cut()` où les ruptures sont définies en utilisant `quantiles()` sur `age_years`. Ci-dessous, nous affichons les résultats en utilisant `tabyl()` de **janitor** pour que vous puissiez voir les pourcentages (voir la page [Tableaux descriptifs](#descriptive_tables)). Notez comment ils ne sont pas exactement 10% dans chaque groupe.  
 
 ```{r}
 linelist %>%                              #commencer avec la donnéé linelist
@@ -1573,12 +1573,12 @@ Si une classe que vous avez fournie est incorrecte, vous verrez une erreur comme
 Error: Can't combine ..1$infection date <date> and ..2$infection date <character>.
 ```
 
-(lorsque vous insérez une ligne avec une valeur de date, n'oubliez pas d'envelopper la date dans la fonction `as.Date()` comme `as.Date("2020-10-10")`.).
+(lorsque vous insérez une ligne avec une valeur de date, n'oubliez pas d'envelopper la date dans la fonction `as.Date()` comme `as.Date("2020-10-10")`.
 
 
 ### coller des lignes {.unnumbered}  
 
-Pour combiner des ensembles de données ensemble en liant les lignes d'un cadre de données au bas d'un autre cadre de données, vous pouvez utiliser `bind_rows()` de **dplyr**. Ceci est expliqué plus en détail dans la page [Joindre des données].  
+Pour combiner des ensembles de données ensemble en liant les lignes d'un cadre de données au bas d'un autre cadre de données, vous pouvez utiliser `bind_rows()` de **dplyr**. Ceci est expliqué plus en détail dans la page [Joindre des données](#joining_matching).  
 
 
 
@@ -1614,7 +1614,7 @@ Une fois le filtre appliqué, le nombre de lignes dans `linelist` est ` linelist
 
 ### Filtrer les valeurs manquantes {.unnumbered}  
 
-Il est assez courant de vouloir filtrer les lignes qui ont des valeurs manquantes. Résistez à l'envie d'écrire `filter(!is.na(column) & !is.na(column))` et utilisez plutôt la fonction **tidyr** qui est spécialement conçue à cet effet : `drop_na()`. Si elle est exécutée avec des parenthèses vides, elle supprime les lignes avec *toutes* les valeurs manquantes. Alternativement, vous pouvez fournir des noms de colonnes spécifiques à évaluer pour les valeurs manquantes, ou utiliser les fonctions d'aide "tidyselect" décrites [ci-dessus] (#clean_tidyselect).  
+Il est assez courant de vouloir filtrer les lignes qui ont des valeurs manquantes. Résistez à l'envie d'écrire `filter(!is.na(column) & !is.na(column))` et utilisez plutôt la fonction **tidyr** qui est spécialement conçue à cet effet : `drop_na()`. Si elle est exécutée avec des parenthèses vides, elle supprime les lignes avec *toutes* les valeurs manquantes. Alternativement, vous pouvez fournir des noms de colonnes spécifiques à évaluer pour les valeurs manquantes, ou utiliser les fonctions d'aide "tidyselect" décrites [ci-dessus](#clean_tidyselect).  
 
 ```{r, eval=F}
 linelist %>% 
@@ -1671,7 +1671,7 @@ Peut-on simplement filtrer par `date_onset` les lignes après Juin 2013 ? **Atte
 
 <span style="color: red;">**_DANGERS:_** Le fait de filtrer sur une date ou un nombre supérieur (>) ou inférieur (<) peut supprimer toutes les lignes contenant des valeurs manquantes (`NA`) ! En effet, `NA` est considéré comme infiniment grand et petit.</span>
 
-*(Voir la page [Travailler avec des dates] pour plus d'informations sur le travail avec des dates et le paquet **lubridate**)*.
+*(Voir la page [Manipuler les dates](#working_dates) pour plus d'informations sur le travail avec des dates et le paquet **lubridate**)*.
 
 #### Concevoir le filtre {.unnumbered}  
 
@@ -1865,8 +1865,8 @@ linelist <- linelist_raw %>%
 <!-- ======================================================= -->
 ## Calculs par rangée  
 
-Si vous voulez effectuer un calcul dans une ligne, vous pouvez utiliser `rowwise()` de **dplyr**. Voir cette vignette en ligne sur [row-wise calculations] (https://cran.r-project.org/web/packages/dplyr/vignettes/rowwise.html).  
-Par exemple, ce code applique `rowwise()` et crée une nouvelle colonne qui additionne le nombre de colonnes de symptômes spécifiées qui ont la valeur "yes", pour chaque ligne de la linelist. Les colonnes sont spécifiées dans `sum()` par leur nom dans un vecteur `c()`. `rowwise()` est essentiellement un type spécial de `group_by()`, il est donc préférable d'utiliser `ungroup()` lorsque vous avez terminé (page sur [Grouping data]).  
+Si vous voulez effectuer un calcul dans une ligne, vous pouvez utiliser `rowwise()` de **dplyr**. Voir cette vignette en ligne sur [calculs par ligne](https://cran.r-project.org/web/packages/dplyr/vignettes/rowwise.html).  
+Par exemple, ce code applique `rowwise()` et crée une nouvelle colonne qui additionne le nombre de colonnes de symptômes spécifiées qui ont la valeur "yes", pour chaque ligne de la linelist. Les colonnes sont spécifiées dans `sum()` par leur nom dans un vecteur `c()`. `rowwise()` est essentiellement un type spécial de `group_by()`, il est donc préférable d'utiliser `ungroup()` lorsque vous avez terminé (page sur [Travailler sur des données groupées](#grouping_data)).  
 
 ```{r,}
 linelist %>%
@@ -1879,7 +1879,7 @@ linelist %>%
   
 Lorsque vous spécifiez la colonne à évaluer, vous pouvez utiliser les fonctions d'aide "tidyselect" décrites dans la section `select()` de cette page. Vous devez juste faire un ajustement (parce que vous ne les utilisez pas dans une fonction **dplyr** comme `select()` ou `summarise()`).  
 
-Placez les critères de spécification des colonnes dans la fonction **dplyr** `c_across()`. Ceci parce que `c_across` ([documentation](https://dplyr.tidyverse.org/reference/c_across.html)) est conçue pour fonctionner avec `rowwise()` spécifiquement. Par exemple, le code suivant :  
+Placez les critères de spécification des colonnes dans la fonction **dplyr** `c_across()`. Ceci marche parce que `c_across` ( [documentation](https://dplyr.tidyverse.org/reference/c_across.html)) est conçue pour fonctionner avec `rowwise()` spécifiquement. Par exemple, le code suivant :  
 
 * Applique `rowwise()` pour que l'opération suivante (`sum()`) soit appliquée à chaque ligne (sans additionner des colonnes entières)  
 * Crée la nouvelle colonne `num_NA_dates`, définie pour chaque ligne comme le nombre de colonnes (dont le nom contient "date") pour lesquelles `is.na()` a donné la valeur TRUE (ce sont des données manquantes).  
@@ -1908,11 +1908,11 @@ linelist %>%
 
 Utilisez la fonction **dplyr** `arrange()` pour trier ou ordonner les lignes par les valeurs des colonnes.  
 
-Listez simplement les colonnes dans l'ordre où elles doivent être triées. Spécifiez `.by_group = TRUE` si vous voulez que le tri se fasse d'abord par tout *groupement* appliqué aux données (voir la page sur [Grouping data]).  
+Listez simplement les colonnes dans l'ordre où elles doivent être triées. Spécifiez `.by_group = TRUE` si vous voulez que le tri se fasse d'abord par tout *groupement* appliqué aux données (voir la page sur [Travailler sur des données groupées](#grouping_data)).  
 
 Par défaut, les colonnes seront triées dans l'ordre "ascendant" (ce qui s'applique aux colonnes numériques et aussi aux colonnes de caractères). Vous pouvez trier une variable dans l'ordre "descendant" en l'entourant de `desc()`.  
 
-Le tri des données avec `arrange()` est particulièrement utile lorsque vous créez des [Tableaux de présentation], lorsque vous utilisez `slice()` pour prendre les lignes "supérieures" par groupe, ou lorsque vous définissez l'ordre des niveaux de facteurs par ordre d'apparition.  
+Le tri des données avec `arrange()` est particulièrement utile lorsque vous créez des [Tableaux de présentation](#tables_presentation), lorsque vous utilisez `slice()` pour prendre les lignes "supérieures" par groupe, ou lorsque vous définissez l'ordre des niveaux de facteurs par ordre d'apparition.  
 
 Par exemple, pour trier les lignes de notre linelist par `hospital`, puis par `date_onset` en ordre décroissant, nous utiliserons :  
 

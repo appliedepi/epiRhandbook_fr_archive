@@ -90,6 +90,7 @@ Cela ouvrira un nouveau script .Rmd.
 
 Le répertoire de travail d'un fichier markdown est l'endroit où le fichier Rmd lui-même est enregistré. Par exemple, si le projet R se trouve dans `~/Documents/projetX` et que le fichier Rmd lui-même se trouve dans un sous-dossier `~/Documents/projetX/markdownfiles/markdown.Rmd`, le code `read.csv("data.csv")` dans le markdown cherchera un fichier csv dans le dossier `markdownfiles`, et non dans le dossier racine du projet où les scripts dans les projets chercheraient normalement automatiquement.
 
+
 Pour faire référence à des fichiers ailleurs, vous devrez soit utiliser le chemin complet du fichier, soit utiliser le "package" **here**. Le "package" **here** définit le répertoire de travail comme étant le dossier racine du projet R et est expliqué en détail dans les pages [Projets R]() et [Importation et exportation](#import_export) de ce manuel. Par exemple, pour importer un fichier appelé "data.csv" depuis le dossier `projectX`, le code serait `import(here("data.csv"))`.
 
 Notez que l'utilisation de `setwd()` dans les scripts R Markdown n'est pas recommandée -- elle ne s'applique qu'au morceau de code dans lequel elle est écrite.
@@ -137,6 +138,7 @@ date: "`r Sys.Date()`"
 
 Vous pouvez utiliser du code R dans des valeurs YAML en l'écrivant en tant que code en ligne (précédé de `r` dans les crochets arrière) mais aussi entre guillemets (voir l'exemple ci-dessus pour `date:`).
 
+
 Dans l'image ci-dessus, parce que nous avons cliqué que notre sortie par défaut serait un fichier html, nous pouvons voir que le YAML dit `output : html_document`. Cependant, nous pouvons aussi changer cela pour dire `powerpoint_presentation` ou `word_document` ou même `pdf_document`.
 
 ### Texte {.unnumbered}
@@ -164,11 +166,13 @@ L'apparence réelle de la police peut être définie en utilisant des modèles s
 
 Il n'existe pas de mécanisme simple pour modifier la couleur du texte dans R Markdown. Une solution de contournement, *si votre fichier de sortie est un fichier HTML*, consiste à ajouter une ligne HTML dans le texte Markdown. Le code HTML ci-dessous imprimera une ligne de texte en rouge gras.
 
+
 ``` {.md}
 <span style="color: red;">**_DANGER:_** This is a warning.</span>  
 ```
 
-[***DANGER:*** This is a warning.]{style="color: red;"}
+[***DANGER:*** Ceci est un avertissement.]{style="color: red;"}
+
 
 #### Titres et en-têtes {.unnumbered}
 
@@ -192,6 +196,7 @@ Utilisez des astérisques (`*`) pour créer une liste de puces. Terminez la phra
 
 Voici mes puces (il y a deux espaces après ce deux-points):    
 
+
 * Puce 1 (suivi de deux espaces et Entrée/Retour) 
 * Puce 2 (suivi de deux espaces et Entrée/Retour) 
   * Sous-puce 1 (suivi de deux espaces et Entrée/Retour)  
@@ -212,6 +217,7 @@ knitr::include_graphics(here::here("images", "markdown/rmarkdown_hide_text.png")
 
 Les sections du script qui sont dédiées à l'exécution du code R sont appelées "chunks". C'est là que vous pouvez charger des "packages", importer des données et effectuer la gestion et la visualisation des données. Il peut y avoir de nombreux "chunks" de code (mettez  en autant qu'il en faut pour un code plus lisible et comprehensible), ils peuvent donc vous aider à organiser votre code R en parties, éventuellement entrecoupées de texte. Remarque : ces "chunks" auront une couleur de fond légèrement différente de celle de la partie narrative du document.
 
+
 Chaque chunk s'ouvre sur une ligne qui commence par trois "quotes" inversés et des crochets qui contiennent les paramètres du chunk (`{ }`). Le chunk se termine par trois autres "quotes" inversés.
 
 Vous pouvez créer un nouveau chunk en le tapant vous-même, en utilisant le raccourci clavier "Ctrl + Alt + i" (ou Cmd + Shift + r sur Mac), ou en cliquant sur l'icône verte "insérer un nouveau chunk de code" en haut de votre éditeur de script.
@@ -231,6 +237,7 @@ Quelques remarques sur le contenu des accolades `{ }` :
 - `fig.show='hold'` si votre chunk imprime plusieurs figures et que vous souhaitez qu'elles soient affichées les unes à côté des autres (à associer à `out.width = c("33%", "67%")`. Vous pouvez également définir `fig.show='asis'` pour les afficher en dessous du code qui les génère, `'hide'` pour les cacher, ou `'animate'` pour concaténer plusieurs d'entre elles dans une animation.`
 - Un en-tête de chunk doit être écrit en *une ligne*\.
 - Essayez d'éviter les points, les caractères de soulignement et les espaces. Utilisez des tirets ( - ) à la place si vous avez besoin d'un séparateur.
+
 
 Lisez plus en détail les options **knitr** [ici](https://yihui.org/knitr/options/).
 
@@ -292,6 +299,7 @@ Create a table using hyphens ( - ) and bars ( \| ). The number of hyphens before
 
 Créez un tableau en utilisant des traits d'union ( - ) et des barres ( \| ). Le nombre de traits d'union avant/entre les barres permet de déterminer le nombre d'espaces dans la cellule avant que le texte ne commence à se positionner.
 
+
 ``` {.md}
 Column 1 |Column  2 |Column 3
 ---------|----------|--------
@@ -321,12 +329,15 @@ Vous pouvez ajouter une option supplémentaire `.tabset-pills` après `.tabset` 
 
 <span style="color: orange;">**_CAUTION:_** Sachez que lors de l'affichage de la sortie HTML par onglets, la fonctionnalité de recherche Ctrl+f ne recherchera que les onglets "actifs", et non les onglets cachés.</span>
 
+<!-- ======================================================= -->
+
 
 <!-- ======================================================= -->
 
 ## Structure du fichier R Markdown
 
 Il existe plusieurs façons de structurer votre fichier R Markdown et les scripts R associés. Chacune présente des avantages et des inconvénients :
+
 
 - R Markdown autonome - tout ce qui est nécessaire pour le rapport est importé ou créé dans le même fichier R Markdown.
 
@@ -374,9 +385,11 @@ Une alternative est d'utiliser l'option `child =` **knitr**.
 ### Runfile {.unnumbered}
 
 
+Par exemple, vous pouvez charger les "packages", charger et nettoyer les données, et même créer les graphiques d'intérêt avant `render()`. Ces étapes peuvent se produire dans le script R, ou dans d'autres scripts qui sont "sourcés". Tant que ces commandes se produisent dans la même session RStudio et que les objets sont enregistrés dans l'environnement, les objets peuvent ensuite être appelés dans le contenu Rmd. Ensuite, le R markdown lui-même ne sera utilisé que pour l'étape finale - pour produire la sortie avec tous les objets prétraités. Il est beaucoup plus facile de débloquer si quelque chose dans le code ne va pas.
+
+
 Cette approche implique l'utilisation du script R qui contient la ou les commandes `render()` pour pré-traiter les objets qui alimentent le balisage R.
 
-Par exemple, vous pouvez charger les "packages", charger et nettoyer les données, et même créer les graphiques d'intérêt avant `render()`. Ces étapes peuvent se produire dans le script R, ou dans d'autres scripts qui sont "sourcés". Tant que ces commandes se produisent dans la même session RStudio et que les objets sont enregistrés dans l'environnement, les objets peuvent ensuite être appelés dans le contenu Rmd. Ensuite, le R markdown lui-même ne sera utilisé que pour l'étape finale - pour produire la sortie avec tous les objets prétraités. Il est beaucoup plus facile de débloquer si quelque chose dans le code ne va pas.
 
 Cette approche est utile pour les raisons suivantes :
 
@@ -432,6 +445,7 @@ rmarkdown::render(input = "my_report.Rmd")
 
 Comme avec "knit", les paramètres par défaut enregistreront la sortie Rmd dans le même dossier que le script Rmd, avec le même nom de fichier (à part l'extension de fichier). Par exemple, "mon_rapport.Rmd", une fois exécuté, créera "mon_rapport.docx" si vous décider de sortir le fichier vers un document Word. Cependant, en utilisant `render()` vous avez la possibilité d'utiliser des paramètres différents. `render()` peut accepter des arguments tels que :
 
+
 - `output_format =` C'est le format de sortie vers lequel convertir (par exemple, `"html_document"`, `"pdf_document"`, `"word_document"`, ou `"all"`). Vous pouvez également le spécifier dans le YAML à l'intérieur du script R Markdown.
 - `output_file =` C'est le nom du fichier de sortie (et le chemin du fichier). Il peut être créé par des fonctions R telles que `here()` ou `str_glue()`, comme illustré ci-dessous.
 - `output_dir =` C'est un répertoire de sortie (dossier) pour enregistrer le fichier. Cela vous permet de choisir un autre répertoire que celui dans lequel le fichier Rmd est enregistré.
@@ -439,6 +453,7 @@ Comme avec "knit", les paramètres par défaut enregistreront la sortie Rmd dans
 - `output_yaml =` Vous pouvez fournir le chemin d'accès à un fichier .yml qui contient des spécifications YAML.
 - `params =` Voir la section sur les paramètres ci-dessous.
 - Voir la liste complète [ici](https://pkgs.rstudio.com/rmarkdown/reference/render.html)
+
 
 Par exemple, pour améliorer le contrôle de version, la commande suivante enregistre le fichier de sortie dans un sous-dossier "outputs", avec la date du jour dans le nom du fichier. Pour créer le nom du fichier, la fonction `str_glue()` du paquet **stringr** est utilisée pour 'coller' ensemble des chaînes statiques (écrites en clair) avec du code R dynamique (écrit entre crochets). Par exemple, si nous sommes le 10 avril 2021, le nom du fichier ci-dessous sera "Report_2021-04-10.docx". Voir la page sur [Caractères et chaînes de caractères](#character_strings) pour plus de détails sur `str_glue()`.
 
@@ -449,7 +464,9 @@ rmarkdown::render(
 ```
 
 
+
 Au fur et à mesure de l'exécution du fichier Rmarkdown, la console RStudio vous montrera la progression du rendu jusqu'à 100%, et un message final pour indiquer que l'exécution est achevée.
+
 
 ### Option 3 : "package" **reportfactory** {.unnumbered}
 
@@ -458,6 +475,7 @@ Le "package" R **reportfactory** offre une méthode alternative d'organisation e
 Pour en savoir plus sur ce flux de travail, consultez la page [Organisation des rapports de routine](#reportfactory).
 
 <!-- ======================================================= -->
+
 
 ## Rapports paramétrés
 
@@ -475,6 +493,7 @@ Vous avez plusieurs options pour spécifier les valeurs des paramètres pour vot
 
 Editez le YAML pour inclure une option `params:`, avec des déclarations indentées pour chaque paramètre que vous voulez définir. Dans cet exemple, nous créons les paramètres `date` et `hospital`, pour lesquels nous spécifions des valeurs. Ces valeurs sont susceptibles de changer à chaque fois que le rapport est exécuté. Si vous utilisez le bouton "Knit" pour produire le résultat, les paramètres auront ces valeurs par défaut. De même, si vous utilisez `render()`, les paramètres auront ces valeurs par défaut, sauf indication contraire dans la commande `render()`.
 
+
 ``` {.yaml}
 ---
 title: Surveillance report
@@ -487,6 +506,7 @@ params:
 
 En arrière-plan, ces valeurs de paramètres sont contenues dans une liste en lecture seule appelée `params`. Ainsi, vous pouvez insérer les valeurs des paramètres dans le code R comme vous le feriez pour un autre objet/valeur R dans votre environnement. Tapez simplement `params$` suivi du nom du paramètre. Par exemple `params$hospital` pour représenter le nom de l'hôpital ("Central Hospital" par défaut).
 
+
 Notez que les paramètres peuvent également contenir les valeurs `true` ou `false`, et donc ceux-ci peuvent être inclus dans vos options **knitr** pour un "chunk" R. Par exemple, vous pouvez définir `{r, eval=params$run}` au lieu de `{r, eval=FALSE}`, et maintenant si le chunk s'exécute ou non dépend de la valeur d'un paramètre `run:`.
 
 Notez que pour les paramètres qui sont des dates, ils seront entrés comme une chaîne. Donc, pour que `params$date` soit interprété dans le code R, il faudra probablement l'envelopper avec `as.Date()` ou une fonction similaire pour le convertir en classe Date.
@@ -496,6 +516,7 @@ Notez que pour les paramètres qui sont des dates, ils seront entrés comme une 
 Comme mentionné plus haut, une alternative à l'appui sur le bouton "Knit" pour produire la sortie est d'exécuter la fonction `render()` à partir d'un script séparé. Dans ce dernier cas, vous pouvez spécifier les paramètres à utiliser dans ce rendu à l'argument `params =` de `render()`.
 
 Notez que toutes les valeurs de paramètres fournies ici vont *écraser* leurs valeurs par défaut si elles sont écrites dans le YAML. Nous écrivons les valeurs entre guillemets car dans ce cas, elles doivent être définies comme des valeurs de type chaîne de caractères.
+
 
 La commande ci-dessous rend "surveillance_report.Rmd", spécifie un nom de fichier de sortie dynamique et un dossier, et fournit une `list()` de deux paramètres et leurs valeurs à l'argument `params =`.
 
@@ -532,7 +553,9 @@ Toutefois, la saisie de valeurs dans cette fenêtre "pop-up" est sujette à des 
 - `input:` est défini sur `select` pour le menu déroulant\
 - `choices:` Donne les valeurs éligibles dans le menu déroulant
 
+
 Ci-dessous, ces spécifications sont écrites pour le paramètre `hospital`.
+
 
 ``` {.yaml}
 ---
@@ -593,7 +616,8 @@ Suivre cette approche signifie que vous ne pouvez pas "Exécuter avec des param�
 
 ## Rapports en boucle
 
-Nous pouvons vouloir exécuter un rapport plusieurs fois, en faisant varier les paramètres d'entrée, afin de produire un rapport pour chaque juridiction/unité. Cela peut être fait en utilisant des outils d'itération, qui sont expliqués en détail dans la page [Itération, boucles et listes]. Les options comprennent le paquet **purrr**, ou l'utilisation d'une *boucle for* comme expliqué ci-dessous.
+
+Nous pouvons vouloir exécuter un rapport plusieurs fois, en faisant varier les paramètres d'entrée, afin de produire un rapport pour chaque juridiction/unité. Cela peut être fait en utilisant des outils d'itération, qui sont expliqués en détail dans la page [Itération, boucles et listes](#iteration). Les options comprennent le paquet **purrr**, ou l'utilisation d'une *boucle for* comme expliqué ci-dessous.
 
 Ci-dessous, nous utilisons une simple *for loop* pour générer un rapport de surveillance pour tous les hôpitaux d'intérêt. Ceci est fait avec une seule commande (au lieu de changer manuellement le paramètre de l'hôpital un par un). La commande permettant de rendre les rapports doit exister dans un script séparé *sauf* le rapport Rmd. Ce script contiendra également des objets définis à parcourir en boucle - la date du jour, et un vecteur de noms d'hôpitaux à parcourir en boucle.
 
@@ -658,6 +682,7 @@ knitr::include_graphics(here::here("images", "markdown/8_ppttemplate.png"))
 
 Malheureusement, l'édition des fichiers Powerpoint est un peu moins souple :
 
+
 - Un en-tête de premier niveau (`# Header 1`) deviendra automatiquement le titre d'une nouvelle diapositive,
 - Un texte `## Header 2` n'apparaîtra pas comme un sous-titre mais comme un texte dans la zone de texte principale de la diapositive (à moins que vous ne trouviez un moyen de manoeuvrer la slide de base).
 - Les graphiques et les tableaux générés seront automatiquement placés dans de nouvelles diapositives. Vous devrez les combiner, par exemple avec la fonction **patchwork** pour combiner les ggplots, afin qu'ils apparaissent sur la même page. Consultez cet [article de blog](https://mattherman.info/blog/ppt-patchwork/) sur l'utilisation du paquet **patchwork** pour placer plusieurs images sur une seule diapositive.
@@ -669,6 +694,7 @@ Voir le [paquet **officer**](https://davidgohel.github.io/officer/) pour un outi
 Une fois qu'un canevas est préparé, le détail de celui-ci peut être ajouté dans le YAML du fichier  Rmd sous la ligne "output" et sous l'endroit où le type de document est spécifié (qui va sur une ligne séparée elle-même). Notons que `reference_doc` peut être utilisé pour les modèles de diapositives Powerpoint.
 
 Il est plus facile de sauvegarder le canevas dans le même dossier que celui où se trouve le fichier Rmd (comme dans l'exemple ci-dessous), ou dans un sous-dossier.
+
 
 
 ``` {.yaml}
@@ -687,6 +713,7 @@ template:
 
 ### Formatage des fichiers HTML {.unnumbered}
 
+
 Les fichiers HTML n'utilisent pas de modèles, mais les styles peuvent être configurés dans le YAML. Les HTML sont des documents interactifs, et sont particulièrement flexibles. Nous couvrons ici quelques options de base.
 
 - Table des matières : On peut ajouter une table des matières avec `toc : true` ci-dessous, et aussi spécifier qu'elle reste visible ("flottante") quand on la fait défiler, avec `toc_float : true`.
@@ -696,6 +723,7 @@ Les fichiers HTML n'utilisent pas de modèles, mais les styles peuvent être con
 - Mise en évidence : Cette configuration modifie l'aspect du texte mis en évidence (par exemple, le code dans les morceaux qui sont affichés). Les styles pris en charge sont default, tango, pygments, kate, monochrome, espresso, zenburn, haddock, breezedark et textmate.
 
 Voici un exemple de la manière d'intégrer les options ci-dessus dans le YAML.
+
 
 
 ``` {.yaml}
@@ -721,9 +749,11 @@ knitr::include_graphics(here::here("images", "markdown/9_html.png"))
 
 Dans une sortie HTML, le contenu de votre rapport peut être dynamique. Voici quelques exemples :
 
+
 ### Tableaux {.unnumbered}
 
 Dans un rapport HTML, vous pouvez imprimer des tableaux de données de telle sorte que le contenu soit dynamique, avec des filtres et des barres de défilement. Il existe plusieurs "packages" qui offrent cette possibilité.
+
 
 Pour ce faire, avec le "package" **DT**, tel qu'il est utilisé dans ce manuel, vous pouvez insérer un morceau de code comme celui-ci :
 
@@ -733,6 +763,7 @@ knitr::include_graphics(here::here("images", "markdown/10_dynamictable.png"))
 
 La fonction `datatable()` affichera le tableau de données fourni comme un tableau dynamique pour le lecteur. Vous pouvez définir `rownames = FALSE` pour simplifier le côté gauche de la table. `filter = "top"` fournit un filtre sur chaque colonne. Dans l'argument `option()`, fournissez une liste d'autres spécifications. Nous en incluons deux ci-dessous : `pageLength = 5` fixe le nombre de lignes qui apparaissent à 5 (les lignes restantes peuvent être visualisées en cliquant sur les flèches), et `scrollX=TRUE` active une barre de défilement en bas du tableau (pour les colonnes qui s'étendent trop à droite).
 
+
 Si votre jeu de données est très grand, pensez à n'afficher que les X premières lignes en enveloppant le nom du jeu de données dans `head()`.
 
 ### Les widgets HTML {.unnumbered}
@@ -741,17 +772,23 @@ Les [widgets HTML pour R](http://www.htmlwidgets.org/) sont une classe spéciale
 
 Voici quelques exemples courants de ces widgets :
 
-- Plotly (utilisé dans cette page du manuel et dans la page [Interative plots]).
-- visNetwork (utilisé dans la page [Chaînes de transmission] de ce manuel)
+- Plotly (utilisé dans cette page du manuel et dans la page [Graphiques interactifs](#interactive_plots)).
+- visNetwork (utilisé dans la page [Chaînes de transmission](#transmission_chains) de ce manuel)
 - Leaflet (utilisé dans la page [Notions de base sur les SIG](#gis) de ce manuel)
 - dygraphs (utile pour afficher de manière interactive des données de séries chronologiques)\
 - DT (`datatable()`) (utilisé pour afficher des tableaux dynamiques avec filtre, tri, etc.)
 
-La fonction `ggplotly()` de **plotly** est particulièrement facile à utiliser. Voir la page [Interactive plots].
+La fonction `ggplotly()` de **plotly** est particulièrement facile à utiliser. Voir la page [Graphiques interactifs](#interactive_plots).
 
 ## Ressources
 
 Des informations supplémentaires peuvent être trouvées via :
+
+- <https://bookdown.org/yihui/rmarkdown/>
+- <https://rmarkdown.rstudio.com/articles_intro.html>
+
+Une bonne explication de markdown vs knitr vs Rmarkdown se trouve ici : <https://stackoverflow.com/questions/40563479/relationship-between-r-markdown-knitr-pandoc-and-bookdown>
+
 
 - <https://bookdown.org/yihui/rmarkdown/>
 - <https://rmarkdown.rstudio.com/articles_intro.html>
