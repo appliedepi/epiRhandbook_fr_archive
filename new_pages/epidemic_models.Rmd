@@ -1,5 +1,5 @@
 
-# Epidemic modeling {#epidemic_models}  
+#Modélisation des épidémies {#epidemic_models}  
 
 
 <!-- ======================================================= -->
