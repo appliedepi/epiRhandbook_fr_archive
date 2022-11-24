@@ -23,11 +23,11 @@ mais peut être installé à partir de github).
 La plupart de cette page est basée sur le travail effectué pour le projet ["R4Epis"](https://r4epis.netlify.app/) ; 
 pour le code détaillé et les modèles R-markdown, voir la page github ["R4Epis"] (https://github.com/R4EPI/sitrep). 
 Une partie du code basé sur le paquet **survey** est basé sur les premières versions de 
-[Études de cas EPIET] (https://github.com/EPIET/RapidAssessmentSurveys).
+[Études de cas EPIET](https://github.com/EPIET/RapidAssessmentSurveys).
 
 Pour l'instant, cette page ne traite pas du calcul de la taille des échantillons ou de l'échantillonnage. 
-Pour un calculateur de taille d'échantillon simple à utiliser, voir [OpenEpi] (https://www.openepi.com/Menu/OE_Menu.htm). 
-La page [GIS basics](https://epirhandbook.com/gis-basics.html) du manuel 
+Pour un calculateur de taille d'échantillon simple à utiliser, voir [OpenEpi](https://www.openepi.com/Menu/OE_Menu.htm). 
+La page [bases de GIS](#gis) du manuel 
 comportera éventuellement une section sur l'échantillonnage aléatoire spatial, et cette page comportera éventuellement une section sur les cadres d'échantillonnage. 
 Cette page contiendra également une section sur les bases de sondage ainsi que sur le calcul de la taille des échantillons. 
 
@@ -81,9 +81,9 @@ L'ensemble de données d'exemple utilisé dans cette section :
 - Dictionnaire de données pour les données fictives de l'enquête sur la mortalité. 
 
 Ceci est basé sur l'enquête pré-approuvée par le comité d'examen éthique de MSF OCA. Le site 
-données fictives ont été produites dans le cadre du projet ["R4Epis"] (https://r4epis.netlify.app/). 
-Tout ceci est basé sur les données collectées à l'aide de [KoboToolbox] (https://www.kobotoolbox.org/), 
-qui est un logiciel de collecte de données basé sur [Open Data Kit] (https://opendatakit.org/).
+données fictives ont été produites dans le cadre du projet ["R4Epis"](https://r4epis.netlify.app/). 
+Tout ceci est basé sur les données collectées à l'aide de [KoboToolbox](https://www.kobotoolbox.org/), 
+qui est un logiciel de collecte de données basé sur [Open Data Kit](https://opendatakit.org/).
 
 Kobo vous permet d'exporter à la fois les données collectées et le dictionnaire de données 
 pour cet ensemble de données. Nous vous recommandons vivement de le faire, car cela simplifie le nettoyage des données. 
@@ -103,7 +103,7 @@ comme un export (comme dans Kobo vous exportez différents niveaux de questionna
 - voir la section sur les données d'enquête ci-dessous pour fusionner les différents niveaux.</span>
 
 
-Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. Consultez la page [Importation et exportation](https://epirhandbook.com/import-and-export.html) pour connaître les différentes façons d'importer des données.
+Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. Consultez la page [Importation et exportation](#import_export) pour connaître les différentes façons d'importer des données.
 
 ```{r echo = FALSE}
 # Importez l'enquête dans R
@@ -210,7 +210,7 @@ survey_data <- survey_data %>%
 
 
 ## créer une variable caractère basée sur les groupes d'une autre variable 
-données_enquête <- données_enquête %>% 
+survey_data <- survey_data %>% 
   mutate(health_district = case_when(
     cluster_number %in% c(1:5) ~ "district_a", 
     TRUE ~ "district_b"
