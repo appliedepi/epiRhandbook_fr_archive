@@ -1,8 +1,8 @@
-# Régression univariée et multivariable { }
+# Régression univariée et multivariable {#regression}
 
 <!-- ======================================================= -->
 
-Cette page montre comment utiliser  des fonctions de régression **base** de R telles que `glm()` et le package **gtsummary** pour 
+Cette page montre comment utiliser des fonctions de régression **base** de R telles que `glm()` et le package **gtsummary** pour 
 examiner les relations entre les variables (par exemple, les rapports de cotes, les rapports de risque et les
 ratios de risque). Il utilise également des fonctions comme `tidy()` du package **broom** pour nettoyer les sorties de régression.  
 
@@ -11,12 +11,12 @@ ratios de risque). Il utilise également des fonctions comme `tidy()` du package
 3.  Multivariable : sélection des variables, sélection du modèle, tableau final
 4.  Forest graphe
 
-Pour la régression des risques proportionnels de Cox, voir la page [Survival analysis](#survival_analysis).
+Pour la régression des risques proportionnels de Cox, voir la page [Analyse d'enquête](#survival_analysis).
 
 
 
 
-<span style="color: black;">**_NOTE:_** Nous utilisons le terme *multivariable* pour faire référence à une régression avec plusieurs variables explicatives. En effet, un modèle *multivarié* serait une régression avec plusieurs résultats - voir ceci [editorial](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518362/) pour plus de detail </span> 
+<span style="color: black;">**_NOTE:_** Nous utilisons le terme *multivariable* pour faire référence à une régression avec plusieurs variables explicatives. En effet, un modèle *multivarié* serait une régression avec plusieurs résultats - voir ceci [éditorial](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518362/) pour plus de detail </span> 
 
 <!-- ======================================================= -->
 
@@ -25,28 +25,28 @@ Pour la régression des risques proportionnels de Cox, voir la page [Survival an
 
 ### Chargement des packages {.unnumbered}
 
-Ce bout de code montre le chargement des packages nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` du package  **pacman**, qui installe le package si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les packages installés avec `library()` de **base** R. Voir la page sur [R basics](#basics) pour plus d'informations sur les packages de R. 
+Ce bout de code montre le chargement des packages nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` du package  **pacman**, qui installe le package si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les packages installés avec `library()` de **base** R. Voir la page sur [R basics](#rbasics) pour plus d'informations sur les packages de R. 
 
  
 
 ```{r}
 pacman::p_load(
-  rio,          # File import
-  here,         # File locator
-  tidyverse,    # data management + ggplot2 graphics, 
-  stringr,      # manipulate text strings 
-  purrr,        # loop over objects in a tidy way
-  gtsummary,    # summary statistics and tests 
-  broom,        # tidy up results from regressions
-  lmtest,       # likelihood-ratio tests
-  parameters,   # alternative to tidy up results from regressions
-  see          # alternative to visualise forest plots
+  rio, # Importation du fichier
+  here, # Localisation de fichiers
+  tidyverse, # gestion des données + graphiques ggplot2, 
+  stringr, # manipuler des chaînes de texte 
+  purrr, # boucle sur les objets d'une manière ordonnée
+  gtsummary, # statistiques et tests sommaires 
+  broom, # met de l'ordre dans les résultats des régressions
+  lmtest, # tests du rapport de vraisemblance
+  parameters, # alternative pour mettre de l'ordre dans les résultats des régressions
+  see # alternative pour visualiser les parcelles forestières
   )
 ```
 
 ### Importation de données {.unnumbered}
 
-Nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous voulez continuer dans le processus d'acquisition de données suivait ce lien, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquer pour téléchager le jeu de données  linelist "propre"</a> (as .rds file). Importez vos données avec la fonction `import()` du packages **rio** (elle accepte de nombreux types de fichiers comme .xlsx, .rds, .csv - voir la page [Import and export](#importing) pour plus de détails)..  
+Nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous voulez continuer dans le processus d'acquisition de données suivait ce lien, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquer pour téléchager le jeu de données  linelist "propre"</a> (as .rds file). Importez vos données avec la fonction `import()` du packages **rio** (elle accepte de nombreux types de fichiers comme .xlsx, .rds, .csv - voir la page [Importer et exporter des données](#import_export) pour plus de détails)..  
 
 
 ```{r, echo=F}
@@ -55,7 +55,7 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 ```
 
 ```{r, eval=F}
-# import the linelist
+# importer la liste de lignes
 linelist <- import("linelist_cleaned.rds")
 ```
 
@@ -80,7 +80,7 @@ explanatory_vars <- c("gender", "fever", "chills", "cough", "aches", "vomit")
 
 #### Convertir en 1 et 0 {.non numéroté}   
 
-Ci-dessous, nous convertissons les colonnes explicatives de "yes"/"no", "m"/"f", et "dead"/"alive" en **1 / 0**, pour se conformer avec les attentes des modèles de régression logistique. Pour faire cela efficacement, nous avons utilisé `across()` de **dplyr** pour transformer plusieurs colonnes en une seule fois. La fonction que nous appliquons à chaque colonne est `case_when()` (également **dplyr**) qui applique une logique pour convertir les valeurs spécifiées en 1 et 0. Voir les sections sur `across()` et `case_when()` dans la page [Cleaning data and core functions](#clean_across)).  
+Ci-dessous, nous convertissons les colonnes explicatives de "yes"/"no", "m"/"f", et "dead"/"alive" en **1 / 0**, pour se conformer avec les attentes des modèles de régression logistique. Pour faire cela efficacement, nous avons utilisé `across()` de **dplyr** pour transformer plusieurs colonnes en une seule fois. La fonction que nous appliquons à chaque colonne est `case_when()` (également **dplyr**) qui applique une logique pour convertir les valeurs spécifiées en 1 et 0. Voir les sections sur `across()` et `case_when()` dans la page [Nettoyage de données et fonctions essentielles](#cleaning_data)).  
 
 Note : le "." ci-dessous représente la colonne qui est traitée par `across()` à ce moment-là.
 
@@ -126,7 +126,7 @@ le nombre de lignes restant dans `linelist` est de ` nrow(linelist)`.
 
 ## Univarié {  }
 
-Tout comme dans la page sur les [Tableaux descriptifs](https://epirhandbook.com/descriptive-tables.html), votre cas d'utilisation déterminera le package R que vous utiliserez. Nous vous présentons deux options pour effectuer une analyse univariée :  
+Tout comme dans la page sur les [Tableaux descriptifs](#descriptive_tables), votre cas d'utilisation déterminera le package R que vous utiliserez. Nous vous présentons deux options pour effectuer une analyse univariée :  
 
 * Utiliser les fonctions disponibles dans **base** R pour afficher rapidement les résultats sur la console. Utilisez le package **broom** pour mettre de l'ordre dans les résultats.  
 * Utilisez le package **gtsummary** pour modéliser et obtenir des résultats prêts à être publiés.  
@@ -165,7 +165,7 @@ d'abord prendre les points des données observées et la colonne predite à part
 
 ```{r lin_reg_res_plot}
 
-## pull the regression points and observed data in to one dataset
+## rassembler les points de régression et les données observées dans un seul ensemble de données
 points <- augment(lm_results)
 
 ## creer un graphique  avec age comme   axe  des abscisses
@@ -248,7 +248,7 @@ linelist %>%
   summary()
 ```
 
-#### Affichage des résultats {.non numéroté}
+#### Affichage des résultats {.unnumbered}
 
 Pour la plupart des utilisations, plusieurs modifications doivent être apportées aux sorties ci-dessus. La fonction `tidy()` du package **broom** est pratique pour rendre les résultats du modèle lisibles et comprehensibles.  
 
@@ -270,7 +270,7 @@ Voici la sortie du tibble `model` :
 DT::datatable(model, rownames = FALSE, options = list(pageLength = nrow(model), scrollX=T), class = 'white-space: nowrap' )
 ```
 
-2) Combinez les résultats de ces modèles avec un tableau de comptage. Ci-dessous, nous créons un tableau de comptage croisé avec la fonction `tabyl()` de **janitor**, comme indiqué dans la page [Tableaux descriptifs](#tables_descriptive).  
+2) Combinez les résultats de ces modèles avec un tableau de comptage. Ci-dessous, nous créons un tableau de comptage croisé avec la fonction `tabyl()` de **janitor**, comme indiqué dans la page [Tableaux descriptifs](#descriptive_tables).  
 
 ```{r}
 counts_table <- linelist %>% 
@@ -309,7 +309,7 @@ combined <- counts_table %>%           # debutons avec un tableau de comptage
   mutate(across(where(is.numeric), round, digits = 2)) ## arrondir à deux chiffres apres la virgule
 ```
 
-Voici à quoi ressemble le dataframe combiné, affiché joliment comme une image avec une fonction de **flextable**. La section [Tables for presentation](#tables_presentation) explique comment personnaliser de tels tableaux avec **flextable**, ou vous pouvez utiliser de nombreux autres packages tels que **knitr** ou **GT**.  
+Voici à quoi ressemble le dataframe combiné, affiché joliment comme une image avec une fonction de **flextable**. La section [Tableau pour la presentationn](#tables_presentation) explique comment personnaliser de tels tableaux avec **flextable**, ou vous pouvez utiliser de nombreux autres packages tels que **knitr** ou **GT**.  
 
 ```{r}
 combined <- combined %>% 
@@ -321,7 +321,7 @@ combined <- combined %>%
 
 Nous présentons ci-dessous une méthode utilisant `glm()` et `tidy()` pour une approche plus simple, voir la section sur **gtsummary**.  
 
-Pour exécuter les modèles sur plusieurs variables d'explicative afin de produire des odds ratios univariés (c'est-à-dire sans contrôle des autres variables), vous pouvez utiliser l'approche ci-dessous. Elle utilise `str_c()` de **stringr** pour créer des formules univariées (voir [Characters and strings](#characters_strings)), exécute la régression `glm()` sur chaque formule, passe chaque sortie `glm()` à `tidy()` et enfin rassemble toutes les sorties du modèle avec `bind_rows()` de **tidyr**. Cette approche utilise `map()` du packages **purrr** pour itérer - voir la page sur [Iteration, loops, and lists] pour plus d'informations sur cet outil.  
+Pour exécuter les modèles sur plusieurs variables d'explicative afin de produire des odds ratios univariés (c'est-à-dire sans contrôle des autres variables), vous pouvez utiliser l'approche ci-dessous. Elle utilise `str_c()` de **stringr** pour créer des formules univariées (voir [Caractères et chaînes de caractères](#character_strings)), exécute la régression `glm()` sur chaque formule, passe chaque sortie `glm()` à `tidy()` et enfin rassemble toutes les sorties du modèle avec `bind_rows()` de **tidyr**. Cette approche utilise `map()` du packages **purrr** pour itérer - voir la page sur [Iteration, loops, and lists] pour plus d'informations sur cet outil.  
 
 1) Créez un vecteur de noms de colonnes des variables explicatives. Nous l'avons déjà en tant que `explanatory_vars` dans la section Préparation de cette page.  
 
@@ -404,7 +404,7 @@ univ_tab_base <- explanatory_vars %>%
 
 ```
 
-Voici à quoi ressemble le dataframe. Voir la page sur les [Tables for presentation](#tables_presentation) pour des idées sur la façon de convertir ce tableau en une jolie sortie HTML (par exemple avec **flextable**).  
+Voici à quoi ressemble le dataframe. Voir la page sur les [Tableau pour la presentationn](#tables_presentation) pour des idées sur la façon de convertir ce tableau en une jolie sortie HTML (par exemple avec **flextable**).  
 
 ```{r, message=FALSE, echo=F}
 # afficher les données de la liste des lignes sous forme de tableau
@@ -419,7 +419,7 @@ DT::datatable(univ_tab_base, rownames = FALSE, options = list(pageLength = 5, sc
 
 ### **gtsummary** package {#reg_gt_uni .unnumbered}
 
-Nous présentons ci-dessous l'utilisation de `tbl_uvregression()` du package **gtsummary**. Tout comme dans la page sur les [Tableaux descriptifs](https://epirhandbook.com/descriptive-tables.html), les fonctions **gtsummary** font un bon travail pour exécuter des statistiques *et* produire des résultats à usage professionnel. Cette fonction produit un tableau des résultats d'une régression univariée.  
+Nous présentons ci-dessous l'utilisation de `tbl_uvregression()` du package **gtsummary**. Tout comme dans la page sur les [Tableaux descriptifs](#descriptive_tables), les fonctions **gtsummary** font un bon travail pour exécuter des statistiques *et* produire des résultats à usage professionnel. Cette fonction produit un tableau des résultats d'une régression univariée.  
 
 Nous ne sélectionnons que les colonnes nécessaires de la `linelist` (les variables explicatives et la variable de résultat) et les introduisons dans `tbl_uvregression()`. Nous allons exécuter une régression univariée sur chacune des colonnes que nous avons définies comme `explanatory_vars` dans la section Préparation des données (sexe, fièvre, frissons, toux, courbatures, vomissements, et age_cat).  
 
@@ -593,7 +593,7 @@ Une autre façon de combiner les sorties univariées et multivariées de `glm()`
 ## combiner des tableaux univariés et multivariés 
 left_join(univ_tab_base, mv_tab_base, by = "term") %>% 
   ##choisir les colonnes et les renommer
-  select( # new name =  old name
+  select( # nouveau nom = ancien nom
     "characteristic" = term, 
     "recovered"      = "0", 
     "dead"           = "1", 
@@ -621,7 +621,7 @@ Cette section montre comment produire un graphique avec les résultats de votre 
 Il y a deux options, vous pouvez construire un graphique vous-même en utilisant **ggplot2** ou utiliser un méta-package appelé **easystats** (un package qui inclut plusieurs packages). 
 méta-package appelé **easystats** (un package qui inclut plusieurs packages).  
 
-Consultez la page sur [les bases de ggplot](#ggplot_basics) si vous n'êtes pas familier avec le package de traçage **ggplot2**.  
+Consultez la page sur [Les bases de ggplot](#ggplot_basics) si vous n'êtes pas familier avec le package de traçage **ggplot2**.  
 
 
 <!-- ======================================================= -->
@@ -634,7 +634,7 @@ Vous pouvez construire un graphique forest avec `ggplot()` en traçant les élé
 * intervalles de confiance avec "geom_errorbar()`".  
 * une ligne verticale à OR = 1 avec `geom_vline()`.  
 
-Avant de tracer un graphique, vous pouvez utiliser `fct_relevel()` du package **forcats** pour définir l'ordre des variables/niveaux sur l'axe des ordonnées. `ggplot()` peut les afficher dans l'ordre alpha-numérique, ce qui ne fonctionnerait pas bien pour ces valeurs de catégories d'âge ("30" apparaîtrait avant "5"). Voir la page sur les [Factors](#factors) pour plus de détails.  
+Avant de tracer un graphique, vous pouvez utiliser `fct_relevel()` du package **forcats** pour définir l'ordre des variables/niveaux sur l'axe des ordonnées. `ggplot()` peut les afficher dans l'ordre alpha-numérique, ce qui ne fonctionnerait pas bien pour ces valeurs de catégories d'âge ("30" apparaîtrait avant "5"). Voir la page sur les [facteurs](#factors) pour plus de détails.  
 
 ```{r ggplot_forest}
 
@@ -669,7 +669,7 @@ mv_tab_base %>%
 
 <!-- ======================================================= -->
 
-### Packages **easystats** {.non numéroté}
+### Packages **easystats** {.unnumbered}
 
 Une alternative, si vous ne voulez pas le bon niveau de contrôle  que **ggplot2** fournit, est d'utiliser une combinaison des packages **easystats**.  
 

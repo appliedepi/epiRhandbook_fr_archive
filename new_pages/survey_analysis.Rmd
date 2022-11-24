@@ -1,227 +1,227 @@
 
-# Analyse d'enquête {#survey_analysis}  
+# Analyse d'enquÃªte {#survey_analysis}  
 
 <!-- ======================================================= -->
-## Aperçu { }
+## AperÃ§u { }
 
-Cette page démontre l'utilisation de plusieurs packages pour l'analyse d'enquêtes. 
+Cette page dÃ©montre l'utilisation de plusieurs packages pour l'analyse d'enquÃªtes. 
 
 
-La plupart des paquets R d'enquête reposent sur le paquet [**survey**](https://cran.r-project.org/web/packages/survey/index.html) 
-pour effectuer des analyses pondérées. 
+La plupart des paquets R d'enquÃªte reposent sur le paquet [**survey**](https://cran.r-project.org/web/packages/survey/index.html) 
+pour effectuer des analyses pondÃ©rÃ©es. 
 Nous utiliserons **survey** ainsi que [**srvyr**](https://cran.r-project.org/web/packages/srvyr/index.html) 
 (une enveloppe pour **survey** permettant un codage de type tidyverse) et
 [**gtsummary**](https://cran.r-project.org/web/packages/gtsummary/index.html) 
-(une enveloppe pour **survey** permettant de créer des tableaux prêts à être publiés). 
+(une enveloppe pour **survey** permettant de crÃ©er des tableaux prÃªts Ã  Ãªtre publiÃ©s). 
 Bien que le paquet original **survey** ne permette pas le codage de style tidyverse, 
-tidyverse, il présente l'avantage supplémentaire d'autoriser les modèles linéaires généralisés pondérés par les 
-pondérés par les enquêtes (qui seront ajoutés à cette page à une date ultérieure). 
-Nous allons également démontrer l'utilisation d'une fonction du paquet [**sitrep**](https://github.com/R4EPI/sitrep)
-pour créer des poids d'échantillonnage (*n.b* ce paquet n'est pas encore sur CRAN, 
-mais peut être installé à partir de github).
+tidyverse, il prÃ©sente l'avantage supplÃ©mentaire d'autoriser les modÃ¨les linÃ©aires gÃ©nÃ©ralisÃ©s pondÃ©rÃ©s par les 
+pondÃ©rÃ©s par les enquÃªtes (qui seront ajoutÃ©s Ã  cette page Ã  une date ultÃ©rieure). 
+Nous allons Ã©galement dÃ©montrer l'utilisation d'une fonction du paquet [**sitrep**](https://github.com/R4EPI/sitrep)
+pour crÃ©er des poids d'Ã©chantillonnage (*n.b* ce paquet n'est pas encore sur CRAN, 
+mais peut Ãªtre installÃ© Ã  partir de github).
 
-La plupart de cette page est basée sur le travail effectué pour le projet ["R4Epis"](https://r4epis.netlify.app/) ; 
-pour le code détaillé et les modèles R-markdown, voir la page github ["R4Epis"] (https://github.com/R4EPI/sitrep). 
-Une partie du code basé sur le paquet **survey** est basé sur les premières versions de 
-[Études de cas EPIET] (https://github.com/EPIET/RapidAssessmentSurveys).
+La plupart de cette page est basÃ©e sur le travail effectuÃ© pour le projet ["R4Epis"](https://r4epis.netlify.app/) ; 
+pour le code dÃ©taillÃ© et les modÃ¨les R-markdown, voir la page github ["R4Epis"] (https://github.com/R4EPI/sitrep). 
+Une partie du code basÃ© sur le paquet **survey** est basÃ© sur les premiÃ¨res versions de 
+[Ã‰tudes de cas EPIET] (https://github.com/EPIET/RapidAssessmentSurveys).
 
-Pour l'instant, cette page ne traite pas du calcul de la taille des échantillons ou de l'échantillonnage. 
-Pour un calculateur de taille d'échantillon simple à utiliser, voir [OpenEpi] (https://www.openepi.com/Menu/OE_Menu.htm). 
+Pour l'instant, cette page ne traite pas du calcul de la taille des Ã©chantillons ou de l'Ã©chantillonnage. 
+Pour un calculateur de taille d'Ã©chantillon simple Ã  utiliser, voir [OpenEpi] (https://www.openepi.com/Menu/OE_Menu.htm). 
 La page [GIS basics](https://epirhandbook.com/gis-basics.html) du manuel 
-comportera éventuellement une section sur l'échantillonnage aléatoire spatial, et cette page comportera éventuellement une section sur les cadres d'échantillonnage. 
-Cette page contiendra également une section sur les bases de sondage ainsi que sur le calcul de la taille des échantillons. 
+comportera Ã©ventuellement une section sur l'Ã©chantillonnage alÃ©atoire spatial, et cette page comportera Ã©ventuellement une section sur les cadres d'Ã©chantillonnage. 
+Cette page contiendra Ã©galement une section sur les bases de sondage ainsi que sur le calcul de la taille des Ã©chantillons. 
 
 
 
-1.  Données d'enquête 
+1.  DonnÃ©es d'enquÃªte 
 2.  Temps d'observation 
-3.  Pondération 
-4.  Objets de la conception de l'enquête
+3.  PondÃ©ration 
+4.  Objets de la conception de l'enquÃªte
 5.  Analyse descriptive 
-6.  Proportions pondérées
-7.  Taux pondérés 
+6.  Proportions pondÃ©rÃ©es
+7.  Taux pondÃ©rÃ©s 
 
 
 <!-- ======================================================= -->
-## Préparation { }
+## PrÃ©paration { }
 
-### Paquets {.nonnumérotés}
+### Paquets {.nonnumÃ©rotÃ©s}
 
-Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger des paquets avec `library()` depuis **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
-Ici, nous démontrons également l'utilisation de la fonction `p_load_gh()` de **pacman** pour installer et charger un paquet de github qui n'a pas encore été publié sur CRAN. 
+Ce morceau de code montre le chargement des paquets nÃ©cessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nÃ©cessaire *et* le charge pour l'utiliser. Vous pouvez Ã©galement charger des paquets avec `library()` depuis **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
+Ici, nous dÃ©montrons Ã©galement l'utilisation de la fonction `p_load_gh()` de **pacman** pour installer et charger un paquet de github qui n'a pas encore Ã©tÃ© publiÃ© sur CRAN. 
 
 ```{r}
 
 ## charger des paquets depuis CRAN
 pacman::p_load(rio, # Importation du fichier
                here, # Localisation de fichiers
-               tidyverse, # gestion des données + graphiques ggplot2
-               tsibble, # gère les ensembles de données de séries temporelles
-               survey, # pour les fonctions d'enquête
-               srvyr, # wrapper dplyr pour le paquet d'enquête
-               gtsummary, # wrapper pour le paquet d'enquête pour produire des tableaux
-               apyramid, # un paquet dédié à la création de pyramides des âges
+               tidyverse, # gestion des donnÃ©es + graphiques ggplot2
+               tsibble, # gÃ¨re les ensembles de donnÃ©es de sÃ©ries temporelles
+               survey, # pour les fonctions d'enquÃªte
+               srvyr, # wrapper dplyr pour le paquet d'enquÃªte
+               gtsummary, # wrapper pour le paquet d'enquÃªte pour produire des tableaux
+               apyramid, # un paquet dÃ©diÃ© Ã  la crÃ©ation de pyramides des Ã¢ges
                patchwork, # pour combiner des ggplots
-               ggforce # pour les tracés alluviaux/sankey
+               ggforce # pour les tracÃ©s alluviaux/sankey
                ) 
 
 ## charger les paquets depuis github
 pacman::p_load_gh(
-     "R4EPI/sitrep" # pour le temps d'observation / fonctions de pondération
+     "R4EPI/sitrep" # pour le temps d'observation / fonctions de pondÃ©ration
 )
 
 ``` 
 
-### Charger les données {.unnumbered}
+### Charger les donnÃ©es {.unnumbered}
 
-L'ensemble de données d'exemple utilisé dans cette section :
+L'ensemble de donnÃ©es d'exemple utilisÃ© dans cette section :
 
-- des données fictives d'enquête de mortalité.
-- comptes de population fictifs pour la zone d'enquête. 
-- Dictionnaire de données pour les données fictives de l'enquête sur la mortalité. 
+- des donnÃ©es fictives d'enquÃªte de mortalitÃ©.
+- comptes de population fictifs pour la zone d'enquÃªte. 
+- Dictionnaire de donnÃ©es pour les donnÃ©es fictives de l'enquÃªte sur la mortalitÃ©. 
 
-Ceci est basé sur l'enquête pré-approuvée par le comité d'examen éthique de MSF OCA. Le site 
-données fictives ont été produites dans le cadre du projet ["R4Epis"] (https://r4epis.netlify.app/). 
-Tout ceci est basé sur les données collectées à l'aide de [KoboToolbox] (https://www.kobotoolbox.org/), 
-qui est un logiciel de collecte de données basé sur [Open Data Kit] (https://opendatakit.org/).
+Ceci est basÃ© sur l'enquÃªte prÃ©-approuvÃ©e par le comitÃ© d'examen Ã©thique de MSF OCA. Le site 
+donnÃ©es fictives ont Ã©tÃ© produites dans le cadre du projet ["R4Epis"] (https://r4epis.netlify.app/). 
+Tout ceci est basÃ© sur les donnÃ©es collectÃ©es Ã  l'aide de [KoboToolbox] (https://www.kobotoolbox.org/), 
+qui est un logiciel de collecte de donnÃ©es basÃ© sur [Open Data Kit] (https://opendatakit.org/).
 
-Kobo vous permet d'exporter à la fois les données collectées et le dictionnaire de données 
-pour cet ensemble de données. Nous vous recommandons vivement de le faire, car cela simplifie le nettoyage des données. 
+Kobo vous permet d'exporter Ã  la fois les donnÃ©es collectÃ©es et le dictionnaire de donnÃ©es 
+pour cet ensemble de donnÃ©es. Nous vous recommandons vivement de le faire, car cela simplifie le nettoyage des donnÃ©es. 
 et est utile pour rechercher des variables/questions. 
 
 
-<span style="color : darkgreen ;">**_TIP:_** Le dictionnaire de données de Kobo comporte des noms de variables dans la colonne "name" du dictionnaire.
-dans la colonne "nom" de la feuille d'enquête. 
-Les valeurs possibles pour chaque variable sont spécifiées dans la feuille de choix. 
-Dans la feuille de choix, "name" a la valeur abrégée et les colonnes "label::english" et 
-"label::french" ont les versions longues appropriées. 
+<span style="color : darkgreen ;">**_TIP:_** Le dictionnaire de donnÃ©es de Kobo comporte des noms de variables dans la colonne "name" du dictionnaire.
+dans la colonne "nom" de la feuille d'enquÃªte. 
+Les valeurs possibles pour chaque variable sont spÃ©cifiÃ©es dans la feuille de choix. 
+Dans la feuille de choix, "name" a la valeur abrÃ©gÃ©e et les colonnes "label::english" et 
+"label::french" ont les versions longues appropriÃ©es. 
 L'utilisation de la fonction `msf_dict_survey()` du paquet **epidict** pour importer un fichier Excel du dictionnaire Kobo 
-sera reformaté pour vous afin de pouvoir l'utiliser facilement pour le recodage.  </span>
+sera reformatÃ© pour vous afin de pouvoir l'utiliser facilement pour le recodage.  </span>
 
-<span style="color : orange ;">**_CAUTION:_** Le jeu de données d'exemple n'est pas le même 
-comme un export (comme dans Kobo vous exportez différents niveaux de questionnaire individuellement). 
-- voir la section sur les données d'enquête ci-dessous pour fusionner les différents niveaux.</span>
+<span style="color : orange ;">**_CAUTION:_** Le jeu de donnÃ©es d'exemple n'est pas le mÃªme 
+comme un export (comme dans Kobo vous exportez diffÃ©rents niveaux de questionnaire individuellement). 
+- voir la section sur les donnÃ©es d'enquÃªte ci-dessous pour fusionner les diffÃ©rents niveaux.</span>
 
 
-Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. Consultez la page [Importation et exportation](https://epirhandbook.com/import-and-export.html) pour connaître les différentes façons d'importer des données.
+Le jeu de donnÃ©es est importÃ© Ã  l'aide de la fonction `import()` du paquet **rio**. Consultez la page [Importation et exportation](https://epirhandbook.com/import-and-export.html) pour connaÃ®tre les diffÃ©rentes faÃ§ons d'importer des donnÃ©es.
 
-``{r echo = FALSE}
-# Importez l'enquête dans R
-données_enquête <- rio::import(here::here("données", "enquêtes", "données_enquête.xlsx"))
+```{r echo = FALSE}
+# Importez l'enquÃªte dans R
+survey_data <- rio::import(here::here("data", "surveys", "survey_data.xlsx"))
 
 # Importez le dictionnaire dans R
-survey_dict <- rio::import(ici::ici("données", "enquêtes", "survey_dict.xlsx")) 
+survey_dict <- rio::import(ici::ici("data", "surveys", "survey_dict.xlsx")) 
 
 # Importez la population dans R 
 population <- rio::import(here::here("data", "surveys", "population.xlsx"))
 ```
 
 ```{r eval = FALSE}
-# Importez les données d'enquête
+# Importez les donnÃ©es d'enquÃªte
 survey_data <- rio::import("survey_data.xlsx")
 
 # Importez le dictionnaire dans R
 survey_dict <- rio::import("survey_dict.xlsx") 
 ```
 
-Les 10 premières lignes de l'enquête sont affichées ci-dessous.
+Les 10 premiÃ¨res lignes de l'enquÃªte sont affichÃ©es ci-dessous.
 
-``{r, message = FALSE, echo = FALSE}
-# Affichez les données de l'enquête sous forme de tableau
+```{r, message = FALSE, echo = FALSE}
+# Affichez les donnÃ©es de l'enquÃªte sous forme de tableau
 DT::datatable(head(survey_data, 10), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
-Nous voulons également importer les données sur la population d'échantillonnage afin de pouvoir produire des 
-pondérations appropriées. Ces données peuvent se présenter sous différents formats, cependant nous 
-Cependant, nous vous suggérons de les présenter comme suit (vous pouvez simplement les saisir dans un excel). 
+Nous voulons Ã©galement importer les donnÃ©es sur la population d'Ã©chantillonnage afin de pouvoir produire des 
+pondÃ©rations appropriÃ©es. Ces donnÃ©es peuvent se prÃ©senter sous diffÃ©rents formats, cependant nous 
+Cependant, nous vous suggÃ©rons de les prÃ©senter comme suit (vous pouvez simplement les saisir dans un excel). 
 
 
-``{r read_data_pop_show, eval = FALSE}
-# Importez les données de la population
+```{r read_data_pop_show, eval = FALSE}
+# Importez les donnÃ©es de la population
 population <- rio::import("population.xlsx")
 ```
 
-Les 10 premières lignes de l'enquête sont affichées ci-dessous.
+Les 10 premiÃ¨res lignes de l'enquÃªte sont affichÃ©es ci-dessous.
 
-``{r message=FALSE, echo=F}
-# Affichez les données de l'enquête sous forme de tableau
+```{r message=FALSE, echo=F}
+# Affichez les donnÃ©es de l'enquÃªte sous forme de tableau
 DT::datatable(head(population, 10), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
-Pour les enquêtes en grappes, vous pouvez souhaiter ajouter des poids d'enquête au niveau de la grappe. 
-Vous pouvez lire ces données comme ci-dessus. 
-Alternativement, s'il n'y a que quelques comptages, ils peuvent être entrés comme suit
+Pour les enquÃªtes en grappes, vous pouvez souhaiter ajouter des poids d'enquÃªte au niveau de la grappe. 
+Vous pouvez lire ces donnÃ©es comme ci-dessus. 
+Alternativement, s'il n'y a que quelques comptages, ils peuvent Ãªtre entrÃ©s comme suit
 dans un tibble. 
-Dans tous les cas, vous aurez besoin d'avoir une colonne avec un identifiant de grappe qui correspond à vos données d'enquête, et une autre colonne avec un identifiant d'enquête. 
-correspondant à vos données d'enquête, et une autre colonne avec le nombre de ménages dans chaque grappe. 
+Dans tous les cas, vous aurez besoin d'avoir une colonne avec un identifiant de grappe qui correspond Ã  vos donnÃ©es d'enquÃªte, et une autre colonne avec un identifiant d'enquÃªte. 
+correspondant Ã  vos donnÃ©es d'enquÃªte, et une autre colonne avec le nombre de mÃ©nages dans chaque grappe. 
 chaque grappe. 
 
-``{r cluster_counts}
+```{r cluster_counts}
 
-## définir le nombre de ménages dans chaque cluster
+## dÃ©finir le nombre de mÃ©nages dans chaque cluster
 cluster_counts <- tibble(cluster = c("village_1", "village_2", "village_3", "village_4", 
                                      "village_5", "village_6", "village_7", "village_8",
                                      "village_9", "village_10"), 
-                         ménages = c(700, 400, 600, 500, 300, 
+                         mÃ©nages = c(700, 400, 600, 500, 300, 
                                         800, 700, 400, 500, 500))
 
 ```
 
-### Nettoyer les données {.unnumbered}
+### Nettoyer les donnÃ©es {.unnumbered}
 
 L'exemple ci-dessous permet de s'assurer que la colonne date est au bon format. 
-Il existe plusieurs autres façons de procéder (voir la page [Working with dates](https://epirhandbook.com/working-with-dates.html)
-pour plus de détails), mais l'utilisation du dictionnaire pour définir les dates est rapide et facile. 
+Il existe plusieurs autres faÃ§ons de procÃ©der (voir la page [Travailler avec des dates](https://epirhandbook.com/working-with-dates.html)
+pour plus de dÃ©tails), mais l'utilisation du dictionnaire pour dÃ©finir les dates est rapide et facile. 
 
-Nous créons également une variable de groupe d'âge en utilisant la fonction `age_categories()` de 
+Nous crÃ©ons Ã©galement une variable de groupe d'Ã¢ge en utilisant la fonction `age_categories()` de 
 **epikit** - voir la section [cleaning data](https://epirhandbook.com/cleaning-data-and-core-functions.html#num_cats)
-pour plus de détails. 
-De plus, nous créons une variable de caractère définissant dans quel district se trouvent les différents clusters.
-les différents clusters. 
+pour plus de dÃ©tails. 
+De plus, nous crÃ©ons une variable de caractÃ¨re dÃ©finissant dans quel district se trouvent les diffÃ©rents clusters.
+les diffÃ©rents clusters. 
 
-Enfin, nous recodons toutes les variables oui/non en variables VRAI/FAUX - sinon, ces variables ne peuvent pas être utilisées par les **services**.
-sinon elles ne peuvent pas être utilisées par les fonctions de proportion **survey**. 
+Enfin, nous recodons toutes les variables oui/non en variables VRAI/FAUX - sinon, ces variables ne peuvent pas Ãªtre utilisÃ©es par les **services**.
+sinon elles ne peuvent pas Ãªtre utilisÃ©es par les fonctions de proportion **survey**. 
 
-``{r nettoyage}
+```{r nettoyage}
 
-## sélectionne les noms de variables de date dans le dictionnaire 
+## sÃ©lectionne les noms de variables de date dans le dictionnaire 
 DATEVARS <- survey_dict %>% 
   filter(type == "date") %>% 
   filter(nom %in% noms(survey_data)) %>% 
-  ## filtre pour correspondre aux noms des colonnes de vos données
-  pull(name) # sélectionne les variables de date
+  ## filtre pour correspondre aux noms des colonnes de vos donnÃ©es
+  pull(name) # sÃ©lectionne les variables de date
   
 ## changer en dates 
 survey_data <- survey_data %>%
   mutate(across(all_of(DATEVARS)), as.Date))
 
 
-## ajouter ceux dont l'âge est uniquement en mois à la variable année (diviser par douze).
+## ajouter ceux dont l'Ã¢ge est uniquement en mois Ã  la variable annÃ©e (diviser par douze).
 survey_data <- survey_data %>% 
   mutate(age_years = if_else(is.na(age_years), 
                              age_months / 12, 
                              age_years))
 
-## définir la variable groupe d'âge
+## dÃ©finir la variable groupe d'Ã¢ge
 survey_data <- survey_data %>% 
      mutate(age_group = age_categories(age_years, 
                                     breakers = c(0, 3, 15, 30, 45)
                                     ))
 
 
-## créer une variable caractère basée sur les groupes d'une autre variable 
-données_enquête <- données_enquête %>% 
+## crÃ©er une variable caractÃ¨re basÃ©e sur les groupes d'une autre variable 
+donnÃ©es_enquÃªte <- donnÃ©es_enquÃªte %>% 
   mutate(health_district = case_when(
     cluster_number %in% c(1:5) ~ "district_a", 
     TRUE ~ "district_b"
   ))
 
 
-## sélectionner les noms de variables oui/non dans le dictionnaire 
+## sÃ©lectionner les noms de variables oui/non dans le dictionnaire 
 YNVARS <- survey_dict %>% 
   filter(type == "yn") %>% 
   filter(nom %in% noms(survey_data)) %>% 
-  ## filtre pour correspondre aux noms des colonnes de vos données
+  ## filtre pour correspondre aux noms des colonnes de vos donnÃ©es
   pull(name) # select yn vars
   
 ## changer en dates 
@@ -235,34 +235,34 @@ survey_data <- survey_data %>%
 
 
 <!-- ======================================================= -->
-## Données d'enquête { }
+## DonnÃ©es d'enquÃªte { }
 
-Il existe de nombreux plans d'échantillonnage différents qui peuvent être utilisés pour les enquêtes. Ici, 
-nous allons démontrer le code pour : 
-- Stratifié 
+Il existe de nombreux plans d'Ã©chantillonnage diffÃ©rents qui peuvent Ãªtre utilisÃ©s pour les enquÃªtes. Ici, 
+nous allons dÃ©montrer le code pour : 
+- StratifiÃ© 
 - en grappes 
-- Stratifié et grappe 
+- StratifiÃ© et grappe 
 
-Comme décrit ci-dessus (en fonction de la façon dont vous concevez votre questionnaire), les données de chaque niveau seront exportées en tant qu'ensemble de données distinct à partir de Kobo. 
-chaque niveau seront exportées comme un ensemble de données séparé de Kobo. Dans notre exemple, il y a
-un niveau pour les ménages et un niveau pour les individus au sein de ces ménages. 
+Comme dÃ©crit ci-dessus (en fonction de la faÃ§on dont vous concevez votre questionnaire), les donnÃ©es de chaque niveau seront exportÃ©es en tant qu'ensemble de donnÃ©es distinct Ã  partir de Kobo. 
+chaque niveau seront exportÃ©es comme un ensemble de donnÃ©es sÃ©parÃ© de Kobo. Dans notre exemple, il y a
+un niveau pour les mÃ©nages et un niveau pour les individus au sein de ces mÃ©nages. 
 
-Ces deux niveaux sont liés par un identifiant unique. 
-Pour un ensemble de données Kobo, cette variable est "_index" au niveau du ménage, qui correspond à la variable "_parent_index". 
-correspond à "_parent_index" au niveau de l'individu.
-Cela créera de nouvelles lignes pour le ménage avec chaque individu correspondant, 
+Ces deux niveaux sont liÃ©s par un identifiant unique. 
+Pour un ensemble de donnÃ©es Kobo, cette variable est "_index" au niveau du mÃ©nage, qui correspond Ã  la variable "_parent_index". 
+correspond Ã  "_parent_index" au niveau de l'individu.
+Cela crÃ©era de nouvelles lignes pour le mÃ©nage avec chaque individu correspondant, 
 voir la section du manuel sur [joining](https://epirhandbook.com/joining-data.html)
-pour plus de détails. 
+pour plus de dÃ©tails. 
 
-``{r merge_data_levels, eval = FALSE}
+```{r merge_data_levels, eval = FALSE}
 
-## Joignez les données des individus et des ménages pour former un ensemble de données complet.
+## Joignez les donnÃ©es des individus et des mÃ©nages pour former un ensemble de donnÃ©es complet.
 survey_data <- left_join(survey_data_hh, 
                          survey_data_indiv,
                          by = c("_index" = "_parent_index"))
 
 
-## créer un identifiant unique en combinant les index des deux niveaux 
+## crÃ©er un identifiant unique en combinant les index des deux niveaux 
 survey_data <- survey_data %>% 
      mutate(uid = str_glue("{index}_{index_y}"))
 
@@ -271,31 +271,31 @@ survey_data <- survey_data %>%
 <!-- ======================================================= -->
 ## Temps d'observation { }
 
-Pour les enquêtes de mortalité, nous voulons maintenant savoir combien de temps chaque individu a été présent dans 
-l'emplacement afin de pouvoir calculer un taux de mortalité approprié pour notre période 
-d'intérêt. Ceci n'est pas pertinent pour toutes les enquêtes, mais particulièrement pour les enquêtes de mortalité.
-de mortalité, car elles sont fréquemment menées auprès de populations mobiles ou déplacées.
-populations mobiles ou déplacées. 
+Pour les enquÃªtes de mortalitÃ©, nous voulons maintenant savoir combien de temps chaque individu a Ã©tÃ© prÃ©sent dans 
+l'emplacement afin de pouvoir calculer un taux de mortalitÃ© appropriÃ© pour notre pÃ©riode 
+d'intÃ©rÃªt. Ceci n'est pas pertinent pour toutes les enquÃªtes, mais particuliÃ¨rement pour les enquÃªtes de mortalitÃ©.
+de mortalitÃ©, car elles sont frÃ©quemment menÃ©es auprÃ¨s de populations mobiles ou dÃ©placÃ©es.
+populations mobiles ou dÃ©placÃ©es. 
 
-Pour ce faire, nous définissons d'abord notre période d'intérêt, également connue sous le nom de période de rappel (c'est-à-dire le moment où l'enquête est menée). 
-période de rappel (c'est-à-dire la période que les participants doivent indiquer lorsqu'ils répondent aux questions). 
+Pour ce faire, nous dÃ©finissons d'abord notre pÃ©riode d'intÃ©rÃªt, Ã©galement connue sous le nom de pÃ©riode de rappel (c'est-Ã -dire le moment oÃ¹ l'enquÃªte est menÃ©e). 
+pÃ©riode de rappel (c'est-Ã -dire la pÃ©riode que les participants doivent indiquer lorsqu'ils rÃ©pondent aux questions). 
 questions). 
-Nous pouvons ensuite utiliser cette période pour définir des dates inappropriées comme manquantes, c'est-à-dire que si des décès
-sont signalés en dehors de la période d'intérêt. 
+Nous pouvons ensuite utiliser cette pÃ©riode pour dÃ©finir des dates inappropriÃ©es comme manquantes, c'est-Ã -dire que si des dÃ©cÃ¨s
+sont signalÃ©s en dehors de la pÃ©riode d'intÃ©rÃªt. 
 
-``{r recall_period}
+```{r recall_period}
 
-## Définit le début/la fin de la période de rappel.
-## peut être changé en variables de date provenant de l'ensemble de données 
-## (par exemple, date d'arrivée et date du questionnaire)
-données_enquête <- données_enquête %>% 
+## DÃ©finit le dÃ©but/la fin de la pÃ©riode de rappel.
+## peut Ãªtre changÃ© en variables de date provenant de l'ensemble de donnÃ©es 
+## (par exemple, date d'arrivÃ©e et date du questionnaire)
+donnÃ©es_enquÃªte <- donnÃ©es_enquÃªte %>% 
   mutate(recall_start = as.Date("2018-01-01"), 
          recall_end = as.Date("2018-05-01")
   )
 
 
-# Définir les dates inappropriées à NA sur la base de règles 
-## par exemple, arrivées avant le début, départs après la fin.
+# DÃ©finir les dates inappropriÃ©es Ã  NA sur la base de rÃ¨gles 
+## par exemple, arrivÃ©es avant le dÃ©but, dÃ©parts aprÃ¨s la fin.
 survey_data <- survey_data %>%
       mutate(
            arrived_date = if_else(arrived_date < recall_start, 
@@ -309,32 +309,32 @@ survey_data <- survey_data %>%
                                date_gauche),
            death_date = if_else(death_date > recall_end,
                                as.Date(NA),
-                               date_décès)
+                               date_dÃ©cÃ¨s)
            )
 
 ```
 
 
-Nous pouvons ensuite utiliser nos variables de date pour définir les dates de début et de fin pour chaque individu. 
+Nous pouvons ensuite utiliser nos variables de date pour dÃ©finir les dates de dÃ©but et de fin pour chaque individu. 
 Nous pouvons utiliser la fonction `find_start_date()` de **sitrep** pour affiner les causes des 
-les dates et ensuite utiliser cela pour calculer la différence entre les jours (personne-temps). 
+les dates et ensuite utiliser cela pour calculer la diffÃ©rence entre les jours (personne-temps). 
 
-Date de début : 
-L'événement d'arrivée approprié le plus tôt dans votre période de rappel.
-Soit le début de votre période de rappel (que vous définissez à l'avance), soit une 
-date après le début de la période de rappel, le cas échéant (par exemple, les arrivées ou les naissances).
+Date de dÃ©but : 
+L'Ã©vÃ©nement d'arrivÃ©e appropriÃ© le plus tÃ´t dans votre pÃ©riode de rappel.
+Soit le dÃ©but de votre pÃ©riode de rappel (que vous dÃ©finissez Ã  l'avance), soit une 
+date aprÃ¨s le dÃ©but de la pÃ©riode de rappel, le cas Ã©chÃ©ant (par exemple, les arrivÃ©es ou les naissances).
 
 date de fin : 
-L'événement de départ approprié le plus tôt dans votre période de rappel
-Soit la fin de votre période de rappel, soit une date antérieure à la fin du rappel. 
-le cas échéant (par exemple, départs, décès).
+L'Ã©vÃ©nement de dÃ©part appropriÃ© le plus tÃ´t dans votre pÃ©riode de rappel
+Soit la fin de votre pÃ©riode de rappel, soit une date antÃ©rieure Ã  la fin du rappel. 
+le cas Ã©chÃ©ant (par exemple, dÃ©parts, dÃ©cÃ¨s).
 
-``{r observation_time}
+```{r observation_time}
 
-## Créer de nouvelles variables pour les dates/causes de début et de fin.
-données_enquête <- données_enquête %>% 
-     ## choisir la date la plus ancienne saisie dans l'enquête.
-     ## à partir des naissances, des arrivées dans les ménages et des arrivées dans les camps. 
+## CrÃ©er de nouvelles variables pour les dates/causes de dÃ©but et de fin.
+donnÃ©es_enquÃªte <- donnÃ©es_enquÃªte %>% 
+     ## choisir la date la plus ancienne saisie dans l'enquÃªte.
+     ## Ã  partir des naissances, des arrivÃ©es dans les mÃ©nages et des arrivÃ©es dans les camps. 
      find_start_date("birthday_date",
                   "arrived_date",
                   period_start = "recall_start",
@@ -342,8 +342,8 @@ données_enquête <- données_enquête %>%
                   datecol = "startdate",
                   datereason = "startcause 
                  ) %>%
-     ## choisir la date la plus ancienne saisie dans l'enquête
-     ## à partir des départs du camp, des décès et de la fin de l'étude
+     ## choisir la date la plus ancienne saisie dans l'enquÃªte
+     ## Ã  partir des dÃ©parts du camp, des dÃ©cÃ¨s et de la fin de l'Ã©tude
      find_end_date("left_date",
                 "death_date",
                 period_start = "recall_start",
@@ -353,24 +353,24 @@ données_enquête <- données_enquête %>%
                )
 
 
-## étiqueter ceux qui étaient présents au début/à la fin (sauf les naissances/décès)
+## Ã©tiqueter ceux qui Ã©taient prÃ©sents au dÃ©but/Ã  la fin (sauf les naissances/dÃ©cÃ¨s)
 survey_data <- survey_data %>% 
      mutate(
-       ## remplir la date de début pour qu'elle corresponde au début de la période de rappel (pour ceux qui sont vides) 
+       ## remplir la date de dÃ©but pour qu'elle corresponde au dÃ©but de la pÃ©riode de rappel (pour ceux qui sont vides) 
        startdate = if_else(is.na(startdate), recall_start, startdate), 
-       ## définir la cause de début comme présente au début si elle est égale à la période de rappel 
-       ## sauf si elle est égale à la date de naissance 
+       ## dÃ©finir la cause de dÃ©but comme prÃ©sente au dÃ©but si elle est Ã©gale Ã  la pÃ©riode de rappel 
+       ## sauf si elle est Ã©gale Ã  la date de naissance 
        startcause = if_else(startdate == recall_start & startcause != "birthday_date",
-                              "Présent au début", startcause), 
-       ## remplir la date de fin pour qu'elle corresponde à la fin de la période de rappel (pour ceux qui sont vides) 
+                              "PrÃ©sent au dÃ©but", startcause), 
+       ## remplir la date de fin pour qu'elle corresponde Ã  la fin de la pÃ©riode de rappel (pour ceux qui sont vides) 
        enddate = if_else(is.na(enddate), recall_end, enddate), 
-       ## définir la cause de fin comme étant présente à la fin si égale à la fin de rappel 
-       ## sauf si elle est égale à la date de décès
+       ## dÃ©finir la cause de fin comme Ã©tant prÃ©sente Ã  la fin si Ã©gale Ã  la fin de rappel 
+       ## sauf si elle est Ã©gale Ã  la date de dÃ©cÃ¨s
        endcause = if_else(enddate == recall_end & endcause != "death_date", 
-                            "Présent à la fin", endcause))
+                            "PrÃ©sent Ã  la fin", endcause))
 
 
-## Définir la durée d'observation en jours
+## DÃ©finir la durÃ©e d'observation en jours
 survey_data <- survey_data %>% 
   mutate(obstime = as.numeric(enddate - startdate))
 
@@ -378,78 +378,78 @@ survey_data <- survey_data %>%
 
 
 <!-- ======================================================= -->
-## Pondération { }
+## PondÃ©ration { }
 
-Il est important d'éliminer les observations erronées avant d'ajouter les poids de l'enquête. 
-Par exemple, si vous avez des observations avec un temps d'observation négatif, vous devrez les vérifier.
-vous devrez les vérifier (vous pouvez le faire avec la fonction `assert_positive_timespan()` de **sitrep**. 
+Il est important d'Ã©liminer les observations erronÃ©es avant d'ajouter les poids de l'enquÃªte. 
+Par exemple, si vous avez des observations avec un temps d'observation nÃ©gatif, vous devrez les vÃ©rifier.
+vous devrez les vÃ©rifier (vous pouvez le faire avec la fonction `assert_positive_timespan()` de **sitrep**. 
 de **sitrep**. 
 Une autre chose est si vous voulez supprimer les lignes vides (par exemple avec `drop_na(uid)`)
-ou supprimer les doublons (voir la section du manuel sur la [déduplication]). 
-pour plus de détails). 
-Ceux qui n'ont pas de consentement doivent aussi être supprimés. 
+ou supprimer les doublons (voir la section du manuel sur la [dÃ©duplication]). 
+pour plus de dÃ©tails). 
+Ceux qui n'ont pas de consentement doivent aussi Ãªtre supprimÃ©s. 
 
-Dans cet exemple, nous filtrons les cas que nous voulons supprimer et les stockons dans un cadre de données séparé.
-cadre de données distinct - de cette façon, nous pouvons décrire ceux qui ont été exclus de l'enquête. 
-Nous utilisons ensuite la fonction `anti_join()` de **dplyr** pour supprimer ces cas exclus de nos données d'enquête.
-de nos données d'enquête. 
+Dans cet exemple, nous filtrons les cas que nous voulons supprimer et les stockons dans un cadre de donnÃ©es sÃ©parÃ©.
+cadre de donnÃ©es distinct - de cette faÃ§on, nous pouvons dÃ©crire ceux qui ont Ã©tÃ© exclus de l'enquÃªte. 
+Nous utilisons ensuite la fonction `anti_join()` de **dplyr** pour supprimer ces cas exclus de nos donnÃ©es d'enquÃªte.
+de nos donnÃ©es d'enquÃªte. 
 
-<span style="color : red ;">**_DANGER:_** Vous ne pouvez pas avoir de valeurs manquantes dans votre variable de poids, ni dans aucune des variables pertinentes pour le plan de sondage (par exemple, les variables d'âge, de sexe, de strates ou de grappes).</span>  
+<span style="color : red ;">**_DANGER:_** Vous ne pouvez pas avoir de valeurs manquantes dans votre variable de poids, ni dans aucune des variables pertinentes pour le plan de sondage (par exemple, les variables d'Ã¢ge, de sexe, de strates ou de grappes).</span>  
 
-``{r remove_unused_data}
+```{r remove_unused_data}
 
-## stockez les cas que vous abandonnez afin de pouvoir les décrire (par exemple, non-consentant. 
+## stockez les cas que vous abandonnez afin de pouvoir les dÃ©crire (par exemple, non-consentant. 
 ## ou mauvais village/cluster)
 dropped <- survey_data %>% 
   filter(!consent | is.na(startdate) | is.na(enddate) | village_name == "other")
 
-## utiliser les cas abandonnés pour supprimer les lignes inutilisées de l'ensemble des données de l'enquête.  
+## utiliser les cas abandonnÃ©s pour supprimer les lignes inutilisÃ©es de l'ensemble des donnÃ©es de l'enquÃªte.  
 survey_data <- anti_join(survey_data, dropped, by = names(dropped))
 
 ```
 
-Comme mentionné ci-dessus, nous montrons comment ajouter des poids pour trois plans d'étude différents (stratifié, en grappes et stratifié). 
-d'étude (stratifié, en grappe et en grappe stratifié). Ceux-ci nécessitent des informations 
-sur la population source et/ou les grappes enquêtées. 
-Nous utiliserons le code de la grappe stratifiée pour cet exemple, mais utilisez celui qui est le plus approprié à votre plan d'étude.
-mais utilisez celui qui convient le mieux à votre modèle d'étude. 
+Comme mentionnÃ© ci-dessus, nous montrons comment ajouter des poids pour trois plans d'Ã©tude diffÃ©rents (stratifiÃ©, en grappes et stratifiÃ©). 
+d'Ã©tude (stratifiÃ©, en grappe et en grappe stratifiÃ©). Ceux-ci nÃ©cessitent des informations 
+sur la population source et/ou les grappes enquÃªtÃ©es. 
+Nous utiliserons le code de la grappe stratifiÃ©e pour cet exemple, mais utilisez celui qui est le plus appropriÃ© Ã  votre plan d'Ã©tude.
+mais utilisez celui qui convient le mieux Ã  votre modÃ¨le d'Ã©tude. 
 
-``{r survey_weights}
+```{r survey_weights}
 
 # stratified ------------------------------------------------------------------
-# Créez une variable appelée "surv_weight_strata".
-# contient les poids pour chaque individu - par groupe d'âge, sexe et district sanitaire.
+# CrÃ©ez une variable appelÃ©e "surv_weight_strata".
+# contient les poids pour chaque individu - par groupe d'Ã¢ge, sexe et district sanitaire.
 survey_data <- add_weights_strata(x = survey_data,
                                          p = population,
                                          surv_weight = "surv_weight_strata",
                                          surv_weight_ID = "surv_weight_ID_strata",
-                                         groupe d'âge, sexe, district de santé)
+                                         groupe d'Ã¢ge, sexe, district de santÃ©)
 
 ## cluster ---------------------------------------------------------------------
 
-# obtient le nombre de personnes d'individus interrogés par ménage
-# ajoute une variable avec les comptes de la variable index du ménage (parent)
+# obtient le nombre de personnes d'individus interrogÃ©s par mÃ©nage
+# ajoute une variable avec les comptes de la variable index du mÃ©nage (parent)
 survey_data <- survey_data %>%
   add_count(index, name = "interviewed")
 
 
-## crée des poids de cluster
+## crÃ©e des poids de cluster
 survey_data <- add_weights_cluster(x = survey_data,
                                           cl = cluster_counts,
-                                          admissible = numéro de membre,
-                                          interviewé = interviewé,
+                                          admissible = numÃ©ro de membre,
+                                          interviewÃ© = interviewÃ©,
                                           cluster_x = nom du village,
                                           cluster_cl = cluster,
                                           household_x = index,
-                                          household_cl = ménages,
+                                          household_cl = mÃ©nages,
                                           surv_weight = "surv_weight_cluster",
                                           surv_weight_ID = "surv_weight_ID_cluster",
                                           ignore_cluster = FALSE,
                                           ignore_household = FALSE)
 
 
-# stratifié et cluster ------------------------------------------------------
-# créer un poids d'enquête pour la grappe et les strates
+# stratifiÃ© et cluster ------------------------------------------------------
+# crÃ©er un poids d'enquÃªte pour la grappe et les strates
 survey_data <- survey_data %>%
   mutate(surv_weight_cluster_strata = surv_weight_strata * surv_weight_cluster)
 
@@ -457,65 +457,65 @@ survey_data <- survey_data %>%
 
 
 <!-- ======================================================= -->
-## Objets de conception d'enquête { }
+## Objets de conception d'enquÃªte { }
 
-Créez un objet d'enquête en fonction de la conception de votre étude. 
-Utilisé de la même manière que les cadres de données pour calculer les proportions de poids, etc. 
-Assurez-vous que toutes les variables nécessaires sont créées avant cela. 
+CrÃ©ez un objet d'enquÃªte en fonction de la conception de votre Ã©tude. 
+UtilisÃ© de la mÃªme maniÃ¨re que les cadres de donnÃ©es pour calculer les proportions de poids, etc. 
+Assurez-vous que toutes les variables nÃ©cessaires sont crÃ©Ã©es avant cela. 
 
 Il y a quatre options, commentez celles que vous n'utilisez pas : 
-- aléatoire simple 
-- Stratifié 
+- alÃ©atoire simple 
+- StratifiÃ© 
 - en grappe 
-- Grappe stratifiée
+- Grappe stratifiÃ©e
 
-Pour ce modèle, nous supposerons que nous regroupons les enquêtes dans deux strates distinctes (districts sanitaires A et B). 
+Pour ce modÃ¨le, nous supposerons que nous regroupons les enquÃªtes dans deux strates distinctes (districts sanitaires A et B). 
 strates distinctes (districts sanitaires A et B). 
 Pour obtenir des estimations globales, nous devons donc combiner les poids des grappes et des strates. 
 
-Comme nous l'avons mentionné précédemment, il existe deux paquets disponibles pour ce faire. Le 
-classique est **survey** et il existe un paquetage appelé **srvyr** qui crée des objets adaptés à tidyverse. 
-qui crée des objets et des fonctions adaptés à tidyverse. Nous ferons la démonstration des deux, 
-mais notez que la plupart du code de ce chapitre utilisera des objets basés sur **srvyr**. 
+Comme nous l'avons mentionnÃ© prÃ©cÃ©demment, il existe deux paquets disponibles pour ce faire. Le 
+classique est **survey** et il existe un paquetage appelÃ© **srvyr** qui crÃ©e des objets adaptÃ©s Ã  tidyverse. 
+qui crÃ©e des objets et des fonctions adaptÃ©s Ã  tidyverse. Nous ferons la dÃ©monstration des deux, 
+mais notez que la plupart du code de ce chapitre utilisera des objets basÃ©s sur **srvyr**. 
 La seule exception est que le paquet **gtsummary** n'accepte que les objets **survey**. 
 
 ### Paquet **Survey  
 
 Le paquet **survey** utilise effectivement le codage **base** *R*, et il n'est donc pas 
 possible d'utiliser les pipes (`%>%`) ou d'autres syntaxes **dplyr**. 
-Avec le paquetage **survey**, nous utilisons la fonction `svydesign()` pour définir un objet d'enquête
-avec les clusters, les poids et les strates appropriés. 
+Avec le paquetage **survey**, nous utilisons la fonction `svydesign()` pour dÃ©finir un objet d'enquÃªte
+avec les clusters, les poids et les strates appropriÃ©s. 
 
-<span style="color : black ;">**_NOTE:_** nous devons utiliser le tilde (`~`) devant les variables, ceci parce que le package utilise la syntaxe **base** *R* d'affectation des variables basée sur des formules. </span>
+<span style="color : black ;">**_NOTE:_** nous devons utiliser le tilde (`~`) devant les variables, ceci parce que le package utilise la syntaxe **base** *R* d'affectation des variables basÃ©e sur des formules. </span>
 
-``{r survey_design}
+```{r survey_design}
 
-# aléatoire simple ---------------------------------------------------------------
+# alÃ©atoire simple ---------------------------------------------------------------
 base_survey_design_simple <- svydesign(ids = ~1, # 1 pour aucun id de grappe
-                   weights = NULL, # aucun poids ajouté
-                   strata = NULL, # l'échantillonnage est simple (pas de strates)
-                   data = survey_data # doit spécifier l'ensemble de données
+                   weights = NULL, # aucun poids ajoutÃ©
+                   strata = NULL, # l'Ã©chantillonnage est simple (pas de strates)
+                   data = survey_data # doit spÃ©cifier l'ensemble de donnÃ©es
                   )
 
 ## stratified ------------------------------------------------------------------
 base_survey_design_strata <- svydesign(ids = ~1, # 1 pour aucun id de cluster
-                   weights = ~surv_weight_strata, # variable de poids créée ci-dessus
-                   strata = ~health_district, # l'échantillonnage a été stratifié par district
-                   data = survey_data # il faut spécifier l'ensemble de données
+                   weights = ~surv_weight_strata, # variable de poids crÃ©Ã©e ci-dessus
+                   strata = ~health_district, # l'Ã©chantillonnage a Ã©tÃ© stratifiÃ© par district
+                   data = survey_data # il faut spÃ©cifier l'ensemble de donnÃ©es
                   )
 
 # cluster ---------------------------------------------------------------------
 base_survey_design_cluster <- svydesign(ids = ~village_name, # ids de cluster
-                   weights = ~surv_weight_cluster, # variable de poids créée ci-dessus
-                   strata = NULL, # l'échantillonnage était simple (pas de strates)
-                   data = survey_data # il faut spécifier l'ensemble de données
+                   weights = ~surv_weight_cluster, # variable de poids crÃ©Ã©e ci-dessus
+                   strata = NULL, # l'Ã©chantillonnage Ã©tait simple (pas de strates)
+                   data = survey_data # il faut spÃ©cifier l'ensemble de donnÃ©es
                   )
 
-# cluster stratifié ----------------------------------------------------------
+# cluster stratifiÃ© ----------------------------------------------------------
 base_survey_design <- svydesign(ids = ~village_name, # ids de cluster
-                   weights = ~surv_weight_cluster_strata, # variable de poids créée ci-dessus
-                   strata = ~health_district, # l'échantillonnage a été stratifié par district
-                   data = survey_data # doit spécifier l'ensemble de données
+                   weights = ~surv_weight_cluster_strata, # variable de poids crÃ©Ã©e ci-dessus
+                   strata = ~health_district, # l'Ã©chantillonnage a Ã©tÃ© stratifiÃ© par district
+                   data = survey_data # doit spÃ©cifier l'ensemble de donnÃ©es
                   )
 ```
 
@@ -524,116 +524,116 @@ base_survey_design <- svydesign(ids = ~village_name, # ids de cluster
 ### Paquet **Srvyr  
 
 Avec le paquetage **srvyr**, nous pouvons utiliser la fonction `as_survey_design()`, qui 
-a les mêmes arguments que ci-dessus, mais autorise les tubes (`%>%`), et nous n'avons donc pas besoin d'utiliser le tilde (`%>%`). 
+a les mÃªmes arguments que ci-dessus, mais autorise les tubes (`%>%`), et nous n'avons donc pas besoin d'utiliser le tilde (`%>%`). 
 donc pas besoin d'utiliser le tilde (`~`). 
 
-``{r survey_design_srvyr}
-## aléatoire simple ---------------------------------------------------------------
+```{r survey_design_srvyr}
+## alÃ©atoire simple ---------------------------------------------------------------
 survey_design_simple <- survey_data %>% 
   as_survey_design(ids = 1, # 1 pour aucun id de grappe 
-                   weights = NULL, # Aucun poids ajouté
-                   strata = NULL # l'échantillonnage était simple (pas de strates)
+                   weights = NULL, # Aucun poids ajoutÃ©
+                   strata = NULL # l'Ã©chantillonnage Ã©tait simple (pas de strates)
                   )
 ## stratified ------------------------------------------------------------------
 survey_design_strata <- survey_data %>%
   as_survey_design(ids = 1, # 1 pour aucun id de cluster
-                   weights = surv_weight_strata, # variable de poids créée ci-dessus
-                   strata = health_district # l'échantillonnage a été stratifié par district
+                   weights = surv_weight_strata, # variable de poids crÃ©Ã©e ci-dessus
+                   strata = health_district # l'Ã©chantillonnage a Ã©tÃ© stratifiÃ© par district
                   )
 ## cluster ---------------------------------------------------------------------
 survey_design_cluster <- survey_data %>%
   as_survey_design(ids = nom_du_village, # ids de la grappe
-                   weights = surv_weight_cluster, # variable de poids créée ci-dessus
-                   strata = NULL # l'échantillonnage était simple (pas de strates)
+                   weights = surv_weight_cluster, # variable de poids crÃ©Ã©e ci-dessus
+                   strata = NULL # l'Ã©chantillonnage Ã©tait simple (pas de strates)
                   )
 
-## cluster stratifié ----------------------------------------------------------
+## cluster stratifiÃ© ----------------------------------------------------------
 survey_design <- survey_data %>%
   as_survey_design(ids = nom_du_village, # ids de la grappe
-                   weights = surv_weight_cluster_strata, # variable de poids créée ci-dessus
-                   strata = health_district # l'échantillonnage a été stratifié par district
+                   weights = surv_weight_cluster_strata, # variable de poids crÃ©Ã©e ci-dessus
+                   strata = health_district # l'Ã©chantillonnage a Ã©tÃ© stratifiÃ© par district
                   )
 ```
 
 <!-- ======================================================= -->
 ## Analyse descriptive { }
 
-L'analyse descriptive et la visualisation de base sont traitées en détail dans d'autres chapitres du manuel. 
+L'analyse descriptive et la visualisation de base sont traitÃ©es en dÃ©tail dans d'autres chapitres du manuel. 
 chapitres du manuel, nous ne nous y attarderons donc pas ici. 
-Pour plus de détails, voir les chapitres sur les [tableaux descriptifs] (https://epirhandbook.com/descriptive-tables.html), 
+Pour plus de dÃ©tails, voir les chapitres sur les [tableaux descriptifs] (https://epirhandbook.com/descriptive-tables.html), 
 [les tests statistiques] (https://epirhandbook.com/simple-statistical-tests.html), 
-[les tableaux de présentation] (https://epirhandbook.com/tables-for-presentation.html), 
+[les tableaux de prÃ©sentation] (https://epirhandbook.com/tables-for-presentation.html), 
 [les bases du ggplot] (https://epirhandbook.com/ggplot-basics.html) et 
 [rapports R markdown] (https://epirhandbook.com/r-markdown-reports.html). 
 
-Dans cette section, nous allons nous concentrer sur la manière d'étudier le biais dans votre échantillon et de le visualiser. 
-Nous nous pencherons également sur la visualisation du flux de population dans le cadre d'une enquête à l'aide de diagrammes alluviaux/sankey. 
+Dans cette section, nous allons nous concentrer sur la maniÃ¨re d'Ã©tudier le biais dans votre Ã©chantillon et de le visualiser. 
+Nous nous pencherons Ã©galement sur la visualisation du flux de population dans le cadre d'une enquÃªte Ã  l'aide de diagrammes alluviaux/sankey. 
 diagrammes d'alluvions/de sables. 
 
-En général, vous devriez envisager d'inclure les analyses descriptives suivantes :  
+En gÃ©nÃ©ral, vous devriez envisager d'inclure les analyses descriptives suivantes :  
 
-- Le nombre final de grappes, de ménages et d'individus inclus.  
+- Le nombre final de grappes, de mÃ©nages et d'individus inclus.  
 - Nombre d'individus exclus et les raisons de cette exclusion 
-- Nombre médian (fourchette) de ménages par grappe et d'individus par ménage. 
+- Nombre mÃ©dian (fourchette) de mÃ©nages par grappe et d'individus par mÃ©nage. 
 
 
-### Biais d'échantillonnage 
+### Biais d'Ã©chantillonnage 
 
-Comparez les proportions dans chaque groupe d'âge entre votre échantillon et 
+Comparez les proportions dans chaque groupe d'Ã¢ge entre votre Ã©chantillon et 
 la population source. 
-Ceci est important pour pouvoir mettre en évidence un éventuel biais d'échantillonnage. 
-Vous pouvez également répéter cette opération en examinant les distributions par sexe. 
+Ceci est important pour pouvoir mettre en Ã©vidence un Ã©ventuel biais d'Ã©chantillonnage. 
+Vous pouvez Ã©galement rÃ©pÃ©ter cette opÃ©ration en examinant les distributions par sexe. 
 
-Notez que ces p-values ne sont qu'indicatives, et qu'une discussion descriptive (ou une visualisation avec les pyramides d'âge) est nécessaire.
-visualisation avec les pyramides d'âge ci-dessous) des distributions dans votre échantillon d'étude par rapport à la population source est plus importante. 
-par rapport à la population source est plus importante que le test binomial lui-même.
-Cela est dû au fait que l'augmentation de la taille de l'échantillon conduira le plus souvent à des 
-différences qui peuvent ne pas être pertinentes après la pondération de vos données.
+Notez que ces p-values ne sont qu'indicatives, et qu'une discussion descriptive (ou une visualisation avec les pyramides d'Ã¢ge) est nÃ©cessaire.
+visualisation avec les pyramides d'Ã¢ge ci-dessous) des distributions dans votre Ã©chantillon d'Ã©tude par rapport Ã  la population source est plus importante. 
+par rapport Ã  la population source est plus importante que le test binomial lui-mÃªme.
+Cela est dÃ» au fait que l'augmentation de la taille de l'Ã©chantillon conduira le plus souvent Ã  des 
+diffÃ©rences qui peuvent ne pas Ãªtre pertinentes aprÃ¨s la pondÃ©ration de vos donnÃ©es.
 
-``{r descriptive_sampling_bias, warning = FALSE}
+```{r descriptive_sampling_bias, warning = FALSE}
 
-## dénombrements et saillies de la population étudiée.
+## dÃ©nombrements et saillies de la population Ã©tudiÃ©e.
 ag <- survey_data %>% 
   group_by(age_group) %>% 
-  drop_na(groupe_d'âge) %>% 
+  drop_na(groupe_d'Ã¢ge) %>% 
   tally() %>% 
   mutate(proportion = n / sum(n), 
          n_total = sum(n))
 
 ## comptes et props de la population source
 propcount <- population %>% 
-  group_by(groupe d'âge) %>%
+  group_by(groupe d'Ã¢ge) %>%
     tally(population) %>%
     mutate(proportion = n / sum(n))
 
-## lier ensemble les colonnes de deux tables, regrouper par âge, et effectuer un 
-## un test binomial pour voir si n/total est significativement différent de la population
+## lier ensemble les colonnes de deux tables, regrouper par Ã¢ge, et effectuer un 
+## un test binomial pour voir si n/total est significativement diffÃ©rent de la population
 ## proportion.
-  ## Le suffixe ajoute ici du texte à la fin des colonnes dans chacun des deux ensembles de données.
+  ## Le suffixe ajoute ici du texte Ã  la fin des colonnes dans chacun des deux ensembles de donnÃ©es.
 left_join(ag, propcount, by = "age_group", suffix = c("", "_pop")) %>%
-  group_by(groupe d'âge) %>%
-  ## broom::tidy(binom.test()) crée une trame de données à partir du test binomial et ## ajoutera les variables p.p. à la trame de données.
+  group_by(groupe d'Ã¢ge) %>%
+  ## broom::tidy(binom.test()) crÃ©e une trame de donnÃ©es Ã  partir du test binomial et ## ajoutera les variables p.p. Ã  la trame de donnÃ©es.
   ## ajoutera les variables p.value, parameter, conf.low, conf.high, method, and
   ## alternative. Nous n'utiliserons que p.value ici. Vous pouvez inclure d'autres
-  ## d'autres colonnes si vous souhaitez faire état des intervalles de confiance.
+  ## d'autres colonnes si vous souhaitez faire Ã©tat des intervalles de confiance.
   mutate(binom = list(broom::tidy(binom.test(n, n_total, proportion_pop)))) %>%
-  unnest(cols = c(binom)) %>% # important pour l'expansion du cadre de données binom.test
+  unnest(cols = c(binom)) %>% # important pour l'expansion du cadre de donnÃ©es binom.test
   mutate(proportion_pop = proportion_pop * 100) %>%
   ## Ajustement des valeurs de p pour corriger les faux positifs. 
-  ## (parce que l'on teste plusieurs groupes d'âge). Cela ne fera une 
-  ## une différence que si vous avez plusieurs catégories d'âge
+  ## (parce que l'on teste plusieurs groupes d'Ã¢ge). Cela ne fera une 
+  ## une diffÃ©rence que si vous avez plusieurs catÃ©gories d'Ã¢ge
   mutate(p.value = p.adjust(p.value, method = "holm")) %>%
                       
-  ## N'affichez que les valeurs de p supérieures à 0,001 (celles qui sont inférieures sont signalées comme <0,001)
+  ## N'affichez que les valeurs de p supÃ©rieures Ã  0,001 (celles qui sont infÃ©rieures sont signalÃ©es comme <0,001)
   mutate(p.value = ifelse(p.value < 0.001, 
                           "<0.001", 
                           as.character(round(p.value, 3)))) %>% 
   
-  ## renommez les colonnes de manière appropriée
+  ## renommez les colonnes de maniÃ¨re appropriÃ©e
   select(
-    "Groupe d'âge" = age_group,
-    "Population étudiée (n)" = n,
-    "Population étudiée (%)" = proportion,
+    "Groupe d'Ã¢ge" = age_group,
+    "Population Ã©tudiÃ©e (n)" = n,
+    "Population Ã©tudiÃ©e (%)" = proportion,
     "Population source (n)" = n_pop,
     "Population source (%)" = proportion_pop,
     "P-value" = p.value
@@ -642,52 +642,52 @@ left_join(ag, propcount, by = "age_group", suffix = c("", "_pop")) %>%
 
 
 
-### Pyramides démographiques 
+### Pyramides dÃ©mographiques 
 
-Les pyramides démographiques (ou âge-sexe) sont un moyen facile de visualiser la distribution de la population de votre enquête.
-dans la population de votre enquête. Il est également intéressant de créer des 
-[tableaux descriptifs] (https://epirhandbook.com/descriptive-tables.html) de l'âge et du sexe par strates d'enquête. 
-et le sexe par strates d'enquête. 
-Nous allons démontrer l'utilisation du paquet **apyramide** car il permet de pondérer les proportions en utilisant notre objet de conception d'enquête créé ci-dessus. 
-pondérées en utilisant notre objet de conception d'enquête créé ci-dessus. Autres options pour créer
-[pyramides démographiques] (https://epirhandbook.com/demographic-pyramids-and-likert-scales.html)
-sont traitées en détail dans ce chapitre du manuel. Nous utiliserons également une 
-fonction wrapper de **sitrep** appelée `plot_age_pyramid()` qui permet de gagner quelques lignes de
+Les pyramides dÃ©mographiques (ou Ã¢ge-sexe) sont un moyen facile de visualiser la distribution de la population de votre enquÃªte.
+dans la population de votre enquÃªte. Il est Ã©galement intÃ©ressant de crÃ©er des 
+[tableaux descriptifs] (https://epirhandbook.com/descriptive-tables.html) de l'Ã¢ge et du sexe par strates d'enquÃªte. 
+et le sexe par strates d'enquÃªte. 
+Nous allons dÃ©montrer l'utilisation du paquet **apyramide** car il permet de pondÃ©rer les proportions en utilisant notre objet de conception d'enquÃªte crÃ©Ã© ci-dessus. 
+pondÃ©rÃ©es en utilisant notre objet de conception d'enquÃªte crÃ©Ã© ci-dessus. Autres options pour crÃ©er
+[pyramides dÃ©mographiques] (https://epirhandbook.com/demographic-pyramids-and-likert-scales.html)
+sont traitÃ©es en dÃ©tail dans ce chapitre du manuel. Nous utiliserons Ã©galement une 
+fonction wrapper de **sitrep** appelÃ©e `plot_age_pyramid()` qui permet de gagner quelques lignes de
 lignes de code pour produire un graphique avec des proportions. 
 
-Comme pour le test binomial formel de différence, vu plus haut dans la section sur le biais d'échantillonnage, nous nous intéressons ici à l'aspect visuel du test. 
-d'échantillonnage, nous sommes intéressés ici à visualiser si notre population échantillonnée 
-est sensiblement différente de la population source et si la pondération corrige cette différence.
-cette différence. Pour ce faire, nous allons utiliser le paquet **patchwork** pour montrer nos visualisations **ggplot**. 
-visualisations **ggplot** côte à côte ; pour plus de détails, voir la section sur la 
-combinaison de tracés dans le chapitre du manuel [ggplot tips](https://epirhandbook.com/ggplot-tips.html?q=patch#combine-plots)
+Comme pour le test binomial formel de diffÃ©rence, vu plus haut dans la section sur le biais d'Ã©chantillonnage, nous nous intÃ©ressons ici Ã  l'aspect visuel du test. 
+d'Ã©chantillonnage, nous sommes intÃ©ressÃ©s ici Ã  visualiser si notre population Ã©chantillonnÃ©e 
+est sensiblement diffÃ©rente de la population source et si la pondÃ©ration corrige cette diffÃ©rence.
+cette diffÃ©rence. Pour ce faire, nous allons utiliser le paquet **patchwork** pour montrer nos visualisations **ggplot**. 
+visualisations **ggplot** cÃ´te Ã  cÃ´te ; pour plus de dÃ©tails, voir la section sur la 
+combinaison de tracÃ©s dans le chapitre du manuel [ggplot tips](https://epirhandbook.com/ggplot-tips.html?q=patch#combine-plots)
 du manuel. 
-Nous allons visualiser notre population source, notre population d'enquête non pondérée et notre population d'enquête pondérée. 
-notre population d'enquête pondérée.
-Vous pouvez également envisager de visualiser chaque strate de votre enquête. 
+Nous allons visualiser notre population source, notre population d'enquÃªte non pondÃ©rÃ©e et notre population d'enquÃªte pondÃ©rÃ©e. 
+notre population d'enquÃªte pondÃ©rÃ©e.
+Vous pouvez Ã©galement envisager de visualiser chaque strate de votre enquÃªte. 
 exemple ici, en utilisant l'argument `stack_by = "health_district"`. 
-(voir `?plot_age_pyramid` pour plus de détails). 
+(voir `?plot_age_pyramid` pour plus de dÃ©tails). 
 
-<span style="color : black ;">**_NOTE:_** Les axes x et y sont inversés dans les pyramides </span>.
+<span style="color : black ;">**_NOTE:_** Les axes x et y sont inversÃ©s dans les pyramides </span>.
 
-``{r weighted_age_pyramid, warning = FALSE, message = FALSE, fig.show = "hold", fig.width = 15}
+```{r weighted_age_pyramid, warning = FALSE, message = FALSE, fig.show = "hold", fig.width = 15}
 
-## définir les limites et les étiquettes de l'axe des x ---------------------------------------------
-## (mettez à jour ces chiffres pour qu'ils correspondent aux valeurs de votre graphique)
+## dÃ©finir les limites et les Ã©tiquettes de l'axe des x ---------------------------------------------
+## (mettez Ã  jour ces chiffres pour qu'ils correspondent aux valeurs de votre graphique)
 max_prop <- 35 ## choisissez la plus haute proportion que vous voulez montrer 
-step <- 5 # choisissez l'espace que vous voulez entre les étiquettes. 
+step <- 5 # choisissez l'espace que vous voulez entre les Ã©tiquettes. 
 
-## cette partie définit le vecteur en utilisant les nombres ci-dessus avec des ruptures d'axe.
+## cette partie dÃ©finit le vecteur en utilisant les nombres ci-dessus avec des ruptures d'axe.
 breaks <- c(
     seq(max_prop/100 * -1, 0 - step/100, step/100), 
     0, 
     seq(0 + step / 100, max_prop/100, step/100)
     )
 
-## cette partie définit le vecteur en utilisant les nombres ci-dessus avec les limites de l'axe
+## cette partie dÃ©finit le vecteur en utilisant les nombres ci-dessus avec les limites de l'axe
 limits <- c(max_prop/100 * -1, max_prop/100)
 
-## Cette partie définit le vecteur en utilisant les nombres ci-dessus avec les étiquettes d'axe.
+## Cette partie dÃ©finit le vecteur en utilisant les nombres ci-dessus avec les Ã©tiquettes d'axe.
 labels <- c(
       seq(max_prop, step, -step), 
       0, 
@@ -695,12 +695,12 @@ labels <- c(
     )
 
 
-## créer des graphiques individuellement --------------------------------------------------
+## crÃ©er des graphiques individuellement --------------------------------------------------
 
 ## tracer la population source 
-## nb : cette population doit être réduite à la population globale (c'est-à-dire en enlevant les districts de santé).
+## nb : cette population doit Ãªtre rÃ©duite Ã  la population globale (c'est-Ã -dire en enlevant les districts de santÃ©).
 source_population <- population %>%%.
-  ## s'assurer que l'âge et le sexe sont des facteurs
+  ## s'assurer que l'Ã¢ge et le sexe sont des facteurs
   mutate(age_group = factor(age_group, 
                             levels = c("0-2", 
                                        "3-14", 
@@ -709,7 +709,7 @@ source_population <- population %>%%.
                                        "45+")), 
          sex = facteur(sex)) %>% 
   group_by(age_group, sex) %>% 
-  ## additionner les comptes pour chaque district de santé 
+  ## additionner les comptes pour chaque district de santÃ© 
   summarise(population = sum(population)) %>% 
   ## supprimer le regroupement pour pouvoir calculer la proportion globale
   ungroup() %>% 
@@ -720,23 +720,23 @@ source_population <- population %>%%.
             split_by = sexe, 
             count = proportion, 
             proportionnel = TRUE) +
-  ## Afficher uniquement le libellé de l'axe des y (sinon répété dans les trois graphiques)
+  ## Afficher uniquement le libellÃ© de l'axe des y (sinon rÃ©pÃ©tÃ© dans les trois graphiques)
   labs(title = "Population source", 
        y = "", 
-       x = "Groupe d'âge (années)") + 
+       x = "Groupe d'Ã¢ge (annÃ©es)") + 
   ## rendre l'axe des x identique pour tous les graphiques 
   scale_y_continuous(breaks = breaks, 
     limites = limites, 
     labels = labels)
   
   
-## Tracez l'échantillon de population non pondéré 
+## Tracez l'Ã©chantillon de population non pondÃ©rÃ© 
 sample_population <- plot_age_pyramid(survey_data, 
                  age_group = "age_group", 
                  split_by = "sex",
                  proportion = TRUE) + 
-  ## Afficher uniquement le libellé de l'axe des x (sinon répété dans les trois graphiques)
-  labs(title = "Population échantillon non pondérée", 
+  ## Afficher uniquement le libellÃ© de l'axe des x (sinon rÃ©pÃ©tÃ© dans les trois graphiques)
+  labs(title = "Population Ã©chantillon non pondÃ©rÃ©e", 
        y = "Proportion (%)", 
        x = "") + 
   ## rendre l'axe des x identique pour tous les graphiques 
@@ -745,7 +745,7 @@ sample_population <- plot_age_pyramid(survey_data,
     labels = labels)
 
 
-## tracer la population de l'échantillon pondéré 
+## tracer la population de l'Ã©chantillon pondÃ©rÃ© 
 weighted_population <- survey_design %>% 
   ## S'assurer que les variables sont des facteurs
   mutate(age_group = factor(age_group), 
@@ -754,8 +754,8 @@ weighted_population <- survey_design %>%
     age_group = "age_group",
     split_by = "sex", 
     proportion = TRUE) +
-  ## Afficher uniquement le libellé de l'axe des x (sinon répété dans les trois graphiques)
-  labs(title = "Echantillon de population pondéré", 
+  ## Afficher uniquement le libellÃ© de l'axe des x (sinon rÃ©pÃ©tÃ© dans les trois graphiques)
+  labs(title = "Echantillon de population pondÃ©rÃ©", 
        y = "", 
        x = "") + 
   ## rendre l'axe des x identique pour tous les graphiques 
@@ -763,13 +763,13 @@ weighted_population <- survey_design %>%
     limites = limites, 
     labels = labels)
 
-## combine les trois tracés ----------------------------------------------------
-## Combinez trois tracés côte à côte en utilisant + 
+## combine les trois tracÃ©s ----------------------------------------------------
+## Combinez trois tracÃ©s cÃ´te Ã  cÃ´te en utilisant + 
 source_population + sample_population + weighted_population + 
-  ## ne montrer qu'une seule légende et définir le thème 
-  ## notez l'utilisation de & pour combiner le thème avec plot_layout()
+  ## ne montrer qu'une seule lÃ©gende et dÃ©finir le thÃ¨me 
+  ## notez l'utilisation de & pour combiner le thÃ¨me avec plot_layout()
   plot_layout(guides = "collect") & 
-  theme(legend.position = "bottom", # déplace la légende vers le bas
+  theme(legend.position = "bottom", # dÃ©place la lÃ©gende vers le bas
         legend.title = element_blank(), # supprimer le titre
         text = element_text(size = 18), # change la taille du texte
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1) # tourner le texte de l'axe x
@@ -779,50 +779,50 @@ source_population + sample_population + weighted_population +
 
 ### Diagramme alluvial/sankey
 
-La visualisation des points de départ et des résultats pour les individus peut être très utile pour 
-obtenir une vue d'ensemble. L'application est évidente pour les populations mobiles, 
+La visualisation des points de dÃ©part et des rÃ©sultats pour les individus peut Ãªtre trÃ¨s utile pour 
+obtenir une vue d'ensemble. L'application est Ã©vidente pour les populations mobiles, 
 mais il existe de nombreuses autres applications telles que les cohortes ou toute autre situation
-où il y a des transitions d'états pour les individus. Ces diagrammes ont plusieurs
-noms différents, y compris alluvial, sankey et ensembles parallèles - les détails sont 
-dans le chapitre du manuel consacré aux [diagrammes et graphiques] (https://epirhandbook.com/diagrams-and-charts.html#alluvialsankey-diagrams). 
+oÃ¹ il y a des transitions d'Ã©tats pour les individus. Ces diagrammes ont plusieurs
+noms diffÃ©rents, y compris alluvial, sankey et ensembles parallÃ¨les - les dÃ©tails sont 
+dans le chapitre du manuel consacrÃ© aux [diagrammes et graphiques] (https://epirhandbook.com/diagrams-and-charts.html#alluvialsankey-diagrams). 
 
 
-``{r visualise_population_flow}
+```{r visualise_population_flow}
 
-## résumer les données
+## rÃ©sumer les donnÃ©es
 flow_table <- survey_data %>%
   count(startcause, endcause, sex) %>% # obtenir des comptages 
-  gather_set_data(x = c("startcause", "endcause")) %>% # changer de format pour le tracé
-  mutate(x = fct_relevel(x, c("startcause", "endcause")), # définit startcause comme premier niveau
+  gather_set_data(x = c("startcause", "endcause")) %>% # changer de format pour le tracÃ©
+  mutate(x = fct_relevel(x, c("startcause", "endcause")), # dÃ©finit startcause comme premier niveau
          x = fct_recode(x, 
-                        "Start \n cause" = "startcause", # ajouter un saut de ligne (\n) après le début
+                        "Start \n cause" = "startcause", # ajouter un saut de ligne (\n) aprÃ¨s le dÃ©but
                         "Fin \n cause" = "endcause")
         )
 
 
-## Tracez votre ensemble de données 
-  ## sur l'axe des x, les causes de début et de fin.
-  ## gather_set_data génère un ID pour chaque combinaison possible.
-  ## La division par y donne les combinaisons possibles de début et de fin.
-  ## la valeur n donne les comptes (peut aussi être changée en proportion).
+## Tracez votre ensemble de donnÃ©es 
+  ## sur l'axe des x, les causes de dÃ©but et de fin.
+  ## gather_set_data gÃ©nÃ¨re un ID pour chaque combinaison possible.
+  ## La division par y donne les combinaisons possibles de dÃ©but et de fin.
+  ## la valeur n donne les comptes (peut aussi Ãªtre changÃ©e en proportion).
 ggplot(flow_table, aes(x, id = id, split = y, value = n)) +
   ## colorer les lignes par sexe 
-  geom_parallel_sets(aes(fill = sex), alpha = 0.5, axis.width = 0.2) + ### remplir les cases d'étiquettes en gris.
-  ## remplir les cases d'étiquettes en gris
-  geom_parallel_sets_axes(axis.width = 0.15, fill = "grey80", color = "grey80") + ## changer la couleur du texte et l'angle de l'étiquette.
-  ## changer la couleur et l'angle du texte (doit être ajusté)
-  geom_parallel_sets_labels(color = "black", angle = 0, size = 5) + ## ajuster la couleur et l'angle du texte (doit être ajusté)
+  geom_parallel_sets(aes(fill = sex), alpha = 0.5, axis.width = 0.2) + ### remplir les cases d'Ã©tiquettes en gris.
+  ## remplir les cases d'Ã©tiquettes en gris
+  geom_parallel_sets_axes(axis.width = 0.15, fill = "grey80", color = "grey80") + ## changer la couleur du texte et l'angle de l'Ã©tiquette.
+  ## changer la couleur et l'angle du texte (doit Ãªtre ajustÃ©)
+  geom_parallel_sets_labels(color = "black", angle = 0, size = 5) + ## ajuster la couleur et l'angle du texte (doit Ãªtre ajustÃ©)
   ## ajustement des axes y et x (il faut probablement plus d'espace vertical)
   scale_x_discrete(name = NULL, expand = c(0, 0.2)) + 
-  ## suppression des étiquettes d'axe
-  thème(
+  ## suppression des Ã©tiquettes d'axe
+  thÃ¨me(
     title = element_text(size = 26),
     text = element_text(size = 26),
     axis.line = element_blank(),
     axis.ticks = element_blank(),
     axis.text.y = element_blank(),
     panel.background = element_blank(),
-    legend.position = "bottom", # déplace la légende vers le bas
+    legend.position = "bottom", # dÃ©place la lÃ©gende vers le bas
     legend.title = element_blank(), # supprimer le titre
   )
 
@@ -830,38 +830,38 @@ ggplot(flow_table, aes(x, id = id, split = y, value = n)) +
 
 
 <!-- ======================================================= -->
-## Proportions pondérées { }
+## Proportions pondÃ©rÃ©es { }
 
-Cette section détaillera comment produire des tableaux pour les effectifs et les proportions pondérés,
-avec les intervalles de confiance associés et l'effet de plan. 
-Il existe quatre options différentes utilisant les fonctions des paquets suivants : 
+Cette section dÃ©taillera comment produire des tableaux pour les effectifs et les proportions pondÃ©rÃ©s,
+avec les intervalles de confiance associÃ©s et l'effet de plan. 
+Il existe quatre options diffÃ©rentes utilisant les fonctions des paquets suivants : 
 **survey**, **srvyr**, **sitrep** et **gtsummary**. 
-Pour un codage minimal permettant de produire un tableau standard de style épidémiologique, nous recommandons la fonction **sitrep**. 
+Pour un codage minimal permettant de produire un tableau standard de style Ã©pidÃ©miologique, nous recommandons la fonction **sitrep**. 
 recommandons la fonction **sitrep** - qui est un wrapper pour le code **srvyr** ; notez cependant que ce 
 cependant que ce n'est pas encore sur CRAN et que cela peut changer dans le futur. 
-Autrement, le code **survey** est susceptible d'être le plus stable à long terme, alors que 
-**srvyr** s'intégrera le mieux dans les flux de travail de tidyverse. Bien que les fonctions **gtsummary** 
-ont beaucoup de potentiel, elles semblent expérimentales et incomplètes au moment de la rédaction.
-au moment de la rédaction. 
+Autrement, le code **survey** est susceptible d'Ãªtre le plus stable Ã  long terme, alors que 
+**srvyr** s'intÃ©grera le mieux dans les flux de travail de tidyverse. Bien que les fonctions **gtsummary** 
+ont beaucoup de potentiel, elles semblent expÃ©rimentales et incomplÃ¨tes au moment de la rÃ©daction.
+au moment de la rÃ©daction. 
 
 
 ### Paquet **Survey 
 
-Nous pouvons utiliser la fonction `svyciprop()` de **survey** pour obtenir des proportions pondérées et les intervalles de confiance à 95% correspondants. 
-et les intervalles de confiance à 95% qui les accompagnent. Un effet de plan approprié peut être 
-extraire en utilisant la fonction `svymean()` plutôt que `svyprop()`. 
-Il est intéressant de noter que `svyprop()` ne semble accepter que les variables comprises entre 0 et 1 (ou VRAI/FAUX).
-1 (ou VRAI/FAUX), donc les variables catégorielles ne fonctionneront pas.
+Nous pouvons utiliser la fonction `svyciprop()` de **survey** pour obtenir des proportions pondÃ©rÃ©es et les intervalles de confiance Ã  95% correspondants. 
+et les intervalles de confiance Ã  95% qui les accompagnent. Un effet de plan appropriÃ© peut Ãªtre 
+extraire en utilisant la fonction `svymean()` plutÃ´t que `svyprop()`. 
+Il est intÃ©ressant de noter que `svyprop()` ne semble accepter que les variables comprises entre 0 et 1 (ou VRAI/FAUX).
+1 (ou VRAI/FAUX), donc les variables catÃ©gorielles ne fonctionneront pas.
 
-<span style="color : black ;">**_NOTE:_** Les fonctions de **survey** acceptent également les objets de conception **srvyr**, mais ici nous avons utilisé l'objet de conception **survey** juste pour la cohérence </span>.
+<span style="color : black ;">**_NOTE:_** Les fonctions de **survey** acceptent Ã©galement les objets de conception **srvyr**, mais ici nous avons utilisÃ© l'objet de conception **survey** juste pour la cohÃ©rence </span>.
 
 
-``{r survey_props}
+```{r survey_props}
 
-## produire des comptes pondérés 
+## produire des comptes pondÃ©rÃ©s 
 svytable(~died, base_survey_design)
 
-## produit des proportions pondérées
+## produit des proportions pondÃ©rÃ©es
 svyciprop(~died, base_survey_design, na.rm = T)
 
 ## obtenir l'effet du plan de sondage 
@@ -870,20 +870,20 @@ svymean(~died, base_survey_design, na.rm = T, deff = T) %>%
 
 ```
 
-Nous pouvons combiner les fonctions de **survey** présentées ci-dessus en une fonction que nous 
-fonction que nous définissons nous-mêmes ci-dessous, appelée `svy_prop` ; et nous pouvons alors utiliser cette fonction 
-avec `map()` du paquetage purrr pour itérer sur plusieurs variables et 
-et créer un tableau. Voir le chapitre du manuel [itération](https://epirhandbook.com/iteration-loops-and-lists.html) 
-pour plus de détails sur **purrr**. 
+Nous pouvons combiner les fonctions de **survey** prÃ©sentÃ©es ci-dessus en une fonction que nous 
+fonction que nous dÃ©finissons nous-mÃªmes ci-dessous, appelÃ©e `svy_prop` ; et nous pouvons alors utiliser cette fonction 
+avec `map()` du paquetage purrr pour itÃ©rer sur plusieurs variables et 
+et crÃ©er un tableau. Voir le chapitre du manuel [itÃ©ration](https://epirhandbook.com/iteration-loops-and-lists.html) 
+pour plus de dÃ©tails sur **purrr**. 
 
-``{r survey_prop_fun}
-# Définissez la fonction permettant de calculer les effectifs pondérés, les proportions, l'IC et l'effet de plan.
+```{r survey_prop_fun}
+# DÃ©finissez la fonction permettant de calculer les effectifs pondÃ©rÃ©s, les proportions, l'IC et l'effet de plan.
 # x est la variable entre guillemets 
-# design est votre objet de conception d'enquête
+# design est votre objet de conception d'enquÃªte
 
 svy_prop <- function(design, x) {
   
-  ## mettre la variable d'intérêt dans une formule 
+  ## mettre la variable d'intÃ©rÃªt dans une formule 
   form <- as.formula(paste0( "~" , x))
   ## garder seulement la colonne VRAIE des comptes de svytable
   weighted_counts <- svytable(form, design)[[2]]
@@ -894,34 +894,34 @@ svy_prop <- function(design, x) {
   ## utiliser svymean pour calculer l'effet de plan et ne garder que la colonne TRUE.
   design_eff <- deff(svymean(form, design, na.rm = TRUE, deff = TRUE))[[TRUE]]
   
-  ## combiner en un seul cadre de données
+  ## combiner en un seul cadre de donnÃ©es
   full_table <- cbind(
     "Variable" = x,
-    "Nombre" = nombres pondérés,
+    "Nombre" = nombres pondÃ©rÃ©s,
     "Proportion" = weighted_props,
     weighted_confint, 
     "Effet de conception" = design_eff
     )
   
-  ## Retourner le tableau sous forme de cadre de données
+  ## Retourner le tableau sous forme de cadre de donnÃ©es
   full_table <- data.frame(full_table, 
-             ## supprimer les noms de variables des lignes (c'est une colonne séparée maintenant)
+             ## supprimer les noms de variables des lignes (c'est une colonne sÃ©parÃ©e maintenant)
              row.names = NULL)
   
-  ## Remplacer les valeurs numériques par des valeurs numériques
+  ## Remplacer les valeurs numÃ©riques par des valeurs numÃ©riques
   full_table[ , 2:6] <- as.numeric(full_table[ , 2:6])
   
-  ## Retourner le cadre de données
-  table_complète
+  ## Retourner le cadre de donnÃ©es
+  table_complÃ¨te
 }
 
-## itérer sur plusieurs variables pour créer un tableau 
+## itÃ©rer sur plusieurs variables pour crÃ©er un tableau 
 purrr::map(
-  ## définir les variables d'intérêt
-  c("gauche", "mort", "arrivé"), 
-  ## déclarer la fonction utilisée et les arguments pour cette fonction (design)
+  ## dÃ©finir les variables d'intÃ©rÃªt
+  c("gauche", "mort", "arrivÃ©"), 
+  ## dÃ©clarer la fonction utilisÃ©e et les arguments pour cette fonction (design)
   svy_prop, design = base_survey_design) %>% 
-  ## réduire la liste à un seul cadre de données
+  ## rÃ©duire la liste Ã  un seul cadre de donnÃ©es
   bind_rows() %>% 
   ## round 
   mutate(across(where(is.numeric), round, digits = 1))
@@ -932,54 +932,54 @@ purrr::map(
 
 ### Paquet **Srvyr 
 
-Avec **srvyr**, nous pouvons utiliser la syntaxe **dplyr** pour créer une table. Notez que la méthode 
-fonction `survey_mean()` est utilisée et que l'argument de proportion est spécifié, ainsi que 
-également que la même fonction est utilisée pour calculer l'effet de plan. Ceci est dû au fait que 
+Avec **srvyr**, nous pouvons utiliser la syntaxe **dplyr** pour crÃ©er une table. Notez que la mÃ©thode 
+fonction `survey_mean()` est utilisÃ©e et que l'argument de proportion est spÃ©cifiÃ©, ainsi que 
+Ã©galement que la mÃªme fonction est utilisÃ©e pour calculer l'effet de plan. Ceci est dÃ» au fait que 
 **srvyr** englobe les deux fonctions du paquetage **survey**, `svyciprop()` et 
-`svymean()`, qui sont utilisées dans la section ci-dessus. 
+`svymean()`, qui sont utilisÃ©es dans la section ci-dessus. 
 
-<span style="color : black ;">**_NOTE:_** Il ne semble pas non plus possible d'obtenir des proportions à partir de variables catégorielles en utilisant **srvyr**, si vous en avez besoin, consultez la section ci-dessous utilisant **sitrep** </span>.
+<span style="color : black ;">**_NOTE:_** Il ne semble pas non plus possible d'obtenir des proportions Ã  partir de variables catÃ©gorielles en utilisant **srvyr**, si vous en avez besoin, consultez la section ci-dessous utilisant **sitrep** </span>.
 
-``{r srvyr_prop}
+```{r srvyr_prop}
 
 ## utiliser l'objet de conception srvyr
 survey_design %>% 
   summarise(
-    ## produire les comptes pondérés 
+    ## produire les comptes pondÃ©rÃ©s 
     counts = survey_total(died), 
-    ## produire les proportions pondérées et les intervalles de confiance 
+    ## produire les proportions pondÃ©rÃ©es et les intervalles de confiance 
     ## multiplier par 100 pour obtenir un pourcentage 
     props = survey_mean(died, 
                         proportion = TRUE, 
                         vartype = "ci") * 100, 
     ## produire l'effet de plan 
     deff = survey_mean(died, deff = TRUE)) %>% 
-  ## conserver uniquement les lignes d'intérêt
-  ## (supprimez les erreurs standard et répétez le calcul des proportions)
+  ## conserver uniquement les lignes d'intÃ©rÃªt
+  ## (supprimez les erreurs standard et rÃ©pÃ©tez le calcul des proportions)
   select(counts, props, props_low, props_upp, deff_deff)
 
 ```
 
-Là encore, nous pourrions écrire une fonction pour itérer sur plusieurs variables en utilisant
+LÃ  encore, nous pourrions Ã©crire une fonction pour itÃ©rer sur plusieurs variables en utilisant
 le paquet **purrr**. 
-Voir le chapitre du manuel [itération](https://epirhandbook.com/iteration-loops-and-lists.html) 
-pour plus de détails sur **purrr**. 
+Voir le chapitre du manuel [itÃ©ration](https://epirhandbook.com/iteration-loops-and-lists.html) 
+pour plus de dÃ©tails sur **purrr**. 
 
-``{r srvyr_prop_fun}
+```{r srvyr_prop_fun}
 
-# Définit la fonction permettant de calculer les effectifs pondérés, les proportions, l'IC et l'effet du plan de sondage.
+# DÃ©finit la fonction permettant de calculer les effectifs pondÃ©rÃ©s, les proportions, l'IC et l'effet du plan de sondage.
 # design est l'objet de votre plan de sondage
 # x est la variable entre guillemets 
 
 
 srvyr_prop <- function(design, x) {
   
-  résumer(
+  rÃ©sumer(
     ## utiliser l'objet du plan de sondage
     design, 
-    ## produire les comptes pondérés 
+    ## produire les comptes pondÃ©rÃ©s 
     counts = survey_total(.data[[x]]), 
-    ## produire les proportions pondérées et les intervalles de confiance 
+    ## produire les proportions pondÃ©rÃ©es et les intervalles de confiance 
     ## multiplier par 100 pour obtenir un pourcentage 
     props = survey_mean(.data[[x]], 
                         proportion = TRUE, 
@@ -988,20 +988,20 @@ srvyr_prop <- function(design, x) {
     deff = survey_mean(.data[[x]], deff = TRUE)) %>% 
   ## ajouter le nom de la variable
   mutate(variable = x) %>% 
-  ## ne conserve que les lignes d'intérêt
-  ## (supprimez les erreurs standard et répétez le calcul des proportions)
+  ## ne conserve que les lignes d'intÃ©rÃªt
+  ## (supprimez les erreurs standard et rÃ©pÃ©tez le calcul des proportions)
   select(variable, counts, props, props_low, props_upp, deff_deff)
   
 }
   
 
-## itérer sur plusieurs variables pour créer un tableau 
+## itÃ©rer sur plusieurs variables pour crÃ©er un tableau 
 purrr::map(
-  ## définir les variables d'intérêt
+  ## dÃ©finir les variables d'intÃ©rÃªt
   c("left", "died", "arrived"), 
-  ## déclarer la fonction utilisée et les arguments pour cette fonction (design)
+  ## dÃ©clarer la fonction utilisÃ©e et les arguments pour cette fonction (design)
   ~srvyr_prop(.x, design = survey_design)) %>% 
-  ## réduire la liste à un seul cadre de données
+  ## rÃ©duire la liste Ã  un seul cadre de donnÃ©es
   bind_rows()
   
 
@@ -1011,15 +1011,15 @@ purrr::map(
 
 ### Paquet **Sitrep 
 
-La fonction `tab_survey()` de **sitrep** est une enveloppe pour **srvyr**, vous permettant de créer des tableaux pondérés avec un minimum d'effort. 
-de créer des tableaux pondérés avec un codage minimal. Elle vous permet également de calculer
-proportions pondérées pour les variables catégorielles. 
+La fonction `tab_survey()` de **sitrep** est une enveloppe pour **srvyr**, vous permettant de crÃ©er des tableaux pondÃ©rÃ©s avec un minimum d'effort. 
+de crÃ©er des tableaux pondÃ©rÃ©s avec un codage minimal. Elle vous permet Ã©galement de calculer
+proportions pondÃ©rÃ©es pour les variables catÃ©gorielles. 
 
-``{r sitrep_props}
+```{r sitrep_props}
 
 ## utilisation de l'objet survey design
 survey_design %>% 
-  ## passe les noms des variables d'intérêt sans les citer
+  ## passe les noms des variables d'intÃ©rÃªt sans les citer
   tab_survey(arrived, left, died, education_level,
              deff = TRUE, # calculer l'effet du plan de sondage
              pretty = TRUE # fusionner la proportion et le 95%CI
@@ -1031,11 +1031,11 @@ survey_design %>%
 
 ### Paquet **Gtsummary
 
-Avec **gtsummary**, il ne semble pas y avoir de fonctions intégrées pour ajouter des intervalles de
+Avec **gtsummary**, il ne semble pas y avoir de fonctions intÃ©grÃ©es pour ajouter des intervalles de
 de confiance ou l'effet de plan. 
-Ici nous montrons comment définir une fonction pour ajouter des intervalles de confiance et ensuite 
-ajouter des intervalles de confiance à une table **gtsummary** créée en utilisant la fonction `tbl_svysummary()`. 
-créée à l'aide de la fonction "tbl_svysummary()`". 
+Ici nous montrons comment dÃ©finir une fonction pour ajouter des intervalles de confiance et ensuite 
+ajouter des intervalles de confiance Ã  une table **gtsummary** crÃ©Ã©e en utilisant la fonction `tbl_svysummary()`. 
+crÃ©Ã©e Ã  l'aide de la fonction "tbl_svysummary()`". 
 
 
 ```{r gtsummary_table}
@@ -1045,26 +1045,26 @@ confidence_intervals <- function(data, variable, by, ...) {
   
   ## extraire les intervalles de confiance et les multiplier pour obtenir des pourcentages.
   props <- svyciprop(as.formula(paste0( "~" , variable)),
-              données, na.rm = TRUE)
+              donnÃ©es, na.rm = TRUE)
   
   ## Extraire les intervalles de confiance 
-  as.numeric(confint(props) * 100) %>% ### rendre numérique et multiplier pour le pourcentage
-    round(., digits = 1) %>% ## arrondir à un chiffre
+  as.numeric(confint(props) * 100) %>% ### rendre numÃ©rique et multiplier pour le pourcentage
+    round(., digits = 1) %>% ## arrondir Ã  un chiffre
     c(.) %>% ## extraire les chiffres de la matrice
-    paste0(., collapse = "-") ## combine en un seul caractère
+    paste0(., collapse = "-") ## combine en un seul caractÃ¨re
 }
 
-## utiliser l'objet de conception du paquet d'enquêtes
+## utiliser l'objet de conception du paquet d'enquÃªtes
 tbl_svysummary(base_survey_design, 
-               include = c(arrived, left, died), ## définir les variables à inclure
-               statistic = list(everything() ~ c("{n} ({p}%)")) %>% ## définir les statistiques d'intérêt
-  add_n() %>% ## ajoute le total pondéré 
+               include = c(arrived, left, died), ## dÃ©finir les variables Ã  inclure
+               statistic = list(everything() ~ c("{n} ({p}%)")) %>% ## dÃ©finir les statistiques d'intÃ©rÃªt
+  add_n() %>% ## ajoute le total pondÃ©rÃ© 
   add_stat(fns = everything() ~ confidence_intervals) %>% ## ajouter les ICs
-  ## modifier les en-têtes de colonnes
+  ## modifier les en-tÃªtes de colonnes
   modify_header(
     liste(
-      n ~ "**Total pondéré (N)**",
-      stat_0 ~ "**Compte pondéré**",
+      n ~ "**Total pondÃ©rÃ© (N)**",
+      stat_0 ~ "**Compte pondÃ©rÃ©**",
       add_stat_1 ~ "**95%CI**"
     )
     )
@@ -1074,21 +1074,21 @@ tbl_svysummary(base_survey_design,
 
 
 <!-- ======================================================= -->
-## Ratios pondérés { }
+## Ratios pondÃ©rÃ©s { }
 
-De même, pour les ratios pondérés (comme pour les ratios de mortalité), vous pouvez utiliser le paquetage 
+De mÃªme, pour les ratios pondÃ©rÃ©s (comme pour les ratios de mortalitÃ©), vous pouvez utiliser le paquetage 
 **survey** ou le paquet **srvyr**. 
-Vous pouvez également écrire des fonctions (similaires à celles ci-dessus) pour itérer sur plusieurs variables. 
-plusieurs variables. Vous pourriez également créer une fonction pour **gtsummary** comme ci-dessus
-mais actuellement, elle n'a pas de fonctionnalité intégrée. 
+Vous pouvez Ã©galement Ã©crire des fonctions (similaires Ã  celles ci-dessus) pour itÃ©rer sur plusieurs variables. 
+plusieurs variables. Vous pourriez Ã©galement crÃ©er une fonction pour **gtsummary** comme ci-dessus
+mais actuellement, elle n'a pas de fonctionnalitÃ© intÃ©grÃ©e. 
 
 
 ### Paquet **Survey 
 
-``{r survey_ratio}
+```{r survey_ratio}
 
 ratio <- svyratio(~died, 
-         dénominateur = ~obstime, 
+         dÃ©nominateur = ~obstime, 
          design = base_survey_design)
 
 ci <- confint(ratio)
@@ -1103,12 +1103,12 @@ cbind(
 
 ### **Paquet SRVYR** (paquet) 
 
-``{r srvyr_ratio}
+```{r srvyr_ratio}
 
 survey_design %>% 
-  ### ratio d'enquête utilisé pour tenir compte du temps d'observation 
+  ### ratio d'enquÃªte utilisÃ© pour tenir compte du temps d'observation 
   summarise(
-    mortalité = survey_ratio(
+    mortalitÃ© = survey_ratio(
       as.numeric(died) * 10000, 
       obstime, 
       vartype = "ci")
@@ -1124,10 +1124,10 @@ survey_design %>%
 
 [Page des statistiques de l'UCLA](https://stats.idre.ucla.edu/r/seminars/survey-data-analysis-with-r/)  
 
-[Analyse des données d'enquête gratuite](http://asdfree.com/)  
+[Analyse des donnÃ©es d'enquÃªte gratuite](http://asdfree.com/)  
 
 [paquet srvyr](http://gdfe.co/srvyr/)  
 
 [paquet gtsummary](http://www.danieldsjoberg.com/gtsummary/reference/index.html) 
 
-[Études de cas de l'enquête EPIET](https://github.com/EPIET/RapidAssessmentSurveys)
+[Ã‰tudes de cas de l'enquÃªte EPIET](https://github.com/EPIET/RapidAssessmentSurveys)
