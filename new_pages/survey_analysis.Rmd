@@ -26,7 +26,7 @@ Pour l'instant, cette page ne traite pas du calcul de la taille des échantillon
 <!-- ======================================================= -->
 ## Préparation { }
 
-### Paquets {.nonnumérotés}
+### Paquets {.unnumbered}
 
 Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger des paquets avec `library()` depuis **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
 Ici, nous démontrons également l'utilisation de la fonction `p_load_gh()` de **pacman** pour installer et charger un paquet de github qui n'a pas encore été publié sur CRAN. 
@@ -669,7 +669,7 @@ La visualisation des points de départ et des résultats pour les individus peut
 obtenir une vue d'ensemble. L'application est évidente pour les populations mobiles, 
 mais il existe de nombreuses autres applications telles que les cohortes ou toute autre situation
 où il y a des transitions d'états pour les individus. Ces diagrammes ont plusieurs
-noms différents, y compris alluvial, sankey et ensembles parallèles - les détails sont dans le chapitre du manuel consacré aux [diagrammes et graphiques](#). 
+noms différents, y compris alluvial, sankey et ensembles parallèles - les détails sont dans le chapitre du manuel consacré aux [diagrammes et graphiques](#diagrams). 
 
 
 ```{r visualise_population_flow}
