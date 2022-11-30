@@ -1,65 +1,65 @@
-# Série temporelle et détection des épidémies {#time_series}  
+# SÃ©rie temporelle et dÃ©tection des Ã©pidÃ©mies {#time_series}  
 
 <!-- ======================================================= -->
-## Aperçu { }
+## AperÃ§u { }
 
-Cet onglet démontre l'utilisation de plusieurs paquets pour l'analyse des séries temporelles. 
+Cet onglet dÃ©montre l'utilisation de plusieurs paquets pour l'analyse des sÃ©ries temporelles. 
 Il s'appuie principalement sur les paquets de la famille [**tidyverts**](https://tidyverts.org/) 
-mais utilise également le paquet RECON [**trending**](https://github.com/reconhub/trending) 
-pour ajuster des modèles qui sont plus appropriés à l'épidémiologie des maladies infectieuses. 
+mais utilise Ã©galement le paquet RECON [**trending**](https://github.com/reconhub/trending) 
+pour ajuster des modÃ¨les qui sont plus appropriÃ©s Ã  l'Ã©pidÃ©miologie des maladies infectieuses. 
 
-Notez que dans l'exemple ci-dessous, nous utilisons un ensemble de données provenant du paquet **surveillance**. 
-sur Campylobacter en Allemagne (voir le [chapitre sur les données](#data_used), 
-du manuel pour plus de détails). Cependant, si vous vouliez exécuter le même code sur un ensemble de données avec plusieurs pays ou d'autres strates, il y a un exemple de code pour cela dans le fichier 
+Notez que dans l'exemple ci-dessous, nous utilisons un ensemble de donnÃ©es provenant du paquet **surveillance**. 
+sur Campylobacter en Allemagne (voir le [chapitre sur les donnÃ©es](#data_used), 
+du manuel pour plus de dÃ©tails). Cependant, si vous vouliez exÃ©cuter le mÃªme code sur un ensemble de donnÃ©es avec plusieurs pays ou d'autres strates, il y a un exemple de code pour cela dans le fichier 
 [r4epis github repo](https://github.com/R4EPI/epitsa). 
 
-Les sujets abordés sont les suivants :  
+Les sujets abordÃ©s sont les suivants :  
 
-1.  Données de séries temporelles 
+1.  DonnÃ©es de sÃ©ries temporelles 
 2.  Analyse descriptive 
-3.  Régressions ajustées
-4.  Relation de deux séries temporelles 
-5.  Détection de l'épidémie
-6.  Séries chronologiques interrompues
+3.  RÃ©gressions ajustÃ©es
+4.  Relation de deux sÃ©ries temporelles 
+5.  DÃ©tection de l'Ã©pidÃ©mie
+6.  SÃ©ries chronologiques interrompues
 
 
 <!-- ======================================================= -->
-## Préparation { }
+## PrÃ©paration { }
 
-### Paquets {.nonnumérotés}
+### Paquets {.unnumbered}
 
-Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger des paquets avec `library()` depuis **base** R. Voir la page sur [R basics](#basics) pour plus d'informations sur les paquets R.  
+Ce morceau de code montre le chargement des paquets nÃ©cessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nÃ©cessaire *et* le charge pour l'utiliser. Vous pouvez Ã©galement charger des paquets avec `library()` depuis **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets R.  
 
 ```{r load_packages}
 pacman::p_load(rio, # Importation du fichier
                here, # Localisation de fichiers
-               tidyverse, # gestion des données + graphiques ggplot2
-               tsibble, # gère les ensembles de données de séries temporelles
+               tidyverse, # gestion des donnÃ©es + graphiques ggplot2
+               tsibble, # gÃ¨re les ensembles de donnÃ©es de sÃ©ries temporelles
                slider, # pour calculer les moyennes mobiles
                imputeTS, # pour remplir les valeurs manquantes
-               feasts, # pour la décomposition des séries temporelles et l'autocorrélation
-               forecast, # ajustement des termes sin et cosin aux données (note : doit être chargé après feasts)
-               trending, # ajustement et évaluation des modèles 
-               tmaptools, # pour obtenir des géocoordonnées (lon/lat) à partir de noms de lieux
+               feasts, # pour la dÃ©composition des sÃ©ries temporelles et l'autocorrÃ©lation
+               forecast, # ajustement des termes sin et cosin aux donnÃ©es (note : doit Ãªtre chargÃ© aprÃ¨s feasts)
+               trending, # ajustement et Ã©valuation des modÃ¨les 
+               tmaptools, # pour obtenir des gÃ©ocoordonnÃ©es (lon/lat) Ã  partir de noms de lieux
                ecmwfr, # pour interagir avec l'API CDS de copernicus sateliate
-               stars, # pour lire les fichiers .nc (données climatiques)
-               units, # pour définir les unités de mesure (données climatiques)
-               yardstick, # pour l'examen de la précision du modèle
-               surveillance # pour la détection des aberrations
+               stars, # pour lire les fichiers .nc (donnÃ©es climatiques)
+               units, # pour dÃ©finir les unitÃ©s de mesure (donnÃ©es climatiques)
+               yardstick, # pour l'examen de la prÃ©cision du modÃ¨le
+               surveillance # pour la dÃ©tection des aberrations
                )
 ``` 
 
-### Chargement des données {.unnumbered}
+### Chargement des donnÃ©es {.unnumbered}
 
-Vous pouvez télécharger toutes les données utilisées dans ce manuel en suivant les instructions de la page [Télécharger le manuel et les données](#data_used).  
+Vous pouvez tÃ©lÃ©charger toutes les donnÃ©es utilisÃ©es dans ce manuel en suivant les instructions de la page [TÃ©lÃ©charger le manuel et les donnÃ©es](#download_book_data).  
 
-L'ensemble de données d'exemple utilisé dans cette section est le décompte hebdomadaire des cas de campylobacter signalés en Allemagne entre 2001 et 2011. <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/campylobacter_germany.xlsx' class='download-button'>
-	Vous pouvez cliquer ici pour télécharger<span> ce fichier de données (.xlsx).</span></a>. 
+L'ensemble de donnÃ©es d'exemple utilisÃ© dans cette section est le dÃ©compte hebdomadaire des cas de campylobacter signalÃ©s en Allemagne entre 2001 et 2011. <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/time_series/campylobacter_germany.xlsx' class='download-button'>
+	Vous pouvez cliquer ici pour tÃ©lÃ©charger<span> ce fichier de donnÃ©es (.xlsx).</span></a>. 
 
-Cet ensemble de données est une version réduite de l'ensemble de données disponible dans le paquet [**surveillance**](https://cran.r-project.org/web/packages/surveillance/). 
-(pour plus de détails, chargez le paquet surveillance et voyez `?campyDE`)
+Cet ensemble de donnÃ©es est une version rÃ©duite de l'ensemble de donnÃ©es disponible dans le paquet [**surveillance**](https://cran.r-project.org/web/packages/surveillance/). 
+(pour plus de dÃ©tails, chargez le paquet surveillance et voyez `?campyDE`)
 
-Importez ces données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#importing) pour plus de détails).
+Importez ces donnÃ©es avec la fonction `import()` du paquet **rio** (elle gÃ¨re de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de dÃ©tails).
 
 ```{r read_data_hide, echo=F}
 # Importez les comptes dans R
@@ -71,83 +71,83 @@ counts <- rio::import(here::here("data", "time_series", "campylobacter_germany.x
 counts <- rio::import("campylobacter_germany.xlsx")
 ```
 
-Les 10 premières lignes des comptages sont affichées ci-dessous.
+Les 10 premiÃ¨res lignes des comptages sont affichÃ©es ci-dessous.
 
 ```{r inspect_data, message=FALSE, echo=F}
-# Affichez les données de comptage sous forme de tableau
+# Affichez les donnÃ©es de comptage sous forme de tableau
 DT::datatable(head(counts, 10), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-### Nettoyer les données {.unnumbered}
+### Nettoyer les donnÃ©es {.unnumbered}
 
-Le code ci-dessous s'assure que la colonne de date est dans le format approprié. 
+Le code ci-dessous s'assure que la colonne de date est dans le format appropriÃ©. 
 Pour cet onglet, nous utiliserons le package **tsibble** et donc la fonction `yearweek` 
-sera utilisée pour créer une variable de semaine calendaire. Il existe plusieurs autres
-façons de le faire (voir la page [Working with dates](#dates))
-pour plus de détails), mais pour les séries temporelles, il est préférable de rester dans un seul cadre (**tsibble**). 
+sera utilisÃ©e pour crÃ©er une variable de semaine calendaire. Il existe plusieurs autres
+faÃ§ons de le faire (voir la page [Manipuler les dates](#working_dates))
+pour plus de dÃ©tails), mais pour les sÃ©ries temporelles, il est prÃ©fÃ©rable de rester dans un seul cadre (**tsibble**). 
 
 ```{r clean_data}
 
-## s'assurer que la colonne date est dans le format approprié
+## s'assurer que la colonne date est dans le format appropriÃ©
 counts$date <- as.Date(counts$date)
 
-## créer une variable de semaine calendaire 
-## adapter les définitions ISO des semaines commençant un lundi
+## crÃ©er une variable de semaine calendaire 
+## adapter les dÃ©finitions ISO des semaines commenÃ§ant un lundi
 counts <- counts %>% 
      mutate(epiweek = yearweek(date, week_start = 1))
 
 ```
 
-### Télécharger les données climatiques {.unnumbered} 
+### TÃ©lÃ©charger les donnÃ©es climatiques {.unnumbered} 
 
-Dans la partie *relation de deux séries temporelles* de cette page, nous allons comparer 
-le nombre de cas de campylobacter aux données climatiques. 
+Dans la partie *relation de deux sÃ©ries temporelles* de cette page, nous allons comparer 
+le nombre de cas de campylobacter aux donnÃ©es climatiques. 
 
-Les données climatiques de n'importe quel endroit du monde peuvent être téléchargées à partir du satellite Copernicus de l'UE. 
-de l'UE. Il ne s'agit pas de mesures exactes, mais de données basées sur un modèle (similaire à l'interpolation). 
-interpolation), mais l'avantage est une couverture horaire globale ainsi que des prévisions.  
+Les donnÃ©es climatiques de n'importe quel endroit du monde peuvent Ãªtre tÃ©lÃ©chargÃ©es Ã  partir du satellite Copernicus de l'UE. 
+de l'UE. Il ne s'agit pas de mesures exactes, mais de donnÃ©es basÃ©es sur un modÃ¨le (similaire Ã  l'interpolation). 
+interpolation), mais l'avantage est une couverture horaire globale ainsi que des prÃ©visions.  
 
-Vous pouvez télécharger chacun de ces fichiers de données climatiques à partir de la page [Télécharger le manuel et les données].  
+Vous pouvez tÃ©lÃ©charger chacun de ces fichiers de donnÃ©es climatiques Ã  partir de la page [TÃ©lÃ©charger le manuel et les donnÃ©es](#download_book_data).  
 
-Pour les besoins de la démonstration, nous allons présenter le code R permettant d'utiliser le paquet **ecmwfr** pour extraire ces données du magasin de données climatiques Copernicus 
-Climate Data Store. Vous devrez créer un compte gratuit pour que cela fonctionne. 
-fonctionner. Le site Web du paquet contient un [walkthrough] utile (https://github.com/bluegreen-labs/ecmwfr#use-copernicus-climate-data-store-cds)
-sur la manière de procéder. Vous trouverez ci-dessous un exemple de code expliquant comment procéder, une fois que vous 
-les clés API appropriées. Vous devez remplacer les X ci-dessous par les identifiants de votre compte
-IDs. Vous devrez télécharger une année de données à la fois, sinon le serveur s'arrête. 
+Pour les besoins de la dÃ©monstration, nous allons prÃ©senter le code R permettant d'utiliser le paquet **ecmwfr** pour extraire ces donnÃ©es du magasin de donnÃ©es climatiques Copernicus 
+Climate Data Store. Vous devrez crÃ©er un compte gratuit pour que cela fonctionne. 
+fonctionner. Le site Web du paquet contient un [demo utile](https://github.com/bluegreen-labs/ecmwfr#use-copernicus-climate-data-store-cds)
+sur la maniÃ¨re de procÃ©der. Vous trouverez ci-dessous un exemple de code expliquant comment procÃ©der, une fois que vous 
+les clÃ©s API appropriÃ©es. Vous devez remplacer les X ci-dessous par les identifiants de votre compte
+IDs. Vous devrez tÃ©lÃ©charger une annÃ©e de donnÃ©es Ã  la fois, sinon le serveur s'arrÃªte. 
 
-Si vous n'êtes pas sûr des coordonnées d'un lieu pour lequel vous voulez télécharger des données 
-données, vous pouvez utiliser le paquet **tmaptools** pour extraire les coordonnées des cartes routières ouvertes
+Si vous n'Ãªtes pas sÃ»r des coordonnÃ©es d'un lieu pour lequel vous voulez tÃ©lÃ©charger des donnÃ©es 
+donnÃ©es, vous pouvez utiliser le paquet **tmaptools** pour extraire les coordonnÃ©es des cartes routiÃ¨res ouvertes
 ouvertes. Une autre option est le paquet [**photon**](https://github.com/rCarto/photon)
-mais il n'a pas encore été publié sur CRAN. 
-**photon** est qu'il fournit plus de données contextuelles lorsqu'il y a plusieurs correspondances pour votre recherche. 
+mais il n'a pas encore Ã©tÃ© publiÃ© sur CRAN. 
+**photon** est qu'il fournit plus de donnÃ©es contextuelles lorsqu'il y a plusieurs correspondances pour votre recherche. 
 plusieurs correspondances pour votre recherche.
 
-```{r données_météo, eval = FALSE}
+```{r donnÃ©es_mÃ©tÃ©o, eval = FALSE}
 
-## récupérer les coordonnées de l'emplacement
+## rÃ©cupÃ©rer les coordonnÃ©es de l'emplacement
 coords <- geocode_OSM("Germany", geometry = "point")
 
-## rassembler les long/lats dans un format pour les requêtes ERA-5 (bounding box) 
-## (comme on ne veut qu'un seul point, on peut répéter les coordonnées)
+## rassembler les long/lats dans un format pour les requÃªtes ERA-5 (bounding box) 
+## (comme on ne veut qu'un seul point, on peut rÃ©pÃ©ter les coordonnÃ©es)
 request_coords <- str_glue_data(coords$coords, "{y}/{x}/{y}/{x}")
 
 
-## Extraction des données modélisées à partir du satellite copernicus (réanalyse ERA-5)
+## Extraction des donnÃ©es modÃ©lisÃ©es Ã  partir du satellite copernicus (rÃ©analyse ERA-5)
 ## https://cds.climate.copernicus.eu/cdsapp#!/software/app-era5-explorer?tab=app
 ## https://github.com/bluegreen-labs/ecmwfr
 
-## Configurer la clé pour les données météo 
+## Configurer la clÃ© pour les donnÃ©es mÃ©tÃ©o 
 wf_set_key(user = "XXXXX",
            key = "XXXXXXXXX-XXXX-XXXX-XXXX-XXXXXX-XXXXXXXXX",
            service = "cds") 
 
-## Exécution pour chaque année d'intérêt (sinon le serveur s'arrête)
+## ExÃ©cution pour chaque annÃ©e d'intÃ©rÃªt (sinon le serveur s'arrÃªte)
 for (i in 2002:2011) {
   
-  ## construire une requête 
+  ## construire une requÃªte 
   ## voir ici pour savoir comment faire : https://bluegreen-labs.github.io/ecmwfr/articles/cds_vignette.html#the-request-syntax
-  ## changer la requête en une liste en utilisant le bouton addin ci-dessus (python to list)
+  ## changer la requÃªte en une liste en utilisant le bouton addin ci-dessus (python to list)
   ## La cible est le nom du fichier de sortie ! !!
    request <- request <- list(
     product_type = "reanalysis",
@@ -166,49 +166,49 @@ for (i in 2002:2011) {
     target = paste0("germany_weather", i, ".nc")
   )
   
-  ### Télécharger le fichier et le stocker dans le répertoire de travail actuel.
+  ### TÃ©lÃ©charger le fichier et le stocker dans le rÃ©pertoire de travail actuel.
   file <- wf_request(user = "XXXXX", # ID utilisateur (pour l'authentification)
-                     request = request, # la requête
-                     transfer = TRUE, # télécharger le fichier
-                     path = here::here("data", "Weather")) ## chemin pour sauvegarder les données
+                     request = request, # la requÃªte
+                     transfer = TRUE, # tÃ©lÃ©charger le fichier
+                     path = here::here("data", "Weather")) ## chemin pour sauvegarder les donnÃ©es
   }
 
 ```
 
-### Charger les données climatiques {.unnumbered}
+### Charger les donnÃ©es climatiques {.unnumbered}
 
-Que vous ayez téléchargé les données climatiques via notre manuel ou que vous ayez utilisé le code ci-dessus, vous devriez maintenant avoir 10 ans de fichiers de données climatiques ".nc" stockés dans le même dossier sur votre ordinateur.  
+Que vous ayez tÃ©lÃ©chargÃ© les donnÃ©es climatiques via notre manuel ou que vous ayez utilisÃ© le code ci-dessus, vous devriez maintenant avoir 10 ans de fichiers de donnÃ©es climatiques ".nc" stockÃ©s dans le mÃªme dossier sur votre ordinateur.  
 
 Utilisez le code ci-dessous pour importer ces fichiers dans R avec le paquet **stars**. 
 
 ```{r read_climate, warning = FALSE, message = FALSE}
 
-## définir le chemin vers le dossier météo 
+## dÃ©finir le chemin vers le dossier mÃ©tÃ©o 
 file_paths <- list.files(
   here::here("data", "time_series", "weather"), # remplacer par votre propre chemin de fichier 
   full.names = TRUE)
 
-## ne garder que ceux qui ont le nom courant d'intérêt 
+## ne garder que ceux qui ont le nom courant d'intÃ©rÃªt 
 file_paths <- file_paths[str_detect(file_paths, "germany")]
 
 ## lire tous les fichiers en tant qu'objet stars 
 data <- stars::read_stars(file_paths)
 ```
 
-Une fois que ces fichiers ont été importés en tant qu'objet `data`, nous allons les convertir en un cadre de données.  
+Une fois que ces fichiers ont Ã©tÃ© importÃ©s en tant qu'objet `data`, nous allons les convertir en un cadre de donnÃ©es.  
 
 ```{r}
-## conversion en cadre de données 
+## conversion en cadre de donnÃ©es 
 temp_data <- as_tibble(data) %>% 
-  ## ajouter des variables et corriger les unités
+  ## ajouter des variables et corriger les unitÃ©s
   mutate(
-    ## créer une variable de semaine calendaire 
+    ## crÃ©er une variable de semaine calendaire 
     epiweek = tsibble::yearweek(time), 
-    ## créer une variable de date (début de la semaine calendaire)
+    ## crÃ©er une variable de date (dÃ©but de la semaine calendaire)
     date = as.Date(epiweek),
-    ## changer la température de kelvin en celsius
+    ## changer la tempÃ©rature de kelvin en celsius
     t2m = set_units(t2m, celsius), 
-    ## changer les précipitations de mètres en millimètres 
+    ## changer les prÃ©cipitations de mÃ¨tres en millimÃ¨tres 
     tp = set_units(tp, mm)) %>% 
   ## regrouper par semaine (en gardant la date aussi)
   group_by(epiweek, date) %>% 
@@ -222,103 +222,103 @@ temp_data <- as_tibble(data) %>%
 
 
 <!-- ======================================================= -->
-## Données de séries temporelles { }
+## DonnÃ©es de sÃ©ries temporelles { }
 
-Il existe un certain nombre de paquets différents pour structurer et traiter les données de données de séries temporelles. Comme nous l'avons dit, nous nous concentrerons sur la famille de paquets **tidyverts** et nous utiliserons donc le paquet **tsibble** pour définir notre objet série temporelle.
-utiliserons le paquet **tsibble** pour définir notre objet de série temporelle. Avoir un ensemble de données défini comme un objet de série temporelle, il est beaucoup plus facile de structurer notre analyse. 
+Il existe un certain nombre de paquets diffÃ©rents pour structurer et traiter les donnÃ©es de donnÃ©es de sÃ©ries temporelles. Comme nous l'avons dit, nous nous concentrerons sur la famille de paquets **tidyverts** et nous utiliserons donc le paquet **tsibble** pour dÃ©finir notre objet sÃ©rie temporelle.
+utiliserons le paquet **tsibble** pour dÃ©finir notre objet de sÃ©rie temporelle. Avoir un ensemble de donnÃ©es dÃ©fini comme un objet de sÃ©rie temporelle, il est beaucoup plus facile de structurer notre analyse. 
 
-Pour ce faire, nous utilisons la fonction `tsibble()` et spécifions l'"index", c'est-à-dire la variable spécifiant l'unité de temps qui nous intéresse. Dans notre cas, il s'agit de la variable `epiweek`. 
+Pour ce faire, nous utilisons la fonction `tsibble()` et spÃ©cifions l'"index", c'est-Ã -dire la variable spÃ©cifiant l'unitÃ© de temps qui nous intÃ©resse. Dans notre cas, il s'agit de la variable `epiweek`. 
 
-Si nous avions un ensemble de données avec des comptages hebdomadaires par province, par exemple, nous pourrions également spécifier la variable de regroupement. 
-nous pourrions également spécifier la variable de regroupement en utilisant l'argument `key = `. 
+Si nous avions un ensemble de donnÃ©es avec des comptages hebdomadaires par province, par exemple, nous pourrions Ã©galement spÃ©cifier la variable de regroupement. 
+nous pourrions Ã©galement spÃ©cifier la variable de regroupement en utilisant l'argument `key = `. 
 Cela nous permettrait d'effectuer une analyse pour chaque groupe. 
 
 
 ```{r ts_object}
 
-## Définir un objet de série temporelle 
+## DÃ©finir un objet de sÃ©rie temporelle 
 counts <- tsibble(counts, index = epiweek)
 
 ```
 
-En regardant `class(counts)`, on constate qu'en plus d'être un cadre de données ordonné 
-("tbl_df", "tbl", "data.frame"), il possède les propriétés supplémentaires d'un cadre de données de série temporelle ("tbl_ts").
-de données de séries temporelles ("tbl_ts"). 
+En regardant `class(counts)`, on constate qu'en plus d'Ãªtre un cadre de donnÃ©es ordonnÃ© 
+("tbl_df", "tbl", "data.frame"), il possÃ¨de les propriÃ©tÃ©s supplÃ©mentaires d'un cadre de donnÃ©es de sÃ©rie temporelle ("tbl_ts").
+de donnÃ©es de sÃ©ries temporelles ("tbl_ts"). 
 
-Vous pouvez jeter un coup d'oil rapide à vos données en utilisant **ggplot2**. Nous voyons sur le graphique que
-qu'il existe un modèle saisonnier clair, et qu'il n'y a pas de manques. Cependant, il semble
-Cependant, il semble y avoir un problème avec la déclaration au début de chaque année. 
-dans la dernière semaine de l'année, puis augmentent pour la première semaine de l'année suivante. 
+Vous pouvez jeter un coup d'oil rapide Ã  vos donnÃ©es en utilisant **ggplot2**. Nous voyons sur le graphique que
+qu'il existe un modÃ¨le saisonnier clair, et qu'il n'y a pas de manques. Cependant, il semble
+Cependant, il semble y avoir un problÃ¨me avec la dÃ©claration au dÃ©but de chaque annÃ©e. 
+dans la derniÃ¨re semaine de l'annÃ©e, puis augmentent pour la premiÃ¨re semaine de l'annÃ©e suivante. 
 
 ```{r basic_plot}
 
-## tracer un graphique linéaire des cas par semaine
+## tracer un graphique linÃ©aire des cas par semaine
 ggplot(counts, aes(x = epiweek, y = case)) + 
      geom_line()
 
 ```
 
 
-<span style="color : red ;">**_ATTENTION:_** La plupart des ensembles de données ne sont pas aussi propres que cet exemple. 
-Vous devrez vérifier les doublons et les manques comme ci-dessous. </span>
+<span style="color : red ;">**_ATTENTION:_** La plupart des ensembles de donnÃ©es ne sont pas aussi propres que cet exemple. 
+Vous devrez vÃ©rifier les doublons et les manques comme ci-dessous. </span>
 
 <!-- ======================================================= -->
 ### Duplicates {.unnumbered}
 
-**tsibble** n'autorise pas les observations en double. Ainsi, chaque ligne devra être
+**tsibble** n'autorise pas les observations en double. Ainsi, chaque ligne devra Ãªtre
 unique, ou unique au sein du groupe (variable `key`). 
-Le paquet a quelques fonctions qui aident à identifier les doublons. Celles-ci incluent
+Le paquet a quelques fonctions qui aident Ã  identifier les doublons. Celles-ci incluent
 `are_duplicated()` qui vous donne un vecteur VRAI/FAUX indiquant si la ligne est un 
-dupliqué, et `duplicates()` qui vous donne un cadre de données des lignes dupliquées. 
+dupliquÃ©, et `duplicates()` qui vous donne un cadre de donnÃ©es des lignes dupliquÃ©es. 
 
 Voir la page sur [De-duplication](#deduplication)
-pour plus de détails sur la façon de sélectionner les lignes que vous voulez. 
+pour plus de dÃ©tails sur la faÃ§on de sÃ©lectionner les lignes que vous voulez. 
 
 ```{r duplicates, eval = FALSE}
 
 ## obtient un vecteur de VRAI/FAUX si les lignes sont des doublons
 are_duplicated(counts, index = epiweek) 
 
-## Obtenez un cadre de données pour les lignes dupliquées. 
+## Obtenez un cadre de donnÃ©es pour les lignes dupliquÃ©es. 
 duplicates(counts, index = epiweek) 
 
 ```
 
 <!-- ======================================================= -->
-### Manques {.non numérotés}
+### Manques {.unnumbered}
 
-Nous avons vu lors de notre brève inspection ci-dessus qu'il n'y a pas de manques, mais nous avons aussi 
-mais nous avons également vu qu'il semble y avoir un problème de retard de déclaration autour du nouvel an. 
-Une façon de résoudre ce problème pourrait être de définir ces valeurs comme manquantes, puis d'imputer les valeurs. 
-d'imputer les valeurs. La forme la plus simple d'imputation de séries chronologiques consiste à tracer une ligne droite entre les dernières valeurs non manquantes et les valeurs manquantes.
-une ligne droite entre la dernière valeur non manquante et la valeur non manquante suivante. 
+Nous avons vu lors de notre brÃ¨ve inspection ci-dessus qu'il n'y a pas de manques, mais nous avons aussi 
+mais nous avons Ã©galement vu qu'il semble y avoir un problÃ¨me de retard de dÃ©claration autour du nouvel an. 
+Une faÃ§on de rÃ©soudre ce problÃ¨me pourrait Ãªtre de dÃ©finir ces valeurs comme manquantes, puis d'imputer les valeurs. 
+d'imputer les valeurs. La forme la plus simple d'imputation de sÃ©ries chronologiques consiste Ã  tracer une ligne droite entre les derniÃ¨res valeurs non manquantes et les valeurs manquantes.
+une ligne droite entre la derniÃ¨re valeur non manquante et la valeur non manquante suivante. 
 Pour ce faire, nous utiliserons la fonction `na_interpolation()` du package **imputeTS**. 
 
-Consultez la page [Données manquantes](#missing_data) pour connaître les autres options d'imputation.  
+Consultez la page [DonnÃ©es manquantes](#missing_data) pour connaÃ®tre les autres options d'imputation.  
 
-Une autre solution consisterait à calculer une moyenne mobile, pour essayer de
-pour tenter d'aplanir ces problèmes de déclaration apparents (voir la section suivante et la page sur les [Moyennes mobiles](#moving_average)). 
+Une autre solution consisterait Ã  calculer une moyenne mobile, pour essayer de
+pour tenter d'aplanir ces problÃ¨mes de dÃ©claration apparents (voir la section suivante et la page sur les [Moyennes mobiles](#moving_average)). 
 
 ```{r missings}
 
-## créez une variable avec les manques au lieu des semaines avec des problèmes de déclaration.
+## crÃ©ez une variable avec les manques au lieu des semaines avec des problÃ¨mes de dÃ©claration.
 counts <- counts %>% 
      mutate(case_miss = if_else(
           ## si epiweek contient 52, 53, 1 ou 2
           str_detect(epiweek, "W51|W52|W53|W01|W02"), 
-          ## alors définie comme manquante 
+          ## alors dÃ©finie comme manquante 
           NA_real_, 
           ## sinon, conservez la valeur dans le cas
           case
      ))
 
-## alternativement interpoler les manquants par une tendance linéaire 
+## alternativement interpoler les manquants par une tendance linÃ©aire 
 ## entre deux points adjacents les plus proches
 counts <- counts %>% 
   mutate(case_int = imputeTS::na_interpolation(case_miss)
          )
 
-## pour vérifier quelles valeurs ont été imputées par rapport à l'original.
+## pour vÃ©rifier quelles valeurs ont Ã©tÃ© imputÃ©es par rapport Ã  l'original.
 ggplot_na_imputations(counts$case_miss, counts$case_int) + 
   ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic()
@@ -336,26 +336,26 @@ ggplot_na_imputations(counts$case_miss, counts$case_int) +
 <!-- ======================================================= -->
 ### Moyennes mobiles {#timeseries_moving .unnumbered}
 
-Si les données sont très bruyantes (les comptes sautent en haut et en bas), alors il peut être utile de 
+Si les donnÃ©es sont trÃ¨s bruyantes (les comptes sautent en haut et en bas), alors il peut Ãªtre utile de 
 calculer une moyenne mobile. Dans l'exemple ci-dessous, pour chaque semaine, nous calculons le 
-nombre moyen de cas des quatre semaines précédentes. Cela permet de lisser les données, pour 
-données pour les rendre plus interprétables. Dans notre cas, cela n'apporte pas grand-chose.
-nous nous en tiendrons aux données interpolées pour la suite de l'analyse. 
-Voir la page [Moyennes mobiles](#moving_average) pour plus de détails. 
+nombre moyen de cas des quatre semaines prÃ©cÃ©dentes. Cela permet de lisser les donnÃ©es, pour 
+donnÃ©es pour les rendre plus interprÃ©tables. Dans notre cas, cela n'apporte pas grand-chose.
+nous nous en tiendrons aux donnÃ©es interpolÃ©es pour la suite de l'analyse. 
+Voir la page [Moyennes mobiles](#moving_average) pour plus de dÃ©tails. 
 
 ```{r moving_averages}
 
-## créer une variable de moyenne mobile (traite les manques)
+## crÃ©er une variable de moyenne mobile (traite les manques)
 counts <- counts %>% 
-     ## créer la variable ma_4w 
+     ## crÃ©er la variable ma_4w 
      ## glisser sur chaque ligne de la variable case
      mutate(ma_4wk = slider::slide_dbl(case, 
                                ## pour chaque ligne, calculez le nom
                                ~ mean(.x, na.rm = TRUE),
-                               ## utiliser les quatre semaines précédentes
+                               ## utiliser les quatre semaines prÃ©cÃ©dentes
                                .before = 4))
 
-### faire une visualisation rapide de la différence 
+### faire une visualisation rapide de la diffÃ©rence 
 ggplot(counts, aes(x = epiweek)) + 
      geom_line(aes(y = case)) + 
      geom_line(aes(y = ma_4wk), colour = "red")
@@ -364,24 +364,24 @@ ggplot(counts, aes(x = epiweek)) +
 
 
 <!-- ======================================================= -->
-### Périodicité {.non numéroté}
+### PÃ©riodicitÃ© {.unnumbered}
 
-Nous définissons ci-dessous une fonction personnalisée pour créer un périodogramme. Voir la page [Writing functions] pour des informations sur la façon d'écrire des fonctions dans R.  
+Nous dÃ©finissons ci-dessous une fonction personnalisÃ©e pour crÃ©er un pÃ©riodogramme. Voir la page [ecrire les fonctions](#writing_functions) pour des informations sur la faÃ§on d'Ã©crire des fonctions dans R.  
 
-Tout d'abord, la fonction est définie. Ses arguments incluent un jeu de données avec une colonne `counts`, `start_week = ` qui est la première semaine du jeu de données, un nombre pour indiquer combien de périodes par an (par exemple 52, 12), et enfin le style de sortie (voir les détails dans le code ci-dessous).  
+Tout d'abord, la fonction est dÃ©finie. Ses arguments incluent un jeu de donnÃ©es avec une colonne `counts`, `start_week = ` qui est la premiÃ¨re semaine du jeu de donnÃ©es, un nombre pour indiquer combien de pÃ©riodes par an (par exemple 52, 12), et enfin le style de sortie (voir les dÃ©tails dans le code ci-dessous).  
 
 
 ```{r periodogram}
 ## Arguments de la fonction
 #####################
-## x est un ensemble de données
-## counts est une variable avec des données de comptage ou des taux dans x 
-## start_week est la première semaine de votre série de données
-## period est le nombre d'unités dans une année. 
-## output indique si vous souhaitez renvoyer le périodogramme spectral ou les semaines de pointe.
-  ## "périodogramme" ou "semaines".
+## x est un ensemble de donnÃ©es
+## counts est une variable avec des donnÃ©es de comptage ou des taux dans x 
+## start_week est la premiÃ¨re semaine de votre sÃ©rie de donnÃ©es
+## period est le nombre d'unitÃ©s dans une annÃ©e. 
+## output indique si vous souhaitez renvoyer le pÃ©riodogramme spectral ou les semaines de pointe.
+  ## "pÃ©riodogramme" ou "semaines".
 
-# Définissez la fonction
+# DÃ©finissez la fonction
 periodogram <- function(x, 
                         compte, 
                         start_week = c(2002, 1), 
@@ -389,17 +389,17 @@ periodogram <- function(x,
                         output = "weeks") {
   
 
-    ## s'assurer que ce n'est pas un tsibble, filtrer sur le projet et ne garder que les colonnes d'intérêt.
+    ## s'assurer que ce n'est pas un tsibble, filtrer sur le projet et ne garder que les colonnes d'intÃ©rÃªt.
     prepare_data <- dplyr::as_tibble(x)
     
     # prepare_data <- prepare_data[prepare_data[[strata]] == j, ]
     prepare_data <- dplyr::select(prepare_data, {{counts}})
     
-    ## créer une série temporelle "zoo" intermédiaire pour pouvoir l'utiliser avec spec.pgram
+    ## crÃ©er une sÃ©rie temporelle "zoo" intermÃ©diaire pour pouvoir l'utiliser avec spec.pgram
     zoo_cases <- zoo::zooreg(prepare_data, 
                              start = start_week, frequency = period)
     
-    ## obtenir un périodogramme spectral n'utilisant pas la transformée de fourier rapide. 
+    ## obtenir un pÃ©riodogramme spectral n'utilisant pas la transformÃ©e de fourier rapide. 
     periodo <- spec.pgram(zoo_cases, fast = FALSE, plot = FALSE)
     
     ## retourner les semaines de pointe 
@@ -413,17 +413,17 @@ periodogram <- function(x,
     
 }
 
-## obtenir le périodogramme spectral pour extraire les semaines avec les fréquences les plus élevées 
-## (vérification de la saisonnalité) 
+## obtenir le pÃ©riodogramme spectral pour extraire les semaines avec les frÃ©quences les plus Ã©levÃ©es 
+## (vÃ©rification de la saisonnalitÃ©) 
 periodo <- periodogram(counts, 
                        case_int, 
                        start_week = c(2002, 1),
                        output = "periodogram")
 
-## Tirez le spectre et la fréquence dans un cadre de données pour le tracé.
+## Tirez le spectre et la frÃ©quence dans un cadre de donnÃ©es pour le tracÃ©.
 periodo <- data.frame(periodo$freq, periodo$spec)
 
-## Tracez un périodogramme montrant la périodicité la plus fréquente. 
+## Tracez un pÃ©riodogramme montrant la pÃ©riodicitÃ© la plus frÃ©quente. 
 ggplot(data = periodo, 
                 aes(x = 1/(periodo.freq/52), y = log(periodo.spec))) + 
   geom_line() + 
@@ -438,103 +438,103 @@ peak_weeks <- periodogram(counts,
 
 ```
 
-<span style="color : black ;">**_ATTENTION:_** Il est possible d'utiliser les semaines ci-dessus pour les ajouter aux termes sin et cosinus, cependant nous utiliserons une fonction pour générer ces termes (voir la section régression ci-dessous) </span>.
+<span style="color : black ;">**_ATTENTION:_** Il est possible d'utiliser les semaines ci-dessus pour les ajouter aux termes sin et cosinus, cependant nous utiliserons une fonction pour gÃ©nÃ©rer ces termes (voir la section rÃ©gression ci-dessous) </span>.
 
 <!-- ======================================================= -->
-### Décomposition {.non numéroté}
+### DÃ©composition {.unnumbered}
 
-La décomposition classique est utilisée pour décomposer une série temporelle en plusieurs parties, qui
-lorsqu'elles sont prises ensemble constituent le modèle que vous voyez. 
-Ces différentes parties sont :  
+La dÃ©composition classique est utilisÃ©e pour dÃ©composer une sÃ©rie temporelle en plusieurs parties, qui
+lorsqu'elles sont prises ensemble constituent le modÃ¨le que vous voyez. 
+Ces diffÃ©rentes parties sont :  
 
-* La tendance-cycle (la direction à long terme des données)  
-* La saisonnalité (motifs répétitifs)  
-* L'aléatoire (ce qui reste après avoir retiré la tendance et la saison).  
+* La tendance-cycle (la direction Ã  long terme des donnÃ©es)  
+* La saisonnalitÃ© (motifs rÃ©pÃ©titifs)  
+* L'alÃ©atoire (ce qui reste aprÃ¨s avoir retirÃ© la tendance et la saison).  
 
 
 ```{r decomposition, warning=F, message=F}
 
-## Décomposition de l'ensemble de données counts 
+## DÃ©composition de l'ensemble de donnÃ©es counts 
 counts %>% 
-  ## en utilisant un modèle additif de décomposition classique
+  ## en utilisant un modÃ¨le additif de dÃ©composition classique
   model(classical_decomposition(case_int, type = "additive")) %>%
-  ## extraire les informations importantes du modèle
+  ## extraire les informations importantes du modÃ¨le
   components() %>% 
-  ## générer un graphique 
+  ## gÃ©nÃ©rer un graphique 
   autoplot()
 
 ```
 
 <!-- ======================================================= -->
-### Autocorrélation {.unnumbered}
+### AutocorrÃ©lation {.unnumbered}
 
-L'autocorrélation vous renseigne sur la relation entre les comptes de chaque semaine 
-et les semaines qui la précèdent (appelées décalages).  
+L'autocorrÃ©lation vous renseigne sur la relation entre les comptes de chaque semaine 
+et les semaines qui la prÃ©cÃ¨dent (appelÃ©es dÃ©calages).  
 
 En utilisant la fonction `ACF()`, nous pouvons produire un graphique qui nous montre un certain nombre de lignes 
-pour la relation à différents décalages. Si le décalage est de 0 (x = 0), cette ligne sera toujours égale à 1, car elle montre la relation entre les deux. 
-ligne sera toujours égale à 1, car elle montre la relation entre une observation et elle-même (non représentée ici). 
-La première ligne illustrée ici (x = 1) montre la relation entre chaque observation 
-et l'observation qui la précède (décalage de 1), la seconde montre la relation entre 
-chaque observation et l'avant-dernière (décalage de 2) et ainsi de suite jusqu'à un décalage de
+pour la relation Ã  diffÃ©rents dÃ©calages. Si le dÃ©calage est de 0 (x = 0), cette ligne sera toujours Ã©gale Ã  1, car elle montre la relation entre les deux. 
+ligne sera toujours Ã©gale Ã  1, car elle montre la relation entre une observation et elle-mÃªme (non reprÃ©sentÃ©e ici). 
+La premiÃ¨re ligne illustrÃ©e ici (x = 1) montre la relation entre chaque observation 
+et l'observation qui la prÃ©cÃ¨de (dÃ©calage de 1), la seconde montre la relation entre 
+chaque observation et l'avant-derniÃ¨re (dÃ©calage de 2) et ainsi de suite jusqu'Ã  un dÃ©calage de
 52 qui montre la relation entre chaque observation et l'observation d'un an (52 semaines avant). 
 an (52 semaines auparavant).  
 
-L'utilisation de la fonction `PACF()` (pour l'autocorrélation partielle) montre le même type de relation, mais ajustée pour toutes les autres semaines intermédiaires. 
-mais ajustée pour toutes les autres semaines intermédiaires. Ceci est moins informatif pour déterminer la
-périodicité. 
+L'utilisation de la fonction `PACF()` (pour l'autocorrÃ©lation partielle) montre le mÃªme type de relation, mais ajustÃ©e pour toutes les autres semaines intermÃ©diaires. 
+mais ajustÃ©e pour toutes les autres semaines intermÃ©diaires. Ceci est moins informatif pour dÃ©terminer la
+pÃ©riodicitÃ©. 
 
 ```{r autocorrelation}
 
-## en utilisant l'ensemble de données counts
+## en utilisant l'ensemble de donnÃ©es counts
 counts %>% 
-  ## calculer l'autocorrélation en utilisant une année complète de lags
+  ## calculer l'autocorrÃ©lation en utilisant une annÃ©e complÃ¨te de lags
   ACF(case_int, lag_max = 52) %>% 
   ## afficher un graphique
   autoplot()
 
-## en utilisant l'ensemble de données counts 
+## en utilisant l'ensemble de donnÃ©es counts 
 counts %>% 
-  ## calculer l'autocorrélation partielle en utilisant une année complète de décalages
+  ## calculer l'autocorrÃ©lation partielle en utilisant une annÃ©e complÃ¨te de dÃ©calages
   PACF(case_int, lag_max = 52) %>% 
   ## Afficher un graphique
   autoplot()
 
 ```
 
-Vous pouvez tester formellement l'hypothèse nulle d'indépendance d'une série temporelle (c'est à dire 
-qu'elle n'est pas autocorrélée) en utilisant le test de Ljung-Box (dans le paquet **stats**). 
-Une valeur p significative suggère qu'il existe une autocorrélation dans les données.
+Vous pouvez tester formellement l'hypothÃ¨se nulle d'indÃ©pendance d'une sÃ©rie temporelle (c'est Ã  dire 
+qu'elle n'est pas autocorrÃ©lÃ©e) en utilisant le test de Ljung-Box (dans le paquet **stats**). 
+Une valeur p significative suggÃ¨re qu'il existe une autocorrÃ©lation dans les donnÃ©es.
 
 ```{r ljung_box}
 
-## Test d'indépendance 
+## Test d'indÃ©pendance 
 Box.test(counts$case_int, type = "Ljung-Box")
 
 ```
 
 
 <!-- ======================================================= -->
-## Ajustement des régressions { }
+## Ajustement des rÃ©gressions { }
 
-Il est possible d'ajuster un grand nombre de régressions différentes à une série temporelle, 
-Cependant, nous allons montrer ici comment ajuster une régression binomiale négative, car elle est 
-c'est souvent la plus appropriée pour les données de comptage dans les maladies infectieuses. 
+Il est possible d'ajuster un grand nombre de rÃ©gressions diffÃ©rentes Ã  une sÃ©rie temporelle, 
+Cependant, nous allons montrer ici comment ajuster une rÃ©gression binomiale nÃ©gative, car elle est 
+c'est souvent la plus appropriÃ©e pour les donnÃ©es de comptage dans les maladies infectieuses. 
 
 <!-- ======================================================= -->
-### Termes de Fourier {.non numéroté}
+### Termes de Fourier {.unnumbered}
 
-Les termes de Fourier sont l'équivalent des courbes sin et cosin. La différence est que 
-ceux-ci sont ajustés en fonction de la recherche de la combinaison de courbes la plus appropriée pour expliquer
-vos données.  
+Les termes de Fourier sont l'Ã©quivalent des courbes sin et cosin. La diffÃ©rence est que 
+ceux-ci sont ajustÃ©s en fonction de la recherche de la combinaison de courbes la plus appropriÃ©e pour expliquer
+vos donnÃ©es.  
 
-Si vous n'ajustez qu'un seul terme de Fourier, cela équivaudrait à ajuster une courbe sin 
-et un cosin pour le décalage le plus fréquent de votre périodogramme (dans notre cas, 52 semaines). 
+Si vous n'ajustez qu'un seul terme de Fourier, cela Ã©quivaudrait Ã  ajuster une courbe sin 
+et un cosin pour le dÃ©calage le plus frÃ©quent de votre pÃ©riodogramme (dans notre cas, 52 semaines). 
 cas 52 semaines). Nous utilisons la fonction `fourier()` du paquet **forecast**.  
 
 Dans le code ci-dessous, nous assignons en utilisant le `$`, car `fourier()` renvoie deux colonnes (une pour le sin et une pour le cosin). 
-(une pour le sin et l'autre pour le cosin) et celles-ci sont ajoutées à l'ensemble de données sous forme de liste, appelée "fourier". 
-"fourier" - mais cette liste peut ensuite être utilisée comme une variable normale dans une régression. 
+(une pour le sin et l'autre pour le cosin) et celles-ci sont ajoutÃ©es Ã  l'ensemble de donnÃ©es sous forme de liste, appelÃ©e "fourier". 
+"fourier" - mais cette liste peut ensuite Ãªtre utilisÃ©e comme une variable normale dans une rÃ©gression. 
 
 ```{r fourier}
 
@@ -544,54 +544,54 @@ counts$fourier <- select(counts, epiweek, case_int) %>%
 ```
 
 <!-- ======================================================= -->
-### Binomiale négative {.unnumbered}
+### Binomiale nÃ©gative {.unnumbered}
 
-Il est possible d'ajuster des régressions en utilisant les fonctions **stats** ou **MASS** de base.
+Il est possible d'ajuster des rÃ©gressions en utilisant les fonctions **stats** ou **MASS** de base.
 (par exemple, `lm()`, `glm()` et `glm.nb()`). Cependant, nous utiliserons celles du 
-paquet **trending**, car cela permet de calculer les intervalles de confiance et de prédiction
-confiance et les intervalles de prédiction appropriés (qui ne sont pas disponibles autrement). 
-La syntaxe est la même, et vous spécifiez une variable de résultat puis un tilde (~) 
-puis vous ajoutez vos diverses variables d'exposition d'intérêt séparées par un plus (+). 
+paquet **trending**, car cela permet de calculer les intervalles de confiance et de prÃ©diction
+confiance et les intervalles de prÃ©diction appropriÃ©s (qui ne sont pas disponibles autrement). 
+La syntaxe est la mÃªme, et vous spÃ©cifiez une variable de rÃ©sultat puis un tilde (~) 
+puis vous ajoutez vos diverses variables d'exposition d'intÃ©rÃªt sÃ©parÃ©es par un plus (+). 
 
-L'autre différence est que nous définissons d'abord le modèle et ensuite `fit()` aux données. 
-données. Ceci est utile car cela permet de comparer plusieurs modèles différents avec la même syntaxe. 
-avec la même syntaxe. 
+L'autre diffÃ©rence est que nous dÃ©finissons d'abord le modÃ¨le et ensuite `fit()` aux donnÃ©es. 
+donnÃ©es. Ceci est utile car cela permet de comparer plusieurs modÃ¨les diffÃ©rents avec la mÃªme syntaxe. 
+avec la mÃªme syntaxe. 
 
-<span style="color : darkgreen ;">**_ATTENTION:_** Si vous vouliez utiliser des taux, plutôt que des 
-comptes, vous pourriez inclure la variable population comme terme de décalage logarithmique, en ajoutant 
-`offset(log(population)`. Vous auriez alors besoin de définir la population à 1, avant d'utiliser `predict()`. 
+<span style="color : darkgreen ;">**_ATTENTION:_** Si vous vouliez utiliser des taux, plutÃ´t que des 
+comptes, vous pourriez inclure la variable population comme terme de dÃ©calage logarithmique, en ajoutant 
+`offset(log(population)`. Vous auriez alors besoin de dÃ©finir la population Ã  1, avant d'utiliser `predict()`. 
 d'utiliser `predict()` afin de produire un taux. </span>
 
-<span style="color : darkgreen ;">**_ATTENTION:_** Pour l'ajustement de modèles plus complexes tels que les modèles 
-comme ARIMA ou prophète, voir le paquet [**fable**](https://fable.tidyverts.org/index.html).</span>
+<span style="color : darkgreen ;">**_ATTENTION:_** Pour l'ajustement de modÃ¨les plus complexes tels que les modÃ¨les 
+comme ARIMA ou prophÃ¨te, voir le paquet [**fable**](https://fable.tidyverts.org/index.html).</span>
 
 ```{r nb_reg, warning = FALSE}
 
-## définissez le modèle que vous voulez ajuster (binomiale négative). 
+## dÃ©finissez le modÃ¨le que vous voulez ajuster (binomiale nÃ©gative). 
 model <- glm_nb_model(
-  ## définir le nombre de cas comme résultat d'intérêt
+  ## dÃ©finir le nombre de cas comme rÃ©sultat d'intÃ©rÃªt
   case_int ~
     ## utiliser epiweek pour tenir compte de la tendance
     epiweek +
-    ## utiliser les termes de fourier pour tenir compte de la saisonnalité
+    ## utiliser les termes de fourier pour tenir compte de la saisonnalitÃ©
     fourier)
 
-## ajustez votre modèle en utilisant le jeu de données de comptage
+## ajustez votre modÃ¨le en utilisant le jeu de donnÃ©es de comptage
 fitted_model <- trending::fit(model, counts)
 
-### calculer les intervalles de confiance et les intervalles de prédiction 
+### calculer les intervalles de confiance et les intervalles de prÃ©diction 
 observed <- predict(fitted_model, simulate_pi = FALSE)
 
-## Tracez votre régression 
+## Tracez votre rÃ©gression 
 ggplot(data = observed, aes(x = epiweek)) + 
-  ## ajouter une ligne pour l'estimation du modèle
+  ## ajouter une ligne pour l'estimation du modÃ¨le
   geom_line(aes(y = estimation),
             col = "red") + 
-  ## ajouter une bande pour les intervalles de prédiction 
+  ## ajouter une bande pour les intervalles de prÃ©diction 
   geom_ribbon(aes(ymin = lower_pi, 
                   ymax = upper_pi), 
               alpha = 0.25) + 
-  ## ajouter une ligne pour le nombre de cas observés
+  ## ajouter une ligne pour le nombre de cas observÃ©s
   geom_line(aes(y = case_int), 
             col = "black") + 
   ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
@@ -601,38 +601,38 @@ ggplot(data = observed, aes(x = epiweek)) +
 ```
 
 <!-- ======================================================= -->
-### Résidus {.non numérotés}
+### RÃ©sidus {.unnumbered}
 
-Pour voir si notre modèle s'adapte bien aux données observées, nous devons examiner les résidus. 
-Les résidus sont la différence entre les comptes observés et les comptes 
-estimés à partir du modèle. Nous pourrions calculer cela simplement en utilisant `case_int - estimate`, 
-mais la fonction `residuals()` l'extrait directement de la régression pour nous.
+Pour voir si notre modÃ¨le s'adapte bien aux donnÃ©es observÃ©es, nous devons examiner les rÃ©sidus. 
+Les rÃ©sidus sont la diffÃ©rence entre les comptes observÃ©s et les comptes 
+estimÃ©s Ã  partir du modÃ¨le. Nous pourrions calculer cela simplement en utilisant `case_int - estimate`, 
+mais la fonction `residuals()` l'extrait directement de la rÃ©gression pour nous.
 
 Ce que nous voyons ci-dessous, c'est que nous n'expliquons pas toutes les variations 
-que nous pourrions expliquer avec le modèle. Il se peut que nous devions ajuster plus de termes de Fourier, 
-et s'attaquer à l'amplitude. Cependant, pour cet exemple, nous allons laisser les choses telles quelles. 
-Les graphiques montrent que notre modèle est moins bon dans les pics et les creux (lorsque les comptages sont
-les plus élevés et les plus bas) et qu'il est plus susceptible de sous-estimer les comptes 
-les comptages observés. 
+que nous pourrions expliquer avec le modÃ¨le. Il se peut que nous devions ajuster plus de termes de Fourier, 
+et s'attaquer Ã  l'amplitude. Cependant, pour cet exemple, nous allons laisser les choses telles quelles. 
+Les graphiques montrent que notre modÃ¨le est moins bon dans les pics et les creux (lorsque les comptages sont
+les plus Ã©levÃ©s et les plus bas) et qu'il est plus susceptible de sous-estimer les comptes 
+les comptages observÃ©s. 
 
 ```{r basic_plot_bivar}
 
 counts %>% 
-  ## garder les variables qui nous intéressent 
+  ## garder les variables qui nous intÃ©ressent 
   select(epiweek, case_int, t2m) %>% 
-  ## Changez vos données en format long
+  ## Changez vos donnÃ©es en format long
   pivot_longer(
-    ## utiliser epiweek comme clé
+    ## utiliser epiweek comme clÃ©
     !epiweek,
-    ## déplacez les noms des colonnes vers la nouvelle colonne "measure".
+    ## dÃ©placez les noms des colonnes vers la nouvelle colonne "measure".
     names_to = "measure", 
-    ## déplacez les valeurs des cellules vers la nouvelle colonne "values".
+    ## dÃ©placez les valeurs des cellules vers la nouvelle colonne "values".
     values_to = "value") %>% 
-  ## créer un graphique avec l'ensemble de données ci-dessus
+  ## crÃ©er un graphique avec l'ensemble de donnÃ©es ci-dessus
   ## Tracez l'epiweek sur l'axe des x et les valeurs (nombres/celsius) sur l'axe des y. 
   ggplot(aes(x = epiweek, y = value)) + 
-    ## créez un graphique séparé pour les comptages tempérés et les comptages de cas. 
-    ## laissez-les définir leurs propres axes y
+    ## crÃ©ez un graphique sÃ©parÃ© pour les comptages tempÃ©rÃ©s et les comptages de cas. 
+    ## laissez-les dÃ©finir leurs propres axes y
     facet_grid(measure ~ ., scales = "free_y") +
     ## Tracez les deux comme une ligne
     geom_line()
@@ -640,120 +640,120 @@ counts %>%
 ```
 
 <!-- ======================================================= -->
-### Lags et corrélation croisée {.unnumbered}
+### Lags et corrÃ©lation croisÃ©e {.unnumbered}
 
-Pour tester formellement quelles semaines sont les plus fortement liées entre les cas et la température. 
-Nous pouvons utiliser la fonction de corrélation croisée (`CCF()`) du paquet **feasts**. 
-Vous pouvez également visualiser (plutôt que d'utiliser `arrange`) en utilisant la fonction `autoplot()`. 
+Pour tester formellement quelles semaines sont les plus fortement liÃ©es entre les cas et la tempÃ©rature. 
+Nous pouvons utiliser la fonction de corrÃ©lation croisÃ©e (`CCF()`) du paquet **feasts**. 
+Vous pouvez Ã©galement visualiser (plutÃ´t que d'utiliser `arrange`) en utilisant la fonction `autoplot()`. 
 
 ```{r cross_correlation, warning=FALSE}
 
 counts %>% 
-  ## calculer la corrélation croisée entre les comptages interpolés et la température
+  ## calculer la corrÃ©lation croisÃ©e entre les comptages interpolÃ©s et la tempÃ©rature
   CCF(case_int, t2m,
-      ## fixer le délai maximum à 52 semaines
+      ## fixer le dÃ©lai maximum Ã  52 semaines
       lag_max = 52, 
-      ## retourne le coefficient de corrélation 
+      ## retourne le coefficient de corrÃ©lation 
       type = "correlation") %>% 
-  ## arange dans l'ordre décroissant du coefficient de corrélation 
-  ## montre les décalages les plus associés
+  ## arange dans l'ordre dÃ©croissant du coefficient de corrÃ©lation 
+  ## montre les dÃ©calages les plus associÃ©s
   arrange(-ccf) %>% 
   ## montrer seulement les dix premiers 
   slice_head(n = 10)
 
 ```
 
-Nous voyons qu'un décalage de 4 semaines est le plus fortement corrélé, 
-donc nous créons une variable de température décalée à inclure dans notre régression. 
+Nous voyons qu'un dÃ©calage de 4 semaines est le plus fortement corrÃ©lÃ©, 
+donc nous crÃ©ons une variable de tempÃ©rature dÃ©calÃ©e Ã  inclure dans notre rÃ©gression. 
 
-<span style="color : red ;">**_ATTENTION:_** Notez que les quatre premières semaines de nos données
-dans la variable de température décalée sont manquantes (`NA`) - car il n'y a pas quatre 
-semaines précédentes pour obtenir des données. Afin d'utiliser cet ensemble de données avec la fonction **trending** 
+<span style="color : red ;">**_ATTENTION:_** Notez que les quatre premiÃ¨res semaines de nos donnÃ©es
+dans la variable de tempÃ©rature dÃ©calÃ©e sont manquantes (`NA`) - car il n'y a pas quatre 
+semaines prÃ©cÃ©dentes pour obtenir des donnÃ©es. Afin d'utiliser cet ensemble de donnÃ©es avec la fonction **trending** 
 `predict()`, nous devons utiliser l'argument `simulate_pi = FALSE` dans la fonction
 `predict()` plus bas. Si nous voulions utiliser l'option simulate, alors 
-nous devons supprimer ces manques et les stocker comme un nouvel ensemble de données en ajoutant `drop_na(t2m_lag4)`. 
+nous devons supprimer ces manques et les stocker comme un nouvel ensemble de donnÃ©es en ajoutant `drop_na(t2m_lag4)`. 
 au morceau de code ci-dessous.</span>  
  
 
 ```{r lag_tempvar}
 
 counts <- counts %>% 
-  ## créer une nouvelle variable pour la température décalée de quatre semaines.
+  ## crÃ©er une nouvelle variable pour la tempÃ©rature dÃ©calÃ©e de quatre semaines.
   mutate(t2m_lag4 = lag(t2m, n = 4))
 
 ```
 
 
 <!-- ======================================================= -->
-### Binomiale négative avec deux variables {.unnumbered}
+### Binomiale nÃ©gative avec deux variables {.unnumbered}
 
-Nous ajustons une régression binomiale négative comme nous l'avons fait précédemment. Cette fois, nous ajoutons la 
-variable de température retardée de quatre semaines. 
+Nous ajustons une rÃ©gression binomiale nÃ©gative comme nous l'avons fait prÃ©cÃ©demment. Cette fois, nous ajoutons la 
+variable de tempÃ©rature retardÃ©e de quatre semaines. 
 
 <span style="color : orange ;">**_ATTENTION:_** Notez l'utilisation de `simulate_pi = FALSE`
-dans l'argument `predict()`. Ceci est dû au fait que le comportement par défaut de **trending** 
-est d'utiliser le paquet **ciTools** pour estimer un intervalle de prédiction. Cela ne fonctionne pas 
-ne fonctionne pas s'il y a des comptes `NA`, et produit également des intervalles plus granulaires. 
-Voir `?trending::predict.trending_model_fit` pour plus de détails. </span>  
+dans l'argument `predict()`. Ceci est dÃ» au fait que le comportement par dÃ©faut de **trending** 
+est d'utiliser le paquet **ciTools** pour estimer un intervalle de prÃ©diction. Cela ne fonctionne pas 
+ne fonctionne pas s'il y a des comptes `NA`, et produit Ã©galement des intervalles plus granulaires. 
+Voir `?trending::predict.trending_model_fit` pour plus de dÃ©tails. </span>  
 
 ```{r nb_reg_bivar, warning = FALSE}
 
-## définissez le modèle que vous voulez ajuster (binomial négatif). 
+## dÃ©finissez le modÃ¨le que vous voulez ajuster (binomial nÃ©gatif). 
 model <- glm_nb_model(
-  ## définir le nombre de cas comme résultat d'intérêt
+  ## dÃ©finir le nombre de cas comme rÃ©sultat d'intÃ©rÃªt
   case_int ~
     ## utiliser epiweek pour tenir compte de la tendance
     epiweek +
-    ## utiliser les termes de fourier pour tenir compte de la saisonnalité
+    ## utiliser les termes de fourier pour tenir compte de la saisonnalitÃ©
     fourier + 
-    ## utiliser la température retardée de quatre semaines 
+    ## utiliser la tempÃ©rature retardÃ©e de quatre semaines 
     t2m_lag4
     )
 
-## ajustez votre modèle en utilisant l'ensemble de données de comptage
+## ajustez votre modÃ¨le en utilisant l'ensemble de donnÃ©es de comptage
 fitted_model <- trending::fit(model, counts)
 
-### calculer les intervalles de confiance et les intervalles de prédiction 
+### calculer les intervalles de confiance et les intervalles de prÃ©diction 
 observed <- predict(fitted_model, simulate_pi = FALSE)
 
 ```
 
 
-Pour étudier les termes individuels, nous pouvons extraire la régression binomiale négative originale
-négative binomiale négative d'origine du format **trending** en utilisant `get_model()` et la passer au paquetage **broom** `tire'.
-fonction `tidy()` du paquetage **broom** pour récupérer les estimations exponentielles et les
-intervalles de confiance associés.  
+Pour Ã©tudier les termes individuels, nous pouvons extraire la rÃ©gression binomiale nÃ©gative originale
+nÃ©gative binomiale nÃ©gative d'origine du format **trending** en utilisant `get_model()` et la passer au paquetage **broom** `tire'.
+fonction `tidy()` du paquetage **broom** pour rÃ©cupÃ©rer les estimations exponentielles et les
+intervalles de confiance associÃ©s.  
 
-Ce que cela nous montre est que la température décalée, après avoir contrôlé la tendance et la saisonnalité, 
-est similaire au nombre de cas (estimation ~ 1) et significativement associée. 
-Cela suggère qu'il pourrait s'agir d'une bonne variable à utiliser pour prédire le nombre de cas futurs (les prévisions climatiques étant facilement accessibles).
-nombre de cas (les prévisions climatiques étant facilement disponibles). 
+Ce que cela nous montre est que la tempÃ©rature dÃ©calÃ©e, aprÃ¨s avoir contrÃ´lÃ© la tendance et la saisonnalitÃ©, 
+est similaire au nombre de cas (estimation ~ 1) et significativement associÃ©e. 
+Cela suggÃ¨re qu'il pourrait s'agir d'une bonne variable Ã  utiliser pour prÃ©dire le nombre de cas futurs (les prÃ©visions climatiques Ã©tant facilement accessibles).
+nombre de cas (les prÃ©visions climatiques Ã©tant facilement disponibles). 
 
 ```{r results_nb_reg_bivar}
 
 fitted_model %>% 
-  ## extraire la régression binomiale négative originale
+  ## extraire la rÃ©gression binomiale nÃ©gative originale
   get_model() %>% 
-  ## obtenir un cadre de données ordonné des résultats
+  ## obtenir un cadre de donnÃ©es ordonnÃ© des rÃ©sultats
   tidy(exponentiate = TRUE, 
        conf.int = TRUE)
 ```
 
-Une rapide inspection visuelle du modèle montre qu'il pourrait faire un meilleur travail pour 
-d'estimer le nombre de cas observés. 
+Une rapide inspection visuelle du modÃ¨le montre qu'il pourrait faire un meilleur travail pour 
+d'estimer le nombre de cas observÃ©s. 
 
 ```{r plot_nb_reg_bivar, warning=F, message=F}
 
-## Tracez votre régression 
+## Tracez votre rÃ©gression 
 ggplot(data = observed, aes(x = epiweek)) + 
-  ## ajouter une ligne pour l'estimation du modèle
+  ## ajouter une ligne pour l'estimation du modÃ¨le
   geom_line(aes(y = estimation),
             col = "red") + 
-  ## ajouter une bande pour les intervalles de prédiction 
+  ## ajouter une bande pour les intervalles de prÃ©diction 
   geom_ribbon(aes(ymin = lower_pi, 
                   ymax = upper_pi), 
               alpha = 0.25) + 
-  ## ajouter une ligne pour le nombre de cas observés
+  ## ajouter une ligne pour le nombre de cas observÃ©s
   geom_line(aes(y = case_int), 
             col = "black") + 
   ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
@@ -763,126 +763,126 @@ ggplot(data = observed, aes(x = epiweek)) +
 ```
 
 
-#### Résidus {.unnumbered}
+#### RÃ©sidus {.unnumbered}
 
-Nous examinons à nouveau les résidus pour voir si notre modèle s'adapte bien aux données observées. 
-Les résultats et l'interprétation sont ici similaires à ceux de la régression précédente, 
-donc il est peut-être plus judicieux de s'en tenir au modèle plus simple sans température. 
+Nous examinons Ã  nouveau les rÃ©sidus pour voir si notre modÃ¨le s'adapte bien aux donnÃ©es observÃ©es. 
+Les rÃ©sultats et l'interprÃ©tation sont ici similaires Ã  ceux de la rÃ©gression prÃ©cÃ©dente, 
+donc il est peut-Ãªtre plus judicieux de s'en tenir au modÃ¨le plus simple sans tempÃ©rature. 
 
 ```{r}
 
-## calculer les résidus 
+## calculer les rÃ©sidus 
 observed <- observed %>% 
   mutate(resid = case_int - estimate)
 
-## les résidus sont-ils assez constants dans le temps (si non : épidémies ? changement de pratique ?)
+## les rÃ©sidus sont-ils assez constants dans le temps (si non : Ã©pidÃ©mies ? changement de pratique ?)
 observed %>%
   ggplot(aes(x = epiweek, y = resid)) +
   geom_line() +
   geom_point() + 
   labs(x = "epiweek", y = "Residuals")
 
-## Y a-t-il une autocorrélation dans les résidus (y a-t-il un modèle d'erreur ?) ?  
+## Y a-t-il une autocorrÃ©lation dans les rÃ©sidus (y a-t-il un modÃ¨le d'erreur ?) ?  
 observed %>% 
   as_tsibble(index = epiweek) %>% 
   ACF(resid, lag_max = 52) %>% 
   autoplot()
 
-## les résidus sont-ils normalement distribués (y a-t-il sous-estimation ou surestimation ?)  
+## les rÃ©sidus sont-ils normalement distribuÃ©s (y a-t-il sous-estimation ou surestimation ?)  
 observed %>%
   ggplot(aes(x = resid)) +
   geom_histogramme(binwidth = 100) +
   geom_rug() +
   labs(y = "count") 
   
-## comparer les comptages observés à leurs résidus 
-  ## il ne devrait pas y avoir de modèle 
+## comparer les comptages observÃ©s Ã  leurs rÃ©sidus 
+  ## il ne devrait pas y avoir de modÃ¨le 
 observed %>%
   ggplot(aes(x = estimate, y = resid)) +
   geom_point() +
   labs(x = "Fitted", y = "Residuals")
 
-## tester formellement l'autocorrélation des résidus
-## H0 est que les résidus proviennent d'une série à bruit blanc (c'est-à-dire aléatoire)
-## Test d'indépendance 
-### si la valeur p est significative alors non aléatoire
+## tester formellement l'autocorrÃ©lation des rÃ©sidus
+## H0 est que les rÃ©sidus proviennent d'une sÃ©rie Ã  bruit blanc (c'est-Ã -dire alÃ©atoire)
+## Test d'indÃ©pendance 
+### si la valeur p est significative alors non alÃ©atoire
 Box.test(observed$resid, type = "Ljung-Box")
 
 ```
 
 <!-- ======================================================= -->
-## Détection des épidémies { }
+## DÃ©tection des Ã©pidÃ©mies { }
 
-Nous allons démontrer ici deux méthodes (similaires) de détection des épidémies. 
-La première s'appuie sur les sections précédentes. 
-Nous utilisons le paquet **trending** pour ajuster les régressions aux années précédentes, et puis
-prédire ce que nous nous attendons à voir l'année suivante. Si les comptages observés sont supérieurs
-ce que nous attendons, cela pourrait suggérer qu'il y a une épidémie. 
-La deuxième méthode est basée sur des principes similaires mais utilise le paquet **surveillance**,
-qui possède un certain nombre d'algorithmes différents pour la détection des aberrations.
+Nous allons dÃ©montrer ici deux mÃ©thodes (similaires) de dÃ©tection des Ã©pidÃ©mies. 
+La premiÃ¨re s'appuie sur les sections prÃ©cÃ©dentes. 
+Nous utilisons le paquet **trending** pour ajuster les rÃ©gressions aux annÃ©es prÃ©cÃ©dentes, et puis
+prÃ©dire ce que nous nous attendons Ã  voir l'annÃ©e suivante. Si les comptages observÃ©s sont supÃ©rieurs
+ce que nous attendons, cela pourrait suggÃ©rer qu'il y a une Ã©pidÃ©mie. 
+La deuxiÃ¨me mÃ©thode est basÃ©e sur des principes similaires mais utilise le paquet **surveillance**,
+qui possÃ¨de un certain nombre d'algorithmes diffÃ©rents pour la dÃ©tection des aberrations.
 
-<span style="color : orange ;">**_ATTENTION:_** Normalement, vous vous intéressez à l'année en cours (où vous ne connaissez que les comptages jusqu'à la semaine actuelle). Donc, dans cet exemple, nous prétendons être dans la semaine 39 de 2011.</span>
+<span style="color : orange ;">**_ATTENTION:_** Normalement, vous vous intÃ©ressez Ã  l'annÃ©e en cours (oÃ¹ vous ne connaissez que les comptages jusqu'Ã  la semaine actuelle). Donc, dans cet exemple, nous prÃ©tendons Ãªtre dans la semaine 39 de 2011.</span>
 
 <!-- ======================================================= -->
 ### **tendance** paquet {.unnumbered}
 
-Pour cette méthode, nous définissons une ligne de base (qui devrait généralement être d'environ 5 ans de données). 
-Nous ajustons une régression aux données de base, puis nous l'utilisons pour prédire les estimations pour l'année suivante.
-pour l'année suivante. 
+Pour cette mÃ©thode, nous dÃ©finissons une ligne de base (qui devrait gÃ©nÃ©ralement Ãªtre d'environ 5 ans de donnÃ©es). 
+Nous ajustons une rÃ©gression aux donnÃ©es de base, puis nous l'utilisons pour prÃ©dire les estimations pour l'annÃ©e suivante.
+pour l'annÃ©e suivante. 
 
 <!-- ======================================================= -->
 #### Date limite { -}
 
-Il est plus facile de définir vos dates à un endroit, puis de les utiliser dans le reste de votre code.
+Il est plus facile de dÃ©finir vos dates Ã  un endroit, puis de les utiliser dans le reste de votre code.
 le reste de votre code.  
 
-Ici nous définissons une date de début (quand nos observations ont commencé) et une date limite 
-(la fin de notre période de référence - et le début de la période pour laquelle nous voulons prédire). 
-~Nous définissons également le nombre de semaines que compte l'année qui nous intéresse (celle que nous allons
-nous allons prédire)~.
-Nous définissons également le nombre de semaines entre la date limite de la période de référence et la date de fin de la période. 
-pour laquelle nous sommes intéressés à prédire. 
+Ici nous dÃ©finissons une date de dÃ©but (quand nos observations ont commencÃ©) et une date limite 
+(la fin de notre pÃ©riode de rÃ©fÃ©rence - et le dÃ©but de la pÃ©riode pour laquelle nous voulons prÃ©dire). 
+~Nous dÃ©finissons Ã©galement le nombre de semaines que compte l'annÃ©e qui nous intÃ©resse (celle que nous allons
+nous allons prÃ©dire)~.
+Nous dÃ©finissons Ã©galement le nombre de semaines entre la date limite de la pÃ©riode de rÃ©fÃ©rence et la date de fin de la pÃ©riode. 
+pour laquelle nous sommes intÃ©ressÃ©s Ã  prÃ©dire. 
 
 
-<span style="color : black ;">**_ATTENTION:_** Dans cet exemple, nous prétendons être actuellement à la fin du mois de septembre 2011 ("2011 W39").</span>  
+<span style="color : black ;">**_ATTENTION:_** Dans cet exemple, nous prÃ©tendons Ãªtre actuellement Ã  la fin du mois de septembre 2011 ("2011 W39").</span>  
 
 ```{r cut_off}
 
-## définir la date de début (quand les observations ont commencé)
+## dÃ©finir la date de dÃ©but (quand les observations ont commencÃ©)
 start_date <- min(counts$epiweek)
 
-## définir une semaine de coupure (fin de la ligne de base, début de la période de prédiction)
+## dÃ©finir une semaine de coupure (fin de la ligne de base, dÃ©but de la pÃ©riode de prÃ©diction)
 cut_off <- yearweek("2010-12-31")
 
-## définir la dernière date qui nous intéresse (c'est-à-dire la fin de la prédiction)
+## dÃ©finir la derniÃ¨re date qui nous intÃ©resse (c'est-Ã -dire la fin de la prÃ©diction)
 end_date <- yearweek("2011-12-31")
 
-## trouver combien de semaines dans la période (année) d'intérêt.
+## trouver combien de semaines dans la pÃ©riode (annÃ©e) d'intÃ©rÃªt.
 num_weeks <- as.numeric(end_date - cut_off)
 
 ```
 
 
 <!-- ======================================================= -->
-#### Ajoutez des lignes {.non numérotées}.
+#### Ajoutez des lignes {.unnumbered}.
 
-Pour pouvoir faire des prévisions dans un format tidyverse, nous devons avoir le bon nombre de lignes dans notre ensemble de données. 
-de lignes dans notre jeu de données, c'est-à-dire une ligne pour chaque semaine jusqu'à la date de fin définie ci-dessus. 
+Pour pouvoir faire des prÃ©visions dans un format tidyverse, nous devons avoir le bon nombre de lignes dans notre ensemble de donnÃ©es. 
+de lignes dans notre jeu de donnÃ©es, c'est-Ã -dire une ligne pour chaque semaine jusqu'Ã  la date de fin dÃ©finie ci-dessus. 
 Le code ci-dessous vous permet d'ajouter ces lignes par une variable de regroupement - par exemple
-par exemple, si nous avons plusieurs pays dans un même ensemble de données, nous pouvons 
+par exemple, si nous avons plusieurs pays dans un mÃªme ensemble de donnÃ©es, nous pouvons 
 ajouter des lignes pour chacun d'entre eux. 
 La fonction `group_by_key()` de **tsibble** nous permet d'effectuer ce regroupement. 
-et ensuite de passer les données groupées aux fonctions **dplyr**, `group_modify()` et 
-`add_row()`. Ensuite, nous spécifions la séquence des semaines entre une après la semaine maximale 
-actuellement disponible dans les données et la semaine de fin. 
+et ensuite de passer les donnÃ©es groupÃ©es aux fonctions **dplyr**, `group_modify()` et 
+`add_row()`. Ensuite, nous spÃ©cifions la sÃ©quence des semaines entre une aprÃ¨s la semaine maximale 
+actuellement disponible dans les donnÃ©es et la semaine de fin. 
 
 ```{r add_rows}
 
-## ajouter les semaines manquantes jusqu'à la fin de l'année 
+## ajouter les semaines manquantes jusqu'Ã  la fin de l'annÃ©e 
 counts <- counts %>%
-  ## regrouper par région
+  ## regrouper par rÃ©gion
   group_by_key() %>%
-  ## pour chaque groupe, ajoutez les lignes à partir de la semaine d'épi la plus élevée jusqu'à la fin de l'année
+  ## pour chaque groupe, ajoutez les lignes Ã  partir de la semaine d'Ã©pi la plus Ã©levÃ©e jusqu'Ã  la fin de l'annÃ©e
   group_modify(~add_row(.,
                         epiweek = seq(max(.$epiweek) + 1, 
                                       end_date,
@@ -893,27 +893,27 @@ counts <- counts %>%
 
 
 <!-- ======================================================= -->
-#### Termes de Fourier {.non numéroté}
+#### Termes de Fourier {.unnumbered}
 
-Nous devons redéfinir nos termes de Fourier, car nous voulons les adapter à la date de base uniquement, puis prédire (extrapoler) ces termes pour la date suivante. 
-de base uniquement, puis prédire (extrapoler) ces termes pour l'année suivante. 
+Nous devons redÃ©finir nos termes de Fourier, car nous voulons les adapter Ã  la date de base uniquement, puis prÃ©dire (extrapoler) ces termes pour la date suivante. 
+de base uniquement, puis prÃ©dire (extrapoler) ces termes pour l'annÃ©e suivante. 
 Pour ce faire, nous devons combiner deux listes de sortie de la fonction `fourier()` ensemble ; 
-la première est pour les données de base, et la seconde prédit pour l'année qui nous intéresse (en définissant le paramètre `fourier()`). 
-l'année qui nous intéresse (en définissant l'argument `h`).  
+la premiÃ¨re est pour les donnÃ©es de base, et la seconde prÃ©dit pour l'annÃ©e qui nous intÃ©resse (en dÃ©finissant le paramÃ¨tre `fourier()`). 
+l'annÃ©e qui nous intÃ©resse (en dÃ©finissant l'argument `h`).  
 
-*N.b.* pour lier les lignes, nous devons utiliser `rbind()` (plutôt que tidyverse `bind_rows`) car
-les colonnes de fourier sont une liste (et ne sont donc pas nommées individuellement). 
+*N.b.* pour lier les lignes, nous devons utiliser `rbind()` (plutÃ´t que tidyverse `bind_rows`) car
+les colonnes de fourier sont une liste (et ne sont donc pas nommÃ©es individuellement). 
 
 ```{r fourier_terms_pred}
 
 
-## définir les termes de fourier (sincos) 
+## dÃ©finir les termes de fourier (sincos) 
 counts <- counts %>% 
   mutate(
-    ## combiner les termes de fourier pour les semaines avant et après la date limite de 2010
-    ## (nb. les termes de fourier de 2011 sont prédits)
+    ## combiner les termes de fourier pour les semaines avant et aprÃ¨s la date limite de 2010
+    ## (nb. les termes de fourier de 2011 sont prÃ©dits)
     fourier = rbind(
-      ## obtenir les termes de fourier pour les années précédentes
+      ## obtenir les termes de fourier pour les annÃ©es prÃ©cÃ©dentes
       fourier(
         ## garder uniquement les lignes avant 2011
         filter(counts, 
@@ -921,14 +921,14 @@ counts <- counts %>%
         ## inclure un ensemble de termes sin cos 
         K = 1
         ), 
-      ## prédire les termes de fourier pour 2011 (en utilisant les données de base)
+      ## prÃ©dire les termes de fourier pour 2011 (en utilisant les donnÃ©es de base)
       fourier(
         ## garder uniquement les lignes avant 2011
         filter(counts, 
                epiweek <= cut_off),
         ## inclure un ensemble de termes sin cos 
         K = 1, 
-        ## prédire 52 semaines à l'avance
+        ## prÃ©dire 52 semaines Ã  l'avance
         h = num_weeks
         )
       )
@@ -937,88 +937,88 @@ counts <- counts %>%
 ```
 
 <!-- ======================================================= -->
-#### Diviser les données et ajuster la régression {.unnumbered}
+#### Diviser les donnÃ©es et ajuster la rÃ©gression {.unnumbered}
 
-Nous devons maintenant diviser notre ensemble de données en deux périodes : la période de base et la période de prédiction. 
-période de prédiction. Ceci est fait en utilisant la fonction **dplyr** `group_split()` après `group_by()`, 
-et créera une liste avec deux cadres de données, un pour la période avant la coupure et un pour la période après la coupure. 
-pour l'après.  
+Nous devons maintenant diviser notre ensemble de donnÃ©es en deux pÃ©riodes : la pÃ©riode de base et la pÃ©riode de prÃ©diction. 
+pÃ©riode de prÃ©diction. Ceci est fait en utilisant la fonction **dplyr** `group_split()` aprÃ¨s `group_by()`, 
+et crÃ©era une liste avec deux cadres de donnÃ©es, un pour la pÃ©riode avant la coupure et un pour la pÃ©riode aprÃ¨s la coupure. 
+pour l'aprÃ¨s.  
 
-Nous utilisons ensuite la fonction `pluck()` du paquet **purrr** pour extraire les ensembles de données de la liste (ce qui équivaut à utiliser des crochets).
-liste (l'équivalent de l'utilisation de crochets, par exemple `dat[[1]]`), et nous pouvons alors ajuster notre 
-notre modèle aux données de base, et ensuite utiliser la fonction `predict()` pour nos données
-d'intérêt après la coupure.  
+Nous utilisons ensuite la fonction `pluck()` du paquet **purrr** pour extraire les ensembles de donnÃ©es de la liste (ce qui Ã©quivaut Ã  utiliser des crochets).
+liste (l'Ã©quivalent de l'utilisation de crochets, par exemple `dat[[1]]`), et nous pouvons alors ajuster notre 
+notre modÃ¨le aux donnÃ©es de base, et ensuite utiliser la fonction `predict()` pour nos donnÃ©es
+d'intÃ©rÃªt aprÃ¨s la coupure.  
 
-Consultez la page sur [l'itération, les boucles et les listes] pour en savoir plus sur **purrr**.  
+Consultez la page sur [l'itÃ©ration, les boucles et les listes](#iteration) pour en savoir plus sur **purrr**.  
 
 <span style="color : orange ;">**_ATTENTION:_** Notez l'utilisation de `simulate_pi = FALSE`
-dans l'argument `predict()`. Ceci est dû au fait que le comportement par défaut de **trending** 
-est d'utiliser le paquet **ciTools** pour estimer un intervalle de prédiction. Cela ne fonctionne pas 
-ne fonctionne pas s'il y a des comptes `NA`, et produit également des intervalles plus granulaires. 
-Voir `?trending::predict.trending_model_fit` pour plus de détails. </span>  
+dans l'argument `predict()`. Ceci est dÃ» au fait que le comportement par dÃ©faut de **trending** 
+est d'utiliser le paquet **ciTools** pour estimer un intervalle de prÃ©diction. Cela ne fonctionne pas 
+ne fonctionne pas s'il y a des comptes `NA`, et produit Ã©galement des intervalles plus granulaires. 
+Voir `?trending::predict.trending_model_fit` pour plus de dÃ©tails. </span>  
 
 ```{r forecast_regression, warning = FALSE}
-# diviser les données pour l'ajustement et la prédiction
+# diviser les donnÃ©es pour l'ajustement et la prÃ©diction
 dat <- counts %>% 
   group_by(epiweek <= cut_off) %>%
   group_split()
 
-## définir le modèle que vous voulez ajuster (binomial négatif) 
+## dÃ©finir le modÃ¨le que vous voulez ajuster (binomial nÃ©gatif) 
 model <- glm_nb_model(
-  ## définir le nombre de cas comme résultat d'intérêt
+  ## dÃ©finir le nombre de cas comme rÃ©sultat d'intÃ©rÃªt
   case_int ~
     ## utiliser epiweek pour tenir compte de la tendance
     epiweek +
-    ## utiliser les termes de fourier pour tenir compte de la saisonnalité
+    ## utiliser les termes de fourier pour tenir compte de la saisonnalitÃ©
     fourier
 )
 
-# définir les données à utiliser pour l'ajustement et celles pour la prédiction.
+# dÃ©finir les donnÃ©es Ã  utiliser pour l'ajustement et celles pour la prÃ©diction.
 fitting_data <- pluck(dat, 2)
 pred_data <- pluck(dat, 1) %>% 
   select(case_int, epiweek, fourier)
 
-# ajustement du modèle 
+# ajustement du modÃ¨le 
 fitted_model <- trending::fit(model, fitting_data)
 
-# obtenir le confint et les estimations pour les données ajustées
+# obtenir le confint et les estimations pour les donnÃ©es ajustÃ©es
 observed <- fitted_model %>% 
   predict(simulate_pi = FALSE)
 
-# prévoir avec les données que l'on veut prévoir avec 
+# prÃ©voir avec les donnÃ©es que l'on veut prÃ©voir avec 
 forecast <- fitted_model %>% 
   predict(pred_data, simulate_pi = FALSE)
 
-## combiner les ensembles de données de base et prédits
+## combiner les ensembles de donnÃ©es de base et prÃ©dits
 observed <- bind_rows(observed, forecast)
 
 ```
 
-Comme précédemment, nous pouvons visualiser notre modèle avec **ggplot**. Nous mettons en évidence les alertes avec
-points rouges pour les comptes observés au-dessus de l'intervalle de prédiction de 95 %. 
-Cette fois, nous ajoutons également une ligne verticale pour indiquer quand la prévision commence. 
+Comme prÃ©cÃ©demment, nous pouvons visualiser notre modÃ¨le avec **ggplot**. Nous mettons en Ã©vidence les alertes avec
+points rouges pour les comptes observÃ©s au-dessus de l'intervalle de prÃ©diction de 95 %. 
+Cette fois, nous ajoutons Ã©galement une ligne verticale pour indiquer quand la prÃ©vision commence. 
 
 ```{r forecast_plot}
 
-## Tracez votre régression 
+## Tracez votre rÃ©gression 
 ggplot(data = observed, aes(x = epiweek)) + 
-  ## ajoutez une ligne pour l'estimation du modèle
+  ## ajoutez une ligne pour l'estimation du modÃ¨le
   geom_line(aes(y = estimation),
             col = "grey") + 
-  ## ajouter une bande pour les intervalles de prédiction 
+  ## ajouter une bande pour les intervalles de prÃ©diction 
   geom_ribbon(aes(ymin = lower_pi, 
                   ymax = upper_pi), 
               alpha = 0.25) + 
-  ## ajouter une ligne pour le nombre de cas observés
+  ## ajouter une ligne pour le nombre de cas observÃ©s
   geom_line(aes(y = case_int), 
             col = "black") + 
-  ## Tracez des points pour les nombres observés supérieurs aux prévisions.
+  ## Tracez des points pour les nombres observÃ©s supÃ©rieurs aux prÃ©visions.
   geom_point(
     data = filter(observed, case_int > upper_pi), 
     aes(y = case_int), 
     couleur = "red", 
     size = 2) + 
-  ## ajouter une ligne verticale et une étiquette pour montrer où la prévision a commencé
+  ## ajouter une ligne verticale et une Ã©tiquette pour montrer oÃ¹ la prÃ©vision a commencÃ©
   geom_vline(
            xintercept = as.Date(cut_off), 
            linetype = "dashed") + 
@@ -1036,82 +1036,81 @@ ggplot(data = observed, aes(x = epiweek)) +
 
 
 <!-- ======================================================= -->
-#### Validation de la prédiction {.unnumbered}
+#### Validation de la prÃ©diction {.unnumbered}
 
-Au-delà de l'inspection des résidus, il est important d'étudier la capacité de votre modèle à prédire les cas dans le futur.
-pour prédire les cas dans le futur. Cela vous donne une idée de la fiabilité de vos 
+Au-delÃ  de l'inspection des rÃ©sidus, il est important d'Ã©tudier la capacitÃ© de votre modÃ¨le Ã  prÃ©dire les cas dans le futur.
+pour prÃ©dire les cas dans le futur. Cela vous donne une idÃ©e de la fiabilitÃ© de vos 
 seuils d'alerte.  
 
-La méthode traditionnelle de validation consiste à voir dans quelle mesure vous pouvez prédire l'année la plus récente avant l'année en cours (parce que vous ne pouvez pas prédire l'année en cours). 
-année précédant l'année en cours (car vous ne connaissez pas encore les chiffres de l'"année en cours"). 
-Par exemple, dans notre ensemble de données, nous utiliserions les données de 2002 à 2009 pour prédire 2010, 
-et ensuite voir si ces prédictions sont exactes. Ensuite, nous réajustons le modèle pour inclure
-données de 2010 et les utiliser pour prédire les comptages de 2011.  
+La mÃ©thode traditionnelle de validation consiste Ã  voir dans quelle mesure vous pouvez prÃ©dire l'annÃ©e la plus rÃ©cente avant l'annÃ©e en cours (parce que vous ne pouvez pas prÃ©dire l'annÃ©e en cours). 
+annÃ©e prÃ©cÃ©dant l'annÃ©e en cours (car vous ne connaissez pas encore les chiffres de l'"annÃ©e en cours"). 
+Par exemple, dans notre ensemble de donnÃ©es, nous utiliserions les donnÃ©es de 2002 Ã  2009 pour prÃ©dire 2010, 
+et ensuite voir si ces prÃ©dictions sont exactes. Ensuite, nous rÃ©ajustons le modÃ¨le pour inclure
+donnÃ©es de 2010 et les utiliser pour prÃ©dire les comptages de 2011.  
 
-Comme on peut le voir dans la figure ci-dessous, réalisée par *Hyndman et al* dans ["Forecasting principles 
-and practice"](https://otexts.com/fpp3/). 
+Comme on peut le voir dans la figure ci-dessous, rÃ©alisÃ©e par *Hyndman et al* dans ["Forecasting principles and practice"](https://otexts.com/fpp3/). 
 
 ![](`r "https://otexts.com/fpp3/fpp_files/figure-html/traintest-1.png"`)
 *figure reproduite avec l'autorisation des auteurs*. 
 
-L'inconvénient de cette méthode est que vous n'utilisez pas toutes les données dont vous disposez et que vous n'obtenez pas le modèle final. 
-ce n'est pas le modèle final que vous utilisez pour la prédiction. 
+L'inconvÃ©nient de cette mÃ©thode est que vous n'utilisez pas toutes les donnÃ©es dont vous disposez et que vous n'obtenez pas le modÃ¨le final. 
+ce n'est pas le modÃ¨le final que vous utilisez pour la prÃ©diction. 
 
-Une alternative consiste à utiliser une méthode appelée validation croisée. Dans ce scénario, vous 
-passez en revue toutes les données disponibles pour ajuster plusieurs modèles afin de prédire un an à l'avance. 
-Vous utilisez de plus en plus de données dans chaque modèle, comme le montre la figure ci-dessous tirée de la 
-même [*Hyndman et al* texte]((https://otexts.com/fpp3/). 
-Par exemple, le premier modèle utilise 2002 pour prédire 2003, le second utilise 2002 et 2003 pour prédire 2004, et ainsi de suite. 
-2003 pour prédire 2004, et ainsi de suite. 
+Une alternative consiste Ã  utiliser une mÃ©thode appelÃ©e validation croisÃ©e. Dans ce scÃ©nario, vous 
+passez en revue toutes les donnÃ©es disponibles pour ajuster plusieurs modÃ¨les afin de prÃ©dire un an Ã  l'avance. 
+Vous utilisez de plus en plus de donnÃ©es dans chaque modÃ¨le, comme le montre la figure ci-dessous tirÃ©e de la 
+mÃªme [*Hyndman et al* texte]((https://otexts.com/fpp3/). 
+Par exemple, le premier modÃ¨le utilise 2002 pour prÃ©dire 2003, le second utilise 2002 et 2003 pour prÃ©dire 2004, et ainsi de suite. 
+2003 pour prÃ©dire 2004, et ainsi de suite. 
 ![](`r "https://otexts.com/fpp2/fpp_files/figure-html/cv1-1.png"`)
 *figure reproduite avec l'autorisation des auteurs*.
 
-Dans la figure ci-dessous, nous utilisons la fonction `map()` du paquet **purrr** pour boucler sur chaque ensemble de données. 
-Nous mettons ensuite les estimations dans un seul ensemble de données et les fusionnons avec le nombre de cas original, 
-pour utiliser le paquet **yardstick** pour calculer les mesures de précision. 
+Dans la figure ci-dessous, nous utilisons la fonction `map()` du paquet **purrr** pour boucler sur chaque ensemble de donnÃ©es. 
+Nous mettons ensuite les estimations dans un seul ensemble de donnÃ©es et les fusionnons avec le nombre de cas original, 
+pour utiliser le paquet **yardstick** pour calculer les mesures de prÃ©cision. 
 Nous calculons quatre mesures, notamment Erreur quadratique moyenne (RMSE), Erreur absolue moyenne (MAE)	
-(MAE), l'erreur absolue moyenne mise à l'échelle (MASE), l'erreur absolue moyenne en pourcentage (MAPE).
+(MAE), l'erreur absolue moyenne mise Ã  l'Ã©chelle (MASE), l'erreur absolue moyenne en pourcentage (MAPE).
 
 <span style="color : orange ;">**_CAUTION:_** Notez l'utilisation de `simulate_pi = FALSE`
-dans l'argument `predict()`. Ceci est dû au fait que le comportement par défaut de **trending** 
-est d'utiliser le paquet **ciTools** pour estimer un intervalle de prédiction. Cela ne fonctionne pas 
-ne fonctionne pas s'il y a des comptes `NA`, et produit également des intervalles plus granulaires. 
-Voir `?trending::predict.trending_model_fit` pour plus de détails. </span>  
+dans l'argument `predict()`. Ceci est dÃ» au fait que le comportement par dÃ©faut de **trending** 
+est d'utiliser le paquet **ciTools** pour estimer un intervalle de prÃ©diction. Cela ne fonctionne pas 
+ne fonctionne pas s'il y a des comptes `NA`, et produit Ã©galement des intervalles plus granulaires. 
+Voir `?trending::predict.trending_model_fit` pour plus de dÃ©tails. </span>  
 
 ```{r cross_validation, warning = FALSE}
 
-## Validation croisée : prédire la ou les semaines à venir en fonction de la fenêtre glissante.
+## Validation croisÃ©e : prÃ©dire la ou les semaines Ã  venir en fonction de la fenÃªtre glissante.
 
-## élargissez vos données en les faisant glisser dans des fenêtres de 52 semaines (avant + après). 
-## pour prédire les 52 semaines à venir
-## (crée des chaînes d'observations de plus en plus longues - conserve les données plus anciennes)
+## Ã©largissez vos donnÃ©es en les faisant glisser dans des fenÃªtres de 52 semaines (avant + aprÃ¨s). 
+## pour prÃ©dire les 52 semaines Ã  venir
+## (crÃ©e des chaÃ®nes d'observations de plus en plus longues - conserve les donnÃ©es plus anciennes)
 
-## définir la fenêtre que l'on veut faire glisser
+## dÃ©finir la fenÃªtre que l'on veut faire glisser
 roll_window <- 52
 
-## Définir les semaines à venir à prévoir 
+## DÃ©finir les semaines Ã  venir Ã  prÃ©voir 
 weeks_ahead <- 52
 
-## créer un ensemble de données répétitives, de plus en plus longues.
-## étiqueter chaque ensemble de données avec un identifiant unique.
-## utiliser seulement les cas avant l'année d'intérêt (i.e. 2011)
+## crÃ©er un ensemble de donnÃ©es rÃ©pÃ©titives, de plus en plus longues.
+## Ã©tiqueter chaque ensemble de donnÃ©es avec un identifiant unique.
+## utiliser seulement les cas avant l'annÃ©e d'intÃ©rÃªt (i.e. 2011)
 case_roll <- counts %>% 
   filter(epiweek < cut_off) %>% 
   ## Garder uniquement les variables de la semaine et du nombre de cas.
   select(epiweek, case_int) %>% 
-    ## laisser tomber les x dernières observations 
-    ## en fonction du nombre de semaines d'anticipation de la prévision. 
-    ## (sinon ce sera une prévision réelle à "inconnu")
+    ## laisser tomber les x derniÃ¨res observations 
+    ## en fonction du nombre de semaines d'anticipation de la prÃ©vision. 
+    ## (sinon ce sera une prÃ©vision rÃ©elle Ã  "inconnu")
     slice(1 :(n() - weeks_ahead)) %>%
     as_tsibble(index = epiweek) %>% 
-    ## reconduire chaque semaine dans x après les fenêtres pour créer l'ID de regroupement 
-    ## en fonction de la fenêtre de roulement spécifiée
+    ## reconduire chaque semaine dans x aprÃ¨s les fenÃªtres pour crÃ©er l'ID de regroupement 
+    ## en fonction de la fenÃªtre de roulement spÃ©cifiÃ©e
     stretch_tsibble(.init = roll_window, .step = 1) %>% 
   ## laisser tomber les deux premiers - car il n'y a pas de cas "avant".
   filter(.id > roll_window)
 
 
-## pour chacun des ensembles de données uniques, exécutez le code ci-dessous
+## pour chacun des ensembles de donnÃ©es uniques, exÃ©cutez le code ci-dessous
 forecasts <- purrr::map(unique(case_roll$.id), 
                         function(i) {
   
@@ -1119,7 +1118,7 @@ forecasts <- purrr::map(unique(case_roll$.id),
   mini_data <- filter(case_roll, .id == i) %>% 
     as_tibble()
   
-  ## créer un ensemble de données vides pour la prévision sur 
+  ## crÃ©er un ensemble de donnÃ©es vides pour la prÃ©vision sur 
   forecast_data <- tibble(
     epiweek = seq(max(mini_data$epiweek) + 1,
                   max(mini_data$epiweek) + weeks_ahead,
@@ -1128,14 +1127,14 @@ forecasts <- purrr::map(unique(case_roll$.id),
     .id = rep.int(i, weeks_ahead)
   )
   
-  ## ajouter les données de prévision à l'original 
+  ## ajouter les donnÃ©es de prÃ©vision Ã  l'original 
   mini_data <- bind_rows(mini_data, forecast_data)
   
-  ## définir le cut off basé sur les dernières données de comptage non manquantes. 
+  ## dÃ©finir le cut off basÃ© sur les derniÃ¨res donnÃ©es de comptage non manquantes. 
   cv_cut_off <- mini_data %>% 
     ## ne garder que les lignes non manquantes
     drop_na(case_int) %>% 
-    ## obtenir la dernière semaine
+    ## obtenir la derniÃ¨re semaine
     summarise(max(epiweek)) %>% 
     ## extraire ce qui n'est pas dans un dataframe
     pull()
@@ -1143,12 +1142,12 @@ forecasts <- purrr::map(unique(case_roll$.id),
   ## Remettre mini_data dans un tsibble
   mini_data <- tsibble(mini_data, index = epiweek)
   
-  ## définir les termes de fourier (sincos) 
+  ## dÃ©finir les termes de fourier (sincos) 
   mini_data <- mini_data %>% 
     mutate(
-    ## Combinez les termes de Fourier pour les semaines avant et après la date limite.
+    ## Combinez les termes de Fourier pour les semaines avant et aprÃ¨s la date limite.
     fourier = rbind(
-      ## obtenir les termes de fourier pour les années précédentes
+      ## obtenir les termes de fourier pour les annÃ©es prÃ©cÃ©dentes
       forecast::fourier(
         ### ne conserve que les lignes avant la date butoir
         filtre(mini_data, 
@@ -1156,78 +1155,78 @@ forecasts <- purrr::map(unique(case_roll$.id),
         ## inclure un ensemble de termes sin cos 
         K = 1
         ), 
-      ## prédire les termes de fourier pour l'année suivante (en utilisant les données de base)
+      ## prÃ©dire les termes de fourier pour l'annÃ©e suivante (en utilisant les donnÃ©es de base)
       fourier(
         ## conserver uniquement les lignes avant la coupure
         filtre(mini_data, 
                epiweek <= cv_cut_off),
         ## inclure un ensemble de termes sin cos 
         K = 1, 
-        ## prédire 52 semaines à l'avance
+        ## prÃ©dire 52 semaines Ã  l'avance
         h = weeks_ahead
         )
       )
     )
   
   
-  # diviser les données pour l'ajustement et la prédiction
+  # diviser les donnÃ©es pour l'ajustement et la prÃ©diction
   dat <- mini_data %>% 
     group_by(epiweek <= cv_cut_off) %>%
     group_split()
 
-  ## définir le modèle que vous voulez ajuster (binomiale négative) 
+  ## dÃ©finir le modÃ¨le que vous voulez ajuster (binomiale nÃ©gative) 
   model <- glm_nb_model(
-    ## définir le nombre de cas comme résultat d'intérêt
+    ## dÃ©finir le nombre de cas comme rÃ©sultat d'intÃ©rÃªt
     case_int ~
       ## utiliser epiweek pour tenir compte de la tendance
       epiweek +
-      ## utiliser les termes de fourier pour tenir compte de la saisonnalité
+      ## utiliser les termes de fourier pour tenir compte de la saisonnalitÃ©
       fourier
   )
 
-  # définir les données à utiliser pour l'ajustement et celles pour la prédiction.
+  # dÃ©finir les donnÃ©es Ã  utiliser pour l'ajustement et celles pour la prÃ©diction.
   fitting_data <- pluck(dat, 2)
   pred_data <- pluck(dat, 1)
   
-  # ajuster le modèle 
+  # ajuster le modÃ¨le 
   fitted_model <- trending::fit(model, fitting_data)
   
-  # prévoir avec les données que l'on veut prédire avec 
+  # prÃ©voir avec les donnÃ©es que l'on veut prÃ©dire avec 
   forecasts <- fitted_model %>% 
     predict(pred_data, simulate_pi = FALSE) %>% 
-    ## garder seulement la semaine et l'estimation de la prévision
+    ## garder seulement la semaine et l'estimation de la prÃ©vision
     select(epiweek, estimate)
     
   }
   )
 
-## Transformer la liste en un cadre de données avec toutes les prévisions.
+## Transformer la liste en un cadre de donnÃ©es avec toutes les prÃ©visions.
 forecasts <- bind_rows(forecasts)
 
-## joindre les prévisions aux données observées
+## joindre les prÃ©visions aux donnÃ©es observÃ©es
 forecasts <- left_join(forecasts, 
                        select(counts, epiweek, case_int),
                        by = "epiweek")
 
-## en utilisant {yardstick} calculer les métriques
+## en utilisant {yardstick} calculer les mÃ©triques
   ## RMSE : Root mean squared error (erreur quadratique moyenne)
   ## MAE : Erreur absolue moyenne	
-  ## MASE : Mean absolute scaled error (erreur absolue moyenne mise à l'échelle)
+  ## MASE : Mean absolute scaled error (erreur absolue moyenne mise Ã  l'Ã©chelle)
   ## MAPE : Erreur absolue moyenne en pourcentage
 model_metrics <- bind_rows(
-  ## dans votre ensemble de données forcées, comparez les données observées aux données prédites.
+  ## dans votre ensemble de donnÃ©es forcÃ©es, comparez les donnÃ©es observÃ©es aux donnÃ©es prÃ©dites.
   rmse(forecasts, case_int, estimation), 
   mae( forecasts, case_int, estimation),
   mase(forecasts, case_int, estimation),
   mape(forecasts, case_int, estimation),
   ) %>% 
-  ### ne conserve que le type de métrique et sa sortie
+  ### ne conserve que le type de mÃ©trique et sa sortie
   select(Metric = .metric, 
          Measure = .estimate) %>% 
   ## faire en sorte que le format soit large pour pouvoir lier les lignes ensuite
   pivot_wider(names_from = Metric, values_from = Measure)
 
-## Retourner les métriques du modèle 
+## Retourner les mÃ©triques du modÃ¨le 
 model_metrics
 
 ```
@@ -1236,139 +1235,139 @@ model_metrics
 <!-- ======================================================= -->
 ### **surveillance** paquet {.unnumbered}
 
-Dans cette section, nous utilisons le paquet **surveillance** pour créer des seuils d'alerte 
-basés sur des algorithmes de détection d'épidémies. Il existe plusieurs méthodes différentes 
+Dans cette section, nous utilisons le paquet **surveillance** pour crÃ©er des seuils d'alerte 
+basÃ©s sur des algorithmes de dÃ©tection d'Ã©pidÃ©mies. Il existe plusieurs mÃ©thodes diffÃ©rentes 
 disponibles dans le paquet, mais nous nous concentrerons ici sur deux options. 
-Pour plus de détails, voir ces articles sur [l'application](https://cran.r-project.org/web/packages/surveillance/vignettes/monitoringCounts.pdf)
-et [théorie](https://cran.r-project.org/web/packages/surveillance/vignettes/glrnb.pdf)
-des alogirths utilisés. 
+Pour plus de dÃ©tails, voir ces articles sur [l'application](https://cran.r-project.org/web/packages/surveillance/vignettes/monitoringCounts.pdf)
+et [thÃ©orie](https://cran.r-project.org/web/packages/surveillance/vignettes/glrnb.pdf)
+des alogirths utilisÃ©s. 
 
-La première option utilise la méthode améliorée de Farrington. Celle-ci ajuste un glm binomial négatif 
-binomiale négative (y compris la tendance) et pondère à la baisse les épidémies passées (valeurs aberrantes) pour créer un niveau de seuil. 
-pour créer un niveau de seuil. 
+La premiÃ¨re option utilise la mÃ©thode amÃ©liorÃ©e de Farrington. Celle-ci ajuste un glm binomial nÃ©gatif 
+binomiale nÃ©gative (y compris la tendance) et pondÃ¨re Ã  la baisse les Ã©pidÃ©mies passÃ©es (valeurs aberrantes) pour crÃ©er un niveau de seuil. 
+pour crÃ©er un niveau de seuil. 
 
-La deuxième option utilise la méthode glrnb. Celle-ci ajuste également un glm binomial négatif 
-binomiale négative, mais inclut la tendance et les termes de Fourier (elle est donc privilégiée ici). La régression est utilisée
-pour calculer la "moyenne de contrôle" (~valeurs ajustées) - elle utilise ensuite une statistique de 
-rapport de vraisemblance généralisé calculé pour évaluer s'il y a un changement de la moyenne pour chaque semaine. 
-pour chaque semaine. Notez que le seuil pour chaque semaine prend en compte les semaines précédentes.
-semaines précédentes, de sorte que s'il y a un changement soutenu, une alarme sera déclenchée. 
-(Notez également qu'après chaque alarme, l'algorithme est réinitialisé).
+La deuxiÃ¨me option utilise la mÃ©thode glrnb. Celle-ci ajuste Ã©galement un glm binomial nÃ©gatif 
+binomiale nÃ©gative, mais inclut la tendance et les termes de Fourier (elle est donc privilÃ©giÃ©e ici). La rÃ©gression est utilisÃ©e
+pour calculer la "moyenne de contrÃ´le" (~valeurs ajustÃ©es) - elle utilise ensuite une statistique de 
+rapport de vraisemblance gÃ©nÃ©ralisÃ© calculÃ© pour Ã©valuer s'il y a un changement de la moyenne pour chaque semaine. 
+pour chaque semaine. Notez que le seuil pour chaque semaine prend en compte les semaines prÃ©cÃ©dentes.
+semaines prÃ©cÃ©dentes, de sorte que s'il y a un changement soutenu, une alarme sera dÃ©clenchÃ©e. 
+(Notez Ã©galement qu'aprÃ¨s chaque alarme, l'algorithme est rÃ©initialisÃ©).
 
-Afin de travailler avec le paquet **surveillance**, nous devons d'abord définir un objet 
-objet "série temporelle de surveillance" (en utilisant la fonction `sts()`) pour s'intégrer dans le 
+Afin de travailler avec le paquet **surveillance**, nous devons d'abord dÃ©finir un objet 
+objet "sÃ©rie temporelle de surveillance" (en utilisant la fonction `sts()`) pour s'intÃ©grer dans le 
 cadre. 
 
 ```{r surveillance_obj}
 
-## Définir un objet de série temporelle de surveillance
-## nb. vous pouvez inclure un dénominateur avec l'objet population (voir ?sts)
+## DÃ©finir un objet de sÃ©rie temporelle de surveillance
+## nb. vous pouvez inclure un dÃ©nominateur avec l'objet population (voir ?sts)
 counts_sts <- sts(observed = counts$case_int[!is.na(counts$case_int)],
                   start = c(
-                    ## sous-ensemble pour ne garder que l'année de start_date. 
+                    ## sous-ensemble pour ne garder que l'annÃ©e de start_date. 
                     as.numeric(str_sub(start_date, 1, 4)), 
-                    ## sous-ensemble pour ne conserver que la semaine à partir de la date de départ
+                    ## sous-ensemble pour ne conserver que la semaine Ã  partir de la date de dÃ©part
                     as.numeric(str_sub(start_date, 7, 8))), 
-                  ## définir le type de données (dans ce cas, hebdomadaire)
+                  ## dÃ©finir le type de donnÃ©es (dans ce cas, hebdomadaire)
                   freq = 52)
 
-## définir la plage de semaines que vous voulez inclure (c'est-à-dire la période de prédiction)
-## nb. l'objet sts ne compte que les observations sans leur attribuer un identifiant de semaine ou d'année. 
-## d'année - nous utilisons donc nos données pour définir les observations appropriées.
+## dÃ©finir la plage de semaines que vous voulez inclure (c'est-Ã -dire la pÃ©riode de prÃ©diction)
+## nb. l'objet sts ne compte que les observations sans leur attribuer un identifiant de semaine ou d'annÃ©e. 
+## d'annÃ©e - nous utilisons donc nos donnÃ©es pour dÃ©finir les observations appropriÃ©es.
 weekrange <- cut_off - start_date
 
 ```
 
 <!-- ======================================================= -->
-#### Méthode Farrington {.non numéroté}
+#### MÃ©thode Farrington {.unnumbered}
 
-Nous définissons ensuite chacun de nos paramètres pour la méthode de Farrington dans une `liste`. 
-Ensuite, nous exécutons l'algorithme en utilisant `farringtonFlexible()` et ensuite nous pouvons extraire le 
+Nous dÃ©finissons ensuite chacun de nos paramÃ¨tres pour la mÃ©thode de Farrington dans une `liste`. 
+Ensuite, nous exÃ©cutons l'algorithme en utilisant `farringtonFlexible()` et ensuite nous pouvons extraire le 
 seuil d'une alerte en utilisant `farringtonmethod@upperbound` pour l'inclure dans notre 
-données. Il est également possible d'extraire un VRAI/FAUX pour chaque semaine si elle a déclenché une alerte (au-dessus du seuil). 
+donnÃ©es. Il est Ã©galement possible d'extraire un VRAI/FAUX pour chaque semaine si elle a dÃ©clenchÃ© une alerte (au-dessus du seuil). 
 une alerte (au-dessus du seuil) en utilisant `farringtonmethod@alarm`. 
 
 ```{r farrington}
 
-## définir le contrôle
+## dÃ©finir le contrÃ´le
 ctrl <- list(
-  ## définissez la période pour laquelle vous voulez un seuil (i.e. 2011)
+  ## dÃ©finissez la pÃ©riode pour laquelle vous voulez un seuil (i.e. 2011)
   range = which(counts_sts@epoch > weekrange),
-  b = 9, ## nombre d'années en arrière pour la ligne de base
-  w = 2, ## taille de la fenêtre de roulement en semaines
-  weightsThreshold = 2.58, ## repondération des épidémies passées (méthode noufaily améliorée - l'originale suggère 1)
-  ## pastWeeksNotIncluded = 3, ## utilisation de toutes les semaines disponibles (noufaily suggère d'en éliminer 26)
+  b = 9, ## nombre d'annÃ©es en arriÃ¨re pour la ligne de base
+  w = 2, ## taille de la fenÃªtre de roulement en semaines
+  weightsThreshold = 2.58, ## repondÃ©ration des Ã©pidÃ©mies passÃ©es (mÃ©thode noufaily amÃ©liorÃ©e - l'originale suggÃ¨re 1)
+  ## pastWeeksNotIncluded = 3, ## utilisation de toutes les semaines disponibles (noufaily suggÃ¨re d'en Ã©liminer 26)
   trend = TRUE,
-  pThresholdTrend = 1, ## 0.05 normalement, mais 1 est conseillé dans la méthode améliorée (c'est-à-dire toujours garder)
+  pThresholdTrend = 1, ## 0.05 normalement, mais 1 est conseillÃ© dans la mÃ©thode amÃ©liorÃ©e (c'est-Ã -dire toujours garder)
   thresholdMethod = "nbPlugin",
   populationOffset = TRUE
   )
 
-## appliquer la méthode flexible de Farrington
+## appliquer la mÃ©thode flexible de Farrington
 farringtonmethod <- farringtonFlexible(counts_sts, ctrl)
 
-## créer une nouvelle variable dans le jeu de données original appelée threshold.
-## contenant la limite supérieure de Farrington. 
+## crÃ©er une nouvelle variable dans le jeu de donnÃ©es original appelÃ©e threshold.
+## contenant la limite supÃ©rieure de Farrington. 
 ## nb. ceci est seulement pour les semaines de 2011 (donc besoin de sous-ensembler les lignes)
 counts[which(counts$epiweek >= cut_off & 
                !is.na(counts$case_int)),
               "threshold"] <- farringtonmethod@upperbound
 ```
 
-Nous pouvons ensuite visualiser les résultats dans ggplot comme nous l'avons fait précédemment. 
+Nous pouvons ensuite visualiser les rÃ©sultats dans ggplot comme nous l'avons fait prÃ©cÃ©demment. 
 
 ```{r plot_farrington, warning=F, message=F}
 
 ggplot(counts, aes(x = epiweek)) + 
-  ## ajouter le nombre de cas observés sous forme de ligne
+  ## ajouter le nombre de cas observÃ©s sous forme de ligne
   geom_line(aes(y = case_int, colour = "Observed")) + 
-  ## ajout de la limite supérieure de l'algorithme d'aberration
+  ## ajout de la limite supÃ©rieure de l'algorithme d'aberration
   geom_line(aes(y = threshold, colour = "Alert threshold"), 
             linetype = "dashed", 
             size = 1.5) +
-  ## définir les couleurs
+  ## dÃ©finir les couleurs
   scale_colour_manual(values = c("Observed" = "black", 
                                  "Alert threshold" = "red")) + 
   ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic() + 
-  ## supprimer le titre de la légende 
+  ## supprimer le titre de la lÃ©gende 
   theme(legend.title = element_blank())
 
 ```
 
 <!-- ======================================================= -->
-#### Méthode GLRNB {.unnumbered}
+#### MÃ©thode GLRNB {.unnumbered}
 
-De même pour la méthode GLRNB, nous définissons chacun de nos paramètres pour le dans une `liste`, 
-puis nous ajustons l'algorithme et extrayons les limites supérieures.
+De mÃªme pour la mÃ©thode GLRNB, nous dÃ©finissons chacun de nos paramÃ¨tres pour le dans une `liste`, 
+puis nous ajustons l'algorithme et extrayons les limites supÃ©rieures.
 
-<span style="color : orange ;">**_ATTENTION:_** Cette méthode utilise la "force brute" (similaire au bootstrapping) pour calculer les seuils, donc peut prendre beaucoup de temps!</span>.
+<span style="color : orange ;">**_ATTENTION:_** Cette mÃ©thode utilise la "force brute" (similaire au bootstrapping) pour calculer les seuils, donc peut prendre beaucoup de temps!</span>.
 
 Voir la [vignette GLRNB](https://cran.r-project.org/web/packages/surveillance/vignettes/glrnb.pdf) 
-pour plus de détails. 
+pour plus de dÃ©tails. 
 
 ```{r glrnb, warning = FALSE, message = FALSE}
 
-## définir les options de contrôle
+## dÃ©finir les options de contrÃ´le
 ctrl <- list(
-  ## définir la période pour laquelle on veut un seuil (i.e. 2011)
+  ## dÃ©finir la pÃ©riode pour laquelle on veut un seuil (i.e. 2011)
   range = which(counts_sts@epoch > weekrange),
-  mu0 = list(S = 1, ## nombre de termes de fourier (harmoniques) à inclure
+  mu0 = list(S = 1, ## nombre de termes de fourier (harmoniques) Ã  inclure
   trend = TRUE, ## inclusion ou non de la tendance
-  refit = FALSE), ## si l'on refit le modèle après chaque alarme
+  refit = FALSE), ## si l'on refit le modÃ¨le aprÃ¨s chaque alarme
   ## cARL = seuil pour la statistique GLR (arbitraire)
-     ## 3 ~ seuil intermédiaire pour minimiser les faux positifs
-     ## 1 s'ajuste aux 99%PI de glm.nb - avec des changements après les pics (seuil abaissé pour l'alerte)
+     ## 3 ~ seuil intermÃ©diaire pour minimiser les faux positifs
+     ## 1 s'ajuste aux 99%PI de glm.nb - avec des changements aprÃ¨s les pics (seuil abaissÃ© pour l'alerte)
    c.ARL = 2,
-   # thêta = log(1.5), ## équivaut à une augmentation de 50% des cas dans une épidémie
-   ret = "cases" ## retourne la limite supérieure du seuil sous forme de nombre de cas
+   # thÃªta = log(1.5), ## Ã©quivaut Ã  une augmentation de 50% des cas dans une Ã©pidÃ©mie
+   ret = "cases" ## retourne la limite supÃ©rieure du seuil sous forme de nombre de cas
   )
 
-## appliquer la méthode glrnb
+## appliquer la mÃ©thode glrnb
 glrnbmethod <- glrnb(counts_sts, control = ctrl, verbose = FALSE)
 
-## créer une nouvelle variable dans l'ensemble de données original appelée threshold
-## contenant la limite supérieure de glrnb. 
+## crÃ©er une nouvelle variable dans l'ensemble de donnÃ©es original appelÃ©e threshold
+## contenant la limite supÃ©rieure de glrnb. 
 ## nb. ceci est seulement pour les semaines de 2011 (donc besoin de sous-ensembler les lignes)
 counts[which(counts$epiweek >= cut_off & 
                !is.na(counts$case_int)),
@@ -1376,63 +1375,63 @@ counts[which(counts$epiweek >= cut_off &
 
 ```
 
-Visualisez les sorties comme précédemment. 
+Visualisez les sorties comme prÃ©cÃ©demment. 
 
 ```{r plot_glrnb, message=F, warning=F}
 
 ggplot(counts, aes(x = epiweek)) + 
-  ## ajouter le nombre de cas observés sous forme de ligne
+  ## ajouter le nombre de cas observÃ©s sous forme de ligne
   geom_line(aes(y = case_int, colour = "Observed")) + 
-  ## ajout de la limite supérieure de l'algorithme d'aberration
+  ## ajout de la limite supÃ©rieure de l'algorithme d'aberration
   geom_line(aes(y = threshold_glrnb, color = "Alert threshold"), 
             linetype = "dashed", 
             size = 1.5) +
-  ## définir les couleurs
+  ## dÃ©finir les couleurs
   scale_colour_manual(values = c("Observed" = "black", 
                                  "Alert threshold" = "red")) + 
   ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic() + 
-  ## supprimer le titre de la légende 
+  ## supprimer le titre de la lÃ©gende 
   theme(legend.title = element_blank())
 
 ```
 
 <!-- ======================================================= -->
-## Série chronologique interrompue { }
+## SÃ©rie chronologique interrompue { }
 
-Les séries chronologiques interrompues (également appelées régression segmentée ou analyse d'intervention), 
-est souvent utilisée pour évaluer l'impact des vaccins sur l'incidence des maladies. 
-Mais elle peut être utilisée pour évaluer l'impact d'un large éventail d'interventions ou d'introductions. 
-Par exemple, des changements dans les procédures hospitalières ou l'introduction d'une nouvelle souche de maladie dans une population. 
+Les sÃ©ries chronologiques interrompues (Ã©galement appelÃ©es rÃ©gression segmentÃ©e ou analyse d'intervention), 
+est souvent utilisÃ©e pour Ã©valuer l'impact des vaccins sur l'incidence des maladies. 
+Mais elle peut Ãªtre utilisÃ©e pour Ã©valuer l'impact d'un large Ã©ventail d'interventions ou d'introductions. 
+Par exemple, des changements dans les procÃ©dures hospitaliÃ¨res ou l'introduction d'une nouvelle souche de maladie dans une population. 
 souche de maladie dans une population. 
-Dans cet exemple, nous supposerons qu'une nouvelle souche de Campylobacter a été introduite en Allemagne fin 2008.
-en Allemagne à la fin de l'année 2008, et nous verrons si cela affecte le nombre de cas. 
-Nous utiliserons à nouveau la régression binomiale négative. Cette fois-ci, la régression sera 
-divisée en deux parties, l'une avant l'intervention (ou l'introduction de la nouvelle souche ici) 
-et une autre après (les périodes pré et post). Cela nous permet de calculer un ratio de taux d'incidence comparant les deux périodes.
-deux périodes. Une explication de l'équation pourrait rendre les choses plus claires (sinon, ignorez-la !).
+Dans cet exemple, nous supposerons qu'une nouvelle souche de Campylobacter a Ã©tÃ© introduite en Allemagne fin 2008.
+en Allemagne Ã  la fin de l'annÃ©e 2008, et nous verrons si cela affecte le nombre de cas. 
+Nous utiliserons Ã  nouveau la rÃ©gression binomiale nÃ©gative. Cette fois-ci, la rÃ©gression sera 
+divisÃ©e en deux parties, l'une avant l'intervention (ou l'introduction de la nouvelle souche ici) 
+et une autre aprÃ¨s (les pÃ©riodes prÃ© et post). Cela nous permet de calculer un ratio de taux d'incidence comparant les deux pÃ©riodes.
+deux pÃ©riodes. Une explication de l'Ã©quation pourrait rendre les choses plus claires (sinon, ignorez-la !).
 ignorez !). 
 
-La régression binomiale négative peut être définie comme suit : 
+La rÃ©gression binomiale nÃ©gative peut Ãªtre dÃ©finie comme suit : 
 
-$$\log(Y_t)= Î²_0 + Î²_1 \times t+ Î²_2 \times Î´(t-t_0) + Î²_3\times(t-t_0 )^+ + log(pop_t) + e_t$$
+$$\log(Y_t)= ÃÂ²_0 + ÃÂ²_1 \times t+ ÃÂ²_2 \times ÃÂ´(t-t_0) + ÃÂ²_3\times(t-t_0 )^+ + log(pop_t) + e_t$$
 
-Où :
-$Y_t$ est le nombre de cas observés au temps $t$.  
-$pop_t$ est la taille de la population en 100 000 au moment $t$ (non utilisé ici)  
-$t_0$ est la dernière année de la pré-période (y compris la période de transition, le cas échéant).  
-$Î'(x$ est la fonction indicatrice (elle vaut 0 si xâ¤0 et 1 si x>0)  
-$(x)^+$ est l'opérateur de coupure (il vaut x si x>0 et 0 sinon)  
-$e_t$ désigne le résidu 
-Des termes supplémentaires, tendance et saison, peuvent être ajoutés si nécessaire. 
+OÃ¹ :
+$Y_t$ est le nombre de cas observÃ©s au temps $t$.  
+$pop_t$ est la taille de la population en 100 000 au moment $t$ (non utilisÃ© ici)  
+$t_0$ est la derniÃ¨re annÃ©e de la prÃ©-pÃ©riode (y compris la pÃ©riode de transition, le cas Ã©chÃ©ant).  
+$Ã'(x$ est la fonction indicatrice (elle vaut 0 si xÃ¢Â¤0 et 1 si x>0)  
+$(x)^+$ est l'opÃ©rateur de coupure (il vaut x si x>0 et 0 sinon)  
+$e_t$ dÃ©signe le rÃ©sidu 
+Des termes supplÃ©mentaires, tendance et saison, peuvent Ãªtre ajoutÃ©s si nÃ©cessaire. 
 
-$Î²_2 \times Î'(t-t_0) + Î²_3\times(t-t_0 )^+$ est la partie linéaire généralisée de la post-période et est 
-de la post-période et est nulle dans la pré-période. 
-Cela signifie que les estimations de $Î²_2$ et $Î²_3$ sont les effets de l'intervention. 
+$ÃÂ²_2 \times Ã'(t-t_0) + ÃÂ²_3\times(t-t_0 )^+$ est la partie linÃ©aire gÃ©nÃ©ralisÃ©e de la post-pÃ©riode et est 
+de la post-pÃ©riode et est nulle dans la prÃ©-pÃ©riode. 
+Cela signifie que les estimations de $ÃÂ²_2$ et $ÃÂ²_3$ sont les effets de l'intervention. 
 
-Nous devons recalculer les termes de fourier sans faire de prévision ici, car nous utiliserons
-toutes les données dont nous disposons (c'est-à-dire rétrospectivement). De plus, nous devons calculer
-les termes supplémentaires nécessaires à la régression. 
+Nous devons recalculer les termes de fourier sans faire de prÃ©vision ici, car nous utiliserons
+toutes les donnÃ©es dont nous disposons (c'est-Ã -dire rÃ©trospectivement). De plus, nous devons calculer
+les termes supplÃ©mentaires nÃ©cessaires Ã  la rÃ©gression. 
 
 ```{r define_terms_interrupted}
 
@@ -1441,72 +1440,72 @@ counts$fourier <- select(counts, epiweek, case_int) %>%
   as_tsibble(indice = epiweek) %>% 
   fourier(K = 1)
 
-## définir la semaine d'intervention 
+## dÃ©finir la semaine d'intervention 
 intervention_week <- yearweek("2008-12-31")
 
-## définir les variables pour la régression 
+## dÃ©finir les variables pour la rÃ©gression 
 counts <- counts %>% 
   mutate(
-    ## correspond à t dans la formule
+    ## correspond Ã  t dans la formule
       ## nombre de semaines (on pourrait probablement aussi utiliser la variable epiweeks)
     # linear = row_number(epiweek), 
     ## correspond au delta(t-t0) dans la formule
-      ## période de pré ou post intervention
+      ## pÃ©riode de prÃ© ou post intervention
     intervention = as.numeric(epiweek >= intervention_week), 
-    ## correspond à (t-t0)^+ dans la formule
-      ## nombre de semaines après l'intervention
+    ## correspond Ã  (t-t0)^+ dans la formule
+      ## nombre de semaines aprÃ¨s l'intervention
       ## (choisir le plus grand nombre entre 0 et ce qui ressort du calcul)
     time_post = pmax(0, epiweek - intervention_week + 1))
 
 ```
 
-Nous utilisons ensuite ces termes pour ajuster une régression binomiale négative, et produisons un tableau avec le pourcentage de changement. 
+Nous utilisons ensuite ces termes pour ajuster une rÃ©gression binomiale nÃ©gative, et produisons un tableau avec le pourcentage de changement. 
 tableau avec le pourcentage de changement. Cet exemple montre qu'il n'y a pas eu de changement 
 changement significatif. 
 
 <span style="color : orange ;">**_ATTENTION:_** Notez l'utilisation de `simulate_pi = FALSE`
-dans l'argument `predict()`. Ceci est dû au fait que le comportement par défaut de **trending** 
-est d'utiliser le paquet **ciTools** pour estimer un intervalle de prédiction. Cela ne fonctionne pas 
-ne fonctionne pas s'il y a des comptes `NA`, et produit également des intervalles plus granulaires. 
-Voir `?trending::predict.trending_model_fit` pour plus de détails. </span>  
+dans l'argument `predict()`. Ceci est dÃ» au fait que le comportement par dÃ©faut de **trending** 
+est d'utiliser le paquet **ciTools** pour estimer un intervalle de prÃ©diction. Cela ne fonctionne pas 
+ne fonctionne pas s'il y a des comptes `NA`, et produit Ã©galement des intervalles plus granulaires. 
+Voir `?trending::predict.trending_model_fit` pour plus de dÃ©tails. </span>  
 
 ```{r interrupted_regression, warning = FALSE}
 
 
-## définissez le modèle que vous voulez ajuster (binomial négatif). 
+## dÃ©finissez le modÃ¨le que vous voulez ajuster (binomial nÃ©gatif). 
 model <- glm_nb_model(
-  ## définir le nombre de cas comme résultat d'intérêt
+  ## dÃ©finir le nombre de cas comme rÃ©sultat d'intÃ©rÃªt
   case_int ~
     ## utiliser epiweek pour tenir compte de la tendance
     epiweek +
-    ## utiliser les termes fourier pour tenir compte de la saisonnalité
+    ## utiliser les termes fourier pour tenir compte de la saisonnalitÃ©
     fourier + 
-    ## ajouter si dans la pré ou post-période 
+    ## ajouter si dans la prÃ© ou post-pÃ©riode 
     intervention + 
-    ## ajouter le temps après l'intervention 
+    ## ajouter le temps aprÃ¨s l'intervention 
     time_post
     )
 
-## ajustez votre modèle en utilisant l'ensemble de données de comptage
+## ajustez votre modÃ¨le en utilisant l'ensemble de donnÃ©es de comptage
 fitted_model <- trending::fit(model, counts)
 
-### calculer les intervalles de confiance et les intervalles de prédiction 
+### calculer les intervalles de confiance et les intervalles de prÃ©diction 
 observed <- predict(fitted_model, simulate_pi = FALSE)
 
 
 
 ## Afficher les estimations et le pourcentage de changement dans un tableau
 fitted_model %>% 
-  ## extraire la régression binomiale négative originale
+  ## extraire la rÃ©gression binomiale nÃ©gative originale
   get_model() %>% 
-  ## obtenir un cadre de données ordonné des résultats
+  ## obtenir un cadre de donnÃ©es ordonnÃ© des rÃ©sultats
   tidy(exponentiate = TRUE, 
        conf.int = TRUE) %>% ### ne conserve que les valeurs d'intervention 
   ### ne conserve que la valeur d'intervention 
   filter(term == "intervention") %>% 
   ## changer le IRR en pourcentage de changement pour l'estimation et les ICs 
   mutate(
-    ## pour chacune des colonnes d'intérêt - créer une nouvelle colonne
+    ## pour chacune des colonnes d'intÃ©rÃªt - crÃ©er une nouvelle colonne
     across(
       all_of(c("estimation", "conf.low", "conf.high")), 
       ## appliquer la formule pour calculer le pourcentage de changement
@@ -1524,20 +1523,20 @@ fitted_model %>%
          "p-value" = p.value)
 ```
 
-Comme précédemment, nous pouvons visualiser les résultats de la régression. 
+Comme prÃ©cÃ©demment, nous pouvons visualiser les rÃ©sultats de la rÃ©gression. 
 
 ```{r plot_interrupted}
 
 ggplot(observed, aes(x = epiweek)) + 
-  ## ajouter le nombre de cas observés sous forme de ligne
+  ## ajouter le nombre de cas observÃ©s sous forme de ligne
   geom_line(aes(y = case_int, colour = "Observed")) + 
-  ## ajout d'une ligne pour l'estimation du modèle
+  ## ajout d'une ligne pour l'estimation du modÃ¨le
   geom_line(aes(y = estimate, col = "Estimate")) + 
-  ## ajouter une bande pour les intervalles de prédiction 
+  ## ajouter une bande pour les intervalles de prÃ©diction 
   geom_ribbon(aes(ymin = lower_pi, 
                   ymax = upper_pi), 
               alpha = 0.25) + 
-  ## ajouter une ligne verticale et une étiquette pour montrer où la prévision a commencé
+  ## ajouter une ligne verticale et une Ã©tiquette pour montrer oÃ¹ la prÃ©vision a commencÃ©
   geom_vline(
            xintercept = as.Date(intervention_week), 
            linetype = "dashed") + 
@@ -1548,7 +1547,7 @@ ggplot(observed, aes(x = epiweek)) +
            angle = 90, 
            vjust = 1
            ) + 
-  ## définir les couleurs
+  ## dÃ©finir les couleurs
   scale_colour_manual(values = c("Observed" = "black", 
                                  "Estimation" = "red")) + 
   ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
@@ -1560,7 +1559,8 @@ ggplot(observed, aes(x = epiweek)) +
 <!-- ======================================================= -->
 ## Ressources { }
 
-[Prévision : principes et pratique - manuel](https://otexts.com/fpp3/)  
-[Études de cas d'analyse de séries temporelles EPIET](https://github.com/EPIET/TimeSeriesAnalysis)  
+[PrÃ©vision : principes et pratique - manuel](https://otexts.com/fpp3/)  
+[Ã‰tudes de cas d'analyse de sÃ©ries temporelles EPIET](https://github.com/EPIET/TimeSeriesAnalysis)  
 [Cours de Penn State](https://online.stat.psu.edu/stat510/lesson/1) 
 [Manuscrit du paquet de surveillance](https://www.jstatsoft.org/article/view/v070i10)
+

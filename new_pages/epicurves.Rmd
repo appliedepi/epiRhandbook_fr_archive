@@ -1683,7 +1683,7 @@ Voir ce [lien](https://ggplot2.tidyverse.org/reference/labellers.html) pour plus
 
 
 
-#### Épidémie totale dans l'arriére-plan de la facette {.unnumbered}
+#### Épidémie totale dans l'arriére-plan de la facette {.nonnumbered}
 
 Pour afficher l'épidémie totale en arriére-plan de chaque facette, ajoutez la fonction `gghighlight()` avec des parenthôses vides au ggplot. Cette fonction provient du paquet **gghighlight**. Notez que le maximum de l'axe des y dans toutes les facettes est maintenant basé sur le pic de l'épidémie entiére. Il y a plus d'exemples de ce package dans la page [ggplot tips](#ggplot_tips).  
 

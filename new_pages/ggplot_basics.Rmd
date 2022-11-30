@@ -1,5 +1,5 @@
 
-# Les bases de ggplot basics {#ggplot_basics}
+# Les bases de ggplot {#ggplot_basics}
 
 ```{r, out.width=c('100%', '100%'), fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "ggplot_basics_top.png"))
@@ -9,7 +9,7 @@ knitr::include_graphics(here::here("images", "ggplot_basics_top.png"))
 
 La syntaxe est très différente de celle de la visualiation avec `R` **base**, et une courbe d'apprentissage y est associée. L'utilisation de **ggplot2** exige généralement de l'utilisateur qu'il formate ses données d'une manière hautement compatible avec **tidyverse**, ce qui rend finalement l'utilisation conjointe de ces packages très efficace.
 
-Dans cette page, nous allons couvrir les principes fondamentaux de la visualisation avec **ggplot2**. Voir la page [ggplot tips](#ggplot_tips) pour des suggestions et des techniques avancées pour que vos graphiques soient vraiment esthétiques.  
+Dans cette page, nous allons couvrir les principes fondamentaux de la visualisation avec **ggplot2**. Voir la page [Astuces de ggplot](#ggplot_tips) pour des suggestions et des techniques avancées pour que vos graphiques soient vraiment esthétiques.  
 
 Plusieurs tutoriels **ggplot2** détaillés sont disponibles dans la section des ressources. Vous pouvez également télécharger cette [fiche d'aide à la visualisation de données avec ggplot](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) sur le site Web de RStudio. Si vous souhaitez trouver de l'inspiration pour visualiser vos données de manière créative, nous vous suggérons de consulter des sites Web tels que [R graph gallery](https://www.r-graph-gallery.com/) et [Data-to-viz](https://www.data-to-viz.com/caveats.html).
 
@@ -388,7 +388,7 @@ Chacune de ces fonctions accepte une syntaxe de formule pour spécifier la ou le
 
 * Pour `facet_grid()` nous pouvons également spécifier une ou deux variables à la formule (`facet_grid( rows ~ columns)`). Si on ne veut en spécifier qu'une, on peut placer un point `.` de l'un ou l'autre côté du tilde comme `facet_grid(. ~ hospital)` ou `facet_grid(hospital ~ .)`.  
 
-Les "facets" peuvent rapidement contenir une quantité écrasante d'informations - il est bon de s'assurer que nous n'avons pas trop de modqlités pour chaque variable qualitative que nous choisissons de "facetter". Voici quelques exemples rapides avec le jeu de données sur le paludisme (voir [Télécharger le manuel et les données](#data_used)) qui contient les données sur le nombre de cas  de cas de paludisme quotidiens pour différentes structures de santé par groupe d'âge.  
+Les "facets" peuvent rapidement contenir une quantité écrasante d'informations - il est bon de s'assurer que nous n'avons pas trop de modqlités pour chaque variable qualitative que nous choisissons de "facetter". Voici quelques exemples rapides avec le jeu de données sur le paludisme (voir [Télécharger le manuel et les données](#download_book_data)) qui contient les données sur le nombre de cas  de cas de paludisme quotidiens pour différentes structures de santé par groupe d'âge.  
 
 Ci-dessous, nous importons ces données et effectuons quelques modifications rapides pour plus de simplicité :  
 
@@ -515,7 +515,7 @@ Voir ce [post](https://juliasilge.com/blog/reorder-within/) sur la façon de ré
 
 ### Sauvegarder les  graphiques dans l'environnement {.unnumbered}
 
-Par défaut, lorsque nous exécutons une commande `ggplot()`, le graphique sera affiché dans l'onglet "Plots" de RStudio. Cependant, nous pouvons également enregistrer le celui-ci en tant qu'objet en utilisant l'opérateur d'affectation `<-` et en lui donnant un nom. Il ne s'affichera alors que si le nom de l'objet lui-même est exécuté. On peut également l'afficher en faisant appel à la fonction **R base** `print()`, mais cela n'est nécessaire que dans certaines circonstances, par exemple si le graphique est créé à l'intérieur d'une *boucle for* utilisée pour afficher plusieurs graphiques à la fois (voir la page [Itération, boucles et listes]).  
+Par défaut, lorsque nous exécutons une commande `ggplot()`, le graphique sera affiché dans l'onglet "Plots" de RStudio. Cependant, nous pouvons également enregistrer le celui-ci en tant qu'objet en utilisant l'opérateur d'affectation `<-` et en lui donnant un nom. Il ne s'affichera alors que si le nom de l'objet lui-même est exécuté. On peut également l'afficher en faisant appel à la fonction **R base** `print()`, mais cela n'est nécessaire que dans certaines circonstances, par exemple si le graphique est créé à l'intérieur d'une *boucle for* utilisée pour afficher plusieurs graphiques à la fois (voir la page [Itération, boucles et listes](iteration)).  
 
 ```{r, warning=F, message=F}
 # definir le graphique
@@ -588,7 +588,7 @@ age_by_wt
 ```
 
 
-<span style="color: darkgreen;">**_ASTUCE:_** Remarquez comment, dans l'affectation de la légende, nous avons utilisé `str_glue()` du package **stringr** pour implanter du code R dynamique dans le texte de la chaîne. La légende affichera la date "Data as of : "qui reflète la date d'hospitalisation maximale dans la liste linéaire utilisée pour dessiner le graphe. Pour en savoir plus, consultez la page [Caractères et chaînes de caractères].</span>  
+<span style="color: darkgreen;">**_ASTUCE:_** Remarquez comment, dans l'affectation de la légende, nous avons utilisé `str_glue()` du package **stringr** pour implanter du code R dynamique dans le texte de la chaîne. La légende affichera la date "Data as of : "qui reflète la date d'hospitalisation maximale dans la liste linéaire utilisée pour dessiner le graphe. Pour en savoir plus, consultez la page [Caractères et chaînes de caractères](#character_strings).</span>  
 
 <span style="color: black;">**_NOTE:_** Une remarque sur la spécification du titre de la *légende* : Il n'y a pas un unique argument "titre de légende", car on peut avoir plusieurs échelles dans votre légende. Dans `labs()`, on peut écrire l'argument pour l'attribut graphique utilisé pour créer la légende, et fournir le titre de cette façon. Par exemple, ci-dessus, nous avons assigné `color = age` pour créer la légende. Par conséquent, nous fournissons `color = ` à `labs()` et nous attribuons le titre de légende souhaité ("Age" avec un A majuscule). Si on crée la légende avec `aes(fill = COLUMN)`, alors dans `labs()` on écrira `fill = ` pour ajuster le titre de cette légende. La section sur les gammes de couleurs dans la page [ggplot tips](#ggplot_tips) fournit plus de détails sur l'édition des légendes, et une approche alternative utilisant les fonctions `scales_()`.</span>
 
@@ -752,7 +752,7 @@ Les visualisations couvertes ici incluent :
   **Graphes en violon**, montre la distribution d'une variable continue basée sur la largeur symétrique du "violon". 
   **Sina plot**, est une combinaison de jitter et de violin plot, où les points individuels sont montrés mais dans la forme symétrique de la distribution (via le "package" **ggforce**).  
 **Scatter plot** pour deux variables continues.  
-**Heatmaps** pour trois variables continues (lien vers la page [Heat plots]).
+**Heatmaps** pour trois variables continues (lien vers la page [Heat plots](#heatmaps)).
 
 ### Histogrammes {.unnumbered}
 
@@ -959,7 +959,7 @@ ggplot(data = linelist %>% drop_na(gender, outcome), #garder que le sexe/issue n
 
 ### Trois variables continues {.unnumbered}  
 
-Vous pouvez afficher trois variables continues en utilisant l'argument `fill = ` pour créer un *heat plot*. La couleur de chaque "cellule" reflétera la valeur de la troisième colonne de données continues. Voir la page [Astuces en ggplot](#ggplot_tips) et la page sur les [Heat plots] pour plus de détails et plusieurs exemples. 
+Vous pouvez afficher trois variables continues en utilisant l'argument `fill = ` pour créer un *heat plot*. La couleur de chaque "cellule" reflétera la valeur de la troisième colonne de données continues. Voir la page [Astuces en ggplot](#ggplot_tips) et la page sur les [Heat plots](#heatmaps) pour plus de détails et plusieurs exemples. 
 
 Il existe des moyens de créer des graphiques 3D dans R, mais pour l'épidémiologie appliquée, ils sont souvent difficiles à interpréter et donc moins utiles pour la prise de décision.  
 
@@ -1080,7 +1080,7 @@ ggplot(outcomes) +
 ```
 
 
-Pour montrer les répartitions par hôpital, il faudrait que notre tableau contienne plus d'informations et qu'il soit au format "long". Nous créons ce tableau avec les fréquences des catégories combinées `outcome` et `hospital` (voir la page [Grouping data](#grouping_data) pour des conseils sur le groupage). 
+Pour montrer les répartitions par hôpital, il faudrait que notre tableau contienne plus d'informations et qu'il soit au format "long". Nous créons ce tableau avec les fréquences des catégories combinées `outcome` et `hospital` (voir la page [Travailler sur des données groupées](#grouping_data) pour des conseils sur le groupage). 
 
 ```{r, fig.height = 4, fig.width=6}
 outcomes2 <- linelist %>% 
@@ -1132,7 +1132,7 @@ Si vous utilisez `geom_col()` avec des données de dates (par exemple une courbe
 
 ### `geom_histogram()` {.unnumbered}  
 
-Les histogrammes peuvent ressembler à des diagrammes en barres, mais ils sont distincts car ils mesurent la distribution d'une variable *continue*. Il n'y a pas d'espace entre les "barres", et une seule colonne est fournie à `geom_histogram()`. Il existe des arguments spécifiques aux histogrammes tels que `bin_width = ` et `breaks = ` pour spécifier comment les données doivent être classées. La section ci-dessus sur les données continues et la page sur les [Courbes épidémiques] fournissent des détails supplémentaires.  
+Les histogrammes peuvent ressembler à des diagrammes en barres, mais ils sont distincts car ils mesurent la distribution d'une variable *continue*. Il n'y a pas d'espace entre les "barres", et une seule colonne est fournie à `geom_histogram()`. Il existe des arguments spécifiques aux histogrammes tels que `bin_width = ` et `breaks = ` pour spécifier comment les données doivent être classées. La section ci-dessus sur les données continues et la page sur les [Courbes épidémiques](#epicurves) fournissent des détails supplémentaires.  
 
 ## Ressources  
 

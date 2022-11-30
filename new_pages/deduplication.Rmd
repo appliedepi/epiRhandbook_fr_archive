@@ -150,7 +150,7 @@ Voir `?get_dupes` pour plus de details, ou consulter ceci [référence en ligne]
 ### Garder seulement les lignes uniques {.unnumbered}
 
 
-Pour garder que les lignes uniques d'un tableau de données, utilisez `distinct()` de **dplyr** (comme démontré dans la page [Cleaning data and core functions](https://epirhandbook.com/en/cleaning-data-and-core-functions.html#cleaning-data-and-core-functions)). Les lignes qui sont dupliquées sont enlevées de sorte que seule la première ligne est retenue. Par défaut, la première ligne correspond au plus grand `rownumber` (ordre des lignes de haut en bas). Seules les lignes uniques sont retenues.  
+Pour garder que les lignes uniques d'un tableau de données, utilisez `distinct()` de **dplyr** (comme démontré dans la page [CNettoyage de données et fonctions essentielles](#cleaning_data)). Les lignes qui sont dupliquées sont enlevées de sorte que seule la première ligne est retenue. Par défaut, la première ligne correspond au plus grand `rownumber` (ordre des lignes de haut en bas). Seules les lignes uniques sont retenues.  
 
 Dans l'exemple ci-dessous, nous utilisons `distinct()` tel que la colonne `recordID` est exclue - ainsi **deux lignes dupliquées sont enlevées**. La première ligne (pour "adam") était dupliquée à 100% et a été enlevée. Par ailleurs, la troisième ligne (pour "amrish") était dupliquée dans chaque colonne *sauf* `recordID` (qui n'est pas considéré) donc a été supprimée. Le tableau de données `obs` est maintenant `nrow(obs)-2`, et non `nrow(obs)` lignes).  
 
@@ -199,7 +199,7 @@ obs %>%
   DT::datatable(rownames = FALSE, options = list(pageLength = 6, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Voir [original data](#dedup_data).  
+Voir [données originales](#dedup_data).  
 
 <!-- ======================================================= -->
 ### Dédupliquer les éléments d'un vecteur {.unnumbered} 
@@ -274,7 +274,7 @@ obs %>% slice(c(2,4))  # retourne les lignes 2 et 4
 ```
 
 
-Voir [original data](#dedup_data). 
+Voir [données originales](#dedup_data). 
 
 Il existe plusieurs variations :  Celles-ci doivent être fournies avec une colonne et le nombre de lignes à retourner (à `n = `).  
 
@@ -339,7 +339,7 @@ obs %>%
   DT::datatable(rownames = FALSE, options = list(pageLength = 8, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Ci-dessus, par exemple, nous pouvons voir que seule la ligne d'Amrish du 5 janvier a été retenue, et que seule la ligne de Brian du 7 janvier a été retenue. Voir les [original data](#dedup_data).   
+Ci-dessus, par exemple, nous pouvons voir que seule la ligne d'Amrish du 5 janvier a été retenue, et que seule la ligne de Brian du 7 janvier a été retenue. Voir les [données originales](#dedup_data).   
 
 
 **Séparation des égalités** 
@@ -377,7 +377,7 @@ obs %>%
 
 <span style="color: darkgreen;">**_TIP:_** Pour utiliser `slice_max()` ou `slice_min()` sur une colonne e de "caractères", mutez-la en une classe de facteurs *ordonnée* !</span>.
 
-Voir [original data](#dedup_data).  
+Voir [données originales](#dedup_data).  
 
 
 <!-- ======================================================= -->
@@ -417,12 +417,12 @@ obs_marked
 DT::datatable(obs_marked, rownames = FALSE, options = list(pageLength = 8, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Voir [original data](#dedup_data).   
+Voir [données originales](#dedup_data).   
 
 <!-- ======================================================= -->
 ### Calcul de la complétude des lignes {.unnumbered} 
 
-Créez une colonne qui contient une métrique pour la complétude des lignes (pas de valeurs manquantes). Cela peut être utile pour décider des lignes à prioriser par rapport aux autres lors de la déduplication/slicing.  
+Créez une colonne qui contient une métrique pour la complétude des lignes (pas de valeurs manquantes). Cela peut être utile pour décider des lignes à prioriser par rapport aux autres lors de la déduplication.  
 
 Dans cet exemple, les colonnes "clés" sur lesquelles vous voulez mesurer la complétude sont sauvegardées dans un vecteur de noms de colonnes.  
 
@@ -430,7 +430,7 @@ Ensuite, la nouvelle colonne `key_completeness` est créée avec `mutate()`. La 
 
 Cela fait appel à la fonction `rowSums()` de **base** R. On utilise également `.`, qui, dans le cadre d'un pipe, fait référence au tableau de données à ce point du pipe (dans ce cas, il est sous-ensemble avec les crochets `[]`).  
 
-*Défiler vers la droite pour voir plus de lignes.** 
+*Défiler vers la droite pour voir plus de lignes.*
 
 ```{r, eval=F}
 # créer une colonne "complétude des variables clés".
@@ -450,7 +450,7 @@ obs %>%
   DT::datatable(rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Voir [original data](#dedup_data).   
+Voir [données originales](#dedup_data).   
 
 
 
@@ -513,7 +513,7 @@ obs %>%
   DT::datatable(rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
 ```
 
-Voir [original data](#dedup_data).  
+Voir [données originales](#dedup_data).  
 
 
 **Cette variation ne présente que des valeurs uniques:** 
@@ -598,14 +598,14 @@ DT::datatable(cases_clean, rownames = FALSE, options = list(pageLength = 10, scr
 ```
 
 
-Voir [original data](#dedup_data).  
+Voir [données originales](#dedup_data).  
 
 
 ## Déduplication probabiliste  
 
 Parfois, vous souhaitez identifier les doublons "probables" en vous basant sur la similarité (par exemple, la sequence des caractères "distance") entre plusieurs colonnes telles que le nom, l'âge, le sexe, la date de naissance, etc. Vous pouvez appliquer un algorithme de correspondance probabiliste pour identifier les doublons probables.   
 
-Voir la page [Joindre des données] pour une explication de cette méthode. La section sur l'Appariement Probabiliste contient un exemple d'application de ces algorithmes pour comparer un tableau de données à *soi-même*, effectuant ainsi une déduplication probabiliste.    
+Voir la page [Joindre des données](#joining_matching) pour une explication de cette méthode. La section sur l'Appariement Probabiliste contient un exemple d'application de ces algorithmes pour comparer un tableau de données à *soi-même*, effectuant ainsi une déduplication probabiliste.    
 
 
 
