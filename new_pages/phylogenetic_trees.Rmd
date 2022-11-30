@@ -41,7 +41,7 @@ scale_color_brewer(name = "Continent",  # nom de la palette de couleurs (qui app
 
 ### Importation des packages {.unnumbered}
 
-Ces lignes de code importe les packages necessaire pour l'analyse. Dans ce guide, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le package si nécessaire *puis* l'importe pour l'utiliser. Vous pouvez également charger les packages installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les packages en R.
+Ces lignes de code importe les packages necessaire pour l'analyse. Dans ce guide, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le package si nécessaire *puis* l'importe pour l'utiliser dans la session de Rstudio. Vous pouvez également charger les packages installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les packages en R.
 
 ```{r, phylogenetic_trees_loading_packages}
 pacman::p_load(
@@ -57,9 +57,9 @@ pacman::p_load(
 
 ### Import data {.unnumbered}
 
-Les données pour cette page peuvent être téléchargées suivant les instructions de la page [Télécharger le manuel et les données].
+Les données pour cette page peuvent être téléchargées suivant les instructions de la page [Télécharger le manuel et les données](#download_book_data).
 
-Il existe plusieurs formats différents dans lesquels un arbre phylogénétique peut être enregistré (par exemple, Newick, NEXUS, Phylip). Un formats couramment utilisés est celui des fichiers Newick (.nwk), qui est la norme pour représenter les arbres sous une forme facilement exploitable par ordinateur. Cela signifie qu'un arbre entier peut être représenté par un format de chaîne de caractères tel que "((t2:0.04,t1:0.34):0.89,(t5:0.37,(t4:0.03,t3:0.67):0.9):0.59) ; ", énumérant tous les nœuds et les extrémités et leur relation (longueur de branche) les uns avec les autres.
+Il existe plusieurs formats différents dans lesquels un arbre phylogénétique peut être enregistré (par exemple, Newick, NEXUS, Phylip). Un format couramment utilisés est celui des fichiers Newick (.nwk), qui est la norme pour représenter les arbres sous une forme facilement exploitable par ordinateur. Cela signifie qu'un arbre entier peut être représenté par un format de chaîne de caractères tel que "((t2:0.04,t1:0.34):0.89,(t5:0.37,(t4:0.03,t3:0.67):0.9):0.59) ; ", énumérant tous les nœuds, les extrémités et leur relation (longueur de branche) les uns avec les autres.
 
 Note : Il est important de comprendre que le fichier de l'arbre phylogénétique en lui-même ne contient pas de données de séquençage, mais est simplement le résultat des distances génétiques entre les séquences. Nous ne pouvons donc pas extraire les données de séquençage d'un fichier arbre.
 
@@ -107,13 +107,13 @@ Nous vérifions le format du `tip.labels` dans le fichier `tree` en regardant le
 head(tree$tip.label) 
 ```
 
-Nous nous assurons également que la première colonne de notre tableau de données `sample_data` est `Sample_ID`. Nous regardons les noms des colonnes de notre tableau de données en utilisant `colnames()` de **base** R.
+Nous nous assurons également que la première colonne de notre tableau de données `sample_data` est `Sample_ID`. Nous regardons les noms des colonnes de notre jeu de données en utilisant `colnames()` de **base** R.
 
 ```{r}
 colnames(sample_data)   
 ```
 
-Nous regardons les `Sample_IDs` dans le tableau de données pour nous assurer que le format est le même que dans le `tip.label` (par exemple, les lettres sont en majuscules, pas de soulignement supplémentaire `_` entre les lettres et les chiffres, etc.)
+Nous regardons les `Sample_IDs` dans le jeu de données pour nous assurer que le format est le même que dans le `tip.label` (par exemple, les lettres sont en majuscules, pas de soulignement supplémentaire `_` entre les lettres et les chiffres, etc.)
 
 ```{r}
 head(sample_data$Sample_ID) # Nous vérifions les 6 premières entrées en utilisant head()
@@ -135,7 +135,7 @@ sample_data$Sample_ID[!tree$tip.label %in% sample_data$Sample_ID]
 
 Après inspection, nous pouvons voir que le format de `Sample_ID` dans le dataframe correspond au format des noms d'échantillons dans le `tip.labels`. Ceux-ci n'ont pas besoin d'être triés dans le même ordre pour être appariés.
 
-Voilà prêts à partir !
+Voilà on est prêts à partir !
 
 <!-- ======================================================= -->
 
@@ -165,7 +165,7 @@ Voici un exemple d'arbre circulaire :
 ```{r, phylogenetic_trees_adding_sampledata, fig.align='center', warning=F, message=F}
 
 ggtree(tree, layout = "circular", branch.length = 'none') %<+% sample_data + # %<+% ajoute le tableau des données l'échantillon à l'arbre
-  aes(color = I(Belgium))+                       # colore les branches en fonction d'une variable de votre tableau de données 
+  aes(color = (Belgium))+                       # colore les branches en fonction d'une variable de votre tableau de données 
   scale_color_manual(
     name = "Sample Origin",                      # le nom de votre palette de couleurs (qui apparaîtra dans la légende comme ceci)
     breaks = c("Yes", "No"),                     # les différentes options de votre variable
