@@ -1,66 +1,66 @@
 
-# Analyse des combinaisons {#combination_analyses}  
+# Analyse des combinaisons {#combination_analysis}  
 
-``{r echo=F, out.width="75%", warning=F, message=F}
+```{r echo=F, out.width="75%", warning=F, message=F}
 pacman::p_load(tidyverse,
                UpSetR,
                ggupset)
 
-# Ajoute de nouvelles variables de symptôme à la linelist, avec des valeurs aléatoires "oui" ou "non". 
+# Ajoute de nouvelles variables de symptÃ´me Ã  la linelist, avec des valeurs alÃ©atoires "oui" ou "non". 
 linelist_sym <- linelist %>% 
   mutate(fever = sample(c("yes", "no"), nrow(linelist), replace = T, prob = c(0.80, 0.20)),
-         frissons = échantillon(c("oui", "non"), nrow(linelist), replace = T, prob = c(0.20, 0.80)),
-         toux = échantillon(c("oui", "non"), nrow(linelist), replace = T, prob = c(0.9, 0.15)),
-         douleurs = échantillon(c("oui", "non"), nrow(linelist), replace = T, prob = c(0.10, 0.90)),
-         vomissements = échantillon(c("oui", "non"), nrow(linelist), replace = T))
+         chills = sample(c("yes", "no"), nrow(linelist), replace = T, prob = c(0.20, 0.80)),
+         cough = sample(c("yes", "no"), nrow(linelist), replace = T, prob = c(0.9, 0.15)),
+         aches = sample(c("yes", "no"), nrow(linelist), replace = T, prob = c(0.10, 0.90)),
+         vomit = sample(c("yes", "no"), nrow(linelist), replace = T))
 
 linelist_sym_2 <- linelist_sym %>% 
   
-  # convertir les valeurs "oui" et "non" en le nom du symptôme lui-même
-  mutate(fever = case_when(fever == "yes" ~ 1, # if old value is "yes", new value is "fever"
+  # convertir les valeurs "oui" et "non" en le nom du symptÃ´me lui-mÃªme
+  mutate(fever = case_when(fever == "yes" ~ 1, # si l'ancienne valeur est "oui", la nouvelle valeur est "fever"
                            TRUE ~ 0), # si l'ancienne valeur est autre que "yes", la nouvelle valeur est NA
          
-         frissons = case_when(frissons == "yes" ~ 1,
-                           VRAI ~ 0),
+         chills = case_when(chills == "yes" ~ 1,
+                           TRUE ~ 0),
          
-         toux = case_when(toux == "oui" ~ 1,
-                           VRAI ~ 0),
+         cough = case_when(cough == "yes" ~ 1,
+                           TRUE ~ 0),
          
-         maux = cas_de_sommet(maux == "oui" ~ 1,
-                           VRAI ~ 0),
+         aches = case_when(aches == "yes" ~ 1,
+                           TRUE ~ 0),
          
-         vomissements = cas_deux (vomissements == "oui" ~ 1,
+         vomit = case_when(vomit == "yes" ~ 1,
                            TRUE ~ 0))
 
-# Créer le graphique
+# CrÃ©er le graphique
 UpSetR::upset(
-  select(linelist_sym_2, fièvre, frissons, toux, courbatures, vomi),
+  select(linelist_sym_2, fever, chills, cough, aches, vomit),
   sets = c("fever", "chills", "cough", "aches", "vomit"),
   order.by = "freq",
   sets.bar.color = c("blue", "red", "yellow", "darkgreen", "orange"), # couleurs optionnelles
   empty.intersections = "on",
   # nsets = 3,
-  nombre.d'angles = 0,
+  number.angles = 0,
   point.size = 3.5,
   line.size = 2, 
-  mainbar.y.label = "Combinaisons de symptômes",
+  mainbar.y.label = "Symptoms Combinations",
   sets.x.label = "Patients with Symptom")
 
 ```
 
 
 
-Cette analyse représente la fréquence des différentes **combinaisons** de valeurs/réponses. Dans cet exemple, nous traçons la fréquence à laquelle les cas ont présenté diverses combinaisons de symptômes.  
+Cette analyse reprÃ©sente la frÃ©quence des diffÃ©rentes **combinaisons** de valeurs/rÃ©ponses. Dans cet exemple, nous traÃ§ons la frÃ©quence Ã  laquelle les cas ont prÃ©sentÃ© diverses combinaisons de symptÃ´mes.  
 
-Cette analyse est aussi souvent appelée :  
+Cette analyse est aussi souvent appelÃ©e :  
 
-* **"Analyse des réponses multiples "**  
-* **"Analyse des ensembles "**  
-* **"Analyse des combinaisons "**  
+* **"Analyse des rÃ©ponses multiples"**  
+* **"Analyse des ensembles"**  
+* **"Analyse des combinaisons"**  
 
-Dans l'exemple de graphique ci-dessus, cinq symptômes sont représentés. Sous chaque barre verticale se trouve une ligne et des points indiquant la combinaison de symptômes reflétée par la barre ci-dessus. À droite, des barres horizontales reflètent la fréquence de chaque symptôme individuel.  
+Dans l'exemple de graphique ci-dessus, cinq symptÃ´mes sont reprÃ©sentÃ©s. Sous chaque barre verticale se trouve une ligne et des points indiquant la combinaison de symptÃ´mes reflÃ©tÃ©e par la barre ci-dessus. Ã€ droite, des barres horizontales reflÃ¨tent la frÃ©quence de chaque symptÃ´me individuel.  
 
-La première méthode que nous montrons utilise le paquet **ggupset**, et la seconde utilise le paquet **UpSetR**. 
+La premiÃ¨re mÃ©thode que nous montrons utilise le paquet **ggupset**, et la seconde utilise le paquet **UpSetR**. 
 
 
 
@@ -70,28 +70,28 @@ La première méthode que nous montrons utilise le paquet **ggupset**, et la secon
 
 
 <!-- ======================================================= -->
-## Préparation { }
+## PrÃ©paration { }
 
 ### Chargement des paquets {.unnumbered}
 
-Ce chunk de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
+Ce chunk de code montre le chargement des paquets nÃ©cessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nÃ©cessaire *et* le charge pour l'utiliser. Vous pouvez Ã©galement charger les paquets installÃ©s avec `library()` de **base** R. Voir la page sur [R - les bases](#rbasics) pour plus d'informations sur les paquets R.  
 
-``{r, warning=F, message=F}
+```{r, warning=F, message=F}
 pacman::p_load(
-  tidyverse, # gestion et visualisation de données
-  UpSetR, # paquetage spécial pour les graphiques combinés
-  ggupset) # paquetage spécial pour les tracés combinés
+  tidyverse, # gestion et visualisation de donnÃ©es
+  UpSetR,    # paquet spÃ©cial pour les graphiques combinÃ©s
+  ggupset)   # paquet spÃ©cial pour les tracÃ©s combinÃ©s
 ```
 
 <!-- ======================================================= -->
-### Importer les données {.unnumbered}  
+### Importer les donnÃ©es {.unnumbered}  
 
 
-Pour commencer, nous importons la linelist nettoyée des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (en tant que fichier .rds). Importez des données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation] pour plus de détails).  
+Pour commencer, nous importons la linelist nettoyÃ©e des cas d'une Ã©pidÃ©mie d'Ebola simulÃ©e. Si vous voulez suivre, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour tÃ©lÃ©charger la linelist "propre"</a> (en tant que fichier .rds). Importez des donnÃ©es avec la fonction `import()` du paquet **rio** (elle gÃ¨re de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importer et exporter des donnÃ©es](#import_export) pour plus de dÃ©tails).  
 
 
 
-``{r, echo=F}
+```{r, echo=F}
 # Importez la liste de lignes dans R
 linelist_sym <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
@@ -102,11 +102,11 @@ linelist_sym <- import("linelist_cleaned.rds")
 ```
 
 
-Cette linelist comprend cinq variables "oui/non" sur les symptômes déclarés. Nous devrons transformer un peu ces variables pour utiliser le paquet **ggupset** afin de réaliser notre tracé. Visualisez les données (faites défiler vers la droite pour voir les variables de symptômes).  
+Cette linelist comprend cinq variables "oui/non" sur les symptÃ´mes dÃ©clarÃ©s. Nous devrons transformer un peu ces variables pour utiliser le paquet **ggupset** afin de rÃ©aliser notre tracÃ©. Visualisez les donnÃ©es (faites dÃ©filer vers la droite pour voir les variables de symptÃ´mes).  
 
-``{r, message=FALSE, echo=F}
-# affichez les données de la liste des lignes sous forme de tableau
-DT::datatable(head(linelist_sym, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+```{r, message=FALSE, echo=F}
+# affichez les donnÃ©es de la liste des lignes sous forme de tableau
+DT::datatable(head(linelist_sym, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
 
@@ -114,101 +114,101 @@ DT::datatable(head(linelist_sym, 50), rownames = FALSE, filter="top", options = 
 <!-- ======================================================= -->
 ### Re-formatage des valeurs {.unnumbered}  
 
-Pour s'aligner sur le format attendu par **ggupset**, nous convertissons les "yes" et "no" en nom de symptôme réel, en utilisant `case_when()` de **dplyr**. Si "non", nous mettons la valeur en blanc, donc les valeurs sont soit `NA` ou le symptôme.  
+Pour s'aligner sur le format attendu par **ggupset**, nous convertissons les "yes" ("oui") et "no" ("non") en nom de symptÃ´me rÃ©el, en utilisant `case_when()` de **dplyr**. Si "non", nous mettons la valeur en blanc, donc les valeurs sont soit `NA` ou le symptÃ´me.  
  
 
-``{r, warning=F, message=F}
-# crée une colonne avec les symptômes nommés, séparés par des points-virgules
+```{r, warning=F, message=F}
+# crÃ©e une colonne avec les symptÃ´mes nommÃ©s, sÃ©parÃ©s par des points-virgules
 linelist_sym_1 <- linelist_sym %>% 
   
-  # convertissez les valeurs "oui" et "non" dans le nom du symptôme lui-même
+  # convertissez les valeurs "oui" et "non" dans le nom du symptÃ´me lui-mÃªme
   mutate(
-    fièvre = case_when(
-      fièvre == "oui" ~ "fièvre", # si l'ancienne valeur est "oui", la nouvelle valeur est "fièvre".
-      TRUE ~ NA_caractère_), # si l'ancienne valeur est autre que "oui", la nouvelle valeur est NA
+    fever = case_when(
+      fever == "yes" ~ "fever", # si l'ancienne valeur est "oui", la nouvelle valeur est "fever".
+      TRUE           ~ NA_character_), # si l'ancienne valeur est autre que "oui", la nouvelle valeur est NA
          
-    frissons = case_when(
-       frissons == "oui" ~ "frissons",
-       TRUE ~ NA_caractère_),
+    chills = case_when(
+       chills == "yes" ~ "chills",
+       TRUE           ~ NA_character_),
     
-    toux = case_when(
-      toux == "oui" ~ "toux",
-      TRUE ~ NA_caractère_),
+    cough = case_when(
+      cough == "yes" ~ "cough",
+      TRUE           ~ NA_character_),
          
-    maux = cas_de_sommet(
-      maux == "oui" ~ "maux",
-      VRAI ~ NA_caractère_),
+    aches = case_when(
+      aches == "yes" ~ "aches",
+      TRUE           ~ NA_character_),
          
-    vomissement = case_when(
-      vomi == "oui" ~ "vomi",
-      VRAI ~ NA_caractère_)
+    vomit = case_when(
+      vomit == "yes" ~ "vomit",
+      TRUE           ~ NA_character_)
     )
 ```
 
-Maintenant, nous faisons deux dernières colonnes :  
+Maintenant, nous faisons deux derniÃ¨res colonnes :  
 
-1. Concaténation (collage) de tous les symptômes du patient (une colonne de caractères)  
-2. Convertir la colonne ci-dessus en classe *list*, afin qu'elle puisse être acceptée par **ggupset** pour faire le graphe.  
+1. ConcatÃ©nation (collage) de tous les symptÃ´mes du patient (une colonne de caractÃ¨res)  
+2. Convertir la colonne ci-dessus en classe *list*, afin qu'elle puisse Ãªtre acceptÃ©e par **ggupset** pour faire le graphe.  
 
-Voir la page sur [Caractères et chaînes de caractères] pour en savoir plus sur la fonction `unite()` de **stringr**.
+Voir la page sur [CaractÃ¨res et chaÃ®nes de caractÃ¨res] pour en savoir plus sur la fonction `unite()` de **stringr**.
 
-``{r, warning=F, message=F}
+```{r, warning=F, message=F}
 linelist_sym_1 <- linelist_sym_1 %>% 
   unite(col = "all_symptoms",
-        c(fièvre, frissons, toux, courbatures, vomissements), 
+        c(fever, chills, cough, aches, vomits), 
         sep = " ; ",
         remove = TRUE,
         na.rm = TRUE) %>% 
   mutate(
-    # Faites une copie de la colonne all_symptoms, mais de la classe "list" (qui est nécessaire pour utiliser ggupset() à l'étape suivante).
+    # Faites une copie de la colonne all_symptoms, mais de la classe "list" (qui est nÃ©cessaire pour utiliser ggupset() Ã  l'Ã©tape suivante).
     all_symptoms_list = as.list(strsplit(all_symptoms, " ; "))
     )
 ```
 
-Visualisez les nouvelles données. Notez les deux colonnes vers l'extrémité droite - les valeurs combinées collées, et la liste
+Visualisez les nouvelles donnÃ©es. Notez les deux colonnes vers l'extrÃ©mitÃ© droite - les valeurs combinÃ©es collÃ©es, et la liste
 
-``{r, echo=F, , warning=F, message=F}
-DT::datatable(head(linelist_sym_1,50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
+```{r, echo=F, , warning=F, message=F}
+DT::datatable(head(linelist_sym_1,50), rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
 ```
 
 
 <!-- ======================================================= -->
 ## **ggupset** { }
 
-Charger le paquetage
+Charger le paquet
 
 ```{r}
 pacman::p_load(ggupset)
 ```
 
 
-Créez le graphique. Nous commençons par un `ggplot()` et un `geom_bar()`, mais ensuite nous ajoutons la fonction spéciale `scale_x_upset()` du **ggupset**.  
+CrÃ©ez le graphique. Nous commenÃ§ons par un `ggplot()` et un `geom_bar()`, mais ensuite nous ajoutons la fonction spÃ©ciale `scale_x_upset()` du **ggupset**.  
 
-``{r, warning=F, message=F}
+```{r, warning=F, message=F}
 ggplot(
-  données = linelist_sym_1,
+  data = linelist_sym_1,
   mapping = aes(x = all_symptoms_list)) +
 geom_bar() +
 scale_x_upset(
   reverse = FALSE,
   n_intersections = 10,
-  sets = c("fièvre", "frissons", "toux", "courbatures", "vomissements"))+
+  sets = c("fever", "chills", "cough", "aches", "vomits"))+
 labos(
-  title = "Signes et symptômes",
-  subtitle = "Les 10 combinaisons les plus fréquentes de signes et de symptômes",
+  title = "Signes et symptÃ´mes",
+  subtitle = "Les 10 combinaisons les plus frÃ©quentes de signes et de symptÃ´mes",
   caption = "Caption here.",
-  x = "Combinaison de symptômes",
-  y = "Fréquence dans l'ensemble de données")
+  x = "Combinaison de symptÃ´mes",
+  y = "FrÃ©quence dans l'ensemble de donnÃ©es")
 
 ```
   
-De plus amples informations sur **ggupset** peuvent être trouvées [en ligne](https://rdrr.io/cran/ggupset/man/scale_x_upset.html) ou hors ligne dans la documentation du paquet dans votre onglet d'aide RStudio `?ggupset`.  
+De plus amples informations sur **ggupset** peuvent Ãªtre trouvÃ©es [en ligne](https://rdrr.io/cran/ggupset/man/scale_x_upset.html) ou hors ligne dans la documentation du paquet dans votre onglet d'aide RStudio `?ggupset`.  
 
 
 <!-- ======================================================= -->
 ## `UpSetR` { }
 
-Le paquet **UpSetR** permet de personnaliser davantage le tracé, mais il peut être plus difficile à exécuter :
+Le paquet **UpSetR** permet de personnaliser davantage le tracÃ©, mais il peut Ãªtre plus difficile Ã  exÃ©cuter :
 
 
 **Chargez le paquet**  
@@ -217,55 +217,55 @@ Le paquet **UpSetR** permet de personnaliser davantage le tracé, mais il peut êt
 pacman::p_load(UpSetR)
 ```
 
-**Nettoyage des données**  
+**Nettoyage des donnÃ©es**  
 
-Nous devons convertir les valeurs des symptômes de la `linelist` en 1 / 0. 
+Nous devons convertir les valeurs des symptÃ´mes de la `linelist` en 1 / 0. 
 
 ```{r}
 # Faire en utilisant upSetR
 
 linelist_sym_2 <- linelist_sym %>% 
   
-  # convertissez les valeurs "oui" et "non" dans le nom du symptôme lui-même
+  # convertissez les valeurs "oui" et "non" dans le nom du symptÃ´me lui-mÃªme
   mutate(
-    fièvre = case_when(
-      fièvre == "oui" ~ 1, # si l'ancienne valeur est "oui", la nouvelle valeur est 1
-      TRUE ~ 0), # si l'ancienne valeur est autre que "oui", la nouvelle valeur est 0
+    fever = case_when(
+      fever == "yes" ~ 1, # si l'ancienne valeur est "oui", la nouvelle valeur est 1
+      TRUE           ~ 0), # si l'ancienne valeur est autre que "oui", la nouvelle valeur est 0
          
     chills = case_when(
       chills == "yes" ~ 1,
-      VRAI ~ 0),
+      TRUE           ~ 0),
          
-    toux = case_when(
-      toux == "oui" ~ 1,
-      VRAI ~ 0),
+    cough = case_when(
+      cough == "yes" ~ 1,
+      TRUE           ~ 0),
          
-    maux = cas_de_sommet(
-      maux == "oui" ~ 1,
-      VRAI ~ 0),
+    aches = case_when(
+      aches == "yes" ~ 1,
+      TRUE           ~ 0),
          
-    vomissement = case_when(
-      vomissement == "oui" ~ 1,
-      VRAI ~ 0)
+    vomit = case_when(
+      vomit == "yes" ~ 1,
+      TRUE           ~ 0)
     )
 ```
 
-Maintenant, faites le graphique en utilisant la fonction personnalisée `upset()` - en utilisant seulement les colonnes de symptômes. Vous devez désigner les "ensembles" à comparer (les noms des colonnes de symptômes). Vous pouvez aussi utiliser `nsets = ` et `order.by = "freq"` pour n'afficher que les X combinaisons les plus importantes.  
+Maintenant, faites le graphique en utilisant la fonction personnalisÃ©e `upset()` - en utilisant seulement les colonnes de symptÃ´mes. Vous devez dÃ©signer les "ensembles" Ã  comparer (les noms des colonnes de symptÃ´mes). Vous pouvez aussi utiliser `nsets = ` et `order.by = "freq"` pour n'afficher que les X combinaisons les plus importantes.  
 
-``{r, warning=F, message=F}
+```{r, warning=F, message=F}
 
-# Créer le graphe
+# CrÃ©er le graphe
 UpSetR::upset(
-  select(linelist_sym_2, fièvre, frissons, toux, courbatures, vomissements),
+  select(linelist_sym_2, fever, chills, cough, aches, vomits),
   sets = c("fever", "chills", "cough", "aches", "vomit"),
   order.by = "freq",
   sets.bar.color = c("blue", "red", "yellow", "darkgreen", "orange"), # couleurs optionnelles
   empty.intersections = "on",
   # nsets = 3,
-  nombre.d'angles = 0,
+  number.angles = 0,
   point.size = 3.5,
   line.size = 2, 
-  mainbar.y.label = "Combinaisons de symptômes",
+  mainbar.y.label = "Symptoms Combinations",
   sets.x.label = "Patients with Symptom")
 
 ```
@@ -276,7 +276,6 @@ UpSetR::upset(
 
 [La page github de UpSetR](https://github.com/hms-dbmi/UpSetR)  
 
-[Une version Shiny App - vous pouvez télécharger vos propres données](https://gehlenborglab.shinyapps.io/upsetr/)  
+[Une version Shiny App - vous pouvez tÃ©lÃ©charger vos propres donnÃ©es](https://gehlenborglab.shinyapps.io/upsetr/)  
 
-[*documentation - difficile à interpréter](https://cran.r-project.org/web/packages/UpSetR/UpSetR.pdf)  
-
+[*documentation - difficile Ã  interprÃ©ter](https://cran.r-project.org/web/packages/UpSetR/UpSetR.pdf) 
