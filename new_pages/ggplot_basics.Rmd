@@ -7,7 +7,7 @@ knitr::include_graphics(here::here("images", "ggplot_basics_top.png"))
 
 **ggplot2** est le "package" R de visualisation de données le plus populaire. Sa fonction `ggplot()` est au cœur de ce "package", et toute cette approche est familièrement connue sous le nom de *"ggplot "* avec les figures qui en résultent parfois affectueusement appelées "ggplots". Le préfixe "gg" dans ce jargon reflète la "**g**ramar of **g**raphics" (la grammaire des graphiques) utilisée pour construire les figures. **ggplot2** bénéficie d'une grande variété de "packages" R supplémentaires qui améliorent encore ses fonctionnalités.  
 
-La syntaxe est très différente de celle de la visualiation avec `R` **base**, et une courbe d'apprentissage y est associée. L'utilisation de **ggplot2** exige généralement de l'utilisateur qu'il formate ses données d'une manière hautement compatible avec **tidyverse**, ce qui rend finalement l'utilisation conjointe de ces packages très efficace.
+La syntaxe est très différente de celle de la visualiation avec `R` **base**, et une courbe d'apprentissage y est associée. L'utilisation de **ggplot2** exige généralement de l'utilisateur qu'il formate ses données d'une manière hautement compatible avec **tidyverse**, ce qui rend finalement l'utilisation conjointe de ces packages très efficace. 
 
 Dans cette page, nous allons couvrir les principes fondamentaux de la visualisation avec **ggplot2**. Voir la page [Astuces de ggplot](#ggplot_tips) pour des suggestions et des techniques avancées pour que vos graphiques soient vraiment esthétiques.  
 
@@ -20,25 +20,24 @@ Plusieurs tutoriels **ggplot2** détaillés sont disponibles dans la section des
 
 ### Charger les extensions ("packages") {.unnumbered}
 
-Ce bout de code montre le chargement des "packages" nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur la fonction `p_load()` du "package" **pacman**, qui installe le (ou une liste de) "package (s)" que si nécessaire (uniquement si le package n'est pas déjà installé) *et* le charge pour l'utiliser . On peut également charger des "packages" avec `library()` à partir de `R` **base**. Voir la page sur [Bases de R](#rbasics) pour plus d'informations sur les "packages" `R`.
+Ce chunk de code montre le chargement des "packages" nécessaires aux analyses. Dans ce manuel, nous souligons la fonction `p_load()` du "package" **pacman**, qui installe le (ou une liste de) "package (s)" que si nécessaire (uniquement si le package n'est pas déjà installé) *et* le charge pour l'utiliser. On peut également charger des "packages" avec `library()` à partir de `R` **base**. Voir la page sur [Bases de R](#rbasics) pour plus d'informations sur les "packages" `R`.
 
 ```{r}
 pacman::p_load(
-  tidyverse,      # inclut ggplot2 et d'autres extensions de  data management
+  tidyverse,      # inclut ggplot2 et d'autres extensions de data management
   rio,            # importer/exporter 
   here,           # localiser des fichiers
-  stringr         # travailler avec des caracteres   
+  stringr         # travailler avec des caractères   
 )
 ```
 
 ### Importer des données {.unnumbered}  
 
-Pour commencer, nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre en travaillant sur la base, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la version "clean" </a> (en fichier .rds). Importez les données avec la fonction `import()` du "package" **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de détails).
+Pour commencer, nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre en travaillant sur le jeu de données, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la version "clean" </a> (en fichier .rds). Importez les données avec la fonction `import()` du "package" **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de détails).
 
 
 ```{r,  echo=F}
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
-
 ```
 
 ```{r, eval=F}
@@ -63,7 +62,7 @@ En préparant les données pour la visualisation, nous pouvons avoir recours à 
 
 * Remplacer les valeurs manquantes `NA` dans une colonne de caractères par la chaîne de caractères "Inconnu".  
 * Envisager de convertir une colonne en classe *facteur* pour que leurs valeurs aient des niveaux ordinaux prescrits.  
-* Nettoyer certaines colonnes de manière à ce que leurs valeurs (qui étaient codées de façon à être maniables) avec des caractères spéciaux comme des "underscores", etc. soient transformées en texte normal ou en majuscules (voir [Caractères et chaînes de caractères](#character_strings)).  
+* Nettoyer certaines colonnes de manière à ce que leurs valeurs (qui étaient codées de façon à être maniables) avec des caractères spéciaux comme des "underscores" (tirets bas), etc. soient transformées en texte normal ou en majuscules (voir [Caractères et chaînes de caractères](#character_strings)).  
 
 Voici quelques exemples concrets de ce genre de pratiques :
 
@@ -75,7 +74,7 @@ linelist <- linelist %>%
                             gender == "f" ~ "Female",      # f à Female,
                             is.na(gender) ~ "Unknown"),    # NA à Unknown
     
-    outcome_disp = replace_na(outcome, "Unknown")          # remplacer les valeurs NA de la variable "outcome" par "Unknown".
+    outcome_disp = replace_na(outcome, "Unknown")          # remplacer les valeurs NA de la variable "outcome" par "Unknown" ("Inconnu").
   )
 ```
 
@@ -87,32 +86,32 @@ En ce qui concerne la structure des données, pour **ggplot2**, nous voulons sou
 knitr::include_graphics(here::here("images", "pivoting", "pivot_longer_new.png"))
 ```
 
-Par exemple, supposons que nous voulons visualiser des données qui sont dans un format "large", comme pour chaque cas dans la `linelist` et leurs symptômes. Ci-dessous, nous créons une mini-liste appelée `symptoms_data` qui ne contient que les colonnes `case_id` et les différentes variables des symptômes. 
+Par exemple, supposons que nous voulons visualiser des données qui sont dans un format "large", comme pour chaque cas dans la `linelist` et leurs symptômes. Ci-dessous, nous créons une mini-linelist appelée `symptoms_data` qui ne contient que les colonnes `case_id` et les différentes variables des symptômes. 
 
 ```{r}
 symptoms_data <- linelist %>% 
   select(c(case_id, fever, chills, cough, aches, vomit))
 ```
 
-Voici à quoi ressemblent les 50 premières lignes de cette mini-liste linéaire - voyez comment elles sont présentées en format "large" avec chaque symptôme comme colonne : 
+Voici à quoi ressemblent les 50 premières lignes de cette mini-linelist - voyez comment elles sont présentées en format "large" avec chaque symptôme en tant que colonne : 
 
 ```{r, message=FALSE, echo=F}
-#afficher les données de la liste linéaire sous forme de tableau
+#afficher les données de la linelist sous forme de tableau
 
 DT::datatable(head(symptoms_data, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Si nous voulions représenter graphiquement le nombre de cas présentant des symptômes spécifiques, nous sommes quelque part limités par le fait que chaque symptôme est une colonne spécifique. Cependant, nous pouvons *restructurer* ("pivoter") les colonnes de symptômes dans un format plus long comme ceci :
+Si nous voulions représenter graphiquement le nombre de cas présentant des symptômes spécifiques, nous sommes limités par le fait que chaque symptôme est une colonne spécifique. Cependant, nous pouvons *restructurer* ("pivoter") les colonnes de symptômes dans un format plus long comme ceci :
 
 ```{r, }
-symptoms_data_long <- symptoms_data %>%    # commencer avec la mini-liste linéaire appelée symptoms_data
+symptoms_data_long <- symptoms_data %>%    # commencer avec la mini-linelist appelée symptoms_data
   
   pivot_longer(
     cols = -case_id,                       # pivoter toutes les colonnes à l'exception de case_id (on veut regrouper les colonnes avec les symptômes)
     names_to = "symptom_name",             # assigner un nom à la nouvelle colonne qui va contenir les différents symptômes regroupés 
-    values_to = "symptom_is_present") %>%  # assigner un nom à la nouvelle colonne qui va contenir les valeurs des différents symptômes regroupés (ici yes/no)
+    values_to = "symptom_is_present") %>%  # assigner un nom à la nouvelle colonne qui va contenir les valeurs des différents symptômes regroupés (yes/no)
   
-  mutate(symptom_is_present = replace_na(symptom_is_present, "unknown")) # convertir les valeurs NA en "unknown"
+  mutate(symptom_is_present = replace_na(symptom_is_present, "unknown")) # convertir les valeurs NA en "unknown" (inconnu)
 
 ```
 
