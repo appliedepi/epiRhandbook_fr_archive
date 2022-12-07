@@ -411,7 +411,7 @@ DT::datatable(head(malaria_data, 50), rownames = FALSE, filter="top", options = 
 
 Pour le moment, concentrons-nous sur les variables `malaria_tot` et `District`. Ignorons pour l'instant les colonnes du nombre de cas par âge. Nous allons tracer des courbes épidémiques avec `geom_col()`, qui produit une colonne pour chaque jour à la hauteur spécifiée sur l'axe des y fournie par la variable `malaria_tot` (les données sont déjà des nombres de cas quotidiens, donc nous utilisons `geom_col()` - voir [la section "Diagramme en barres" ci-dessous](#ggplot_basics_bars)).  
 
-Lorsque nous ajoutons la commande `facet_wrap()`, nous spécifions un tilde et ensuite la variable à utiliser pour le "facet" (`District` dans ce cas). On peut placer une autre variable sur le côté gauche du tilde, - cela créera un "facet" pour chaque combinaison - mais nous recommandons de le faire avec `facet_grid()` à la place. Dans ce cas d'utilisation, un "facet" est créé pour chaque valeur unique de `District`.  
+Lorsque nous ajoutons la commande `facet_wrap()`, nous spécifions un tilde (~) et ensuite la variable à utiliser pour le "facet" (`District` dans ce cas). On peut placer une autre variable sur le côté gauche du tilde, - cela créera un "facet" pour chaque combinaison - mais nous recommandons de le faire avec `facet_grid()` à la place. Dans ce cas d'utilisation, un "facet" est créé pour chaque valeur unique de `District`.  
 
 ```{r, warning=F, message=F}
 # Un graphique avec des facets par district
@@ -435,7 +435,7 @@ malaria_age <- malaria_data %>%
   select(-malaria_tot) %>% 
   pivot_longer(
     cols = c(starts_with("malaria_rdt_")),  # choisir la variable à mettre en format "long"
-    names_to = "age_group",      # la nouvelle variable avec tous les groupes d'âge est nommée  age_group
+    names_to = "age_group",      # la nouvelle variable avec tous les groupes d'âge est nommée age_group
     values_to = "num_cases"      # les valeurs dans les anciennes colonnes séparées sont regroupées dans une nouvelle unique colonne appelée num_cases
   ) %>%
   mutate(
@@ -528,7 +528,7 @@ age_by_wt
 
 ### Modifier des graphiques de l'environnement {.unnumbered}  
 
-Une des particularités de **ggplot2** est que nous pouvons définir un graphe (comme ci-dessus), puis lui ajouter des couches en commençant par son nom. Nous n'avons pas besoin de répéter toutes les commandes qui ont créé le graphe original ! 
+Une des particularités de **ggplot2** est que nous pouvons définir un graphiquee (comme ci-dessus), puis lui ajouter des couches en commençant par son nom. Nous n'avons pas besoin de répéter toutes les commandes qui ont créé le graphique original ! 
 
 Par exemple, pour modifier le graphe `age_by_wt` qui a été défini ci-dessus, pour inclure une ligne verticale à l'âge de 50 ans, il suffit d'ajouter un `+` et de commencer à ajouter des couches supplémentaires au graphe. 
 
@@ -542,28 +542,28 @@ age_by_wt+
 
 L'exportation de ggplots est facilitée par la fonction `ggsave()` de **ggplot2**. Elle peut fonctionner de deux façons :  
 
-* Spécifier le nom de l'objet plot, puis le chemin et le nom du fichier avec l'extension.  
+* Spécifier le nom de l'objet graphique, puis le chemin d'accès au fichier et le nom du fichier avec l'extension.  
   * Par exemple : `ggsave(my_plot, here("plots", "my_plot.png"))`  
-* Exécutez la commande avec seulement un chemin de fichier, pour sauvegarder le dernier graphe qui a été imprimé.  
+* Exécutez la commande avec seulement un chemin d'accès au fichier, pour sauvegarder le dernier graphique qui a été imprimé.  
   * Par exemple : `ggsave(here("plots", "my_plot.png"))`.  
   
-Vous pouvez exporter en png, pdf, jpeg, tiff, bmp, svg, ou plusieurs autres types de fichiers, en spécifiant l'extension du fichier dans le chemin du fichier.  
+Vous pouvez exporter en png, pdf, jpeg, tiff, bmp, svg, ou plusieurs autres types de fichiers, en spécifiant l'extension du fichier dans le chemin d'accès au fichier.  
 
-Vous pouvez également spécifier les arguments `width = `, `height = `, et `units = ` (soit "in", "cm", ou "mm"). Vous pouvez également spécifier `dpi = ` avec un nombre pour la résolution du graphe (par exemple 300). Consultez les détails de la fonction en entrant `?ggsave` ou en lisant la [documentation en ligne](https://ggplot2.tidyverse.org/reference/ggsave.html). 
+Vous pouvez également spécifier les arguments `width = ` (largeur), `height = ` (hauteur), et `units = ` (unités) (soit "in", "cm", ou "mm"). Vous pouvez également spécifier `dpi = ` avec un nombre pour la résolution du graphe (par exemple 300). Consultez les détails de la fonction en entrant `?ggsave` ou en lisant la [documentation en ligne](https://ggplot2.tidyverse.org/reference/ggsave.html). 
 
-Rappelez-vous que vous pouvez utiliser la syntaxe `here()` pour fournir le chemin du fichier souhaité. Voir la page [Importation et exportation](#import_export) pour plus d'informations. 
+Rappelez-vous que vous pouvez utiliser la syntaxe `here()` pour fournir le chemin d'accès au fichier souhaité. Voir la page [Importation et exportation](#import_export) pour plus d'informations. 
 
 
 ## Etiquettes du graphe
 
-Vous voudrez certainement ajouter ou ajuster les étiquettes du graphique. Ceci est plus facile à faire avec la fonction `labs()` qui est ajoutée au graphe avec `+` tout comme les "goems" l'ont été.  
+Vous voudrez certainement ajouter ou ajuster les étiquettes du graphique. Ceci est le plus facile à faire avec la fonction `labs()` qui est ajoutée au graphe avec `+` tout comme les "geoms" l'ont été.  
 
 Dans `labs()`, vous pouvez fournir des chaînes de caractères à ces arguments :  
 
 * `x = ` et `y = ` Le titre de l'axe des x et de l'axe des y (étiquettes des axes)  
 * `title = ` Le titre du graphique principal  
 * `subtitle = ` Le sous-titre du graphique, en plus petit texte sous le titre  
-* `caption = ` La légende du graphique, en bas à droite par défaut.  
+* `caption = ` La note de bas de graphe du graphique, en bas à droite par défaut.  
 
 Voici un graphique que nous avons fait plus tôt, mais avec des étiquettes plus jolies :  
 
@@ -571,9 +571,9 @@ Voici un graphique que nous avons fait plus tôt, mais avec des étiquettes plus
 age_by_wt <- ggplot(
   data = linelist,   # preciser le jeu de donnees
   mapping = aes(     # mapper les attributs aux valeurs des variables
-         x = age,           # mapper l'axe des x à l'age            
+         x = age,           # mapper l'axe des x à l'âge            
          y = wt_kg,         # mapper l'axe des y au poids (weight)
-         color = age))+     # mapper la coleur à l' age
+         color = age))+     # mapper la couleur à l'âge
   geom_point()+           # afficher les données comme des points
   labs(
     title = "Age and weight distribution",
@@ -587,9 +587,9 @@ age_by_wt
 ```
 
 
-<span style="color: darkgreen;">**_ASTUCE:_** Remarquez comment, dans l'affectation de la légende, nous avons utilisé `str_glue()` du package **stringr** pour implanter du code R dynamique dans le texte de la chaîne. La légende affichera la date "Data as of : "qui reflète la date d'hospitalisation maximale dans la liste linéaire utilisée pour dessiner le graphe. Pour en savoir plus, consultez la page [Caractères et chaînes de caractères](#character_strings).</span>  
+<span style="color: darkgreen;">**_ASTUCE:_** Remarquez comment, dans l'affectation de la note de bas de graphe, nous avons utilisé `str_glue()` du package **stringr** pour implanter du code R dynamique dans le texte de la chaîne de caractères. La légende affichera la date "Data as of :" qui reflète la date d'hospitalisation maximale dans la liste linéaire utilisée pour dessiner le graphe. Pour en savoir plus, consultez la page [Caractères et chaînes de caractères](#character_strings).</span>  
 
-<span style="color: black;">**_NOTE:_** Une remarque sur la spécification du titre de la *légende* : Il n'y a pas un unique argument "titre de légende", car on peut avoir plusieurs échelles dans votre légende. Dans `labs()`, on peut écrire l'argument pour l'attribut graphique utilisé pour créer la légende, et fournir le titre de cette façon. Par exemple, ci-dessus, nous avons assigné `color = age` pour créer la légende. Par conséquent, nous fournissons `color = ` à `labs()` et nous attribuons le titre de légende souhaité ("Age" avec un A majuscule). Si on crée la légende avec `aes(fill = COLUMN)`, alors dans `labs()` on écrira `fill = ` pour ajuster le titre de cette légende. La section sur les gammes de couleurs dans la page [ggplot tips](#ggplot_tips) fournit plus de détails sur l'édition des légendes, et une approche alternative utilisant les fonctions `scales_()`.</span>
+<span style="color: black;">**_NOTE:_** Une remarque sur la spécification du titre de la *légende* : Il n'y a pas un unique argument "titre de légende", car on peut avoir plusieurs échelles dans votre légende. Dans `labs()`, on peut écrire l'argument pour l'attribut graphique utilisé pour créer la légende, et fournir le titre de cette façon. Par exemple, ci-dessus, nous avons assigné `color = age` pour créer la légende. Par conséquent, nous fournissons `color = ` à `labs()` et nous attribuons le titre de légende souhaité ("Age" avec un A majuscule). Si on crée la légende avec `aes(fill = COLUMN)`, alors dans `labs()` on écrira `fill = ` pour ajuster le titre de cette légende. La section sur les échelles de couleurs dans la page [ggplot tips](#ggplot_tips) fournit plus de détails sur l'édition des légendes, et une approche alternative utilisant les fonctions `scales_()`.</span>
 
 
 ## Thèmes {#ggplot_basics_themes} 
@@ -597,13 +597,13 @@ age_by_wt
 Une des meilleures parties de **ggplot2** est le large contrôle que nous pouvons avoir sur le graphique - nous pouvons définir n'importe quoi ! Comme mentionné plus haut, les éléments du graphique qui ne sont *pas* reliés aux données sont ajustés par la fonction `theme()`. Par exemple, la couleur de fond du graphique, la présence/absence de lignes de grille, et la police/taille/couleur/alignement du texte (titres, sous-titres, légendes, texte des axes...). Ces ajustements peuvent être effectués de deux manières :  
 
 * Utiliser une fonction [*thème toute faite*](https://ggplot2.tidyverse.org/reference/ggtheme.html) `theme_()` pour faire des ajustements généraux - ceux-ci incluent `theme_classic()`, `theme_minimal()`, `theme_dark()`, `theme_light()`, `theme_grey()`, `theme_bw()` entre autres.  
-* Ajustez chaque petit aspect de la parcelle individuellement dans `theme()`.  
+* Ajustez chaque petit aspect du graphique individuellement dans `theme()`.  
 
 ### Fonctions thème toute faites {.unnumbered}  
 
 Comme elles sont assez simples, nous allons démontrer l'utilisation des fonctions thème prêtes à l'utilisation ci-dessous et ne les décrirons pas davantage ici. 
 
-<span style="color: black;">**_NOTE:_** Notez que tout micro-ajustement *supplémentaire* avec `theme()` doit être fait *après* l'utilisation d'une fonction thème prête à l'utilisation (sinon les ajustements ne seront pas pris en compte).</span>  
+<span style="color: black;">**_NOTE:_** Notez que tout micro-ajustement *supplémentaire* avec `theme()` doit être fait *après* l'utilisation d'une fonction thème toute faite (sinon les ajustements ne seront pas pris en compte).</span>  
 
 Ecrivez-les avec des parenthèses vides. 
 
@@ -637,17 +637,17 @@ ggplot(data = linelist, mapping = aes(x = age, y = wt_kg))+
 
 La fonction `theme()` peut prendre un grand nombre d'arguments, dont chacun modifie un aspect très spécifique du graphique. Il n'est pas possible de couvrir tous les arguments, mais nous allons décrire le modèle général pour leur utilisation et vous montrer comment trouver le nom de l'argument dont vous avez besoin. La syntaxe de base est la suivante :
 
-1. Dans `theme()` écrivez le nom de l'argument pour l'élément de l'intrigue que vous voulez modifier, comme `plot.title = `  
-3. Fournissez une fonction `element_()` à l'argument  
-  + Le plus souvent, utilisez `element_text()`, mais d'autres incluent `element_rect()` pour les couleurs d'arrière-plan du canevas, ou `element_blank()` pour supprimer les éléments du graphe  
-4. A l'intérieur de la fonction `element_()`, écrivez des affectations d'arguments pour faire les ajustements poussés que vous désirez.  
+1. Dans `theme()` écrivez le nom de l'argument pour l'élément du graphique que vous voulez modifier, comme `plot.title = `  
+2. Fournissez une fonction `element_()` à l'argument  
+  + Le plus souvent, utilisez `element_text()`, mais d'autres incluent `element_rect()` pour les couleurs d'arrière-plan du canevas, ou `element_blank()` pour supprimer les éléments du graphique  
+3. A l'intérieur de la fonction `element_()`, écrivez des affectations d'arguments pour faire les ajustements fins que vous désirez.  
 
 Cette description était assez abstraite, voici donc quelques exemples.  
 
-Le graphe ci-dessous a l'air assez stupide, mais il sert à vous montrer une variété de façons dont vous pouvez ajuster vos graphes.  
+Le graphique ci-dessous a l'air assez stupide, mais il sert à vous montrer une variété de façons dont vous pouvez ajuster vos graphes.  
 
-* Nous commençons avec le graphe `age_by_wt` défini juste au-dessus et ajoutons `theme_classic()`.  
-* Pour des ajustements plus poussés, on ajoute `theme()` et on inclut un argument pour chaque élément du graphe à ajuster.  
+* Nous commençons avec le graphique `age_by_wt` défini juste au-dessus et ajoutons `theme_classic()`.  
+* Pour des ajustements plus fins, on ajoute `theme()` et on inclut un argument pour chaque élément du graphe à ajuster.  
 
 Il peut être intéressant d'organiser les arguments en sections logiques. Pour décrire quelques-uns de ceux utilisés ci-dessous :  
 
@@ -658,7 +658,7 @@ Il peut être intéressant d'organiser les arguments en sections logiques. Pour 
 
 ```{r, , warning=F, message=F}
 age_by_wt + 
-  theme_classic()+                                 # pre-definir les ajustements ave un theme tout-prêt
+  theme_classic()+                                 # pre-definir les ajustements avec un theme tout-prêt
   theme(
     legend.position = "bottom",                    # déplacer la legende en dessous
     
@@ -687,8 +687,8 @@ Voici quelques arguments `theme()` particulièrement courants. Vous reconnaître
 `axis.text = element_text()`       |Texte sur les axes (pour les deux axes)
 `axis.text.x = element_text()`     |Texte sur les axes: axe des x uniquement (utiliser `.y` pour axe des y uniquement)  
 `axis.ticks = element_blank()`     |Supprimer les coches des axes
-`axis.line = element_line()`       |Lignes des axes (colour, size, linetype: solid dashed dotted etc)
-`strip.text = element_text()`      |Bande de texte des "facet" (colour, face, size, angle...)
+`axis.line = element_line()`       |Lignes des axes (color, size, linetype: solid dashed dotted etc)
+`strip.text = element_text()`      |Texte de bande des "facet" (colour, face, size, angle...)
 `strip.background = element_rect()`|Bande des "facet" (fill, colour, size...)  
 
 
@@ -698,7 +698,7 @@ La documentation **tidyverse** sur [modifier le thème](https://ggplot2.tidyvers
 
 <span style="color: darkgreen;">**_TIP:_** Exécutez la commande `theme_get()` de **ggplot2** pour imprimer une liste de tous les >90 arguments de `theme()` sur la console.</span>  
 
-<span style="color: darkgreen;">**_TIP:_** Si vous voulez supprimer un élément d'un graphe, vous pouvez aussi le faire via `theme()`. Passez simplement `element_blank()` en argument pour le faire disparaître complètement. Pour les légendes, préciser `legend.position = "none"`.</span>  
+<span style="color: darkgreen;">**_TIP:_** Si jamais vous voulez supprimer un élément d'un graphe, vous pouvez aussi le faire via `theme()`. Passez simplement `element_blank()` en argument pour le faire disparaître complètement. Pour les légendes, préciser `legend.position = "none"`.</span>  
 
 
 
@@ -706,7 +706,7 @@ La documentation **tidyverse** sur [modifier le thème](https://ggplot2.tidyvers
 ## Couleurs  
 
 
-Veuillez consulter cette [section sur les gammes de couleurs de la page "Trucs et Astuces dans ggplot"](#ggplot_tips_colors).
+Veuillez consulter cette [section sur les échelles de couleurs de la page "Trucs et Astuces dans ggplot"](#ggplot_tips_colors).
 
 
 ## Utiliser le "pipe" avec **ggplot2**   
