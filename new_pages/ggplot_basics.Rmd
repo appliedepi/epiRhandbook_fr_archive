@@ -744,20 +744,20 @@ linelist %>%                                                     # commencer ave
 Tout au long de cette page, vous avez déjà vu de nombreux exemples de représentation de données continues. Nous les consolidons ici brièvement et présentons quelques variantes.  
 Les visualisations couvertes ici incluent :
 
-* Les tracés pour une variable continue :  
+* Les graphiques pour une variable continue :  
   * **Histogramme**, un graphique classique pour présenter la distribution d'une variable continue. 
-  **Graphique en boîte** (également appelé boîte à moustaches), pour montrer les 25ème, 50ème et 75ème percentiles, les extrémités de la distribution et les valeurs aberrantes ([limitations importantes](https://www.data-to-viz.com/caveat/boxplot.html)).  
+  **Diagramme en boîte** (également appelé boîte à moustaches), pour montrer les 25ème, 50ème et 75ème percentiles, les extrémités de la distribution et les valeurs aberrantes ([limitations importantes](https://www.data-to-viz.com/caveat/boxplot.html)).  
   **Graphique de gigue**, pour montrer toutes les valeurs sous forme de points qui sont "gigueux" afin qu'ils puissent (presque) tous être vus, même si deux d'entre eux ont la même valeur.  
-  **Graphes en violon**, montre la distribution d'une variable continue basée sur la largeur symétrique du "violon". 
-  **Sina plot**, est une combinaison de jitter et de violin plot, où les points individuels sont montrés mais dans la forme symétrique de la distribution (via le "package" **ggforce**).  
-**Scatter plot** pour deux variables continues.  
+  **Graphiques en violon**, montre la distribution d'une variable continue basée sur la largeur symétrique du "violon". 
+  **Sina plot**, est une combinaison du graphique de gigue et du graphique de violin, où les points individuels sont montrés mais dans la forme symétrique de la distribution (via le "package" **ggforce**).  
+**Nuage de points** pour deux variables continues.  
 **Heatmaps** pour trois variables continues (lien vers la page [Heat plots](#heatmaps)).
 
 ### Histogrammes {.unnumbered}
 
 Les histogrammes peuvent ressembler à des diagrammes en barres, mais ils sont distincts car ils mesurent la distribution d'une variable *continue*. Il n'y a pas d'espace entre les "barres", et une seule colonne est fournie à `geom_histogram()`.
 
-Le code ci-dessous permet de générer des **histogrammes**, qui regroupent les données continues en plages et les affichent dans des barres adjacentes de hauteur variable. Ceci est fait en utilisant `geom_histogram()`. Voir la section ["Diagrammes en barres"](#ggplot_basics_bars) de la page ggplot basics pour comprendre la différence entre `geom_histogram()`, `geom_bar()`, et `geom_col()`.  
+Le code ci-dessous permet de générer des **histogrammes**, qui regroupent les données continues en gammes et les affichent dans des barres adjacentes de hauteur variable. Ceci est fait en utilisant `geom_histogram()`. Voir la section ["Diagrammes en barres"](#ggplot_basics_bars) de la page ggplot basics pour comprendre la différence entre `geom_histogram()`, `geom_bar()`, et `geom_col()`.  
 
 Nous allons montrer la distribution des âges des cas. Dans `mapping = aes()`, nous spécifierons la colonne dont nous voulons voir la distribution. On peut affecter cette colonne à l'axe des x ou des y. 
 
@@ -786,7 +786,7 @@ ggplot(data = linelist, aes(x = age))+  # mapper la variable age à l'axe des x
   labs(title = "C) Set to 5 bins")
 
 
-# D) More bins
+# D) Plus de bins
 ggplot(data = linelist, aes(x = age))+  # mapper la variable age à l'axe des x
   geom_histogram(binwidth = 1)+
   labs(title = "D) binwidth of 1")
@@ -811,9 +811,9 @@ ggplot(data = linelist, mapping = aes(x = age, fill = gender)) +
 
 Pour obtenir un histogramme "empilé" (d'une colonne continue de données), nous pouvons faire l'une des choses suivantes :  
 
-1) Utilisez `geom_histogram()` avec l'argument `fill = ` dans `aes()` et affecté à la colonne de regroupement, ou bien  
+1) Utilisez `geom_histogram()` avec l'argument `fill = ` dans `aes()` et affecté à la colonne de regroupement, ou   
 2) Utilisez `geom_freqpoly()`, qui est probablement plus facile à lire (vous pouvez toujours définir `binwidth = `).  
-3) Pour voir les proportions de toutes les valeurs, définissez le paramètre `y = after_stat(density)` (utilisez exactement cette syntaxe - elle n'a pas été modifiée pour vos données). Note : ces proportions seront affichées *par groupe*.  
+3) Pour voir les proportions de toutes les valeurs, définissez le paramètre `y = after_stat(density)` (utilisez exactement cette syntaxe non modifiée pour vos données). Note : ces proportions seront affichées *par groupe*.  
 
 Chacun d'entre eux est présenté ci-dessous (*notez* l'utilisation de `color = ` ou  `fill = ` dans chacun d'entre eux) :  
 
@@ -845,30 +845,29 @@ Si vous voulez vous amuser un peu, essayez `geom_density_ridges` du "package" **
 Pour plus de détails sur les histogrammes, consultez la page **tidyverse** [page sur geom_histogram()](https://ggplot2.tidyverse.org/reference/geom_histogram.html).  
 
 
-### Boîtes à moustaches {.unnumbered}
+### Diagrammes en boîtes {.unnumbered}
 
 Les diagrammes en boîte sont très utilisés, mais ils ont des limites importantes. Ils peuvent masquer la distribution réelle - par exemple, une distribution bimodale. Voir cette [galerie de graphiques R](https://www.r-graph-gallery.com/boxplot.html) et cet [article data-to-viz](https://www.data-to-viz.com/caveat/boxplot.html) pour plus de détails. Cependant, ils affichent joliment l'écart interquartile et les valeurs aberrantes - ils peuvent donc être superposés à d'autres types de graphiques qui montrent la distribution de manière plus détaillée.  
 
-Nous vous rappelons ci-dessous les différentes composantes d'un boxplot :  
-
+Nous vous rappelons ci-dessous les différentes composantes d'un diagramme en boîte :  
 ```{r, out.width = "100%", fig.align = "center", echo=F}
 knitr::include_graphics(here::here("images", "boxplot.png"))
 ```
 
 Lorsque vous utilisez `geom_boxplot()` pour créer un box plot, vous mappez généralement un seul axe (x ou y) dans `aes()`. L'axe spécifié détermine si les tracés sont horizontaux ou verticaux. 
 
-Dans la plupart des "geoms", nous créons un graphique par groupe en faisant correspondre un attribut comme `color = ` ou `fill = ` à une variable dans `aes()`. Cependant, pour les boxplot, nous pouvons le faire en assignant la variable de regroupement à l'axe non assigné (x ou y). Ci-dessous se trouve le code pour un boxplot de *toutes* les valeurs d'âge dans l'ensemble de données, et ensuite le code pour afficher un box plot pour chaque sexe (non manquant) dans l'ensemble du jeu de données. Notez que les valeurs `NA` (manquantes) apparaîtront comme un box plot séparé, sauf si elles sont supprimées. Dans cet exemple, nous avons également défini le "remplissage" de la colonne "outcome" (issue finale de chaque cas) afin que chaque diagramme soit d'une couleur différente - mais ce n'est pas nécessaire. 
+Dans la plupart des "geoms", nous créons un graphique par groupe en faisant correspondre un attribut comme `color = ` ou `fill = ` à une variable dans `aes()`. Cependant, pour les diagrammes en boîte, nous pouvons le faire en assignant la variable de regroupement à l'axe non assigné (x ou y). Ci-dessous se trouve le code pour un diagramme de boîte de *toutes* les valeurs d'âge dans l'ensemble de données, et ensuite le code pour afficher un box plot pour chaque sexe (non manquant) dans l'ensemble du jeu de données. Notez que les valeurs `NA` (manquantes) apparaîtront comme un diagramme de boîte séparé, sauf si elles sont supprimées. Dans cet exemple, nous avons également défini le "remplissage" de la colonne "gender" (issue finale de chaque cas) afin que chaque diagramme de boîtes soit d'une couleur différente - mais ce n'est pas nécessaire. 
 
 ```{r fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
-# A) boxplot d'ensemble
+# A) Diagramme de boîte d'ensemble
 ggplot(data = linelist)+  
   geom_boxplot(mapping = aes(y = age))+   # uniquement axe y mappé (non axe des x)
   labs(title = "A) Overall boxplot")
 
-# B) Boxplot par groupe
+# B) Diagramme de boîte par groupe
 ggplot(data = linelist, mapping = aes(y = age, x = gender, fill = gender)) + 
   geom_boxplot()+                     
-  theme(legend.position = "none")+   # supprimer legende (redondant)
+  theme(legend.position = "none")+   # supprimer la légende (redondant)
   labs(title = "B) Boxplot by gender")      
 ```
 
