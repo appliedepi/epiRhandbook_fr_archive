@@ -15,11 +15,11 @@ Une liste complète des fonctions du pacakge **forcats** est disponible en ligne
 
 
 <!-- ======================================================= -->
-## Preparation  
+## Préparation  
 
-### Chargement des paquets {.unnumbered}  
+### Chargement des packages {.unnumbered}  
 
-Ce morceau de code montre le chargement des packages nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le package si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les packages installés avec `library()` de **base** R. Voir la page sur [R basics](#rbasics) pour plus d'informations sur les packages R.  
+Ce morceau de code montre le chargement des packages nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur la fonction `p_load()` du package **pacman**, qui installe le package si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les packages installés avec la fonction `library()` de **base** de R. Voir la page sur [R basics](#rbasics) pour plus d'informations sur les packages R.  
 
 ```{r}
 pacman::p_load(
@@ -46,20 +46,20 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 
 
 ```{r, eval=F}
-# importer ton jeu de donnée
+# importer ton jeu de données
 linelist <- import("linelist_cleaned.rds")
 ```
 
 
-### Nouveau variable qualitative {#fct_newcat .unnumbered}  
+### Nouvelle variable qualitative {#fct_newcat .unnumbered}  
 
 Pour la démonstration dans cette page, nous utiliserons un scénario commun - la création d'une nouvelle variable catégorielle.
 
-Notez que si vous convertissez une colonne numérique en facteur de classe, vous ne serez pas en mesure de calculer des statistiques numériques sur celle-ci.  
+Notez que si vous convertissez une colonne numérique en classe facteur, vous ne serez pas en mesure de calculer des statistiques numériques sur celle-ci.  
 
-#### Creation de  colonnes {.unnumbered}  
+#### Création de  colonnes {.unnumbered}  
 
-Nous utilisons la colonne existante `days_onset_hosp` (jours entre l'apparition des symptômes et l'admission à l'hôpital) et créons une nouvelle colonne `delay_cat` en classant chaque ligne dans l'une de plusieurs catégories. Nous faisons cela avec la fonction **dplyr** `case_when()`, qui applique séquentiellement des critères logiques (côté droit) à chaque ligne et renvoie la valeur correspondante côté gauche pour la nouvelle colonne `delay_cat`. Vous trouverez plus d'informations sur la fonction `case_when()` dans [Nettoyage des données et des fonctions de base](#cleaning_data).
+Nous utilisons la colonne existante `days_onset_hosp` (jours entre l'apparition des symptômes et l'admission à l'hôpital) et créons une nouvelle colonne `delay_cat` en classant chaque ligne dans l'une de plusieurs catégories. Nous faisons cela avec la fonction `case_when()` du package **dplyr**, qui applique séquentiellement des critères logiques (côté droit) à chaque ligne et renvoie la valeur correspondante côté gauche pour la nouvelle colonne `delay_cat`. Vous trouverez plus d'informations sur la fonction `case_when()` dans [Nettoyage des données et des fonctions de base](#cleaning_data).
 
 
 ```{r}
@@ -76,13 +76,13 @@ linelist <- linelist %>%
 
 #### Ordre des valeurs par defaut {.unnumbered}  
 
-Telle que créée avec `case_when()`, la nouvelle colonne `delay_cat` est une colonne catégorielle de la classe Character - *pas* encore un facteur. Ainsi, dans un tableau de fréquence, nous voyons que les valeurs uniques apparaissent dans un ordre alphanumérique par défaut - un ordre qui n'a pas beaucoup de sens intuitif :  
+Telle que créée avec `case_when()`, la nouvelle colonne `delay_cat` est une colonne catégorielle de la classe Character - *pas* encore un facteur. Ainsi, dans un tableau de fréquences, nous voyons que les valeurs uniques apparaissent dans un ordre alphanumérique par défaut - un ordre qui n'a pas beaucoup de sens intuitif :  
 
 ```{r}
 table(linelist$delay_cat, useNA = "always")
 ```
 
-De même, si nous réalisons un diagramme à barres, les valeurs apparaissent également dans cet ordre sur l'axe des x (voir la page sur [les bases de ggplot](#ggplot_basics) pour en savoir plus sur **ggplot2** - le package de visualisation le plus courant dans R).  
+De même, si nous réalisons un diagramme en barres, les valeurs apparaissent également dans cet ordre sur l'axe des x (voir la page sur [les bases de ggplot](#ggplot_basics) pour en savoir plus sur **ggplot2** - le package de visualisation le plus courant dans R).  
 
 ```{r, warning=F, message=F}
 ggplot(data = linelist)+
@@ -91,13 +91,13 @@ ggplot(data = linelist)+
 
 
 
-## Convertir en facteur
+## Conversion d'une variable en facteur
 
-Pour convertir une colonne de caractères ou de chiffres en facteur de classe, vous pouvez utiliser n'importe quelle fonction du package **forcats** (plusieurs sont détaillées [ci-dessous](#fct_adjust)). Elles convertiront en facteur de classe et effectueront ou permettront un certain ordre des niveaux - par exemple, l'utilisation de `fct_relevel()` vous permet de spécifier manuellement l'ordre des niveaux. La fonction `as_factor()` convertit simplement la classe sans autres capacités.  
+Pour convertir une colonne de caractères ou de chiffres en facteur, vous pouvez utiliser n'importe quelle fonction du package **forcats** (plusieurs sont détaillées [ci-dessous](#fct_adjust)). Elles convertiront en variable de classe facteur et effectueront ou permettront un certain ordre des niveaux - par exemple, l'utilisation de la fonction `fct_relevel()` vous permet de spécifier manuellement l'ordre des niveaux. Quant à la fonction `as_factor()`, elle convertit simplement la classe sans autres capacités.  
 
-La fonction R **base** `factor()` convertit une colonne en facteur et vous permet de spécifier manuellement l'ordre des niveaux, comme un vecteur de caractères à son argument `levels = `.  
+La fonction `factor()` de R **base**  convertit une colonne en facteur et vous permet de spécifier manuellement l'ordre des niveaux, comme un vecteur de caractères à son argument `levels = `.  
 
-Ci-dessous, nous utilisons `mutate()` et `fct_relevel()` pour convertir la colonne `delay_cat` de la classe caractère à la classe facteur. La colonne `delay_cat` est créée dans la section [Préparation](#fct_newcat) ci-dessus. 
+Ci-dessous, nous utilisons les fonctions `mutate()` et `fct_relevel()` pour convertir la colonne `delay_cat` de la classe caractère à la classe facteur. La colonne `delay_cat` est créée dans la section [Préparation](#fct_newcat) ci-dessus. 
 
 
 
@@ -107,7 +107,7 @@ linelist <- linelist %>%
 ```
 
 *Les "valeurs" uniques de cette colonne sont maintenant considérées comme des "niveaux" du facteur.* 
-Les niveaux ont un *ordre*, qui peut être affiché avec la fonction **base** R `levels()`, ou alternativement visualisé dans un tableau de comptage via `table()` de **base** R ou `tabyl()` de **janitor**. Par défaut, l'ordre des niveaux sera alpha-numérique, comme auparavant. Notez que `NA` n'est pas un niveau de facteur.  
+Les niveaux ont un *ordre*, qui peut être affiché avec la fonction `levels()` appartenant aux fonctions de **base** de R, ou alternativement visualisé dans un tableau de comptage via `table()` du package **base** de R ou `tabyl()` de **janitor**. Par défaut, l'ordre des niveaux sera alpha-numérique, comme auparavant. Notez que `NA` n'est pas un niveau de facteur.  
 
 ```{r}
 levels(linelist$delay_cat)
@@ -128,7 +128,7 @@ levels(linelist$delay_cat)
 ```
 
 
-Maintenant, l'ordre de l'intrigue a aussi un sens plus intuitif.  
+Maintenant, l'ordre des variables sur le graphique a aussi un sens plus intuitif.  
 
 ```{r, warning=F, message=F}
 ggplot(data = linelist)+
@@ -140,7 +140,7 @@ ggplot(data = linelist)+
 
 ### Ajouter {#fct_add .unnumbered}
 
-Si vous devez ajouter des niveaux à un facteur, vous pouvez le faire avec `fct_expand()`. Il suffit d'écrire le nom de la colonne suivi des nouveaux niveaux (séparés par des virgules). En tabulant les valeurs, nous pouvons voir les nouveaux niveaux et le nombre de zéros. Vous pouvez utiliser `table()` de **base** R, ou `tabyl()` de **janitor** :  
+Si vous devez ajouter des niveaux à un facteur, vous pouvez le faire avec `fct_expand()`. Il suffit d'écrire le nom de la colonne suivi des nouveaux niveaux (séparés par des virgules). En affichant les niveaux dans un tableau, nous pouvons voir les nouveaux niveaux et le nombre de zéros. Vous pouvez utiliser la fonction `table()` du package **base** de R, ou `tabyl()` de **janitor** :  
 
 ```{r}
 linelist %>% 
@@ -150,12 +150,12 @@ linelist %>%
 
 
 
-Note : il existe une fonction spéciale **forcats** pour ajouter facilement les valeurs manquantes (`NA`) comme niveau. Voir la section sur les [Valeurs manquantes](#fct_missing) ci-dessous.  
+Note : il existe une fonction spéciale du package **forcats** pour ajouter facilement les valeurs manquantes (`NA`) comme niveau. Voir la section sur les [Valeurs manquantes](#fct_missing) ci-dessous.  
 
 
 ### Enlever {.unnumbered}
 
-Si vous utilisez `fct_drop()`, les niveaux "inutilisés" avec des comptes nuls seront supprimés de l'ensemble des niveaux. Les niveaux que nous avons ajoutés ci-dessus ("Non admis à l'hôpital") existent en tant que niveau mais aucune ligne n'a réellement ces valeurs. Ils seront donc supprimés en appliquant `fct_drop()` à notre colonne de facteurs :  
+Si vous utilisez la fonction `fct_drop()`, les niveaux "inutilisés" avec des comptes nuls seront supprimés de l'ensemble des niveaux. Les niveaux que nous avons ajoutés ci-dessus ("Non admis à l'hôpital") existent en tant que niveau mais aucune ligne n'a réellement ces valeurs. Ils seront donc supprimés en appliquant la fonction `fct_drop()` à notre colonne de facteurs :  
 
 ```{r}
 linelist %>% 
@@ -179,12 +179,12 @@ Ces fonctions peuvent être appliquées à une colonne de facteurs dans deux con
 
 ### Manuellement {.unnumbered} 
 
-Cette fonction est utilisée pour ordonner manuellement les niveaux des facteurs. Si elle est utilisée sur une colonne sans facteur, la colonne sera d'abord convertie en facteur de classe.  
+Cette fonction est utilisée pour ordonner manuellement les niveaux des facteurs. Si elle est utilisée sur une colonne sans facteur, la colonne sera d'abord convertie en facteur.  
 
 Entre les parenthèses, fournissez d'abord le nom de la colonne de facteur, puis fournissez soit :  
 
 * Tous les niveaux dans l'ordre désiré (comme un vecteur de caractères `c()`), ou bien  
-* Un niveau et son placement corrigé en utilisant l'argument `after = `.  
+* Un niveau et son emplacement corrigé en utilisant l'argument `after = `.  
 
 Voici un exemple de redéfinition de la colonne `delay_cat` (qui est déjà de la classe Factor) et de spécification de tous les niveaux dans l'ordre souhaité.  
 
@@ -194,7 +194,7 @@ linelist <- linelist %>%
   mutate(delay_cat = fct_relevel(delay_cat, c("<2 days", "2-5 days", ">5 days")))
 ```
 
-Si vous voulez seulement déplacer un niveau, vous pouvez le spécifier à `fct_relevel()` seul et donner un nombre à l'argument `after = ` pour indiquer où dans l'ordre il doit être. Par exemple, la commande ci-dessous déplace "<2 jours" en deuxième position : 
+Si vous voulez seulement déplacer un niveau, vous pouvez le spécifier uniquement à l'aide de la fonction `fct_relevel()` et donner un nombre à l'argument `after = ` pour indiquer dans l'ordre dans lequel il doit être. Par exemple, la commande ci-dessous déplace "<2 jours" en deuxième position : 
 
 ```{r, eval=F}
 # re-define level order
@@ -206,9 +206,9 @@ linelist %>%
 
 
 
-### Dans un graphe {.unnumbered}  
+### Dans un graphique {.unnumbered}  
 
-Les commandes **forcats** peuvent être utilisées pour définir l'ordre des niveaux dans le dataframe, ou seulement dans un graphique. En utilisant la commande pour "envelopper" le nom de la colonne *dans* la commande de traçage `ggplot()`, vous pouvez inverser/niveler/etc. la transformation ne s'appliquera que dans ce tracé.  
+Les commandes du package **forcats** peuvent être utilisées pour définir l'ordre des niveaux dans le dataframe, ou seulement dans un graphique. En utilisant la commande pour "envelopper" le nom de la colonne *dans* la commande de traçage `ggplot()`, vous pouvez inverser/niveler/etc. la transformation ne s'appliquera que dans ce tracé.  
 
 Ci-dessous, deux tracés sont créés avec `ggplot()` (voir la page [les bases de ggplot](#ggplot_basics)). Dans le premier, la colonne `delay_cat` est mise en correspondance avec l'axe des x du graphique, avec son ordre de niveau par défaut comme dans les données `linelist`. Dans le second exemple, elle est enveloppée dans `fct_relevel()` et l'ordre est modifié dans le graphe.  
 
