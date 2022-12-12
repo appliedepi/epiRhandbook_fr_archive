@@ -7,11 +7,11 @@ knitr::include_graphics(here::here("images", "Factors_1500x500.png"))
 
 En R, les *facteurs* sont une classe de données qui permettent de créer des catégories ordonnées avec un ensemble fixe de valeurs acceptables.  
 
-En règle générale, vous convertissez une colonne de la classe de caractères ou numérique en un facteur si vous souhaitez définir un ordre intrinsèque aux valeurs ("*niveaux*") afin qu'elles puissent être affichées de manière non alphabétique dans les graphiques et les tableaux. Une autre utilisation courante des facteurs consiste à normaliser les légendes des graphiques afin qu'elles ne fluctuent pas si certaines valeurs sont temporairement absentes des données.   
+En règle générale, vous convertissez une colonne de la classe caractères ou numérique en un facteur si vous souhaitez définir un ordre intrinsèque aux valeurs ("*niveaux*") afin qu'elles puissent être affichées de manière non alphabétique dans les graphiques et les tableaux. Une autre utilisation courante des facteurs consiste à normaliser les légendes des graphiques afin qu'elles ne fluctuent pas si certaines valeurs sont temporairement absentes des données.   
 
-Cette page présente l'utilisation des fonctions du paquetage **forcats** (un nom court pour "**For** **cat**egorical variables") et de certaines fonctions R **base**. Nous abordons également l'utilisation de **lubridate** et **aweek** pour les cas de facteurs spéciaux liés aux semaines épidémiologiques.  
+Cette page présente l'utilisation des fonctions du package **forcats** (un nom court pour "**For** **cat**egorical variables") et de certaines fonctions R **base**. Nous abordons également l'utilisation de **lubridate** et **aweek** pour les cas de facteurs spéciaux liés aux semaines épidémiologiques.  
 
-Une liste complète des fonctions **forcats** est disponible en ligne [ici](https://forcats.tidyverse.org/reference/index.html). Nous présentons ci-dessous quelques-unes des fonctions les plus courantes.  
+Une liste complète des fonctions du pacakge **forcats** est disponible en ligne [ici](https://forcats.tidyverse.org/reference/index.html). Nous présentons ci-dessous quelques-unes des fonctions les plus courantes.  
 
 
 <!-- ======================================================= -->
