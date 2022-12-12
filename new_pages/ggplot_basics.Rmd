@@ -336,9 +336,9 @@ ggplot()+
 
 ### Groupage {#ggplotgroups .unnumbered}  
 
-On peut facilement agréger les données et les "représenter par groupe". En fait, nous l'avons déjà fait !  
+On peut facilement regrouper les données et les "représenter par groupe". En fait, nous l'avons déjà fait !  
 
-Pour cela nous allons assigner la colonne de "regroupement" à l'attribut approprié du graphique, dans un `mapping = aes()`. Ci-dessus, nous avons fait une démonstration en utilisant des valeurs continues lorsque nous avons assigné l'attribut`size = ` à la variable `age`. Cependant, cela fonctionne de la même manière pour les colonnes discrètes/catégoriques.  
+Pour cela nous allons assigner la colonne de "regroupement" à l'attribut approprié du graphique, dans un `mapping = aes()`. Ci-dessus, nous avons fait une démonstration en utilisant des valeurs continues lorsque nous avons assigné l'attribut`size = ` à la variable `age`. Cependant, cela fonctionne de la même manière pour les colonnes discrètes/catégorielles.  
 
 Par exemple, si nous voulons que les points soient affichés par sexe, nous pouvons définir `mapping = aes(color = gender)`. Une légende apparaît automatiquement. Cette affectation peut être faite dans le `mapping = aes()` de la commande supérieure `ggplot()` (et elle va être héritée par le "geom"), ou elle peut être définie dans un `mapping = aes()` séparé dans le "geom". Les deux approches sont présentées ci-dessous :  
 
@@ -360,11 +360,11 @@ ggplot(data = linelist,
 ```
 
 
-Notez que selon le "geom", vous devrez utiliser différents arguments pour agréger les données. Pour `geom_point()`, vous utiliserez probablement `color =`, `shape = ` ou `size = `. Alors que pour `geom_bar()`, vous utiliseriez plus probablement `fill = `. Cela dépend simplement du "geom" et de l'attribut du graphique que vous voulez utiliser pour refléter les groupages.  
+Notez que selon le "geom", vous devrez utiliser différents arguments pour regrouper les données. Pour `geom_point()`, vous utiliserez probablement `color =`, `shape = ` ou `size = `. Alors que pour `geom_bar()`, vous utiliseriez plus probablement `fill = `. Cela dépend simplement du "geom" et de l'attribut du graphique que vous voulez utiliser pour refléter les groupages.  
 
-Pour votre information - la manière la plus basique d'agréger les données est d'utiliser seulement l'argument `group = ` dans `mapping = aes()`. Cependant, cela ne changera pas les couleurs, le remplissage ou les formes. Elle ne créera pas non plus de légende. Pourtant, les données sont groupées, donc les affichages statistiques des données peuvent être affectés.  
+Pour votre information - la manière la plus basique d'regrouper les données est d'utiliser seulement l'argument `group = ` dans `mapping = aes()`. Cependant, cela ne changera pas les couleurs, le remplissage ou les formes. Elle ne créera pas non plus de légende. Pourtant, les données sont groupées, donc les affichages statistiques des données peuvent être affectés.  
 
-Pour ajuster l'ordre des groupes dans un graphique, consultez la page [Trucs et Astuces avec ggplot ](#ggplot_tips) ou la page sur les [Facteurs](#factors). Vous trouverez de nombreux exemples de graphiques groupés dans les sections ci-dessous sur la représentation des données continues et catégoriques.   
+Pour ajuster l'ordre des groupes dans un graphique, consultez la page [Trucs et Astuces avec ggplot ](#ggplot_tips) ou la page sur les [Facteurs](#factors). Vous trouverez de nombreux exemples de graphiques groupés dans les sections ci-dessous sur la représentation des données continues et catégorielles.   
 
 
 ## Facets / Petits-multiples {#ggplot_basics_facet}  
@@ -875,29 +875,29 @@ ggplot(data = linelist, mapping = aes(y = age, x = gender, fill = gender)) +
 Pour le code permettant d'ajouter un diagramme en boîte aux bords d'un nuage de points (diagrammes "marginaux"), voir la page [Trucs et Astuces avec ggplot](#ggplot_tips).  
 
 
-### Graphes en violon, guigue, et "sina" {.unnumbered}
+### Graphes en violon, gigue, et "sina" {.unnumbered}
 
-Ci-dessous, vous trouverez le code pour créer des diagrammes en **violon** (`geom_violin`) et **jitter** (`geom_jitter`) pour montrer les distributions. Vous pouvez spécifier que le remplissage ou la couleur est également déterminé par les données, en insérant ces options dans `aes()`. 
+Ci-dessous, vous trouverez le code pour créer des diagrammes en **violon** (`geom_violin`) et **jitter** (gigue) (`geom_jitter`) pour montrer les distributions. Vous pouvez spécifier que le remplissage ou la couleur est également déterminé par les données, en insérant ces options dans `aes()`. 
 
 ```{r fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
 
 
 # A) Jitter par groupe
-ggplot(data = linelist %>% drop_na(outcome),      # supprimer valeurs manquantes
-       mapping = aes(y = age,                     # mapper variable continue
+ggplot(data = linelist %>% drop_na(outcome),      # supprimer les valeurs manquantes
+       mapping = aes(y = age,                     # mapper la variable continue
            x = outcome,                           # mapper la variable de regroupement
-           color = outcome))+                     # mapper Couleur avec var outcome 
-  geom_jitter()+                                  # Creer le graphe
+           color = outcome))+                     # mapper la couleur avec la variable outcome 
+  geom_jitter()+                                  # Creer le graphique
   labs(title = "A) jitter plot by gender")     
 
 
 
 # B) Violin par groupe
-ggplot(data = linelist %>% drop_na(outcome),       # supprimer valeurs manquantes
-       mapping = aes(y = age,                      # mapper variable continue
+ggplot(data = linelist %>% drop_na(outcome),       # supprimer les valeurs manquantes
+       mapping = aes(y = age,                      # mapper la variable continue
            x = outcome,                            # mapper la variable de regroupement
-           fill = outcome))+                       # mapper Couleur avec var outcome
-  geom_violin()+                                   # Creer le graphe
+           fill = outcome))+                       # mapper la ouleur avec la variable outcome
+  geom_violin()+                                   # Creer le graphique
   labs(title = "B) violin plot by gender")    
 ```
 
@@ -910,23 +910,23 @@ Vous pouvez combiner les deux en utilisant la fonction `geom_sina()` du "package
 # A) Sina  par group
 ggplot(
   data = linelist %>% drop_na(outcome), 
-  aes(y = age,           # mapper var numerique
-      x = outcome)) +    # mapper variable de regroupement
+  aes(y = age,           # mapper la variable numérique
+      x = outcome)) +    # mapper la variable de regroupement
   geom_violin(
-    aes(fill = outcome), # remplissage (couleur de fond violon)
+    aes(fill = outcome), # remplissage (couleur de fond du violon)
     color = "white",     # contour blanc
     alpha = 0.2)+        # transparence
   geom_sina(
-    size=1,                # Changer la taille des guigues
-    aes(color = outcome))+ # mapper  la couleur des points avec la var outcome
-  scale_fill_manual(       # Definir des couleurs de remplissage (de fond) des violons en precisant quelle couleur prend chaque modalite de la var outcome
+    size=1,                # Changer la taille des gigues
+    aes(color = outcome))+ # mapper la couleur des points avec la variable outcome
+  scale_fill_manual(       # Definir des couleurs de remplissage (de fond) des violons en precisant quelle couleur prend chaque modalite de la variable outcome
     values = c("Death" = "#bf5300", 
               "Recover" = "#11118c")) + 
-  scale_color_manual(      # Definir des couleurs des points en precisant quelle couleur prend chaque modalite de la var outcome
+  scale_color_manual(      # Definir des couleurs des points en precisant quelle couleur prend chaque modalite de la variable outcome
     values = c("Death" = "#bf5300", 
               "Recover" = "#11118c")) + 
-  theme_minimal() +                                # Supprimer arriere-plan gris
-  theme(legend.position = "none") +                # Supprimer  legende non-necessaire
+  theme_minimal() +                                # Supprimer l'arriere-plan gris
+  theme(legend.position = "none") +                # Supprimer la legende non-necessaire
   labs(title = "B) violin and sina plot by gender, with extra formatting")      
 
 
@@ -936,17 +936,17 @@ ggplot(
 
 ### Deux variables continues  {.unnumbered}
 
-En suivant une syntaxe similaire, `geom_point()` vous permettra de tracer deux variables continues l'une en fonction de l'autre dans un **scatter plot**. Ceci est utile pour montrer les valeurs réelles plutôt que leurs distributions. Un diagramme de dispersion basique de l'âge par rapport au poids est montré dans (A). Dans (B), nous utilisons à nouveau `facet_grid()` pour montrer la relation entre deux variables continues dans la liste lineaire. 
+En suivant une syntaxe similaire, `geom_point()` vous permettra de tracer deux variables continues l'une en fonction de l'autre dans un **scatter plot** (un nuage de points/un diagramme de dispersion). Ceci est utile pour montrer les valeurs réelles plutôt que leurs distributions. Un diagramme de dispersion basique de l'âge par rapport au poids est montré dans (A). Dans (B), nous utilisons à nouveau `facet_grid()` pour montrer la relation entre deux variables continues dans la liste lineaire. 
 
 ```{r fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
-# Diagramme de dispersion de base du poids et de l'âge
+# Diagramme de dispersion du poids et de l'âge
 ggplot(data = linelist, 
        mapping = aes(y = wt_kg, x = age))+
   geom_point() +
   labs(title = "A) Scatter plot of weight and age")
 
 # Diagramme de dispersion du poids et de l'âge par sexe et issue finale du cas
-ggplot(data = linelist %>% drop_na(gender, outcome), #garder que le sexe/issue non manquant
+ggplot(data = linelist %>% drop_na(gender, outcome), #garder que le sexe/issue finale non manquant
        mapping = aes(y = wt_kg, x = age))+
   geom_point() +
   labs(title = "B) Scatter plot of weight and age faceted by gender and outcome")+
@@ -957,15 +957,15 @@ ggplot(data = linelist %>% drop_na(gender, outcome), #garder que le sexe/issue n
 
 ### Trois variables continues {.unnumbered}  
 
-Vous pouvez afficher trois variables continues en utilisant l'argument `fill = ` pour créer un *heat plot*. La couleur de chaque "cellule" reflétera la valeur de la troisième colonne de données continues. Voir la page [Astuces en ggplot](#ggplot_tips) et la page sur les [Heat plots](#heatmaps) pour plus de détails et plusieurs exemples. 
+Vous pouvez afficher trois variables continues en utilisant l'argument `fill = ` pour créer un *graphique thermique* (heat plot). La couleur de chaque "cellule" reflétera la valeur de la troisième colonne de données continues. Voir la page [Astuces en ggplot](#ggplot_tips) et la page sur les [Graphiques thermiques](#heatmaps) pour plus de détails et plusieurs exemples. 
 
 Il existe des moyens de créer des graphiques 3D dans R, mais pour l'épidémiologie appliquée, ils sont souvent difficiles à interpréter et donc moins utiles pour la prise de décision.  
 
 
 
-## Représenter des données categorielles
+## Représenter des données catégorielles
 
-Les données catégorielles peuvent être des valeurs de caractères, des valeurs logiques (VRAI/FAUX) ou des facteurs (voir la page [Facteurs](#factors)). 
+Les données catégoriques peuvent être des valeurs de caractères, des valeurs logiques (VRAI/FAUX) ou des facteurs (voir la page [Facteurs](#factors)). 
 
 ### Préparation  {.unnumbered}
 
@@ -982,7 +982,7 @@ La première chose à comprendre au sujet de vos données catégorielles est de 
 Ensuite, examinez la classe des colonnes que vous voulez tracer. Nous examinons `hospital`, d'abord avec `class()` de **base** R, et avec `tabyl()` de **janitor**.
 
 ```{r}
-# Voir la classe de la variable hospital - on peut voir que c'est une variable caractere
+# Voir la classe de la variable hospital - on peut voir que c'est une variable de type caractère
 class(linelist$hospital)
 
 # Regardez les valeurs et les proportions dans la variable hospital
@@ -991,7 +991,7 @@ linelist %>%
 ```
 
 
-Nous pouvons voir que les valeurs à l'intrieur sont des caractères, car il s'agit de noms d'hôpitaux, et par défaut elles sont classées par ordre alphabétique. Il existe des valeurs "autres" et "manquantes", que nous préférerions voir figurer dans les dernières sous-catégories lors de la présentation des répartitions. Nous transformons donc cette variable en facteur et la réorganisons. Ce point est traité plus en détail dans la page [Facteurs](#factors).
+Nous pouvons voir que les valeurs à l'intérieur sont des caractères, car il s'agit de noms d'hôpitaux, et par défaut elles sont classées par ordre alphabétique. Il existe des valeurs "autres" et "manquantes", que nous préférerions voir figurer dans les dernières sous-catégories lors de la présentation des répartitions. Nous transformons donc cette variable en facteur et la réorganisons. Ce point est traité plus en détail dans la page [Facteurs](#factors).
 
 
 ```{r}
@@ -1024,7 +1024,7 @@ Utilisez `geom_bar()` si vous voulez que la hauteur des barres (ou la hauteur de
 Ci-dessous, nous avons affecté la variable "outcome" (issue finale) à l'axe des y, mais il pourrait tout aussi bien être sur l'axe des x. Si vous avez des valeurs de caractères plus longues, il est parfois préférable de retourner les barres sur le côté et de placer la légende en bas. Cela peut avoir un impact sur la façon dont vos niveaux de facteurs sont ordonnés - dans ce cas, nous les inversons avec `fct_rev()` pour mettre les manquants et les autres en bas.    
 
 ```{r, out.width=c('50%', '50%'), fig.show='hold'}
-# A) Outcome pour l'ensemble des cas
+# A) Issues finales pour l'ensemble des cas
 ggplot(linelist %>% drop_na(outcome)) + 
   geom_bar(aes(y = fct_rev(hospital)), width = 0.7) +
   theme_minimal()+
@@ -1032,7 +1032,7 @@ ggplot(linelist %>% drop_na(outcome)) +
        y = "Hospital")
 
 
-# B) Outcomes pour les cas par hopital
+# B)  finales pour les cas par hôpital
 ggplot(linelist %>% drop_na(outcome)) + 
   geom_bar(aes(y = fct_rev(hospital), fill = outcome), width = 0.7) +
   theme_minimal()+
@@ -1059,18 +1059,18 @@ outcomes <- linelist %>%
   drop_na() %>% 
   group_by(outcome) %>% 
   count %>% 
-  ungroup() %>% # Ungroup pour que les proportions soient sur le total
-  mutate(proportion = n/sum(n)*100) # Caculer le pourcentage
+  ungroup() %>% # désagréger pour que les proportions soient sur le total
+  mutate(proportion = n/sum(n)*100) # Calculer le pourcentage
   
 outcomes #Voir la table
 ```
 
 
-Le code ci-dessous utilise `geom_col` pour créer des diagrammes en barres simples afin de montrer la distribution de l'issue des cas Ebola. Avec `geom_col`, x et y doivent être spécifiés. Ici, x est la variable catégorique sur l'axe des x, et y est la colonne de proportions générée `proportion`. 
+Le code ci-dessous utilise `geom_col` pour créer des diagrammes en barres simples afin de montrer la distribution de l'issue finale des cas Ebola. Avec `geom_col`, x et y doivent être spécifiés. Ici, x est la variable catégorielle sur l'axe des x, et y est la colonne de proportions générée `proportion`. 
 
 
 ```{r, fig.height = 3, fig.width=4.5}
-# Outcome pour l'ensemble des cas
+# Issues finales pour l'ensemble des cas
 ggplot(outcomes) + 
   geom_col(aes(x=outcome, y = proportion)) +
   labs(subtitle = "Number of recovered and dead Ebola cases")
@@ -1078,43 +1078,43 @@ ggplot(outcomes) +
 ```
 
 
-Pour montrer les répartitions par hôpital, il faudrait que notre tableau contienne plus d'informations et qu'il soit au format "long". Nous créons ce tableau avec les fréquences des catégories combinées `outcome` et `hospital` (voir la page [Travailler sur des données groupées](#grouping_data) pour des conseils sur le groupage). 
+Pour montrer les répartitions par hôpital, il faudrait que notre tableau contienne plus d'informations et qu'il soit au format "long". Nous créons ce tableau avec les fréquences des catégories combinées `outcome` et `hospital` (voir la page [Travailler sur des données groupées](#grouping_data) pour des conseils sur le regroupement). 
 
 ```{r, fig.height = 4, fig.width=6}
 outcomes2 <- linelist %>% 
   drop_na(outcome) %>% 
-  count(hospital, outcome) %>%  # compter les lignes par hospital et outcome
-  group_by(hospital) %>%        # Grouper pour que les proportions soient sur le total de "hospital"
-  mutate(proportion = n/sum(n)*100) # calculer proportions  de deces et de guerison au sein de chaque  "hospital" 
+  count(hospital, outcome) %>%  # compter les lignes par hôpital et issue finale
+  group_by(hospital) %>%        # regrouper pour que les proportions soient sur le total de "hospital"
+  mutate(proportion = n/sum(n)*100) # calculer les proportions de décès et de guerison au sein de chaque "hospital" 
 
-head(outcomes2) # Voir les premieres lignes de la table 
+head(outcomes2) # Voir les premières lignes de la table 
 ```
   
 Nous créons ensuite le ggplot avec quelques mises en forme supplémentaires :
 
   * **Inverser les axes** : Nous avons inversé les axes avec `coord_flip()` pour pouvoir lire les noms des hôpitaux.
-  **Barres côte-à-côte** : Ajout d'un argument `position = "dodge"` pour que les barres pour les décès et la guérison soient présentées côte à côte plutôt qu'empilées. Notez que les barres empilées sont la valeur par défaut.
-  * **Largeur de colonne** : Spécifié 'width', donc les colonnes sont deux fois moins larges que la largeur maximale possible.
-  **Ordre des variable** : Inversez l'ordre des catégories sur l'axe des y de sorte que 'Autre' et 'Manquant' soient en bas, avec `scale_x_discrete(limits=rev)`. Notez que nous avons utilisé cette méthode plutôt que `scale_y_discrete` parce que l'hôpital est indiqué dans l'argument `x` de `aes()`, même si visuellement il est sur l'axe des ordonnées. Nous faisons cela parce que Ggplot semble présenter les catégories à l'envers, sauf si nous lui disons de ne pas le faire.  
-  * **Autres détails** : Étiquettes/titres et couleurs ajoutés dans `labs` et `scale_fill_color` respectivement.
+  **Barres côte-à-côte** : Nous avons ajouté d'un argument `position = "dodge"` pour que les barres pour les décès et la guérison soient présentées côte à côte plutôt qu'empilées. Notez que les barres empilées sont la valeur par défaut.
+  * **Largeur de colonne** : Nous avons spécifié 'width', donc les colonnes sont deux fois moins larges que la largeur maximale possible.
+  **Ordre des variable** : Nous avons inversé l'ordre des catégories sur l'axe des y de sorte que 'Autre' et 'Manquant' soient en bas, avec `scale_x_discrete(limits=rev)`. Notez que nous avons utilisé cette méthode plutôt que `scale_y_discrete` parce que l'hôpital est indiqué dans l'argument `x` de `aes()`, même si visuellement il est sur l'axe des ordonnées. Nous faisons cela parce que ggplot semble présenter les catégories à l'envers, sauf si nous lui disons de ne pas le faire.  
+  * **Autres détails** : Les étiquettes/titres et couleurs ont été ajoutés dans `labs` et `scale_fill_color` respectivement.
   
 ```{r, fig.height = 4, fig.width=8}
 
-# Outcome pour l'ensemble des cas par hopital
+# Issue finale pour l'ensemble des cas par hopital
 ggplot(outcomes2) +  
   geom_col(
     mapping = aes(
-      x = proportion,                 # mapper axe des x avec les  proportion pre-calculees
-      y = fct_rev(hospital),          # inverse les categories de la variable donc missing/other en dernier
-      fill = outcome),                # remplissage par outcome
-    width = 0.5)+                    # barres moins larges (out of 1)
-  theme_minimal() +                  # theme Minimal 
+      x = proportion,                 # mapper axe des x avec les proportions pre-calculées
+      y = fct_rev(hospital),          # inverser les catégories de la variable 'hospital' pour que missing/other sont en dernier
+      fill = outcome),                # remplissage par issue finale
+    width = 0.5)+                    # barres moins larges (sur 1)
+  theme_minimal() +                  # theme minimal 
   theme(legend.position = "bottom")+
   labs(subtitle = "Number of recovered and dead Ebola cases, by hospital",
-       fill = "Outcome",             # titre legend 
-       y = "Count",                  # titre axe y 
-       x = "Hospital of admission")+ # titre axe x
-  scale_fill_manual(                 # preciser des couleurs manuellement
+       fill = "Outcome",             # titre légende 
+       y = "Count",                  # titre axe des y 
+       x = "Hospital of admission")+ # titre axe des x
+  scale_fill_manual(                 # préciser des couleurs manuellement
     values = c("Death"= "#3B1c8C",
                "Recover" = "#21908D" )) 
 
@@ -1124,7 +1124,7 @@ ggplot(outcomes2) +
 Notez que les proportions sont binaires, et que l'on peut donc préférer ne pas utiliser le terme "guérison" et ne montrer que la proportion de décès. Ceci n'est qu'une illustration.  
 
 
-Si vous utilisez `geom_col()` avec des données de dates (par exemple une courbe epidemique à partir de données agrégées) - vous voudrez ajuster l'argument `width = ` pour supprimer les lignes de "gap" entre les barres. Si vous utilisez des données quotidiennes, réglez `width = 1`. Si vous utilisez des données hebdomadaires, `width = 7`. 
+Si vous utilisez `geom_col()` avec des données de dates (par exemple une courbe épidémique à partir de données regroupées) - vous voudrez ajuster l'argument `width = ` pour supprimer les lignes de "gap" entre les barres. Si vous utilisez des données quotidiennes, réglez `width = 1`. Si vous utilisez des données hebdomadaires, `width = 7`. 
 <span style="color: orange;">**_CAUTION:_** Les mois ne sont pas possibles car chaque mois a un nombre de jours différent..</span>
  
 
