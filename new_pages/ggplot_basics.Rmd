@@ -1087,7 +1087,7 @@ outcomes2 <- linelist %>%
   group_by(hospital) %>%        # Grouper pour que les proportions soient sur le total de "hospital"
   mutate(proportion = n/sum(n)*100) # calculer proportions  de deces et de guerison au sein de chaque  "hospital" 
 
-head(outcomes2) # Voir les premieres lignes de la table
+head(outcomes2) # Voir les premieres lignes de la table 
 ```
   
 Nous créons ensuite le ggplot avec quelques mises en forme supplémentaires :
