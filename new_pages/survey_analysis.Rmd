@@ -7,8 +7,10 @@
 Cette page démontre l'utilisation de plusieurs packages pour l'analyse d'enquêtes. 
 
 
+
 La plupart des paquets R d'enquête reposent sur le paquet [**survey**](https://cran.r-project.org/web/packages/survey/index.html) pour effectuer des analyses pondérées. 
 Nous utiliserons **survey** ainsi que [**srvyr**](https://cran.r-project.org/web/packages/srvyr/index.html) (une enveloppe pour **survey** permettant un codage de type tidyverse) et [**gtsummary**](https://cran.r-project.org/web/packages/gtsummary/index.html) (une enveloppe pour **survey** permettant de créer des tableaux prêts à être publiés).Bien que le paquet original **survey** ne permette pas le codage de style tidyverse, tidyverse, il présente l'avantage supplémentaire d'autoriser les modèles linéaires généralisés pondérés par les pondérés par les enquêtes (qui seront ajoutés à cette page à une date ultérieure). Nous allons également démontrer l'utilisation d'une fonction du paquet [**sitrep**](https://github.com/R4EPI/sitrep) pour créer des poids d'échantillonnage (*n.b* ce paquet n'est pas encore sur CRAN, mais peut être installé à partir de github).
+
 
 La plupart de cette page est basée sur le travail effectué pour le projet ["R4Epis"](https://r4epis.netlify.app/) ; pour le code détaillé et les modèles R-markdown, voir la page github ["R4Epis"] (https://github.com/R4EPI/sitrep). Une partie du code basé sur le paquet **survey** est basé sur les premières versions de [Études de cas EPIET](https://github.com/EPIET/RapidAssessmentSurveys).
 
@@ -61,6 +63,7 @@ L'ensemble de données d'exemple utilisé dans cette section :
 - comptes de population fictifs pour la zone d'enquête. 
 - Dictionnaire de données pour les données fictives de l'enquête sur la mortalité. 
 
+
 Ceci est basé sur l'enquête pré-approuvée par le comité d'examen éthique de MSF OCA. Le site données fictives ont été produites dans le cadre du projet ["R4Epis"](https://r4epis.netlify.app/). 
 Tout ceci est basé sur les données collectées à l'aide de [KoboToolbox](https://www.kobotoolbox.org/), qui est un logiciel de collecte de données basé sur [Open Data Kit](https://opendatakit.org/).
 
@@ -73,7 +76,7 @@ Kobo vous permet d'exporter à la fois les données collectées et le dictionnai
 - voir la section sur les données d'enquête ci-dessous pour fusionner les différents niveaux.</span>
 
 
-Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. Consultez la page [Importation et exportation](https://epirhandbook.com/import-and-export.html) pour connaître les différentes façons d'importer des données.
+Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. Consultez la page [Importation et exportation](#import_export) pour connaître les différentes façons d'importer des données.
 
 ```{r echo = FALSE}
 # Importez l'enquête dans R
