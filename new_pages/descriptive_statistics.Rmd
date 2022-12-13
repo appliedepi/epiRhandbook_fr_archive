@@ -145,7 +145,7 @@ Utilisez les fonctions "adorn" de **janitor** pour ajouter des totaux, convertir
 Fonction | Résultat                          
 -------------------|--------------------------------
 `adorn_totals()` | Ajoute les totaux (`where = ` "row", "col", ou "both"). Définissez `name =` pour "Total".  
-`adorn_percentages()` | Convertit les comptes en proportions, avec `denominateur = ` "row", "col", ou "all".  
+`adorn_percentages()` | Convertit les comptes en proportions, avec `denominator = ` "row", "col", ou "all".  
 `adorn_pct_formatting()` | Convertit les proportions en pourcentages. Spécifiez `digits =`. Supprimez "%" avec `affix_sign = F`.  
 `adorn_rounding()` | Pour arrondir les nombres, les proportions à des places `digits =`. Pour arrondir les pourcentages, utilisez `adorn_pct_formatting()` comme ci-dessus.  
 `adorn_ns()` | Ajoutez des comptes à un tableau de proportions ou de pourcentages. Indiquez `position =` "rear" pour les comptages entre parenthèses, ou "front" pour mettre le pourcentage entre parenthèses.  
@@ -223,7 +223,7 @@ linelist %>%
   adorn_title(
     row_name = "Catégorie d'âge",
     col_name = "Sexe",
-    placement = "combined") %>% 
+    placement = "combiné") %>% 
   flextable::flextable() %>% # convertit en flextable HTML
   flextable::autofit() %>% # garantit une seule ligne par ligne
   flextable::save_as_docx(path = "tabyl.docx") # Enregistrer comme document Word
@@ -243,7 +243,7 @@ age_by_outcome <- linelist %>%
 
 chisq.test(age_by_outcome)
 ```
-#### Autres astuces {.non numéroté}  
+#### Autres astuces {.unnumbered}  
 
 * Incluez l'argument `na.rm = TRUE` pour exclure les valeurs manquantes de tous les calculs ci-dessus.  
 * Si vous appliquez `adorn_XXX()` à des tables qui n'ont pas été créées par `tabyl()`, vous pouvez spécifier une ou plusieurs colonnes particulières à appliquer comme `adorn_percentage(,,,c(cas,décès))`. La syntaxe n'est pas simple. Pensez à utiliser `summarise()` à la place.  
@@ -256,9 +256,9 @@ chisq.test(age_by_outcome)
 
 **dplyr** fait partie des paquets **tidyverse** et est un outil de gestion de données extrêmement courant. La création de tableaux avec **dplyr** est utile si vous calculez des statistiques sommaires par groupe, ou si vous passez les résultats à `ggplot()` (qui attend des données "longues").  
 
-#### Compteurs {.non numéroté}  
+#### Compteurs {.unnumbered}  
 
-Comme expliqué dans la page [Regroupement de données], vous pouvez utiliser la fonction **dplyr** `count()` pour retourner des comptages tabulés sur une ou plusieurs colonnes. La sortie retournée est dans un format "long" avec une colonne `n` pour contenir les comptes.  
+Comme expliqué dans la page [Travailler sur des données groupées](#grouping_data), vous pouvez utiliser la fonction **dplyr** `count()` pour retourner des comptages tabulés sur une ou plusieurs colonnes. La sortie retournée est dans un format "long" avec une colonne `n` pour contenir les comptes.  
 
 ```{r}
 linelist %>% 
@@ -272,7 +272,7 @@ linelist %>%
   count(age_cat, gender)
 ```
 
-Pour afficher cette sortie de comptage par groupe avec `ggplot()`, c'est relativement simple. Voir d'autres exemples dans les pages [Tracer des données catégorielles] et [Conseils pour ggplot].  
+Pour afficher cette sortie de comptage par groupe avec `ggplot()`, c'est relativement simple. Voir d'autres exemples dans les pages [Tracer des données catégorielles] et [Trucs et Astuces avec ggplot](#ggplot_tips).  
 
 ```{r, warning=F, message=F}
 linelist %>% 
@@ -327,7 +327,7 @@ summary_table <- linelist %>% # Commence avec linelist, sauvegarde comme nouvel 
     delay_sd = round(sd(days_onset_hosp, na.rm = T), digits = 1) # écart type des retards, par groupe et arrondi
   )
 
-summary_table # print
+summary_table # imprimer
 ```
 
 
@@ -364,11 +364,11 @@ summary_table %>%
   select(-c(delay_mean, delay_sd)) %>% # supprimer deux anciennes colonnes   
   adorn_totals(where = "row") %>% # ajoute la ligne de total
   rename( # renomme les colonnes
-    "Nom de l'hôpital" = hospital,
-    "Cas" = cases,
-    "Délai 3+ jours" = delay_3,
-    "% retard 3+ jours" = pct_delay_3,
-    "Moyenne (sd)" = delay)
+    "Hospital Name" = hospital,
+    "Cases" = cases,
+    "Delay 3+ days" = delay_3,
+    "% delay 3+ days" = pct_delay_3,
+    "Mean (sd)" = delay)
 ```
 
 
@@ -459,19 +459,19 @@ Le comportement par défaut de `tbl_summary()` est assez incroyable - il prend l
 ```{r, warning=F, message=F}
 linelist %>% 
   select(age_years, gender, outcome, fever, temp, hospital) %>% # conserve les colonnes d'intérêt
-  tbl_summary() # default tbl_summary()
+  tbl_summary() # par défaut tbl_summary()
 ```
 
 
 Nous allons maintenant expliquer comment la fonction fonctionne et comment faire des ajustements. Les arguments clés sont détaillés ci-dessous : 
 
-**``by = ``**  
+**`by = `**  
 Vous pouvez stratifier votre tableau par une colonne (par exemple par `outcome`), en créant un tableau à 2 voies.  
 
 **`statistic = `**  
 Indiquez les statistiques à afficher et comment les afficher avec une équation. Il y a deux côtés à l'équation, séparés par un tilde `~`. À droite, entre guillemets, se trouve l'affichage statistique souhaité, et à gauche, les colonnes auxquelles cet affichage s'appliquera.  
 
-* Le côté droit de l'équation utilise la syntaxe de `str_glue()` de **stringr** (voir [Caractères et chaînes]), avec la chaîne d'affichage désirée entre guillemets et les statistiques elles-mêmes entre crochets. Vous pouvez inclure des statistiques comme "n" (pour les comptes), "N" (pour le dénominateur), "mean", "median", "sd", "max", "min", les percentiles comme "p##" comme "p25", ou le pourcentage du total comme "p". Voir `?tbl_summary` pour plus de détails.  
+* Le côté droit de l'équation utilise la syntaxe de `str_glue()` de **stringr** (voir [Caractères et chaînes de caractères](#character_strings)), avec la chaîne d'affichage désirée entre guillemets et les statistiques elles-mêmes entre crochets. Vous pouvez inclure des statistiques comme "n" (pour les comptes), "N" (pour le dénominateur), "mean", "median", "sd", "max", "min", les percentiles comme "p##" comme "p25", ou le pourcentage du total comme "p". Voir `?tbl_summary` pour plus de détails.  
 * Pour le côté gauche de l'équation, vous pouvez spécifier les colonnes par leur nom (par exemple `age` ou `c(age, gender)`) ou en utilisant des aides comme `all_continuous()`, `all_categorical()`, `contains()`, `starts_with()`, etc.  
 
 Un exemple simple d'équation `statistic = ` pourrait ressembler à ce qui suit, pour imprimer uniquement la moyenne de la colonne `age_years` :  
@@ -523,13 +523,13 @@ linelist %>%
       gender ~ "Sexe",
       temp ~ "Température",
       hospital ~ "Hôpital"),
-    missing_text = "Manquant" # comment les valeurs manquantes doivent être affichées
+    missing_text = "Missing" # comment les valeurs manquantes doivent être affichées
   )
 ```
 
 
 
-#### Statistiques sur plusieurs lignes pour les variables continues {.unnumbered} (non numérotées)  
+#### Statistiques sur plusieurs lignes pour les variables continues {.unnumbered}  
 
 Si vous souhaitez imprimer plusieurs lignes de statistiques pour des variables continues, vous pouvez l'indiquer en définissant le `type = ` à "continuous2".  Vous pouvez combiner tous les éléments présentés précédemment dans un seul tableau en choisissant les statistiques que vous souhaitez afficher. Pour cela, vous devez indiquer à la fonction que vous voulez récupérer un tableau en entrant le type comme "continuous2". Le nombre de valeurs manquantes est indiqué par "Inconnu".
 
@@ -565,7 +565,7 @@ table(linelist$outcome, useNA = "always")
 Plusieurs colonnes peuvent être croisées en les listant l'une après l'autre, séparées par des virgules. En option, vous pouvez attribuer à chaque colonne un "nom" comme `Outcome = linelist$outcome`.  
 
 ```{r}
-age_by_outcome <- table(linelist$age_cat, linelist$outcome, useNA = "always") # save table as object
+age_by_outcome <- table(linelist$age_cat, linelist$outcome, useNA = "always") # enregistrer la table en tant qu'objet
 age_by_outcome # imprimer le tableau
 ```
 Pour retourner les proportions, passez le tableau ci-dessus à la fonction `prop.table()`. Utilisez l'argument `margins = ` pour spécifier si vous voulez que les proportions soient des lignes (1), des colonnes (2), ou du tableau entier (3). Pour plus de clarté, nous envoyons le tableau à la fonction `round()` de **base** R, en spécifiant 2 chiffres.   
@@ -660,7 +660,7 @@ kruskal.test(age_years ~ outcome, linelist)
 
 ```{r}
 
-## comparer les proportions dans chaque groupe avec un test du chi carré
+## comparer les proportions dans chaque groupe avec un test du chi-carré
 chisq.test(linelist$gender, linelist$outcome)
 
 ```
@@ -676,7 +676,7 @@ L'exécution de tests statistiques de comparaison avec `tbl_summary` se fait en 
 `add_p` à une table et en spécifiant le test à utiliser. Il est possible d'obtenir des p-values corrigées pour les tests multiples en utilisant la fonction
 `add_q`. Exécutez `?tbl_summary` pour plus de détails.  
 
-#### Test du khi-deux 
+#### Test du chi-carré 
 
 Comparez les proportions d'une variable catégorielle dans deux groupes. Le test statistique par défaut pour 
 `add_p()` est d'effectuer un test d'indépendance du chi carré avec correction de continuité, mais si le nombre d'appels prévu est inférieur à 5, alors le test sera effectué. 

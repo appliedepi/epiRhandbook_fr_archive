@@ -1,29 +1,29 @@
-# Plot continuous data { }  
+# Traçage de données continues {plot_continuous}  
 
 ```{r echo=F, fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
 pacman::p_load(ggplot2,
                dplyr)
 
-linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds")) %>% #Load the data
+linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds")) %>% #Charger les données
   mutate(age = as.numeric(age),
-         wt_kg = as.numeric(wt_kg)) # Converting age and weight to numeric value if needed
+         wt_kg = as.numeric(wt_kg)) # Conversion de l'âge et du poids en valeur numérique si nécessaire
 
-# with the boxplot() function
+# avec la fonction boxplot()
 # graphics::boxplot(age ~ outcome,
 #                   data = linelist,
 #                   col = c("gold", "darkgreen"),
-#                   main = "A) BOX PLOT made using R's built in graphics boxplot")
+#                   main = "A) PLOT EN BOÎTE réalisé à l'aide du graphique boxplot intégré à R")
 
 
 
-# with ggplot2 historgram
+# avec ggplot2 historgram
 ggplot(data = linelist,
        mapping = aes(x = age))+
   geom_histogram(binwidth=2)+
   labs(title = "A) histogram of age")
 
 
-# with ggplot2 box plots
+# avec les box plots de ggplot2
 ggplot(data = linelist %>% drop_na(gender), mapping = aes(y = age, x = gender, fill = gender))+
   geom_violin()+
   #ggforce::geom_sina(aes(color = gender), alpha = 0.5)+
@@ -31,7 +31,7 @@ ggplot(data = linelist %>% drop_na(gender), mapping = aes(y = age, x = gender, f
   labs(title = "B) Box and Violin plots of age by gender")
 
 
-# with ggplot2 - scatter plot
+# avec ggplot2 - graphique en nuage de points
 ggplot(data = linelist,
        mapping = aes(y = wt_kg, x = age))+
   geom_point()+
@@ -41,7 +41,7 @@ ggplot(data = linelist,
 
 ```
 
-Cette page traite du traçage approprié de données continues, telles que l'âge, les mesures cliniques et la distance. Nous nous concentrons sur l'utilisation de **ggplot2** (qui fait partie de la famille de paquets **tidyverse**), mais nous décrivons aussi brièvement **les fonctions de traçage de base** de R.  
+Cette page traite du traçage approprié de données continues, telles que l'âge, les mesures cliniques et la distance. Nous nous concentrons sur l'utilisation de **ggplot2** (qui fait partie de la famille de paquets **tidyverse**), mais nous décrivons aussi brièvement les fonctions de traçage de **base** de R.  
 
 Les visualisations couvertes ici incluent :
 
@@ -83,7 +83,7 @@ pacman::p_load(
 
 ### Importer des données {.unnumbered}
 
-Pour les exemples de cette page, nous importons la linelist nettoyée des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (en tant que fichier .rds). Importez des données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation] pour plus de détails).  
+Pour les exemples de cette page, nous importons la linelist nettoyée des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (en tant que fichier .rds). Importez des données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importer et exporter des données](#import_export) pour plus de détails).  
 
 ```{r, echo=F}
 # Importez la liste de diffusion dans R
@@ -121,7 +121,7 @@ linelist <- linelist %>%
  
 ```
 
-Remarque : Vous devez avoir effectué plusieurs vérifications des données avant cette étape, y compris la vérification de l'absence de données. Consultez la page [Données manquantes] pour obtenir des conseils sur ces analyses.  
+Remarque : Vous devez avoir effectué plusieurs vérifications des données avant cette étape, y compris la vérification de l'absence de données. Consultez la page [Données manquantes](#missing_data) pour obtenir des conseils sur ces analyses.  
 
 
 
@@ -154,12 +154,12 @@ ggplot(data = linelist, aes(x = age))+ # fournir la variable x
 # B) Plus de bins
 ggplot(data = linelist, aes(x = age))+ # fournit la variable x
   geom_histogram(bins = 50)+
-  labs(title = "B) Set to 50 bins")
+  labs(title = "B) Définir à 50 bins")
 
 # C) Moins de bins
 ggplot(data = linelist, aes(x = age))+ # fournir la variable x
   geom_histogram(bins = 5)+
-  labs(title = "C) Set to 5 bins")
+  labs(title = "C) Définir à 5 bins")
 
 
 # D) Plus de bacs
@@ -200,10 +200,10 @@ Pour obtenir un histogramme "empilé" (d'une colonne continue de données), vous
 Chacune d'entre elles est présentée ci-dessous (*notez l'utilisation de `color = ` par rapport à `fill = ` dans chacune) :  
 
 ```{r, fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
-# Histogramme "empilé
+# Histogramme "empilé"
 ggplot(data = linelist, mapping = aes(x = age, fill = gender)) +
   geom_histogram(binwidth = 2)+
-  labs(title = "'Stacked' histogram")
+  labs(title = "Histogramme 'empilé'")
 
 # Fréquence 
 ggplot(data = linelist, mapping = aes(x = age, color = gender)) +
@@ -221,7 +221,7 @@ ggplot(data = linelist, mapping = aes(x = age, y = after_stat(density), fill = g
   labs(title = "Proportionnelle, lissée avec geom_density()")
 ```
 
-Si vous voulez vous amuser un peu, essayez `geom_density_ridges` du paquet **ggridges** ([vignette ici](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html).  
+Si vous voulez vous amuser un peu, essayez `geom_density_ridges` du paquet **ggridges** ( [vignette ici](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html).  
 
 Pour en savoir plus sur les histogrammes, consultez la page **tidyverse** [page sur geom_histogram()](https://ggplot2.tidyverse.org/reference/geom_histogram.html).  
 
@@ -271,7 +271,7 @@ Ci-dessous se trouve le code pour créer des **graphiques de violon** (`geom_vio
 # A) Graphe de gigue par groupe
 ggplot(data = linelist %>% drop_na(outcome), # supprimer les valeurs manquantes
        mapping = aes(y = age, # Variable continue
-           x = résultat, # variable de groupement
+           x = outcome, # variable de groupement
            color = outcome))+ # Variable de couleur
   geom_jitter()+ # Créez le graphique en forme de violon
   labs(title = "A) graphique de gigue par sexe")     
@@ -298,9 +298,9 @@ Le tracé A) à gauche montre une superposition basique de `geom_violin()` et `g
 pacman::p_load(ggforce)
 
 # A) Tracé Sina par groupe
-ggplot(données = linelist %>% drop_na(outcome), 
-       aes(y = âge, # variable numérique
-           x = résultat)) + # variable de groupe
+ggplot(data = linelist %>% drop_na(outcome), 
+       aes(y = age, # variable numérique
+           x = outcome)) + # variable de groupe
   geom_violin()+ # création de la base du tracé violine
   geom_sina()+ # ajout de points de gigue en forme de violon
   labs(title = "A) tracé violon et sina par sexe")      
@@ -309,8 +309,8 @@ ggplot(données = linelist %>% drop_na(outcome),
 # A) Tracé Sina par groupe
 ggplot(
   data = linelist %>% drop_na(outcome), 
-  aes(y = âge, # variable numérique
-      x = résultat)) + # variable de groupe
+  aes(y = age, # variable numérique
+      x = outcome)) + # variable de groupe
   geom_violin(
     aes(fill = outcome), # fill (couleur du fond du violon)
     color = "white", # contour blanc
@@ -318,12 +318,12 @@ ggplot(
   geom_sina(
     size=1, # modification de la taille de la gigue
     aes(color = outcome))+ # couleur (couleur des points)
-  scale_fill_manual( # Définir le remplissage pour le fond du violon par mort/récupération
+  scale_fill_manual( # Définir le remplissage pour le fond du violon par death/recover
     values = c( "Death" = "#bf5300", 
-              "Récupération" = "#11118c")) + 
-  scale_color_manual( # Définir les couleurs pour les points par mort/récupération
+              "Recover" = "#11118c")) + 
+  scale_color_manual( # Définir les couleurs pour les points par death/recover
     values = c( "Death" = "#bf5300", 
-              "Récupération" = "#11118c")) + 
+              "Recover" = "#11118c")) + 
   theme_minimal() + # Supprimer le fond gris
   theme(legend.position = "none") + # Suppression de la légende inutile
   labs(title = "B) tracé du violon et du sina par sexe, avec formatage supplémentaire")      
@@ -374,13 +374,13 @@ Un diagramme de dispersion basique de l'âge par rapport au poids est montré da
 
 ```{r fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
 # Diagramme de dispersion de base du poids et de l'âge
-ggplot(données = linelist, 
+ggplot(data = linelist, 
        mapping = aes(y = wt_kg, x = age))+
   geom_point() +
   labs(title = "A) Diagramme de dispersion du poids et de l'âge")
 
 # Diagramme de dispersion du poids et de l'âge par sexe et résultat Ebola
-ggplot(data = linelist %>% drop_na(gender, outcome), # filter retains non-missing gender/outcome
+ggplot(data = linelist %>% drop_na(gender, outcome), # le filtre retient le genre/résultat non manquant
        mapping = aes(y = wt_kg, x = age))+
   geom_point() +
   labs(title = "B) Diagramme de dispersion du poids et de l'âge en fonction du sexe et de l'issue")+
@@ -406,34 +406,34 @@ Nous présentons des méthodes pour tracer en utilisant les graphiques **base** 
 
 #### Graphiques en boîte et histogrammes {.unnumbered}
 
-Le paquet graphique intégré **base** de R est livré avec les fonctions `boxplot()` et `hist()`, permettant une visualisation directe d'une variable continue. Ces commandes peuvent être tapées rapidement et sont donc utiles pour un "coup d'œil rapide". Rappelez-vous que vous devez écrire *chaque* cadre de données et colonne dans la syntaxe du "signe du dollar" - `dataframe$column`. L'argument `main= ` est utilisé pour créer un titre.  
+Le paquet graphique intégré **base** de R est livré avec les fonctions `boxplot()` et `hist()`, permettant une visualisation directe d'une variable continue. Ces commandes peuvent être tapées rapidement et sont donc utiles pour un "coup d'œil rapide". Rappelez-vous que vous devez écrire *chaque* cadre de données et colonne dans la syntaxe du "signe du dollar" - `dataframe$column`. L'argument `main = ` est utilisé pour créer un titre.  
 
 ```{r, fig.show='hold', out.width=c('50%', '50%')}
 
 # Boxplot
-boxplot(linelist$wt_kg, main = "A) Boxplot de base") 
+boxplot(linelist$wt_kg, main = "A) Base boxplot") 
 
 
 # Histogramme
-hist(linelist$wt_kg, main = "B) Histogramme de base") 
+hist(linelist$wt_kg, main = "B) Base histogram") 
 
 ```
 
 #### Sous-groupes {.unnumbered}  
 
-Les sous-groupes peuvent être créés avec la syntaxe des formules. Notez que dans le graphique B ci-dessous, ```résultat``` et ```sexe``` sont écrits comme ```résultat*sexe```, de sorte que les boxplots existent pour les quatre combinaisons de ces deux colonnes. Ils ne sont pas facettés sur différentes lignes et colonnes comme dans **ggplot2**. Nous spécifions `linelist` à `data = ` pour ne pas avoir à utiliser la syntaxe `$` tout le temps.  
+Les sous-groupes peuvent être créés avec la syntaxe des formules. Notez que dans le graphique B ci-dessous, ```outcome``` et ```gender``` sont écrits comme ```outcome*gender```, de sorte que les boxplots existent pour les quatre combinaisons de ces deux colonnes. Ils ne sont pas facettés sur différentes lignes et colonnes comme dans **ggplot2**. Nous spécifions `linelist` à `data = ` pour ne pas avoir à utiliser la syntaxe `$` tout le temps.  
 
 ```{r, fig.show='hold', out.width=c('50%', '50%')}
 
 # Box plot par sous-groupe
-boxplot(âge ~ résultat,
-                  données = linelist, 
-                  main = "A) Boxplot de base par sous-groupe")
+boxplot(age ~ outcome,
+                  data = linelist, 
+                  main = "A) Base boxplot by subgroup")
 
 # Box plot par sous-groupes croisés
-boxplot(âge ~ résultat*sexe,
-                  données = linelist, 
-                  main = "B) Boxplot de base par groupes croisés")
+boxplot(age ~ outcome*gender,
+                  data = linelist, 
+                  main = "B) Base boxplot) by crossed groups")
 
 ```
 
@@ -449,7 +449,7 @@ Voici quelques options supplémentaires avec `boxplot()` présentées ci-dessous
 # Varier la largeur en fonction de la taille de l'échantillon 
 boxplot(linelist$age ~ linelist$outcome,
                   varwidth = TRUE, # Largeur variable selon la taille de l'échantillon
-                  main="A) Largeur proportionnelle des boxplot()")
+                  main="A) Proportional boxplot() widths")
 
                   
 # Entaille (graphique en forme de violon), et largeur variable

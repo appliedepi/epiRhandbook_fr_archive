@@ -72,7 +72,7 @@ linelist_case_data <- rio::import(here::here("data", "case_linelists", "linelist
 ```
 
 ```{r eval=F}
-# import linelist
+# importation de linelist
 linelist_case_data <- rio::import("linelist_cleaned.rds")
 ```
 
@@ -286,7 +286,7 @@ print(linelistsurv_fit, print.rmean = TRUE)
 ```
 
 
-<span style="color : darkgreen ;">**_TIP:_** Nous pouvons créer l'objet *surv* directement dans la fonction `survfit()` et économiser une ligne de code. Cela ressemblera alors à : `linelistsurv_quick <- survfit(Surv(futime, event) ~ 1, data=linelist_surv)`.</span>
+<span style="color : darkgreen ;">**_TIP:_** Nous pouvons créer *l'objet surv* directement dans la fonction `survfit()` et économiser une ligne de code. Cela ressemblera alors à : `linelistsurv_quick <- survfit(Surv(futime, event) ~ 1, data=linelist_surv)`.</span>
 
 
 ### Risque cumulé {.unnumbered}  
@@ -458,7 +458,7 @@ ggsurvplot(
   data = linelist_surv,
   size = 1, linetype = "strata", # types de lignes
   conf.int = T,
-  surv.scale = "pourcentage",  
+  surv.scale = "percent",  
   break.time.by = 10, 
   xlab = "Jours de suivi",
   ylab= "Probabilité de survie",
@@ -506,7 +506,7 @@ Le même manque de preuves est noté concernant le groupe d'âge.
 
 ```{r coxmodel_agesex}
 
-#fitting the cox model
+#ajustement du modèle de cox
 linelistsurv_cox_sexage <- survival::coxph(
               Surv(futime, event) ~ gender + age_cat_small, 
               data = linelist_surv
@@ -610,11 +610,11 @@ Dans la dernière section, nous avons abordé l'utilisation de la régression de
 
 Que se passe-t-il si vous vous intéressez à une covariable qui est mesurée **après** le début du suivi ? Ou, que se passe-t-il si vous avez une covariable qui peut changer dans le temps ?
 
-Par exemple, vous travaillez peut-être avec des données cliniques où vous avez répété les mesures des valeurs de laboratoire de l'hôpital qui peuvent changer dans le temps. C'est un exemple de **covariable dépendante du temps**. Pour résoudre ce problème, vous avez besoin d'une configuration spéciale, mais heureusement, le modèle cox est très flexible et ce type de données peut également être modélisé avec les outils du paquet **survival**. 
+Par exemple, vous travaillez peut-être avec des données cliniques où vous avez répété les mesures des valeurs de laboratoire de l'hôpital qui peuvent changer dans le temps. C'est un exemple de **Covariable Dépendante du Temps**. Pour résoudre ce problème, vous avez besoin d'une configuration spéciale, mais heureusement, le modèle cox est très flexible et ce type de données peut également être modélisé avec les outils du paquet **survival**. 
 
 ### Configuration des covariables dépendantes du temps {.unnumbered} 
 
-L'analyse des covariables dépendantes du temps dans R nécessite la configuration d'un ensemble de données spécial. Si cela vous intéresse, consultez l'article plus détaillé de l'auteur du paquet **survival** [Using Time Dependent Covariates and Time Dependent Coefficients in the Cox Model](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf).
+L'analyse des covariables dépendantes du temps dans R nécessite la configuration d'un ensemble de données spécial. Si cela vous intéresse, consultez l'article plus détaillé de l'auteur du paquet **survival** [Utilisation de covariables dépendantes du temps et de coefficients dépendants du temps dans le modèle de Cox](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf).
 
 Pour cela, nous allons utiliser un nouvel ensemble de données du package `SemiCompRisks` nommé `BMT`, qui comprend des données sur 137 patients ayant subi une greffe de moelle osseuse. Les variables sur lesquelles nous allons nous concentrer sont :  
 
@@ -642,7 +642,7 @@ bmt <- rowid_to_column(BMT, "my_id")
 L'ensemble de données ressemble maintenant à ceci :  
 
 ```{r message=FALSE, echo=F}
-DT::datatable(bmt, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+DT::datatable(bmt, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
 #### Développer les lignes de patients {.unnumbered} 
