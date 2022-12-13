@@ -1,5 +1,5 @@
 
-# Joindre des données { }  
+# Joindre des données {#joining_matching}  
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(here::here("images", "left-join.gif"))

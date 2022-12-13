@@ -1,5 +1,5 @@
 
-# Caractères et chaînes de caractères {#character_strings}  
+# caractÃ¨res et chaÃ®nes de caractÃ¨res {#character_strings}  
 
 ```{r, out.width=c('100%'), echo=F, message=F}
 knitr::include_graphics(here::here("images", "Characters_Strings_1500x500.png"))
@@ -7,22 +7,22 @@ knitr::include_graphics(here::here("images", "Characters_Strings_1500x500.png"))
 
 
 
-Cette page démontre l'utilisation du paquet **stringr** pour évaluer et manipuler des valeurs de caractères (ou chaînes de caractères, ce que nous appelons "strings" en anglais).  
+Cette page dÃ©montre l'utilisation du paquet **stringr** pour Ã©valuer et manipuler des valeurs de caractÃ¨res (ou chaÃ®nes de caractÃ¨res, ce que nous appelons "strings" en anglais).  
 
-1. Combiner, ordonner, séparer, arranger - `str_c()`, `str_glue()`, `str_order()`, `str_split()`  
+1. Combiner, ordonner, sÃ©parer, arranger - `str_c()`, `str_glue()`, `str_order()`, `str_split()`  
 2. Nettoyer et standardiser  
     * Ajuster la longueur - `str_pad()`, `str_trunc()`, `str_wrap()`.  
     * Changez la casse - `str_to_upper()`, `str_to_title()`, `str_to_lower()`, `str_to_sentence()`  
-3. Évaluer et extraire par position - `str_length()`, `str_sub()`, `word()`.  
-4. Modèles  
-    * Détecter et localiser - `str_detect()`, `str_subset()`, `str_match()`, `str_extract()`  
+3. Ã‰valuer et extraire par position - `str_length()`, `str_sub()`, `word()`.  
+4. ModÃ¨les  
+    * dÃ©tecter et localiser - `str_detect()`, `str_subset()`, `str_match()`, `str_extract()`  
     * Modifier et remplacer - `str_sub()`, `str_replace_all()`  
-7. Expressions régulières ("regex")
+7. Expressions rÃ©guliÃ¨res ("regex")
 
 
-Afin d'expliquer facilement l'utilisation des chaînes de caractères dans le présent chapitre, la plupart des exemples utilisent un vecteur de caractères court et défini, mais ils peuvent facilement être adaptés à une colonne dans un dataframe.  
+Afin d'expliquer facilement l'utilisation des chaÃ®nes de caractÃ¨res dans le prÃ©sent chapitre, la plupart des exemples utilisent un vecteur de caractÃ¨res court et dÃ©fini, mais ils peuvent facilement Ãªtre adaptÃ©s Ã  une colonne dans un dataframe.  
 
-Une grande partie de l'inspiration pour ce chapitre est basée sur cette [example de le paquet stringr](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html).  
+Une grande partie de l'inspiration pour ce chapitre est basÃ©e sur cette [example de le paquet stringr](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html).  
 
 
 
@@ -36,17 +36,17 @@ Installez ou chargez le paquet **stringr** et d'autres paquets de **tidyverse**.
 ```{r}
 # installer/charger les paquets
 pacman::p_load(
-  stringr,    # de nombreuses fonctions pour la manipulation des chaînes de caractères
-  tidyverse,  # pour diverses options de manipulation des données 
+  stringr,    # de nombreuses fonctions pour la manipulation des chaÃ®nes de caractÃ¨res
+  tidyverse,  # pour diverses options de manipulation des donnÃ©es 
   tools)      # alternative pour la conversion en majuscules
 
 ```
 
 
-### Importation de données  {.unnumbered}  
+### Importation de donnÃ©es  {.unnumbered}  
 
 
-Dans cette page, il y aura parfois des références à la `linelist` (liste de cas ou liste linéaire) nettoyée des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre les exemples dans votre propre script, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez ici pour télécharger la "linelist" nettoyée</a> (as .rds file). Importez les données avec la fonction `import()` du paquet **rio** (la fonction `import()` peut être utilisée pour importer plusieurs types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation] pour plus de détails). 
+Dans cette page, il y aura parfois des rÃ©fÃ©rences Ã  la `linelist` (liste de cas ou liste linÃ©aire) nettoyÃ©e des cas d'une Ã©pidÃ©mie d'Ebola simulÃ©e. Si vous voulez suivre les exemples dans votre propre script, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez ici pour tÃ©lÃ©charger la "linelist" nettoyÃ©e</a> (as .rds file). Importez les donnÃ©es avec la fonction `import()` du paquet **rio** (la fonction `import()` peut Ãªtre utilisÃ©e pour importer plusieurs types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de dÃ©tails). 
 
 ```{r, echo=F}
 # importez la linelist dans R
@@ -58,10 +58,10 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 linelist <- import("linelist_cleaned.rds")
 ```
 
-Les 50 premières lignes de la linelist (liste linéaire ou liste de cas) sont affichées ci-dessous.
+Les 50 premiÃ©res lignes de la linelist (liste linÃ©aire ou liste de cas) sont affichÃ©es ci-dessous.
 
 ```{r, message=FALSE, echo=F}
-# affiche les données de la linelist dans un tableau
+# affiche les donnÃ©es de la linelist dans un tableau
 DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
@@ -69,78 +69,78 @@ DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list
 
 
 <!-- ======================================================= -->
-## Unir, séparer et arranger { }
+## Unir, sÃ©parer et arranger { }
 
 Cette section couvre :  
 
-* Utilisation de `str_c()`, `str_glue()` et `unite()` pour combiner des chaînes de caractères.  
-* Utiliser `str_order()` pour organiser des chaînes de caractères.  
-* Utiliser `str_split()` et `separate()` pour séparer des chaînes de caractères.  
+* Utilisation de `str_c()`, `str_glue()` et `unite()` pour combiner des chaÃ®nes de caractÃ¨res.  
+* Utiliser `str_order()` pour organiser des chaÃ®nes de caractÃ¨res.  
+* Utiliser `str_split()` et `separate()` pour sÃ©parer des chaÃ®nes de caractÃ¨res.  
 
 
 
 <!-- ======================================================= -->
-### Combiner des chaînes de caractères {.unnumbered}
+### Combiner des chaÃ®nes de caractÃ¨res {.unnumbered}
 
-Pour combiner ou concaténer plusieurs chaînes de caractères en une seule chaîne, nous suggérons d'utiliser la fonction `str_c()` du paquet **stringr**. Si vous avez des valeurs de caractères distinctes à combiner, fournissez-les simplement comme arguments uniques, séparés par des virgules.     
+Pour combiner ou concatÃ©ner plusieurs chaÃ®nes de caractÃ¨res en une seule chaÃ®ne, nous suggÃ©rons d'utiliser la fonction `str_c()` du paquet **stringr**. Si vous avez des valeurs de caractÃ¨res distinctes Ã  combiner, fournissez-les simplement comme arguments uniques, sÃ©parÃ©s par des virgules.     
 
 ```{r}
 str_c("String1", "String2", "String3")
 ```
 
-L'argument `sep = ` insère une valeur de caractère entre chacun des arguments que vous avez fournis (par exemple, fournir une virgule, un espace ou une nouvelle ligne insèrerait ce caractère entre chaque argument `"\n"`)  
+L'argument `sep = ` insÃ©re une valeur de caractÃ¨re entre chacun des arguments que vous avez fournis (par exemple, fournir une virgule, un espace ou une nouvelle ligne insÃ©rerait ce caractÃ¨re entre chaque argument `"\n"`)  
 
 ```{r}
 str_c("String1", "String2", "String3", sep = ", ")
 ```
 
-L'argument `collapse = ` est pertinent si vous mettez plusieurs *vecteurs* comme arguments à `str_c()`. L'argument `collapse = ` est utilisé pour séparer les éléments inclus dans le vecteur produit par `str_c()`, où le vecteur produit est un long vecteur de type Caractère. 
+L'argument `collapse = ` est pertinent si vous mettez plusieurs *vecteurs* comme arguments Ã  `str_c()`. L'argument `collapse = ` est utilisÃ© pour sÃ©parer les Ã©lÃ©ments inclus dans le vecteur produit par `str_c()`, oÃ¹ le vecteur produit est un long vecteur de type caractÃ¨re. 
 
-L'exemple ci-dessous montre la combinaison de deux vecteurs en un seul vecteur (prénoms et noms de famille). Un autre exemple similaire pourrait être montré avec des régions et le nombre de cas dans chaque région. Dans cet exemple :  
+L'exemple ci-dessous montre la combinaison de deux vecteurs en un seul vecteur (prÃ©noms et noms de famille). Un autre exemple similaire pourrait Ãªtre montrÃ© avec des rÃ©gions et le nombre de cas dans chaque rÃ©gion. Dans cet exemple :  
 
-* La valeur `sep = ` apparaît entre chaque prénom et chaque nom.  
-* La valeur `collapse = ` apparaît entre chaque personne.   
+* La valeur `sep = ` apparaÃ®t entre chaque prÃ©nom et chaque nom.  
+* La valeur `collapse = ` apparaÃ®t entre chaque personne.   
 
 
 ```{r}
 first_names <- c("abdul", "fahruk", "janice") 
 last_names  <- c("hussein", "akinleye", "okeke")
 
-# sep s'affiche entre les chaînes de caractères d'entrée respectives, tandis que collapse s'affiche entre les éléments produits
+# sep s'affiche entre les chaÃ®nes de caractÃ¨res d'entrÃ©e respectives, tandis que collapse s'affiche entre les Ã©lÃ©ments produits
 str_c(first_names, last_names, sep = " ", collapse = ";  ")
 ```
 
-Remarque: Selon le contexte d'affichage souhaité, lorsque vous imprimez une telle chaîne combinée avec des nouvelles lignes, vous devrez peut-être envelopper la phrase entière dans `cat()` pour que les nouvelles lignes s'impriment correctement:  
+Remarque: Selon le contexte d'affichage souhaitÃ©, lorsque vous imprimez une telle chaÃ®ne combinÃ©e avec des nouvelles lignes, vous devrez peut-Ãªtre envelopper la phrase entiÃ¨re dans `cat()` pour que les nouvelles lignes s'impriment correctement:  
 
 ```{r}
-# Pour que les nouvelles lignes s'impriment correctement, il peut être nécessaire d'envelopper la phrase dans cat()
+# Pour que les nouvelles lignes s'impriment correctement, il peut Ãªtre nÃ©cessaire d'envelopper la phrase dans cat()
 cat(str_c(first_names, last_names, sep = " ", collapse = ";\n"))
 ```
 
 
 
 <!-- ======================================================= -->
-### Chaînes de caractères dynamiques {.unnumbered}
+### ChaÃ®nes de caractÃ¨res dynamiques {.unnumbered}
 
-Utilisez la fonction `str_glue()` pour insérer du code R dynamique dans une chaîne de caractères. C'est une fonction très utile pour créer des légendes de tracés dynamiques, comme démontré ci-dessous.  
+Utilisez la fonction `str_glue()` pour insÃ©rer du code R dynamique dans une chaÃ®ne de caractÃ¨res. C'est une fonction trÃ©s utile pour crÃ©er des lÃ©gendes de graphiques dynamiques, comme dÃ©montrÃ© ci-dessous.  
 
-* Tout le contenu est placé entre guillemets doubles comme ceci `str_glue("")`.  
-* Tout code dynamique ou référence à des valeurs prédéfinies est placé entre des accolades `{}` à l'intérieur des guillemets doubles. Il peut y avoir plusieurs accolades dans la même commande de `str_glue()`.  
-* Pour afficher les guillemets de caractères '', utilisez des guillemets simples entre les guillemets doubles (par exemple, pour le format de date - voir l'exemple ci-dessous).  
+* Tout le contenu est placÃ© entre guillemets doubles comme ceci `str_glue("")`.  
+* Tout code dynamique ou rÃ©fÃ©rence Ã  des valeurs prÃ©dÃ©finies est placÃ© entre des accolades `{}` Ã  l'intÃ©rieur des guillemets doubles. Il peut y avoir plusieurs accolades dans la mÃªme commande de `str_glue()`.  
+* Pour afficher les guillemets de caractÃ¨res '', utilisez des guillemets simples entre les guillemets doubles (par exemple, pour le format de date - voir l'exemple ci-dessous).  
 * Conseil : Vous pouvez utiliser `\n` pour forcer une nouvelle ligne.  
 * Conseil : Vous pouvez utiliser `format()` pour ajuster l'affichage de la date, et utiliser `Sys.Date()` pour afficher la date actuelle.  
 
 
-Un exemple simple, d'une légende de tracé dynamique :  
+Un exemple simple, d'une lÃ©gende d'un graphique dynamique :  
 
 ```{r}
-str_glue("Data include {nrow(linelist)} cases and are current to {format(Sys.Date(), '%d %b %Y')}.")
+str_glue("Les donnÃ©es incluent {nrow(linelist)} cas et sont actuelles Ã  {format(Sys.Date(), '%d %b %Y')}.")
 ```
 
-Un format alternatif consiste à utiliser des caractères de remplacement à l'intérieur des parenthèses et à définir le code dans des arguments séparés à la fin de la fonction `str_glue()`, comme ci-dessous. Cela peut améliorer la lisibilité du code si le texte est long.
+Un format alternatif consiste Ã  utiliser des caractÃ¨res de remplacement Ã  l'intÃ©rieur des parenthÃ¨ses et Ã  dÃ©finir le code dans des arguments sÃ©parÃ©s Ã  la fin de la fonction `str_glue()`, comme ci-dessous. Cela peut amÃ©liorer la lisibilitÃ© du code si le texte est long.
 
 ```{r}
-str_glue("Linelist as of {current_date}.\nLast case hospitalized on {last_hospital}.\n{n_missing_onset} cases are missing date of onset and not shown",
+str_glue("Linelist Ã  la {current_date}.\nDernier cas hospitalisÃ© Ã  l'hÃ´pital {last_hospital}.\n{n_missing_onset} cas n'ont pas de date d'apparition et ne sont pas reprÃ©sentÃ©s.",
          current_date = format(Sys.Date(), '%d %b %Y'),
          last_hospital = format(as.Date(max(linelist$date_hospitalisation, na.rm=T)), '%d %b %Y'),
          n_missing_onset = nrow(linelist %>% filter(is.na(date_onset)))
@@ -151,10 +151,10 @@ str_glue("Linelist as of {current_date}.\nLast case hospitalized on {last_hospit
 
 **Extraction d'un dataframe**
 
-Il est parfois utile d'extraire des données d'un dataframe et de les coller ensemble en séquence.Vous trouverez ci-dessous un exemple de dataframe comprenant la juridiction (zone), les nouvelles affaires et les affaires totales. Nous allons l'utiliser pour faire une description résumée du nombre de nouveaux cas et du nombre total de cas par juridiction. 
+Il est parfois utile d'extraire des donnÃ©es d'un dataframe et de les coller ensemble en sÃ©quence.Vous trouverez ci-dessous un exemple de dataframe comprenant la juridiction (zone), les nouvelles affaires et les affaires totales. Nous allons l'utiliser pour faire une description rÃ©sumÃ©e du nombre de nouveaux cas et du nombre total de cas par juridiction. 
 
 ```{r}
-# créer un dataframe de cas
+# crÃ©er un dataframe de cas
 case_table <- data.frame(
   zone        = c("Zone 1", "Zone 2", "Zone 3", "Zone 4", "Zone 5"),
   new_cases   = c(3, 0, 7, 0, 15),
@@ -166,7 +166,7 @@ case_table <- data.frame(
 DT::datatable(case_table, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Utilisez la fonction `str_glue_data()`, qui est spécifiquement utilisée pour prendre des données à partir des lignes du dataframe: 
+Utilisez la fonction `str_glue_data()`, qui est spÃ©cifiquement utilisÃ©e pour prendre des donnÃ©es Ã  partir des lignes du dataframe: 
 
 ```{r}
 case_table %>% 
@@ -174,20 +174,20 @@ case_table %>%
 ```
 
 
-**Combinaison des chaînes de caractères entre les lignes**  
+**Combinaison des chaÃ®nes de caractÃ¨res entre les lignes**  
 
-Si vous essayez "d'enrouler" des valeurs dans une colonne d'un dataframe, c'est-à-dire de combiner des valeurs de plusieurs lignes en une seule ligne en les collant ensemble avec un séparateur. Consultez la section de la page [Déduplication] sur les valeurs ["enroulées"](#str_rollup).    
+Si vous essayez "d'enrouler" des valeurs dans une colonne d'un dataframe, c'est-Ã -dire de combiner des valeurs de plusieurs lignes en une seule ligne en les collant ensemble avec un sÃ©parateur. Consultez la section de la page [Deduplication](#deduplication) sur les valeurs ["enroulÃ©es"](#str_rollup).    
 
-**Dataframe combiné en une seule ligne**  
+**Dataframe combinÃ© en une seule ligne**  
 
-Vous pouvez faire apparaître la description résumée sur une seule ligne en utilisant `str_c()` (en spécifiant le dataframe et les noms des colonnes), et en fournissant les arguments `sep = ` et `collapse = `.  
+Vous pouvez faire apparaÃªtre la description rÃ©sumÃ©e sur une seule ligne en utilisant `str_c()` (en spÃ©cifiant le dataframe et les noms des colonnes), et en fournissant les arguments `sep = ` et `collapse = `.  
 
 
 ```{r}
 str_c(case_table$zone, case_table$new_cases, sep = " = ", collapse = ";  ")
 ```
 
-Vous pouvez ajouter le pré-fixe "New Cases :" (nouveaux cas en français) au début de la description en l'entourant d'une `str_c()` distincte (si "New Cases :" se trouvait dans la `str_c()``, il apparaîtrait plusieurs fois).   
+Vous pouvez ajouter le prÃ©-fixe "New Cases :" (nouveaux cas en franÃ§ais) au dÃ©but de la description en l'entourant d'une `str_c()` distincte (si "New Cases :" se trouvait dans la `str_c()``, il apparaÃ®trait plusieurs fois).   
 
 ```{r}
 str_c("New Cases: ", str_c(case_table$zone, case_table$new_cases, sep = " = ", collapse = ";  "))
@@ -198,15 +198,15 @@ str_c("New Cases: ", str_c(case_table$zone, case_table$new_cases, sep = " = ", c
 
 ###  Unir les colonnes {#str_unite .unnumbered}
 
-Dans un cadre de données, le regroupement des valeurs de caractères de plusieurs colonnes peut être réalisé avec la fonction `unite()` du paquet **tidyr**. C'est l'inverse de la fonction `separate()`.   
+Dans un cadre de donnÃ©es, le regroupement des valeurs de caractÃ¨res de plusieurs colonnes peut Ãªtre rÃ©alisÃ© avec la fonction `unite()` du paquet **tidyr**. C'est l'inverse de la fonction `separate()`.   
 
 Vous devez fournir le nom de la nouvelle colonne unie et ensuite fournir les noms des colonnes que vous souhaitez unir.  
 
-* Par défaut, le séparateur utilisé dans la colonne unie est le caractère de soulignement `_`, mais cela peut être changé avec l'argument `sep = `.  
-* L'argument `remove = ` supprime les colonnes qui seront unies du dataframe (VRAI par défaut).  
-* L'argument `na.rm = ` supprime les valeurs manquantes lors de l'unification (FAUX par défaut)  
+* Par dÃ©faut, le sÃ©parateur utilisÃ© dans la colonne unie est le caractÃ¨re de soulignement `_`, mais cela peut Ãªtre changÃ© avec l'argument `sep = `.  
+* L'argument `remove = ` supprime les colonnes qui seront unies du dataframe (VRAI par dÃ©faut).  
+* L'argument `na.rm = ` supprime les valeurs manquantes lors de l'unification (FAUX par dÃ©faut)  
 
-Ci-dessous, nous définissons un mini dataframe pour la démonstration:  
+Ci-dessous, nous dÃ©finissons un mini dataframe pour la dÃ©monstration:  
 
 ```{r, message = F, warning=F}
 df <- data.frame(
@@ -231,16 +231,16 @@ Voici l'exemple avec le dataframe dessus:
 DT::datatable(df_split, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Ci-dessous, nous réunissons les trois colonnes de symptômes:  
+Ci-dessous, nous rÃ©unissons les trois colonnes de symptÃ´mes:  
 
 ```{r}
 df_split %>% 
   unite(
     col = "all_symptoms", # nom de la nouvelle colonne unie
-    c("sym_1", "sym_2", "sym_3"), # colonnes à unir
-    sep = ", ", # séparateur à utiliser dans la colonne unie
-    remove = TRUE, # si TRUE (VRAI), supprime les colonnes d'entrée du dataframe
-    na.rm = TRUE # Si TRUE (VRAI), les valeurs manquantes sont supprimées avant l'unification.
+    c("sym_1", "sym_2", "sym_3"), # colonnes Ã  unir
+    sep = ", ", # sÃ©parateur Ã  utiliser dans la colonne unie
+    remove = TRUE, # si TRUE (VRAI), supprime les colonnes d'entrÃ©e du dataframe
+    na.rm = TRUE # Si TRUE (VRAI), les valeurs manquantes sont supprimÃ©es avant l'unification.
   )
 ```
 
@@ -251,28 +251,28 @@ df_split %>%
 
 
 <!-- ======================================================= -->
-### Séparer {.unnumbered}  
+### sÃ©parer {.unnumbered}  
 
-Pour diviser une chaîne de caractères en fonction d'un motif, utilisez la fonction `str_split()`. Cette fonction évalue la (ou les) chaîne(s) de caractères et renvoie une `liste` de vecteurs de caractères constituée des valeurs nouvellement séparées.
+Pour diviser une chaÃ®ne de caractÃ¨res en fonction d'un motif, utilisez la fonction `str_split()`. Cette fonction Ã©value la (ou les) chaÃ®ne(s) de caractÃ¨res et renvoie une `liste` de vecteurs de caractÃ¨res constituÃ©e des valeurs nouvellement sÃ©parÃ©es.
 
-L'exemple simple ci-dessous évalue une chaîne de caractères et la divise en trois. Par défaut, il retourne un objet de la classe `list` avec un élément (un vecteur de caractères) pour chaque chaîne initialement fournie. Si `simplify = TRUE`, (en français VRAI), il retourne une matrice de caractères.   
+L'exemple simple ci-dessous Ã©value une chaÃ®ne de caractÃ¨res et la divise en trois. Par dÃ©faut, il retourne un objet de la classe `list` avec un Ã©lÃ©ment (un vecteur de caractÃ¨res) pour chaque chaÃ®ne initialement fournie. Si `simplify = TRUE`, (en franÃ§ais VRAI), il retourne une matrice de caractÃ¨res.   
 
-Dans cet exemple, une chaîne de caractères est fournie, et la fonction renvoie une liste avec un élément - un vecteur de caractères avec trois valeurs.   
+Dans cet exemple, une chaÃ®ne de caractÃ¨res est fournie, et la fonction renvoie une liste avec un Ã©lÃ©ment - un vecteur de caractÃ¨res avec trois valeurs.   
 
 ```{r}
 str_split(string = "jaundice, fever, chills",
           pattern = ",")
 ```
 
-Si les valeurs séparées sont enregistrées dans un objet, vous pouvez alors accéder à la n-ième valeur séparée avec la syntaxe des crochets. Pour accéder à une valeur spécifique, vous pouvez utiliser une syntaxe comme celle-ci : `nouveau_objet[[1]][2]`, qui accéderait à la deuxième valeur de la première chaîne évaluée ("fever", ou fièvre en français, dans le dataframe de l'exemple). Consultez la page [Bases de R] pour plus de détails sur l'accès aux éléments.  
+Si les valeurs sÃ©parÃ©es sont enregistrÃ©es dans un objet, vous pouvez alors accÃ©der Ã  la n-iÃ©me valeur sÃ©parÃ©e avec la syntaxe des crochets. Pour accÃ©der Ã  une valeur spÃ©cifique, vous pouvez utiliser une syntaxe comme celle-ci : `nouveau_objet[[1]][2]`, qui accÃ©derait Ã  la deuxiÃ©me valeur de la premiÃ©re chaÃ®ne Ã©valuÃ©e ("fever", ou fiÃ©vre en franÃ§ais, dans le dataframe de l'exemple). Consultez la page [Bases de R](#rbasics) pour plus de dÃ©tails sur l'accÃ©s aux Ã©lÃ©ments.  
 
 ```{r}
 pt1_symptoms <- str_split("jaundice, fever, chills", ",")
 
-pt1_symptoms[[1]][2]  # extrait la 2ème valeur du 1er (et dans ce cas unique) élément de la liste
+pt1_symptoms[[1]][2]  # extrait la 2Ã©me valeur du 1er (et dans ce cas unique) Ã©lÃ©ment de la liste
 ```
 
-Si plusieurs chaînes de caractères sont fournies par `str_split()`, il y aura plus d'un élément dans la liste retournée. 
+Si plusieurs chaÃ®nes de caractÃ¨res sont fournies par `str_split()`, il y aura plus d'un Ã©lÃ©ment dans la liste retournÃ©e. 
 
 ```{r}
 symptoms <- c("jaundice, fever, chills",     # patient 1
@@ -286,19 +286,19 @@ str_split(symptoms, ",")                     # split each patient's symptoms
 ```
 
 
-Pour retourner une "matrice de caractères" à la place, ce qui peut être utile pour créer des colonnes dans votre dataframe, définissez l'argument `simplify = TRUE` comme indiqué ci-dessous :  
+Pour retourner une "matrice de caractÃ¨res" Ã  la place, ce qui peut Ãªtre utile pour crÃ©er des colonnes dans votre dataframe, dÃ©finissez l'argument `simplify = TRUE` comme indiquÃ© ci-dessous :  
 
 ```{r}
 str_split(symptoms, ",", simplify = TRUE) #simplify = VRAI
 ```
 
-Vous pouvez également ajuster le nombre de séparations à créer avec l'argument `n = `. Par exemple, l'exemple ci-dessous limite le nombre de séparations à deux. Toutes les autres virgules restent dans les deuxièmes valeurs. 
+Vous pouvez Ã©galement ajuster le nombre de sÃ©parations Ã  crÃ©er avec l'argument `n = `. Par exemple, l'exemple ci-dessous limite le nombre de sÃ©parations Ã  deux. Toutes les autres virgules restent dans les deuxiÃ©mes valeurs. 
 
 ```{r}
 str_split(symptoms, ",", simplify = TRUE, n = 2)
 ```
 
-*Note - les mêmes résultats peuvent être obtenus avec `str_split_fixed()`, dans lequel vous ne donnez pas l'argument `simplify`, mais devez à la place désigner le nombre de colonnes (`n`).* 
+*Note - les mÃªmes rÃ©sultats peuvent Ãªtre obtenus avec `str_split_fixed()`, dans lequel vous ne donnez pas l'argument `simplify`, mais devez Ã  la place dÃ©signer le nombre de colonnes (`n`).* 
 
 ```{r, eval=F}
 str_split_fixed(symptoms, ",", n = 2)
@@ -307,46 +307,46 @@ str_split_fixed(symptoms, ",", n = 2)
 
 
 
-### Séparer les colonnes {.unnumbered}  
+### SÃ©parer les colonnes {.unnumbered}  
 
-Si vous essayez de séparer une colonne dans un dataframe, il est préférable d'utiliser la fonction `separate()` de **dplyr**. Cette fonction est utilisée pour séparer une colonne de caractères en d'autres colonnes. 
+Si vous essayez de sÃ©parer une colonne dans un dataframe, il est prÃ©fÃ©rable d'utiliser la fonction `separate()` de **dplyr**. Cette fonction est utilisÃ©e pour sÃ©parer une colonne de caractÃ¨res en d'autres colonnes. 
 
-Disons que nous avons un simple dataframe `df` (défini et uni dans la [section unite](#str_unite)) contenant une colonne `case_ID`, une colonne de caractères avec plusieurs symptômes, et une colonne de résultats. Notre objectif est de séparer la colonne `symptoms` en plusieurs colonnes, chacune contenant un symptôme.   
+Disons que nous avons un simple dataframe `df` (dÃ©fini et uni dans la [section unite](#str_unite)) contenant une colonne `case_ID`, une colonne de caractÃ¨res avec plusieurs symptÃ´mes, et une colonne de rÃ©sultats. Notre objectif est de sÃ©parer la colonne `symptoms` en plusieurs colonnes, chacune contenant un symptÃ´me.   
 
 
 ```{r, echo=F}
 DT::datatable(df, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-En supposant que les données sont passées ('pipe', en utilisant %>%) dans `separate()`, vous devez d'abord fournir la colonne à séparer dans la fonction `seperate()`. Ensuite, fournissez `into = ` comme un vecteur `c( )` contenant les noms des *nouvelles* colonnes, comme indiqué ci-dessous.  
+En supposant que les donnÃ©es sont passÃ©es ('pipe', en utilisant %>%) dans `separate()`, vous devez d'abord fournir la colonne Ã  sÃ©parer dans la fonction `seperate()`. Ensuite, fournissez `into = ` comme un vecteur `c( )` contenant les noms des *nouvelles* colonnes, comme indiquÃ© ci-dessous.  
 
-* `sep = ` le séparateur, peut être un caractère, ou un nombre (interprété comme la position du caractère à séparer) 
-* `remove = ` FAUX par défaut, supprime la colonne sélectionnée du dataframe une fois séparée.  
-* `convert = ` FALSE par défaut, si TRUE, les "NA" de la chaîne deviendront des `NA`.  
-* `extra = ` ce contrôle ce qui se passe s'il y a plus de valeurs créées par la séparation de la colonne que de nouveaux noms de colonnes fournis.
-     * `extra = "warn"` signifie que vous verrez un avertissement mais que les valeurs excédentaires seront supprimées (**par défaut**).  
-     * `extra = "drop"`, signifie que les valeurs excédentaires seront abandonnées sans avertissement.  
-     **`extra = "merge"` ne fractionnera que le nombre de nouvelles colonnes listées dans `into` - *cette configuration préservera toutes vos données***.  
+* `sep = ` le sÃ©parateur, peut Ãªtre un caractÃ¨re, ou un nombre (interprÃ©tÃ© comme la position du caractÃ¨re Ã  sÃ©parer) 
+* `remove = ` FAUX par dÃ©faut, supprime la colonne sÃ©lectionnÃ©e du dataframe une fois sÃ©parÃ©e.  
+* `convert = ` FALSE par dÃ©faut, si TRUE, les "NA" de la chaÃ®ne deviendront des `NA`.  
+* `extra = ` ce contrÃ©le ce qui se passe s'il y a plus de valeurs crÃ©Ã©es par la sÃ©paration de la colonne que de nouveaux noms de colonnes fournis.
+     * `extra = "warn"` signifie que vous verrez un avertissement mais que les valeurs excÃ©dentaires seront supprimÃ©es (**par dÃ©faut**).  
+     * `extra = "drop"`, signifie que les valeurs excÃ©dentaires seront abandonnÃ©es sans avertissement.  
+     **`extra = "merge"` ne fractionnera que le nombre de nouvelles colonnes listÃ©es dans `into` - *_cette configuration prÃ©servera toutes vos donnÃ©es_**.  
 
 
-Voici un exemple avec `extra = "merge"` - Deux nouvelles colonnes sont définies mais tous les troisièmes symptômes ou plus sont combinés dans la deuxième colonne:  
+Voici un exemple avec `extra = "merge"` - Deux nouvelles colonnes sont dÃ©finies mais tous les troisiÃ©mes symptÃ´mes ou plus sont combinÃ©s dans la deuxiÃ©me colonne:  
 
 ```{r}
-# troisièmes symptômes combinés dans la deuxième nouvelle colonne
+# troisiÃ©mes symptÃ´mes combinÃ©s dans la deuxiÃ©me nouvelle colonne
 df %>% 
   separate(symptoms, into = c("sym_1", "sym_2"), sep=",", extra = "merge")
 ```
 
-Lorsque l'option par défaut est utilisée ci-dessous, un avertissement est donné mais les troisièmes symptômes sont perdus:  
+Lorsque l'option par dÃ©faut est utilisÃ©e ci-dessous, R retourne un avertissement mais les troisiÃ©mes symptÃ´mes sont perdus:  
 
 ```{r}
-# les troisièmes symptômes sont perdus
+# les troisiÃ©mes symptÃ´mes sont perdus
 df %>% 
   separate(symptoms, into = c("sym_1", "sym_2"), sep=",")
 ```
 
 
-<span style="color: orange;">**_CAUTION:_** Si vous ne fournissez pas suffisamment de valeurs `into` pour les nouvelles colonnes, vos données peuvent être tronquées.</span>  
+<span style="color: orange;">**_CAUTION:_** Si vous ne fournissez pas suffisamment de valeurs `into` pour les nouvelles colonnes, vos donnÃ©es peuvent Ãªtre tronquÃ©es.</span>  
 
 
 
@@ -354,22 +354,22 @@ df %>%
 
 
 <!-- ======================================================= -->
-### Classer par ordre alphabétique {.unnumbered} 
+### Classer par ordre alphabÃ©tique {.unnumbered} 
 
-Vous pouvez trier plusieurs chaînes de caractères par ordre alphabétique. `str_order()` renvoie l'ordre (numérique), tandis que `str_sort()` renvoie les chaînes de caractères dans l'ordre alphabétique.
+Vous pouvez trier plusieurs chaÃ®nes de caractÃ¨res par ordre alphabÃ©tique. `str_order()` renvoie l'ordre (numÃ©rique), tandis que `str_sort()` renvoie les chaÃ®nes de caractÃ¨res dans l'ordre alphabÃ©tique.
 
 ```{r}
-# chaînes de caractères
+# chaÃ®nes de caractÃ¨res
 health_zones <- c("Alba", "Takota", "Delta")
 
-# renvoie l'ordre alphabétique
+# renvoie l'ordre alphabÃ©tique
 str_order(health_zones)
 
-# retourne les chaînes de caractères par ordre alphabétique
+# retourne les chaÃ®nes de caractÃ¨res par ordre alphabÃ©tique
 str_sort(health_zones)
 ```
 
-Pour utiliser un alphabet différent, ajoutez l'argument `locale = `. Voir la liste complète des locales en entrant `stringi::stri_locale_list()` dans la console R.  
+Pour utiliser un alphabet diffÃ©rent, ajoutez l'argument `locale = `. Voir la liste complÃ¨te des locales en entrant `stringi::stri_locale_list()` dans la console R.  
 
 
 
@@ -378,7 +378,7 @@ Pour utiliser un alphabet différent, ajoutez l'argument `locale = `. Voir la lis
 <!-- ======================================================= -->
 ### Fonctions de la base R {.unnumbered}
 
-Il est courant de voir les fonctions **base** R `paste()` et `paste0()`, qui concaténent des vecteurs après avoir converti toutes les parties en caractères. Ces fonctions agissent de manière similaire à `str_c()` mais la syntaxe est sans doute plus compliquée - dans les parenthèses, chaque partie est séparée par une virgule. Les parties sont soit du texte en caractères (entre guillemets), soit des objets de code prédéfinis (sans guillemets). Par exemple:
+Il est courant de voir les fonctions **base** R `paste()` et `paste0()`, qui concatÃ©nent des vecteurs aprÃ©s avoir converti toutes les parties en caractÃ¨res. Ces fonctions agissent de maniÃ¨re similaire Ã  `str_c()` mais la syntaxe est sans doute plus compliquÃ©e - dans les parenthÃ¨ses, chaque partie est sÃ©parÃ©e par une virgule. Les parties sont soit du texte en caractÃ¨res (entre guillemets), soit des objets de code prÃ©dÃ©finis (sans guillemets). Par exemple:
 
 ```{r}
 n_beds <- 10
@@ -387,7 +387,7 @@ n_masks <- 20
 paste0("Regional hospital needs ", n_beds, " beds and ", n_masks, " masks.")
 ```
 
-Les arguments `sep = ` et `collapse = ` peuvent être spécifiés. `paste()` est simplement `paste0()` avec un `sep = " "` (un espace) par défaut. 
+Les arguments `sep = ` et `collapse = ` peuvent Ãªtre spÃ©cifiÃ©s. `paste()` est simplement `paste0()` avec un `sep = " "` (un espace) par dÃ©faut. 
 
 
 
@@ -398,7 +398,7 @@ Les arguments `sep = ` et `collapse = ` peuvent être spécifiés. `paste()` est si
 <!-- ======================================================= -->
 ### Changer la casse {.unnumbered}
 
-Souvent, on doit modifier la casse/capitalisation d'une valeur de chaîne de caractères, par exemple les noms des jursidictions. Utilisez `str_to_upper()`, `str_to_lower()`, et `str_to_title()`, de **stringr**, comme indiqué ci-dessous :  
+Souvent, on doit modifier la casse/capitalisation d'une valeur de chaÃ®ne de caractÃ¨res, par exemple les noms des jursidictions. Utilisez `str_to_upper()`, `str_to_lower()`, et `str_to_title()`, de **stringr**, comme indiquÃ© ci-dessous :  
 
 ```{r}
 str_to_upper("California")
@@ -406,12 +406,12 @@ str_to_upper("California")
 str_to_lower("California")
 ```
 
-En utilisant *base** R, l'exemple ci-dessus peut également être réalisé avec `toupper()` ou `tolower()`.  
+En utilisant *base** R, l'exemple ci-dessus peut Ã©galement Ãªtre rÃ©alisÃ© avec `toupper()` ou `tolower()`.  
 
 
 **Mots en majuscules**  
 
-La transformation de la chaîne pour que chaque mot soit en majuscule peut être réalisée avec `str_to_title()`:  
+La transformation de la chaÃ®ne pour que chaque mot soit en majuscule peut Ãªtre rÃ©alisÃ©e avec `str_to_title()`:  
 
 ```{r}
 str_to_title("go to the US state of california ")
@@ -423,7 +423,7 @@ Utilisez la fonction `toTitleCase()` du paquet **tools** pour ne mettre en majus
 tools::toTitleCase("This is the US state of california")
 ```
 
-Vous pouvez également utiliser la fonction `str_to_sentence()`, qui ne met en majuscule que la première lettre de la chaîne.
+Vous pouvez Ã©galement utiliser la fonction `str_to_sentence()`, qui ne met en majuscule que la premiÃ©re lettre de la chaÃ®ne.
 
 ```{r}
 str_to_sentence("the patient must be transported")
@@ -433,36 +433,36 @@ str_to_sentence("the patient must be transported")
 
 ### Longueur du bloc {#str_pad .unnumbered}
 
-Utilisez la fonction `str_pad()` pour ajouter des caractères à une chaîne, jusqu'à une longueur minimale. Par défaut, des espaces sont ajoutés, mais vous pouvez également ajouter d'autres caractères en utilisant l'argument `pad = `.  
+Utilisez la fonction `str_pad()` pour ajouter des caractÃ¨res Ã  une chaÃ®ne, jusqu'Ã   une longueur minimale. Par dÃ©faut, des espaces sont ajoutÃ©s, mais vous pouvez Ã©galement ajouter d'autres caractÃ¨res en utilisant l'argument `pad = `.  
 
 
 ```{r}
-# Codes ICD de longueur différente
+# Codes ICD de longueur diffÃ©rente
 ICD_codes <- c("R10.13",
                "R10.819",
                "R17")
 
-# Les codes ICD sont complétés à 7 caractères sur la droite
+# Les codes ICD sont complÃ©tÃ©s Ã  7 caractÃ¨res sur la droite
 str_pad(ICD_codes, 7, "right")
 
 # Remplir avec des points au lieu d'espaces
 str_pad(ICD_codes, 7, "right", pad = ".")
 ```
 
-Par exemple, pour compléter des nombres avec des zéros en tête (comme pour les heures ou les minutes), vous pouvez compléter le nombre à une longueur minimale de 2 avec `pad = "0"`.
+Par exemple, pour complÃ¨ter des nombres avec des zÃ©ros en tÃªte (comme pour les heures ou les minutes), vous pouvez complÃ¨ter le nombre Ã  une longueur minimale de 2 avec `pad = "0"`.
 
 ```{r}
-# Ajoutez des zéros à deux chiffres (par exemple, pour les minutes/heures)
+# Ajoutez des zÃ©ros Ã  deux chiffres (par exemple, pour les minutes/heures)
 str_pad("4", 2, pad = "0") 
 
-# Exemple utilisant une colonne numérique nommée "heures" (hours en Anglais)
+# Exemple utilisant une colonne numÃ©rique nommÃ©e "heures" (hours en Anglais)
 # hours <- str_pad(hours, 2, pad = "0")
 ```
 
 
 ### Tronquer {.unnumbered} 
 
-La fonction `str_trunc()` définit une longueur maximale pour chaque chaîne. Si une chaîne dépasse cette longueur, elle est tronquée (raccourcie) et une ellipse (...) est incluse pour indiquer que la chaîne était auparavant plus longue. Notez que l'ellipse *est* comptée dans la longueur. Les caractères d'ellipses peuvent être changés avec l'argument `ellipsis = `.  L'argument optionnel `side = ` spécifie où l'ellipse apparaîtra dans la chaîne tronquée ("gauche", "droite", ou "centre").  
+La fonction `str_trunc()` dÃ©finit une longueur maximale pour chaque chaÃ®ne. Si une chaÃ®ne dÃ©passe cette longueur, elle est tronquÃ©e (raccourcie) et une ellipse (...) est incluse pour indiquer que la chaÃ®ne Ã©tait auparavant plus longue. Notez que l'ellipse *est* comptÃ©e dans la longueur. Les caractÃ¨res d'ellipses peuvent Ãªtre changÃ©s avec l'argument `ellipsis = `.  L'argument optionnel `side = ` spÃ©cifie oÃ¹ l'ellipse apparaÃ®tra dans la chaÃ®ne tronquÃ©e ("gauche", "droite", ou "centre").  
 
 ```{r}
 original <- "Symptom onset on 4/3/2020 with vomiting"
@@ -472,63 +472,63 @@ str_trunc(original, 10, "center")
 
 ### Normaliser la longueur {.unnumbered}
 
-Utilisez la fonction `str_trunc()` pour définir une longueur maximale, puis utilisez `str_pad()` pour étendre les chaînes très courtes à cette longueur tronquée. Dans l'exemple ci-dessous, 6 est défini comme longueur maximale (une valeur est tronquée), puis une valeur très courte est ajoutée pour atteindre la longueur de 6.       
+Utilisez la fonction `str_trunc()` pour dÃ©finir une longueur maximale, puis utilisez `str_pad()` pour Ã©tendre les chaÃ®nes trÃ©s courtes Ã  cette longueur tronquÃ©e. Dans l'exemple ci-dessous, 6 est dÃ©fini comme longueur maximale (une valeur est tronquÃ©e), puis une valeur trÃ©s courte est ajoutÃ©e pour atteindre la longueur de 6.       
 
 ```{r}
-# Codes CIM de longueur différente
+# Codes CIM de longueur diffÃ©rente
 ICD_codes   <- c("R10.13",
                  "R10.819",
                  "R17")
 
-# tronquer à la longueur maximale de 6
+# tronquer Ã  la longueur maximale de 6
 ICD_codes_2 <- str_trunc(ICD_codes, 6)
 ICD_codes_2
 
-# étendre à une longueur minimale de 6
+# Ã©tendre Ã  une longueur minimale de 6
 ICD_codes_3 <- str_pad(ICD_codes_2, 6, "right")
 ICD_codes_3
 ```
 
 
-### Supprimer les espaces avant/après les chaînes de caractères {.unnumbered}  
+### Supprimer les espaces avant/aprÃ©s les chaÃ®nes de caractÃ¨res {.unnumbered}  
 
-Utilisez la fonction `str_trim()` pour supprimer les espaces, les nouvelles lignes (`\n`) ou les tabulations (`\t`) sur les côtés d'une entrée de chaîne de caractères. Ajoutez `"right"` (en français droite), `"left"` (en français gauche) ou `"both"` (en français les deux) à la commande pour spécifier le côté à découper (par exemple, `str_trim(x, "right")`.
+Utilisez la fonction `str_trim()` pour supprimer les espaces, les nouvelles lignes (`\n`) ou les tabulations (`\t`) sur les cÃ´tÃ©s d'une entrÃ©e de chaÃ®ne de caractÃ¨res. Ajoutez `"right"` (en franÃ§ais droite), `"left"` (en franÃ§ais gauche) ou `"both"` (en franÃ§ais les deux) Ã  la commande pour spÃ©cifier le cÃ´tÃ© Ã  dÃ©couper (par exemple, `str_trim(x, "right")`.
 
 ```{r}
-# Numéros d'identification avec espaces excédentaires à droite
-IDs <- c("provA_1852  ", # deux espaces excédentaires
-         "provA_2345",   # zero espace excédentaire
-         "provA_9460 ")  # un espace excédentaire
+# NumÃ©ros d'identification avec espaces excÃ©dentaires Ã  droite
+IDs <- c("provA_1852  ", # deux espaces excÃ©dentaires
+         "provA_2345",   # zero espace excÃ©dentaire
+         "provA_9460 ")  # un espace excÃ©dentaire
 
-#  les identifiants sont coupés pour supprimer les espaces excédentaires du côté droit uniquement
+#  les identifiants sont coupÃ©s pour supprimer les espaces excÃ©dentaires du cÃ´tÃ© droit uniquement
 str_trim(IDs)
 ```
 
 
-### Supprimer les espaces répétés dans les chaînes de caractères {.unnumbered}  
+### Supprimer les espaces rÃ©pÃ©tÃ©s dans les chaÃ®nes de caractÃ¨res {.unnumbered}  
 
-Utilisez la fonction `str_squish()` pour supprimer les espaces répétés qui apparaissent *à l'intérieur* d'une chaîne. Par exemple, pour convertir les espaces doubles en espaces simples. Elle supprime également les espaces, les retours à la ligne ou les tabulations à l'extérieur de la chaîne, comme `str_trim()`.  
+Utilisez la fonction `str_squish()` pour supprimer les espaces rÃ©pÃ©tÃ©s qui apparaissent *Ã  l'intÃ©rieur* d'une chaÃ®ne. Par exemple, pour convertir les espaces doubles en espaces simples. Elle supprime Ã©galement les espaces, les retours Ã  la ligne ou les tabulations Ã  l'extÃ©rieur de la chaÃ®ne, comme `str_trim()`.  
 
 
 ```{r}
-# L'original contient des espaces supplémentaires dans la chaîne
+# L'original contient des espaces supplÃ©mentaires dans la chaÃ®ne
 str_squish("  Pt requires   IV saline\n") 
 ```
 
-Entrez `?str_trim`, `?str_pad` dans votre console R pour voir plus de détails.   
+Entrez `?str_trim`, `?str_pad` dans votre console R pour voir plus de dÃ©tails.   
 
 
 ### Transformer en paragraphes {.unnumbered}  
 
-Utilisez `str_wrap()` pour transformer un long texte non structuré en un paragraphe structuré avec une longueur de ligne fixe. Fournissez la longueur idéale de caractères pour chaque ligne, et la fonction applique un algorithme pour insérer des nouvelles lignes (`\n`) dans le paragraphe, comme dans l'exemple ci-dessous. 
+Utilisez `str_wrap()` pour transformer un long texte non structurÃ© en un paragraphe structurÃ© avec une longueur de ligne fixe. Fournissez la longueur idÃ©ale de caractÃ¨res pour chaque ligne, et la fonction applique un algorithme pour insÃ©rer des nouvelles lignes (`\n`) dans le paragraphe, comme dans l'exemple ci-dessous. 
 
 ```{r}
-pt_course <- "Symptom onset 1/4/2020 vomiting chills fever. Pt saw traditional healer in home village on 2/4/2020. On 5/4/2020 pt symptoms worsened and was admitted to Lumta clinic. Sample was taken and pt was transported to regional hospital on 6/4/2020. Pt died at regional hospital on 7/4/2020."
+pt_course <- "DÃ©but des symptÃ´mes 1/4/2020 : vomissements, frissons, fiÃ¨vre. Le patient a vu un guÃ©risseur traditionnel dans son village natal le 2/4/2020. Le 5/4/2020, les symptÃ´mes du patient se sont aggravÃ©s et il a Ã©tÃ© admis Ã  la clinique Lumta. Un Ã©chantillon a Ã©tÃ© prÃ©levÃ© et le patient a Ã©tÃ© transportÃ© Ã  l'hÃ´pital rÃ©gional le 6/4/2020. Le patient est dÃ©cÃ©dÃ© Ã  l'hÃ´pital rÃ©gional le 7/4/2020."
 
 str_wrap(pt_course, 40)
 ```
 
-La fonction de **base** R cat()` peut être enroulée autour de la commande ci-dessus afin d'imprimer le résultat dans la console R. 
+La fonction de **base** R cat()` peut Ãªtre enroulÃ©e autour de la commande ci-dessus afin d'imprimer le rÃ©sultat dans la console R. 
 
 ```{r}
 cat(str_wrap(pt_course, 40))
@@ -540,40 +540,40 @@ cat(str_wrap(pt_course, 40))
 
 
 <!-- ======================================================= -->
-##  Gérer par position { }
+##  GÃ©rer par position { }
 
 
-### Extraire par position de caractère  {.unnumbered}  
+### Extraire par position de caractÃ¨re  {.unnumbered}  
 
-Utilisez la fonction `str_sub()` pour retourner seulement une partie d'une chaîne de caractères. La fonction prend trois arguments principaux :  
+Utilisez la fonction `str_sub()` pour retourner seulement une partie d'une chaÃ®ne de caractÃ¨res. La fonction prend trois arguments principaux :  
 
-1) le(s) vecteur(s) de caractères  
-2) la position de départ dans le vecteur
+1) le(s) vecteur(s) de caractÃ¨res  
+2) la position de dÃ©part dans le vecteur
 3) la position finale dans le vecteur
 
-Quelques remarques sur les numéros de position :  
+Quelques remarques sur les numÃ©ros de position :  
 
-* Si le numéro de position est positif, la position est comptée à partir de l'extrémité gauche de la chaîne.  
-* Si le numéro de position est négatif, il est compté à partir de l'extrémité droite de la chaîne.  
-* Les numéros de position sont inclusifs.  
-* Les positions qui dépassent la chaîne de caractères seront tronquées (supprimées).  
+* Si le numÃ©ro de position est positif, la position est comptÃ©e Ã  partir de l'extrÃ©mitÃ© gauche de la chaÃ®ne.  
+* Si le numÃ©ro de position est nÃ©gatif, il est comptÃ© Ã  partir de l'extrÃ©mitÃ© droite de la chaÃ®ne.  
+* Les numÃ©ros de position sont inclusifs.  
+* Les positions qui dÃ©passent la chaÃ®ne de caractÃ¨res seront tronquÃ©es (supprimÃ©es).  
 
-Voici quelques exemples appliqués à la chaîne "pneumonie" :  
+Voici quelques exemples appliquÃ©s Ã  la chaÃ®ne "pneumonie" :  
 
 ```{r}
-# position de départ et position finale troisième en partant de la gauche (3ème lettre en partant de la gauche)
+# position de dÃ©part et position finale troisiÃ©me en partant de la gauche (3Ã©me lettre en partant de la gauche)
 str_sub("pneumonia", 3, 3)
 
-# 0 n'est pas présent, donc cela renvoie ""
+# 0 n'est pas prÃ©sent, donc cela renvoie ""
 str_sub("pneumonia", 0, 0)
 
-# # 6ème en partant de la gauche, jusqu'à la 1ère en partant de la droite
+# # 6Ã©me en partant de la gauche, jusqu'Ã   la 1Ã©re en partant de la droite
 str_sub("pneumonia", 6, -1)
 
-# 5ème de la droite, vers le 2ème de la droite
+# 5Ã©me de la droite, vers le 2Ã©me de la droite
 str_sub("pneumonia", -5, -2)
 
-# 4ème en partant de la gauche, jusqu'à une position en dehors de la chaîne de caractères
+# 4Ã©me en partant de la gauche, jusqu'Ã   une position en dehors de la chaÃ®ne de caractÃ¨res
 str_sub("pneumonia", 4, 15)
 ```
 
@@ -581,13 +581,13 @@ str_sub("pneumonia", 4, 15)
 
 ### Extraire par position de mot {.unnumbered} 
 
-Pour extraire le nième "mot", utilisez la fonction `word()`, du paquet **stringr**. Fournissez la ou les chaînes de caractères, puis la première position du mot à extraire, et la dernière position du mot à extraire.  
+Pour extraire le niÃ©me "mot", utilisez la fonction `word()`, du paquet **stringr**. Fournissez la ou les chaÃ®nes de caractÃ¨res, puis la premiÃ©re position du mot Ã  extraire, et la derniÃ¨re position du mot Ã  extraire.  
 
-Par défaut, le séparateur entre les mots est supposé être un espace, sauf indication contraire avec `sep = ` (par exemple, `sep = "_"` où les mots sont séparés par des caractères de soulignement).   
+Par dÃ©faut, le sÃ©parateur entre les mots est supposÃ© Ãªtre un espace, sauf indication contraire avec `sep = ` (par exemple, `sep = "_"` oÃ¹ les mots sont sÃ©parÃ©s par des caractÃ¨res de soulignement).   
 
 
 ```{r}
-# chaînes de caractères à évaluer
+# chaÃ®nes de caractÃ¨res Ã  Ã©valuer
 chief_complaints <- c("I just got out of the hospital 2 days ago, but still can barely breathe.",
                       "My stomach hurts",
                       "Severe ear pain")
@@ -597,26 +597,26 @@ word(chief_complaints, start = 1, end = 3, sep = " ")
 ```
 
 
-###  Remplacer par la position du caractère {.unnumbered} 
+###  Remplacer par la position du caractÃ¨re {.unnumbered} 
 
-`str_sub()` apparié avec l'opérateur d'affectation (`<-`) peut être utilisé pour modifier une partie d'une chaîne : 
+`str_sub()` appariÃ© avec l'opÃ©rateur d'affectation (`<-`) peut Ãªtre utilisÃ© pour modifier une partie d'une chaÃ®ne : 
 
 ```{r}
 word <- "pneumonia"
 
-# convertissez les troisième et quatrième caractères en X 
+# convertissez les troisiÃ©me et quatriÃ©me caractÃ¨res en X 
 str_sub(word, 3, 4) <- "XX"
 
 # imprimer
 word
 ```
 
-Voici ci-dessus Un exemple appliqué à plusieurs chaînes de caractères (par exemple, un vecteur de mots ou une colonne). Notez l'expansion en longueur de "HIV".   
+Voici ci-dessus Un exemple appliquÃ© Ã  plusieurs chaÃ®nes de caractÃ¨res (par exemple, un vecteur de mots ou une colonne). Notez l'expansion en longueur de "HIV".   
 
 ```{r}
 words <- c("pneumonia", "tubercolosis", "HIV")
 
-# convertissez les troisième et quatrième caractères en X 
+# convertissez les troisiÃ©me et quatriÃ©me caractÃ¨res en X 
 str_sub(words, 3, 4) <- "XX"
 
 words
@@ -640,31 +640,31 @@ Alternativement, utilisez la fonction `nchar()` de **base** R.
 <!-- ======================================================= -->
 ## Motifs { }
 
-De nombreuses fonctions du paquet **stringr** fonctionnent pour détecter, localiser, extraire, correspondre, remplacer et séparer en fonction d'un *motif* spécifié.  
+De nombreuses fonctions du paquet **stringr** fonctionnent pour dÃ©tecter, localiser, extraire, correspondre, remplacer et sÃ©parer en fonction d'un *motif* spÃ©cifiÃ©.  
 
 
 <!-- ======================================================= -->
-### Détecter un motif {.unnumbered}
+### dÃ©tecter un motif {.unnumbered}
 
-Utilisez la fonction `str_detect()` comme ci-dessous pour détecter la présence/absence d'un motif dans une chaîne de caractères. Fournissez d'abord la chaîne ou le vecteur à rechercher (`string = `), puis le motif à rechercher (`pattern = `). Notez que par défaut, la recherche *est sensible à la casse*!
+Utilisez la fonction `str_detect()` comme ci-dessous pour dÃ©tecter la prÃ©sence/absence d'un motif dans une chaÃ®ne de caractÃ¨res. Fournissez d'abord la chaÃ®ne ou le vecteur Ã  rechercher (`string = `), puis le motif Ã  rechercher (`pattern = `). Notez que par dÃ©faut, la recherche *est sensible Ã  la casse*!
 
 ```{r}
 str_detect(string = "primary school teacher", pattern = "teach")
 ```
 
-L'argument `negate = ` peut être inclus et mis à `TRUE` (en français VRAI) si vous voulez savoir si le motif n'est PAS présent.  
+L'argument `negate = ` peut Ãªtre inclus et mis Ã  `TRUE` (en franÃ§ais VRAI) si vous voulez savoir si le motif n'est PAS prÃ©sent.  
 
 ```{r}
 str_detect(string = "primary school teacher", pattern = "teach", negate = TRUE)
 ```
 
-Pour ignorer les majuscules et les minuscules, intégrez le motif dans `regex()`, et *dans* `regex()` ajoutez l'argument `ignore_case = TRUE` (ou `T` en raccourci).  
+Pour ignorer les majuscules et les minuscules, intÃ©grez le motif dans `regex()`, et *dans* `regex()` ajoutez l'argument `ignore_case = TRUE` (ou `T` en raccourci).  
 
 ```{r}
 str_detect(string = "Teacher", pattern = regex("teach", ignore_case = T))
 ```
 
-Lorsque `str_detect()` est appliqué à un vecteur de caractères ou à une colonne de dataframe, il renvoie TRUE (en français VRAI) ou FALSE (en français FAUX) pour chacune des valeurs. 
+Lorsque `str_detect()` est appliquÃ© Ã  un vecteur de caractÃ¨res ou Ã  une colonne de dataframe, il renvoie TRUE (en franÃ§ais VRAI) ou FALSE (en franÃ§ais FAUX) pour chacune des valeurs. 
 
 ```{r}
 # un vecteur/colonne de professions 
@@ -679,24 +679,24 @@ occupations <- c("field laborer",
                  "office worker",
                  "food service")
 
-# Détecter la présence du motif "teach" dans chaque chaîne - la valeur retournée est un vecteur de VRAI/FAUX
+# dÃ©tecter la prÃ©sence du motif "teach" dans chaque chaÃ®ne - la valeur retournÃ©e est un vecteur de VRAI/FAUX
 str_detect(occupations, "teach")
 
 ```
 
-Si vous avez besoin de compter les `TRUE`s, utilisez la fonction `sum()` sur les valeurs ou le vecteur retourné(es). Ceci compte le nombre de `TRUE` (VRAI) dans les valeurs ou le vecteur retourné(es). 
+Si vous avez besoin de compter les `TRUE`s, utilisez la fonction `sum()` sur les valeurs ou le vecteur retournÃ©(es). Ceci compte le nombre de `TRUE` (VRAI) dans les valeurs ou le vecteur retournÃ©(es). 
 
 ```{r}
 sum(str_detect(occupations, "teach"))
 ```
 
-Pour effectuer une recherche incluant plusieurs termes, incluez-les séparés par des barres OR (`|`) dans l'argument `pattern = `, comme indiqué ci-dessous: 
+Pour effectuer une recherche incluant plusieurs termes, incluez-les sÃ©parÃ©s par des barres OR (`|`) dans l'argument `pattern = `, comme indiquÃ© ci-dessous: 
 
 ```{r}
 sum(str_detect(string = occupations, pattern = "teach|professor|tutor"))
 ```
 
-Si vous avez besoin de construire une longue liste de termes de recherche, vous pouvez les combiner en utilisant `str_c()` et `sep = |`, et assigner ceci à un objet. Vous pouvez ensuite référencer le vecteur par le nom de l'objet. L'exemple ci-dessous combine les termes de recherche d'une occupation possible en un seul objet.  
+Si vous avez besoin de construire une longue liste de termes de recherche, vous pouvez les combiner en utilisant `str_c()` et `sep = |`, et assigner ceci Ã  un objet. Vous pouvez ensuite rÃ©fÃ©rencer le vecteur par le nom de l'objet. L'exemple ci-dessous combine les termes de recherche d'une occupation possible en un seul objet.  
 
 ```{r}
 # termes de recherche
@@ -713,7 +713,7 @@ occupation_med_frontline <- str_c("medical", "medicine", "hcw", "healthcare", "h
 occupation_med_frontline
 ```
 
-Cette commande renvoie le nombre de professions qui contiennent l'un des termes de recherche pour les praticiens médicaux (`occupation_med_frontline`):  
+Cette commande renvoie le nombre de professions qui contiennent l'un des termes de recherche pour les praticiens mÃ©dicaux (`occupation_med_frontline`):  
 
 ```{r}
 sum(str_detect(string = occupations, pattern = occupation_med_frontline))
@@ -721,36 +721,36 @@ sum(str_detect(string = occupations, pattern = occupation_med_frontline))
 
 
 
-**Fonctions de recherche de chaînes de caractères de base R**  
+**Fonctions de recherche de chaÃ®nes de caractÃ¨res de base R**  
 
-La fonction de R **base** `grepl()` fonctionne de manière similaire à `str_detect()`, dans le sens qu'elle recherche les correspondances avec un motif et retourne un vecteur logique. La syntaxe de base est `grepl(pattern, strings_to_search, ignore.case = FALSE, ...)`. Un avantage est que l'argument `ignore.case` est plus facile à écrire (il n'y a pas besoin d'impliquer la fonction `regex()`).  
+La fonction de R **base** `grepl()` fonctionne de maniÃ¨re similaire Ã  `str_detect()`, dans le sens qu'elle recherche les correspondances avec un motif et retourne un vecteur logique. La syntaxe de base est `grepl(pattern, strings_to_search, ignore.case = FALSE, ...)`. Un avantage est que l'argument `ignore.case` est plus facile Ã  Ã©crire (il n'y a pas besoin d'impliquer la fonction `regex()`).  
 
-Les fonctions `sub()` et `gsub()` de base R agissent de manière similaire à `str_replace()`. Leur syntaxe générale suit ce format : `gsub(motif, remplacement, chaînes_à_rechercher, ignore.case = FALSE)`. `sub()` remplacera seulement la première instance du motif, alors que `gsub()` remplacera toutes les instances du motif.   
+Les fonctions `sub()` et `gsub()` de base R agissent de maniÃ¨re similaire Ã  `str_replace()`. Leur syntaxe gÃ©nÃ©rale suit ce format : `gsub(motif, remplacement, chaÃ®nes_a_rechercher, ignore.case = FALSE)`. `sub()` remplacera seulement la premiÃ©re instance du motif, alors que `gsub()` remplacera toutes les instances du motif.   
 
 
 #### Convertir les virgules en points {.unnumbered}  
 
-Voici un exemple d'utilisation de `gsub()` pour convertir des virgules en points dans un vecteur de nombres. Cela peut être utile si vos données proviennent de différents endroits dans le monde avec une syntaxe de langue différente.  
+Voici un exemple d'utilisation de `gsub()` pour convertir des virgules en points dans un vecteur de nombres. Cela peut Ãªtre utile si vos donnÃ©es proviennent de diffÃ©rents endroits dans le monde avec une syntaxe de langue diffÃ©rente.  
 
-L'exemple ci-dessous utilise deux applications de `gsub`. L'application interne `gsub()`, qui agit en premier sur l'objet `lengths`, convertit tous les points en "" sans espace. Le caractère point "." doit être "spécifié" avec deux slashs pour signifier réellement un point, parce que "." en regex sans deux slashs signifie " n'importe quel caractère". Ensuite, le résultat (avec seulement des virgules) est passé à la fonction externe `gsub()` dans laquelle les virgules sont remplacées par des points.     
+L'exemple ci-dessous utilise deux applications de `gsub`. L'application interne `gsub()`, qui agit en premier sur l'objet `lengths`, convertit tous les points en "" sans espace. Le caractÃ¨re point "." doit Ãªtre "spÃ©cifiÃ©" avec deux slashs pour signifier rÃ©ellement un point, parce que "." en regex sans deux slashs signifie " n'importe quel caractÃ¨re". Ensuite, le rÃ©sultat (avec seulement des virgules) est passÃ© Ã  la fonction externe `gsub()` dans laquelle les virgules sont remplacÃ©es par des points.     
 
 ```{r, eval=F}
 lengths <- c("2.454,56", "1,2", "6.096,5")
 
 as.numeric(gsub(pattern = ",",                # trouver les virgules    
                 replacement = ".",            # remplacer par des points
-                x = gsub("\\.", "", lengths)  # vecteur avec d'autres points supprimés 
+                x = gsub("\\.", "", lengths)  # vecteur avec d'autres points supprimÃ©s 
                 )
-           )                                  # convertir le résultat en numérique
+           )                                  # convertir le rÃ©sultat en numÃ©rique
 ```
 
 
 
 
 
-### Remplacer tous les éléments {.unnumbered}  
+### Remplacer tous les Ã©lÃ©ments {.unnumbered}  
 
-Utilisez la fonction `str_replace_all()` comme un outil de "recherche et remplacement". Vous fournissez d'abord les chaînes à évaluer à `string = `, puis le motif à remplacer à `pattern = `, et enfin la valeur de remplacement à `replacement = `. L'exemple ci-dessous remplace toutes les occurrences de "dead" (en français mort) par "deceased" (en français décédés). Notez que cette opération est sensible à la casse.   
+Utilisez la fonction `str_replace_all()` comme un outil de "recherche et remplacement". Vous fournissez d'abord les chaÃ®nes Ã  Ã©valuer Ã  `string = `, puis le motif Ã  remplacer Ã  `pattern = `, et enfin la valeur de remplacement Ã  `replacement = `. L'exemple ci-dessous remplace toutes les occurrences de "dead" (en franÃ§ais mort) par "deceased" (en franÃ§ais dÃ©cÃ©dÃ©s). Notez que cette opÃ©ration est sensible Ã  la casse.   
 
 ```{r}
 outcome <- c("Karl: dead",
@@ -763,22 +763,22 @@ str_replace_all(string = outcome, pattern = "dead", replacement = "deceased")
 Remarques :  
 
 * Pour remplacer un motif par `NA`, utilisez `str_replace_na()`.  
-* La fonction `str_replace()` remplace uniquement la première instance du motif dans chaque chaîne évaluée.  
+* La fonction `str_replace()` remplace uniquement la premiÃ©re instance du motif dans chaque chaÃ®ne Ã©valuÃ©e.  
 
 
 <!-- ======================================================= -->
-### Détecter en utilisant des instructions logiques {.unnumbered}
+### dÃ©tecter en utilisant des instructions logiques {.unnumbered}
 
 
-**A l'intérieur de `case_when()`**  
+**A l'intÃ©rieur de `case_when()`**  
 
-`str_detect()` est souvent utilisé dans `case_when()` (du paquet **dplyr**). Disons que `occupations` est une colonne de la linelist (liste linéaire ou liste de cas). La fonction `mutate()` ci-dessous crée une nouvelle colonne appelée `is_educator` en utilisant la logique conditionnelle via `case_when()`. Consultez la page sur le nettoyage des données pour en savoir plus sur la méthode `case_when()`.  
+`str_detect()` est souvent utilisÃ© dans `case_when()` (du paquet **dplyr**). Disons que `occupations` est une colonne de la linelist (liste linÃ©aire ou liste de cas). La fonction `mutate()` ci-dessous crÃ©e une nouvelle colonne appelÃ©e `is_educator` en utilisant la logique conditionnelle via `case_when()`. Consultez la page sur le nettoyage des donnÃ©es pour en savoir plus sur la mÃ©thode `case_when()`.  
 
 
 ```{r, eval=F}
 df <- df %>% 
   mutate(is_educator = case_when(
-    #  recherche de termes dans la profession, non sensible à la casse
+    #  recherche de termes dans la profession, non sensible Ã  la casse
     str_detect(occupations,
                regex("teach|prof|tutor|university",
                      ignore_case = TRUE))              ~ "Educator",
@@ -786,14 +786,14 @@ df <- df %>%
     TRUE                                               ~ "Not an educator"))
 ```
 
-Par ailleurs, il peut être important d'ajouter des critères d'exclusion à la logique conditionnelle (`négate = F`) :  
+Par ailleurs, il peut Ãªtre important d'ajouter des critÃ©res d'exclusion Ã  la logique conditionnelle (`negate = F`) :  
 
 ```{r, eval=F}
 df <- df %>% 
-  # la valeur de la nouvelle colonne is_educator est basée sur la logique conditionnelle
+  # la valeur de la nouvelle colonne is_educator est basÃ©e sur la logique conditionnelle
   mutate(is_educator = case_when(
     
-    # la colonne occupation doit répondre à 2 critères pour se voir attribuer "Educateur" :
+    # la colonne occupation doit rÃ©pondre Ã  2 critÃ©res pour se voir attribuer "Educateur" :
     # elle doit avoir un terme de recherche ET PAS de terme d'exclusion
     
     #  Doit avoir un terme de recherche
@@ -805,7 +805,7 @@ df <- df %>%
                regex("admin", ignore_case = T),
                negate = TRUE                        ~ "Educator"
     
-    # Toutes les lignes ne répondant pas aux critères ci-dessus
+    # Toutes les lignes ne rÃ©pondant pas aux critÃ©res ci-dessus
     TRUE                                            ~ "Not an educator"))
 ```
 
@@ -816,18 +816,18 @@ df <- df %>%
 <!-- ======================================================= -->
 ### Localiser la position du motif {.unnumbered}  
 
-Pour localiser la *première* position d'un motif, utilisez la fonction `str_locate()`. Elle produit une position de début et de fin.   
+Pour localiser la *premiÃ©re* position d'un motif, utilisez la fonction `str_locate()`. Elle produit une position de dÃ©but et de fin.   
 
 ```{r}
 str_locate("I wish", "sh")
 ```
 
-Comme les autres fonctions de la famille `str`, il existe une version "_all" (`str_locate_all()`) qui renvoie les positions de *toutes* les instances du motif dans chaque chaîne. Cette fonction renvoie les valeurs sous forme de `liste`.  
+Comme les autres fonctions de la famille `str`, il existe une version "_all" (`str_locate_all()`) qui renvoie les positions de *toutes* les instances du motif dans chaque chaÃ®ne. Cette fonction renvoie les valeurs sous forme de `liste`.  
 
 ```{r}
 phrases <- c("I wish", "I hope", "he hopes", "He hopes")
 
-str_locate(phrases, "h" ) # position de la *première* instance du motif
+str_locate(phrases, "h" ) # position de la *premiÃ©re* instance du motif
 str_locate_all(phrases, "h" ) # position de *chaque* instance du motif
 ```
 
@@ -838,16 +838,16 @@ str_locate_all(phrases, "h" ) # position de *chaque* instance du motif
 <!-- ======================================================= -->
 ### Extraire une correspondance {.unnumbered}  
 
-`str_extract_all()` retourne les motifs de correspondance eux-mêmes, ce qui est très utile lorsque vous avez proposé plusieurs motifs via des conditions "OR" (en français OU). Par exemple, si vous cherchez dans le vecteur de chaînes de professions (voir l'exemple précédent) *soit* "teach", "prof", ou "tutor".
+`str_extract_all()` retourne les motifs de correspondance eux-mÃªmes, ce qui est trÃ©s utile lorsque vous avez proposÃ© plusieurs motifs via des conditions "OR" (en franÃ§ais OU). Par exemple, si vous cherchez dans le vecteur de chaÃ®nes de professions (voir l'exemple prÃ©cÃ©dent) *soit* "teach", "prof", ou "tutor".
 
-`str_extract_all()` renvoie une `liste` qui contient *toutes les correspondances* pour chaque chaîne évaluée. Voyez ci-dessous comment l'occupation 3 contient deux correspondances de motifs.  
+`str_extract_all()` renvoie une `liste` qui contient *toutes les correspondances* pour chaque chaÃ®ne Ã©valuÃ©e. Voyez ci-dessous comment l'occupation 3 contient deux correspondances de motifs.  
 
 ```{r}
 str_extract_all(occupations, "teach|prof|tutor")
 ```
 
 
-`str_extract()` extrait *seulement la première correspondance* dans chaque chaîne évaluée, produisant un vecteur de caractères avec un élément pour chaque chaîne évaluée. Elle retourne `NA` lorsqu'il n'y a pas de correspondance. Les `NA`s peuvent être supprimés en enveloppant le vecteur retourné avec `na.exclude()`. Notez que la deuxième correspondance de l'occupation 3 n'est pas affichée.  
+`str_extract()` extrait *seulement la premiÃ©re correspondance* dans chaque chaÃ®ne Ã©valuÃ©e, produisant un vecteur de caractÃ¨res avec un Ã©lÃ©ment pour chaque chaÃ®ne Ã©valuÃ©e. Elle retourne `NA` lorsqu'il n'y a pas de correspondance. Les `NA`s peuvent Ãªtre supprimÃ©s en enveloppant le vecteur retournÃ© avec `na.exclude()`. Notez que la deuxiÃ©me correspondance de l'occupation 3 n'est pas affichÃ©e.  
 
 ```{r}
 str_extract(occupations, "teach|prof|tutor")
@@ -856,15 +856,15 @@ str_extract(occupations, "teach|prof|tutor")
 <!-- ======================================================= -->
 ### Sous-ensemble et comptage {.unnumbered}  
 
-Les fonctions alignées comprennent `str_subset()` et `str_count()`.  
+Les fonctions alignÃ©es comprennent `str_subset()` et `str_count()`.  
 
-`str_subset()` renvoie les valeurs réelles qui contiennent le motif : 
+`str_subset()` renvoie les valeurs rÃ©elles qui contiennent le motif : 
 
 ```{r}
 str_subset(occupations, "teach|prof|tutor")
 ```
 
-`str_count()` renvoie un vecteur de nombres : le **nombre de fois** qu'un terme de recherche apparaît dans chaque valeur évaluée.  
+`str_count()` renvoie un vecteur de nombres : le **nombre de fois** qu'un terme de recherche apparaÃ®t dans chaque valeur Ã©valuÃ©e.  
 
 ```{r}
 str_count(occupations, regex("teach|prof|tutor", ignore_case = TRUE))
@@ -879,19 +879,19 @@ EN CONSTRUCTION
 
 
 <!-- ======================================================= -->
-## Caractères spéciaux  
+## caractÃ¨res spÃ©ciaux  
 
-**Slash arrière `\` comme échappement**  
+**Slash arriÃ©re `\` comme Ã©chappement**  
 
-La barre oblique inverse `\` est utilisée pour "échapper" à la signification du caractère suivant. Ainsi, une barre oblique inversée peut être utilisée pour afficher un guillemet *dans* d'autres guillemets (`\"`) - le guillemet central ne "cassera" pas les guillemets environnants.  
+La barre oblique inverse `\` est utilisÃ©e pour "Ã©chapper" Ã  la signification du caractÃ¨re suivant. Ainsi, une barre oblique inversÃ©e peut Ãªtre utilisÃ©e pour afficher un guillemet *dans* d'autres guillemets (`\"`) - le guillemet central ne "cassera" pas les guillemets environnants.  
 
-Note - Si vous voulez *afficher* une barre oblique inverse, vous devez échapper à sa signification avec *une autre* barre oblique inverse. Ainsi, vous devez écrire deux barres obliques inversées `\\` pour en afficher une.  
+Note - Si vous voulez *afficher* une barre oblique inverse, vous devez Ã©chapper Ã  sa signification avec *une autre* barre oblique inverse. Ainsi, vous devez Ã©crire deux barres obliques inversÃ©es `\\` pour en afficher une.  
 
-**Caractères spéciaux " 
+**caractÃ¨res spÃ©ciaux " 
 
-Caractère spécial | Représentation  
+caractÃ¨re spÃ©cial | ReprÃ©sentation  
 ----------------- | --------------------------------------------------------------    
-`"\\"` | barre oblique inversée  
+`"\\"` | barre oblique inversÃ©e  
 `"\n"` | une nouvelle ligne (newline)   
 `"\""` | guillemets doubles *entre* guillemets doubles  
 `"\""` | guillemets simples *entre guillemets simples  
@@ -899,100 +899,100 @@ Caractère spécial | Représentation
 `"\r"` | retour chariot  
 `"\t"` | tabulation  
 `"\v"` | tabulation verticale 
-`"\b"` | retour arrière  
+`"\b"` | retour arriÃ©re  
 
-Exécutez ` ?"'"` dans la console R pour afficher la liste complète de ces caractères spéciaux (elle apparaîtra dans le volet d'aide de RStudio). 
+ExÃ©cutez ` ?"'"` dans la console R pour afficher la liste complÃ¨te de ces caractÃ¨res spÃ©ciaux (elle apparaÃ®tra dans le volet d'aide de RStudio). 
 
-
-
-<!-- ======================================================= -->
-## Expressions régulières (regex) 
 
 
 <!-- ======================================================= -->
-## Regex et caractères spéciaux { } 
-
-Les expressions régulières, ou "regex", sont un langage concis pour décrire des motifs dans des chaînes de caractères. Si vous n'êtes pas familier avec ce langage, une expression régulière peut ressembler à une langue étrangère. Nous allons essayer de démystifier un peu ce langage.  
-
-*Une grande partie de cette section est adaptée de [ce tutoriel](https://towardsdatascience.com/a-gentle-introduction-to-regular-expressions-with-r-df5e897ca432) et de [cette cheatsheet](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf)*. Nous adaptons ici de manière sélective, sachant que ce manuel pourrait être consulté par des personnes n'ayant pas d'accès à l'Internet pour consulter les autres tutoriels.    
+## Expressions rÃ©guliÃ¨res (regex) 
 
 
-Une expression régulière est souvent utilisée pour extraire des motifs spécifiques d'un texte "non structuré", par exemple des notes médicales, des plaintes principales, des antécédents du patient ou d'autres colonnes de texte libre dans un dataframe.
+<!-- ======================================================= -->
+## Regex et caractÃ¨res spÃ©ciaux { } 
 
-Il existe quatre outils de base que l'on peut utiliser pour créer une expression régulière de base :  
+Les expressions rÃ©guliÃ¨res, ou "regex", sont un langage concis pour dÃ©crire des motifs dans des chaÃ®nes de caractÃ¨res. Si vous n'Ã©tes pas familier avec ce langage, une expression rÃ©guliÃ¨re peut ressembler Ã  une langue Ã©trangÃ©re. Nous allons essayer de dÃ©mystifier un peu ce langage.  
 
-1) Jeux de caractères  
-2) Méta-caractères  
+*Une grande partie de cette section est adaptÃ©e de [ce tutoriel](https://towardsdatascience.com/a-gentle-introduction-to-regular-expressions-with-r-df5e897ca432) et de [cette cheatsheet](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf)*. Nous adaptons ici de maniÃ¨re sÃ©lective, sachant que ce manuel pourrait Ãªtre consultÃ© par des personnes n'ayant pas d'accÃ©s Ã  l'Internet pour consulter les autres tutoriels.    
+
+
+Une expression rÃ©guliÃ¨re est souvent utilisÃ©e pour extraire des motifs spÃ©cifiques d'un texte "non structurÃ©", par exemple des notes mÃ©dicales, des plaintes principales, des antÃ©cÃ©dents du patient ou d'autres colonnes de texte libre dans un dataframe.
+
+Il existe quatre outils de base que l'on peut utiliser pour crÃ©er une expression rÃ©guliÃ¨re de base :  
+
+1) Jeux de caractÃ¨res  
+2) MÃ©ta-caractÃ¨res  
 3) Quantificateurs  
 4) Groupes  
 
 
-**Jeux de caractères**  
+**Jeux de caractÃ¨res**  
 
-Les jeux de caractères sont une façon d'exprimer les options de liste pour une correspondance de caractères, entre parenthèses. Ainsi, une correspondance sera déclenchée si l'un des caractères entre parenthèses est trouvé dans la chaîne. Par exemple, pour rechercher des voyelles, on peut utiliser ce jeu de caractères: "[aeiou]". Voici d'autres jeux de caractères courants:  
+Les jeux de caractÃ¨res sont une faÃ§on d'exprimer les options de liste pour une correspondance de caractÃ¨res, entre parenthÃ¨ses. Ainsi, une correspondance sera dÃ©clenchÃ©e si l'un des caractÃ¨res entre parenthÃ¨ses est trouvÃ© dans la chaÃ®ne. Par exemple, pour rechercher des voyelles, on peut utiliser ce jeu de caractÃ¨res: "[aeiou]". Voici d'autres jeux de caractÃ¨res courants:  
 
-Jeu de caractères | Correspond à  
+Jeu de caractÃ¨res | Correspond Ã   
 ----------------- | --------------------------------------------------------------    
 `"[A-Z]"` | toute lettre majuscule unique  
 `"[a-z]"` | toute lettre minuscule unique
 `"[0-9]"` | n'importe quel chiffre  
-`[:alnum:]` | tout caractère alphanumérique  
-`[:digit:]` | tout chiffre numérique  
+`[:alnum:]` | tout caractÃ¨re alphanumÃ©rique  
+`[:digit:]` | tout chiffre numÃ©rique  
 `[:alpha:]` | toute lettre (majuscule ou minuscule)  
 `[:upper:]` | toute lettre majuscule  
 `[:lower:]` | toute lettre minuscule  
 
 
 
-Les jeux de caractères peuvent être combinés à l'intérieur d'une même parenthèse (sans espace !), par exemple `"[A-Za-z]"` (toute lettre majuscule OU minuscule), ou un autre exemple `"[t-z0-5]"` (minuscules de t à z OU nombre de 0 à 5).  
+Les jeux de caractÃ¨res peuvent Ãªtre combinÃ©s Ã  l'intÃ©rieur d'une mÃªme parenthÃ¨se (sans espace !), par exemple `"[A-Za-z]"` (toute lettre majuscule OU minuscule), ou un autre exemple `"[t-z0-5]"` (minuscules de t Ã  z OU nombre de 0 Ã  5).  
 
 
 
 **Meta characters**  
 
-Les métacaractères sont des raccourcis pour les jeux de caractères. Certains des plus importants sont énumérés ci-dessous :  
+Les mÃ©tacaractÃ¨res sont des raccourcis pour les jeux de caractÃ¨res. Certains des plus importants sont Ã©numÃ©rÃ©s ci-dessous :  
 
-Caractère méta | Représentation  
+caractÃ¨re mÃ©ta | ReprÃ©sentation  
 ----------------- | --------------------------------------------------------------    
 `"\\s"` | un seul espace  
-`"\\w"` | un seul caractère alphanumérique (A-Z, a-z, ou 0-9)  
+`"\\w"` | un seul caractÃ¨re alphanumÃ©rique (A-Z, a-z, ou 0-9)  
 `"\\d"` | un seul chiffre (0-9) 
 
 
 **Quantificateurs**  
 
-En général, vous ne souhaitez pas rechercher une correspondance sur un seul caractère. Les quantificateurs vous permettent de désigner la longueur des lettres/chiffres pour permettre une correspondance plus spécifique.  
+En gÃ©nÃ©ral, vous ne souhaitez pas rechercher une correspondance sur un seul caractÃ¨re. Les quantificateurs vous permettent de dÃ©signer la longueur des lettres/chiffres pour permettre une correspondance plus spÃ©cifique.  
 
-Les quantificateurs sont des nombres écrits entre accolades `{ }` *après* le caractère qu'ils quantifient, par exemple:
+Les quantificateurs sont des nombres Ã©crits entre accolades `{ }` *aprÃ©s* le caractÃ¨re qu'ils quantifient, par exemple:
 
 * `"A{2}"` renverra les instances de **deux** lettres majuscules A.  
-* `"A{2,4}"` renverra les instances de **deux à quatre** lettres majuscules A *(ne mettez pas d'espace !)*.  
+* `"A{2,4}"` renverra les instances de **deux Ã  quatre** lettres majuscules A *(ne mettez pas d'espace !)*.  
 * `"A{2,}"` renverra les instances de **deux lettres A majuscules ou plus**.  
-* `"A+"` renverra les instances de **une ou plusieurs** lettres majuscules A (groupe étendu jusqu'à ce qu'un caractère différent soit rencontré).  
-* Faites précéder d'un astérisque `*` pour obtenir **zéro ou plus** de correspondances (utile si vous n'êtes pas sûr que le motif soit présent).  
+* `"A+"` renverra les instances de **une ou plusieurs** lettres majuscules A (groupe Ã©tendu jusqu'Ã   ce qu'un caractÃ¨re diffÃ©rent soit rencontrÃ©).  
+* Faites prÃ©cÃ©der d'un astÃ©risque `*` pour obtenir **zÃ©ro ou plus** de correspondances (utile si vous n'Ã©tes pas sÃ»r que le motif soit prÃ©sent).  
 
 
-En utilisant le symbole plus `+` comme quantificateur, la correspondance se fera jusqu'à ce qu'un caractère différent soit rencontré. Par exemple, cette expression retournera tous les *mots* (caractères alpha : `"[A-Za-z]+"`).
+En utilisant le symbole plus `+` comme quantificateur, la correspondance se fera jusqu'Ã   ce qu'un caractÃ¨re diffÃ©rent soit rencontrÃ©. Par exemple, cette expression retournera tous les *mots* (caractÃ¨res alpha : `"[A-Za-z]+"`).
 
 
 ```{r}
-# chaîne de caractères pour tester les quantificateurs
+# chaÃ®ne de caractÃ¨res pour tester les quantificateurs
 test <- "A-AA-AAA-AAAA"
 ```
 
-Lorsqu'un quantificateur de {2} est utilisé, seules les paires de A consécutifs sont renvoyées. Deux paires sont identifiées dans `AAAA`.  
+Lorsqu'un quantificateur de {2} est utilisÃ©, seules les paires de A consÃ©cutifs sont renvoyÃ©es. Deux paires sont identifiÃ©es dans `AAAA`.  
 
 ```{r}
 str_extract_all(test, "A{2}")
 ```
 
-Lorsqu'un quantificateur de {2,4} est utilisé, les groupes de A consécutifs d'une longueur de deux à quatre sont renvoyés.  
+Lorsqu'un quantificateur de {2,4} est utilisÃ©, les groupes de A consÃ©cutifs d'une longueur de deux Ã  quatre sont renvoyÃ©s.  
 
 ```{r}
 str_extract_all(test, "A{2,4}")
 ```
 
-Avec le quantificateur `+`, les groupes de **un ou plus** sont renvoyés :   
+Avec le quantificateur `+`, les groupes de **un ou plus** sont renvoyÃ©s :   
 
 ```{r}
 str_extract_all(test, "A+")
@@ -1000,17 +1000,17 @@ str_extract_all(test, "A+")
 
 **Relative position**  
 
-Il existe des exigences spécifiques pour ce qui précède ou suit un motif. Par exemple, pour extraire des phrases, "deux chiffres qui sont suivis d'un point" (`""`).  (?<=\\.)\\s(?=[A-Z]) 
+Il existe des exigences spÃ©cifiques pour ce qui prÃ©cÃ©de ou suit un motif. Par exemple, pour extraire des phrases, "deux chiffres qui sont suivis d'un point" (`""`).  (?<=\\.)\\s(?=[A-Z]) 
 
 ```{r}
 str_extract_all(test, "")
 ```
 
 
-Déclaration de position | Correspond à  
+dÃ©claration de position | Correspond Ã   
 ----------------- | --------------------------------------------------------------    
-`"(?<=b)a"` | Un "a" qui **est précédé** d'un "b".  
-`"(?<!b)a"` | "a" qui **n'est PAS précédé** par un "b"  
+`"(?<=b)a"` | Un "a" qui **est prÃ©cÃ©dÃ©** d'un "b".  
+`"(?<!b)a"` | "a" qui **n'est PAS prÃ©cÃ©dÃ©** par un "b"  
 `"a(?=b)"` | "a" qui **est suivi** par un "b"  
 `"a(?!b)"` | "a" qui **n'est PAS suivi** d'un "b".  
 
@@ -1019,42 +1019,42 @@ Déclaration de position | Correspond à
 
 **Groupes**  
 
-La capture de groupes dans votre expression régulière est un moyen d'obtenir des valeurs plus organisées lors de l'extraction.  
+La capture de groupes dans votre expression rÃ©guliÃ¨re est un moyen d'obtenir des valeurs plus organisÃ©es lors de l'extraction.  
 
 
 
 
 **Exemples de regex**  
 
-Vous trouverez ci-dessous un texte libre pour les exemples. Nous allons essayer d'en extraire des informations utiles en utilisant un terme de recherche par expression régulière.    
+Vous trouverez ci-dessous un texte libre pour les exemples. Nous allons essayer d'en extraire des informations utiles en utilisant un terme de recherche par expression rÃ©guliÃ¨re.    
 
 ```{r}
-pt_note <- "Patient arrived at Broward Hospital emergency ward at 18:00 on 6/12/2005. Patient presented with radiating abdominal pain from LR quadrant. Patient skin was pale, cool, and clammy. Patient temperature was 99.8 degrees farinheit. Patient pulse rate was 100 bpm and thready. Respiratory rate was 29 per minute."
+pt_note <- "Le patient est arrivÃ© aux urgences de l'hÃ´pital Broward Ã  18h00 le 6/12/2005. Le patient s'est prÃ©sentÃ© avec une douleur abdominale irradiant du quadrant LR. La peau du patient Ã©tait pÃ¢le, fraÃ®che et moite. Sa tempÃ©rature Ã©tait de 99,8 degrÃ©s Farinheit. Le pouls du patient Ã©tait de 100 bpm et filant. La frÃ©quence respiratoire Ã©tait de 29 par minute."
 ```
 
-Cette expression correspond à tous les mots (tout caractère jusqu'à la frappe d'un non-caractère tel qu'un espace):  
+Cette expression correspond Ã  tous les mots (tout caractÃ¨re jusqu'Ã   la frappe d'un non-caractÃ¨re tel qu'un espace):  
 
 ```{r}
 str_extract_all(pt_note, "[A-Za-z]+")
 ```
 
-L'expression `"[0-9]{1,2}"` correspond à des nombres consécutifs de 1 ou 2 chiffres. On pourrait aussi l'écrire `"\d{1,2}"`, ou `"[:digit:]{1,2}"`.   
+L'expression `"[0-9]{1,2}"` correspond Ã  des nombres consÃ©cutifs de 1 ou 2 chiffres. On pourrait aussi l'Ã©crire `"\d{1,2}"`, ou `"[:digit:]{1,2}"`.   
 
 ```{r}
 str_extract_all(pt_note, "[0-9]{1,2}")
 ```
 
 "
-<!-- Cette expression va extraire toutes les phrases (en supposant que la première lettre est en majuscule, et que la phrase se termine par un point). Le motif se lit en anglais comme suit : "Une lettre majuscule suivie de quelques lettres minuscules, d'un espace, de quelques lettres, d'un espace, -->".
+<!-- Cette expression va extraire toutes les phrases (en supposant que la premiÃ©re lettre est en majuscule, et que la phrase se termine par un point). Le motif se lit en anglais comme suit : "Une lettre majuscule suivie de quelques lettres minuscules, d'un espace, de quelques lettres, d'un espace, -->".
 
 <!-- ```{r} -->
 <!-- str_extract_all(pt_note, "[A-Z][a-z]+\\s\\w+\\s\\d{1,2}\\s\\w+\\s*\\w*") -->
 <!-- ``` -->
 
 
-Vous pouvez consulter une liste utile d'expressions regex et de conseils à la page 2 de [cette cheatsheet](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf).  
+Vous pouvez consulter une liste utile d'expressions regex et de conseils Ã  la page 2 de [cette cheatsheet](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf).  
 
-Voir également ce [tutoriel](https://towardsdatascience.com/a-gentle-introduction-to-regular-expressions-with-r-df5e897ca432).  
+Voir Ã©galement ce [tutoriel](https://towardsdatascience.com/a-gentle-introduction-to-regular-expressions-with-r-df5e897ca432).  
 
 
 
@@ -1062,10 +1062,10 @@ Voir également ce [tutoriel](https://towardsdatascience.com/a-gentle-introductio
 <!-- ======================================================= -->
 ## Resources { }
 
-Une fiche de référence pour les fonctions du paquet **stringr** peut être trouvée [ici](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf)
+Une fiche de rÃ©fÃ©rence pour les fonctions du paquet **stringr** peut Ãªtre trouvÃ©e [ici](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf)
 
 
-Une vignette sur **stringr** peut être trouvée [ici](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html).
+Une vignette sur **stringr** peut Ãªtre trouvÃ©e [ici](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html).
 
 
 

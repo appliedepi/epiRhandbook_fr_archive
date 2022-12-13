@@ -1,39 +1,39 @@
 
-# Fonctions d'écriture {#writing_functions}
+# Fonctions d'Ã©criture {#writing_functions}
 
 
 <!-- ======================================================= -->
-## Préparation { }
+## PrÃ©paration { }
 
 
 ### Load packages {-}
 
-Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez aussi charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
+Ce morceau de code montre le chargement des paquets nÃ©cessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nÃ©cessaire *et* le charge pour l'utiliser. Vous pouvez aussi charger les paquets installÃ©s avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
 
-``{r, echo=F, warning=F, message=F}
+```{r, echo=F, warning=F, message=F}
 pacman::p_load(
   rio, # Importation de fichiers
   here, # Localisateur de fichiers
-  skimr, # obtenir une vue d'ensemble des données
-  tidyverse, # gestion des données + graphiques ggplot2, 
+  skimr, # obtenir une vue d'ensemble des donnÃ©es
+  tidyverse, # gestion des donnÃ©es + graphiques ggplot2, 
   gtsummary, # statistiques et tests sommaires
   janitor, # ajout de totaux et de pourcentages aux tableaux
   scales, # conversion facile des proportions en pourcentages  
   flextable, # convertir les tableaux en HTML
   purrr, # facilite la programmation fonctionnelle
   readr, #pour lire les fichiers csv
-  highcharter #pour créer un objet highchart et dessiner un graphique particulier
+  highcharter #pour crÃ©er un objet highchart et dessiner un graphique particulier
 
   )
 ```
 
-### Importer des données {-}
+### Importer des donnÃ©es {-}
 
-Nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous souhaitez télécharger les données pour les suivre pas à pas, consultez les instructions de la page [Télécharger le livre et les données]. Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. Voir la page [Importation et exportation] pour les différentes manières d'importer des données.
+Nous importons le jeu de donnÃ©es des cas d'une Ã©pidÃ©mie d'Ebola simulÃ©e. Si vous souhaitez tÃ©lÃ©charger les donnÃ©es pour les suivre pas Ã  pas, consultez les instructions de la page [TÃ©lÃ©charger le manuel et les donnÃ©es](#download_book_data). Le jeu de donnÃ©es est importÃ© Ã  l'aide de la fonction `import()` du paquet **rio**. Voir la page [Importer et exporter des donnÃ©es](#import_export) pour les diffÃ©rentes maniÃ¨res d'importer des donnÃ©es.
 
-Nous utiliserons également dans la dernière partie de cette page des données sur la grippe H7N9 de 2013.
+Nous utiliserons Ã©galement dans la derniÃ¨re partie de cette page des donnÃ©es sur la grippe H7N9 de 2013.
 
-``{r, echo=F}
+```{r, echo=F}
 # Importez les linelists dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 
@@ -44,14 +44,14 @@ flu_china <- rio::import(here::here("data", "case_linelists", "fluH7N9_China_201
 
 ## Fonctions  
 
-Les fonctions sont utiles en programmation car elles permettent de rendre les codes plus faciles à comprendre, plus courts et moins sujets aux erreurs (à condition qu'il n'y ait pas d'erreurs dans la fonction elle-même).
+Les fonctions sont utiles en programmation car elles permettent de rendre les codes plus faciles Ã  comprendre, plus courts et moins sujets aux erreurs (Ã  condition qu'il n'y ait pas d'erreurs dans la fonction elle-mÃªme).
 
-Si vous êtes arrivé jusqu'à ce manuel, cela signifie que vous avez rencontré d'innombrables fonctions, car en R, chaque opération est un appel de fonction.
-`+, for, if, [, $, { â¦`. Par exemple, `x + y` est la même chose que `'+'(x, y)`.
+Si vous Ãªtes arrivÃ© jusqu'Ã  ce manuel, cela signifie que vous avez rencontrÃ© d'innombrables fonctions, car en R, chaque opÃ©ration est un appel de fonction.
+`+, for, if, [, $, { Ã¢Â¦`. Par exemple, `x + y` est la mÃªme chose que `'+'(x, y)`.
 
-R est l'un des langages qui offre le plus de possibilités de travailler avec des fonctions et qui donne suffisamment d'outils à l'utilisateur pour les écrire facilement. Nous ne devrions pas penser aux fonctions comme étant fixées au sommet ou à la fin de la chaîne de programmation, R offre la possibilité de les utiliser comme s'il s'agissait de vecteurs et même de les utiliser à l'intérieur d'autres fonctions, listes...
+R est l'un des langages qui offre le plus de possibilitÃ©s de travailler avec des fonctions et qui donne suffisamment d'outils Ã  l'utilisateur pour les Ã©crire facilement. Nous ne devrions pas penser aux fonctions comme Ã©tant fixÃ©es au sommet ou Ã  la fin de la chaÃ®ne de programmation, R offre la possibilitÃ© de les utiliser comme s'il s'agissait de vecteurs et mÃªme de les utiliser Ã  l'intÃ©rieur d'autres fonctions, listes...
 
-Il existe de nombreuses ressources très avancées sur la programmation fonctionnelle et nous ne donnerons ici qu'un aperçu pour vous aider à démarrer avec la programmation fonctionnelle avec de courts exemples pratiques. Nous vous encourageons ensuite à visiter les liens sur les références pour en savoir plus.
+Il existe de nombreuses ressources trÃ¨s avancÃ©es sur la programmation fonctionnelle et nous ne donnerons ici qu'un aperÃ§u pour vous aider Ã  dÃ©marrer avec la programmation fonctionnelle avec de courts exemples pratiques. Nous vous encourageons ensuite Ã  visiter les liens sur les rÃ©fÃ©rences pour en savoir plus.
 
 
 
@@ -59,54 +59,54 @@ Il existe de nombreuses ressources très avancées sur la programmation fonctionne
 
 ## Pourquoi utiliser une fonction ? 
 
-Avant de répondre à cette question, il est important de noter que vous avez déjà eu des conseils pour écrire vos toutes premières fonctions R dans la page sur [l'itération, les boucles et les listes] de ce manuel. En fait, l'utilisation de "if/else" et de boucles est souvent au cour de bon nombre de nos fonctions car elles permettent d'élargir l'application de notre code en autorisant des conditions multiples ou d'itérer des codes pour des tâches répétitives.
+Avant de rÃ©pondre Ã  cette question, il est important de noter que vous avez dÃ©jÃ  eu des conseils pour Ã©crire vos toutes premiÃ¨res fonctions R dans la page sur [l'itÃ©ration, les boucles et les listes] de ce manuel. En fait, l'utilisation de "if/else" et de boucles est souvent au cour de bon nombre de nos fonctions car elles permettent d'Ã©largir l'application de notre code en autorisant des conditions multiples ou d'itÃ©rer des codes pour des tÃ¢ches rÃ©pÃ©titives.
 
-- Je répète plusieurs fois le même bloc de code pour l'appliquer à une variable ou à des données différentes ?
+- Je rÃ©pÃ¨te plusieurs fois le mÃªme bloc de code pour l'appliquer Ã  une variable ou Ã  des donnÃ©es diffÃ©rentes ?
 
-- Si je m'en débarrasse, cela raccourcira-t-il considérablement mon code global et le rendra-t-il plus rapide ?
+- Si je m'en dÃ©barrasse, cela raccourcira-t-il considÃ©rablement mon code global et le rendra-t-il plus rapide ?
 
-- Est-il possible que le code que j'ai écrit soit réutilisé mais avec une valeur différente à plusieurs endroits du code ?
+- Est-il possible que le code que j'ai Ã©crit soit rÃ©utilisÃ© mais avec une valeur diffÃ©rente Ã  plusieurs endroits du code ?
 
-Si la réponse à l'une des questions précédentes est "OUI", alors vous avez probablement besoin d'écrire une fonction
+Si la rÃ©ponse Ã  l'une des questions prÃ©cÃ©dentes est "OUI", alors vous avez probablement besoin d'Ã©crire une fonction
 
 ## Comment R construit-il les fonctions ?
 
 Les fonctions dans R ont trois composants principaux :
 
-- le `formals()` qui est la liste d'arguments qui contrôle la façon dont nous pouvons appeler la fonction.
+- le `formals()` qui est la liste d'arguments qui contrÃ´le la faÃ§on dont nous pouvons appeler la fonction.
 
-- le `body()` qui est le code à l'intérieur de la fonction, c'est-à-dire entre les parenthèses ou à la suite des parenthèses, selon la façon dont on l'écrit.
+- le `body()` qui est le code Ã  l'intÃ©rieur de la fonction, c'est-Ã -dire entre les parenthÃ¨ses ou Ã  la suite des parenthÃ¨ses, selon la faÃ§on dont on l'Ã©crit.
 
 et,
 
-- l' `environnement()` qui aide à localiser les variables de la fonction et détermine comment la fonction trouve sa valeur.
+- l' `environnement()` qui aide Ã  localiser les variables de la fonction et dÃ©termine comment la fonction trouve sa valeur.
  
-Une fois que vous avez créé votre fonction, vous pouvez vérifier chacun de ces composants en appelant la fonction associée.
+Une fois que vous avez crÃ©Ã© votre fonction, vous pouvez vÃ©rifier chacun de ces composants en appelant la fonction associÃ©e.
  
 
 ## Syntaxe et structure de base
 
-- Une fonction devra être nommée correctement afin que son travail soit facilement compréhensible dès que l'on lit son nom. En fait, c'est déjà le cas avec la majorité de l'architecture R de base. Des fonctions comme `mean()`, `print()`, `summary()` ont des noms qui sont très simples. 
+- Une fonction devra Ãªtre nommÃ©e correctement afin que son travail soit facilement comprÃ©hensible dÃ¨s que l'on lit son nom. En fait, c'est dÃ©jÃ  le cas avec la majoritÃ© de l'architecture R de base. Des fonctions comme `mean()`, `print()`, `summary()` ont des noms qui sont trÃ¨s simples. 
 
-- Une fonction a besoin d'arguments, comme les données sur lesquelles elle travaille et d'autres objets qui peuvent être des valeurs statiques, entre autres options.  
+- Une fonction a besoin d'arguments, comme les donnÃ©es sur lesquelles elle travaille et d'autres objets qui peuvent Ãªtre des valeurs statiques, entre autres options.  
 
-- Et enfin, une fonction donnera une sortie basée sur sa tâche principale et les arguments qui lui ont été donnés. Habituellement, nous utilisons les fonctions intégrées telles que `print()`, `return()`... pour produire la sortie. La sortie peut être une valeur logique, un nombre, un caractère, un cadre de données... en bref, tout type d'objet R.
+- Et enfin, une fonction donnera une sortie basÃ©e sur sa tÃ¢che principale et les arguments qui lui ont Ã©tÃ© donnÃ©s. Habituellement, nous utilisons les fonctions intÃ©grÃ©es telles que `print()`, `return()`... pour produire la sortie. La sortie peut Ãªtre une valeur logique, un nombre, un caractÃ¨re, un cadre de donnÃ©es... en bref, tout type d'objet R.
 
 En gros, c'est la composition d'une fonction :
 
-``{r, eval=FALSE}
+```{r, eval=FALSE}
 
 nom_fonction <- function(argument_1, argument_2, argument_3){
   
-           fonction_tâche
+           function_task
   
-           return(sortie)
+           return(output)
 }
 
 
 ```
 
-Nous pouvons créer notre première fonction qui sera appelée `contain_covid19()``. 
+Nous pouvons crÃ©er notre premiÃ¨re fonction qui sera appelÃ©e `contain_covid19()``. 
 
 ```{r}
 
@@ -114,15 +114,15 @@ contain_covid19 <- function(barrier_gest, wear_mask, get_vaccine){
   
                             if(barrier_gest == "yes" & wear_mask == "yes" & get_vaccine == "yes" ) 
        
-                            return("succès")
+                            return("success")
   
-  else("veuillez vous assurer que toutes les réponses sont oui, cette pandémie doit prendre fin !")
+  else("please make sure all are yes, this pandemic has to end!")
 }
 
 
 ```
 
-Nous pouvons ensuite vérifier les composants de notre fonction nouvellement créée.
+Nous pouvons ensuite vÃ©rifier les composants de notre fonction nouvellement crÃ©Ã©e.
 
 ```{r}
 
@@ -133,7 +133,7 @@ environnement(contain_covid19)
 ```
 
 
-Maintenant, nous allons tester notre fonction. Pour appeler notre fonction écrite, vous l'utilisez comme vous utilisez toutes les fonctions R, c'est-à-dire en écrivant le nom de la fonction et en ajoutant les arguments requis.
+Maintenant, nous allons tester notre fonction. Pour appeler notre fonction Ã©crite, vous l'utilisez comme vous utilisez toutes les fonctions R, c'est-Ã -dire en Ã©crivant le nom de la fonction et en ajoutant les arguments requis.
 
 ```{r}
 
@@ -141,24 +141,24 @@ contain_covid19(barrier_gest = "yes", wear_mask = "yes", get_vaccine = "yes")
 
 ```
 
-Par précaution, nous pouvons réécrire le nom de chaque argument. Mais sans les préciser, le code devrait fonctionner puisque R a en mémoire le positionnement de chaque argument. Ainsi, tant que vous mettez les valeurs des arguments dans le bon ordre, vous pouvez éviter d'écrire les noms des arguments lors de l'appel des fonctions.
+Par prÃ©caution, nous pouvons rÃ©Ã©crire le nom de chaque argument. Mais sans les prÃ©ciser, le code devrait fonctionner puisque R a en mÃ©moire le positionnement de chaque argument. Ainsi, tant que vous mettez les valeurs des arguments dans le bon ordre, vous pouvez Ã©viter d'Ã©crire les noms des arguments lors de l'appel des fonctions.
 
 ```{r}
 
-contenir_covid19("oui", "oui", "oui")
+contenir_covid19("yes", "yes", "yes")
 
 ```
 
-Voyons ensuite ce qui se passe si l'une des valeurs est "non" ou **non** "oui".
+Voyons ensuite ce qui se passe si l'une des valeurs est `"no"` ou **pas** `"yes"`.
 
 ```{r}
 
 contain_covid19(barrier_gest = "yes", wear_mask = "yes", get_vaccine = "no")
 ```
 
-Si nous fournissons un argument qui n'est pas reconnu, nous obtenons une erreur : 
+Si nous fournissons un argument qui n'est pas reconnu, nous obtenons une erreur: 
 
-``{r, eval=F}
+```{r, eval=F}
 contain_covid19(barrier_gest = "sometimes", wear_mask = "yes", get_vaccine = "no")
 ```
 
@@ -166,48 +166,48 @@ contain_covid19(barrier_gest = "sometimes", wear_mask = "yes", get_vaccine = "no
   Impossible de trouver la fonction "contain_covid19"``.
 
 
-<span style="color : black ;">**_NOTE:_** Certaines fonctions (la plupart du temps très courtes et simples) peuvent ne pas avoir besoin de nom et peuvent être utilisées directement sur une ligne de code ou à l'intérieur d'une autre fonction pour effectuer une tâche rapide. Elles sont appelées **fonctions anonymes** .</span>
+<span style="color : black ;">**_NOTE:_** Certaines fonctions (la plupart du temps trÃ¨s courtes et simples) peuvent ne pas avoir besoin de nom et peuvent Ãªtre utilisÃ©es directement sur une ligne de code ou Ã  l'intÃ©rieur d'une autre fonction pour effectuer une tÃ¢che rapide. Elles sont appelÃ©es **fonctions anonymes** .</span>
 
-Par exemple ci-dessous est une première fonction anonyme qui ne garde que les variables de caractères le jeu de données.
+Par exemple ci-dessous est une premiÃ¨re fonction anonyme qui ne garde que les variables de caractÃ¨res le jeu de donnÃ©es.
 
-``{r, eval=F}
+```{r, eval=F}
 linelist %>% 
-  dplyr::slice_head(n=10) %>% #équivalent à la fonction "head" de base de R et qui renvoie les n premières observations de l'ensemble de données.
-  select(fonction(x) is.character(x)) 
+  dplyr::slice_head(n=10) %>% #Ã©quivalent Ã  la fonction "head" de base de R et qui renvoie les n premiÃ¨res observations de l'ensemble de donnÃ©es.
+  select(function(x) is.character(x)) 
 ```
   
 ```{r, echo=F}
 linelist %>% 
-  dplyr::slice_head(n=10) %>% #équivalent de la fonction "head" de base de R et qui retourne les n premières observations de l'ensemble de données
+  dplyr::slice_head(n=10) %>% #Ã©quivalent de la fonction "head" de base de R et qui retourne les n premiÃ¨res observations de l'ensemble de donnÃ©es
   select(function(x) is.character(x)) %>%  
-DT::datatable(rownames = FALSE, filter="top", options = list(pageLength = 10, scrollX=T), class = 'white-space : nowrap' )
+DT::datatable(rownames = FALSE, filter="top", options = list(pageLength = 10, scrollX=T), class = 'white-space: nowrap' )
 ```
 
 
-Ensuite, une autre fonction qui sélectionne une observation sur deux de notre ensemble de données (cela peut être utile lorsque nous avons des données longitudinales avec de nombreux enregistrements par patient, par exemple après avoir été classés par date ou par visite).
-Dans ce cas, la fonction à écrire en dehors de dplyr serait `fonction (x) (x%%2 == 0)` pour s'appliquer au vecteur contenant tous les numéros de ligne.
+Ensuite, une autre fonction qui sÃ©lectionne une observation sur deux de notre ensemble de donnÃ©es (cela peut Ãªtre utile lorsque nous avons des donnÃ©es longitudinales avec de nombreux enregistrements par patient, par exemple aprÃ¨s avoir Ã©tÃ© classÃ©s par date ou par visite).
+Dans ce cas, la fonction Ã  Ã©crire en dehors de dplyr serait `function (x) (x%%2 == 0)` pour s'appliquer au vecteur contenant tous les numÃ©ros de ligne.
 
 
-``{r, eval=F}
+```{r, eval=F}
 linelist %>%   
-   tête de tranche(n=20) %>% 
-   tibble::rownames_to_column() %>% # ajoute les indices de chaque obs comme rownames pour voir clairement la sélection finale
+   slice_head(n=20) %>% 
+   tibble::rownames_to_column() %>% # ajoute les indices de chaque obs comme rownames pour voir clairement la sÃ©lection finale
    filter(row_number() %%2 == 0)
 ```
 
-``{r, echo=F}
+```{r, echo=F}
 linelist %>%   
-   tête_de_sélection(n=20) %>% 
-   tibble::rownames_to_column() %>% # ajoute les indices de chaque obs comme rownames pour voir clairement la sélection finale
+   slice_head(n=20) %>% 
+   tibble::rownames_to_column() %>% # ajoute les indices de chaque obs comme rownames pour voir clairement la sÃ©lection finale
    filter(row_number() %%2 == 0) %>% 
-DT::datatable(rownames = FALSE, filter="top", options = list(pageLength = 10, scrollX=T), class = 'white-space : nowrap' )
+DT::datatable(rownames = FALSE, filter="top", options = list(pageLength = 10, scrollX=T), class = 'white-space: nowrap' )
 
 ```
 
 
-Un code R de base possible pour la même tâche serait le suivant :
+Un code R de base possible pour la mÃªme tÃ¢che serait le suivant :
 
-``{r, eval = F}
+```{r, eval = F}
 
 linelist_firstobs <- head(linelist, 20)
 
@@ -218,34 +218,34 @@ linelist_firstobs[base::Filter(function(x) (x%%2 == 0), seq(nrow(linelist_firsto
 
 linelist_firstobs <- head(linelist, 20)
 
-linelist_firstobs[base::Filter(function(x) (x%%2 == 0), seq(nrow(linelist_firstobs)),] %>% 
-DT::datatable(rownames = FALSE, filter="top", options = list(pageLength = 10, scrollX=T), class = 'white-space : nowrap' )
+linelist_firstobs[base::Filter(function(x) (x%%2 == 0), seq(nrow(linelist_firstobs))),] %>% 
+DT::datatable(rownames = FALSE, filter="top", options = list(pageLength = 10, scrollX=T), class = 'white-space: nowrap' )
 
 ```
 
 
-<span style="color : orange ;">**_CAUTION:_** S'il est vrai que l'utilisation de fonctions peut nous aider dans notre code, il peut néanmoins être long d'écrire certaines fonctions ou d'en corriger une si elle n'a pas été pensée en profondeur, écrite de manière adéquate et qu'elle renvoie des erreurs en conséquence. C'est pour cette raison qu'il est souvent recommandé d'écrire d'abord le code R, de s'assurer qu'il fait ce que nous voulons qu'il fasse, puis de le transformer en une fonction avec ses trois composants principaux tels que listés ci-dessus. </span>
+<span style="color : orange ;">**_CAUTION:_** S'il est vrai que l'utilisation de fonctions peut nous aider dans notre code, il peut nÃ©anmoins Ãªtre long d'Ã©crire certaines fonctions ou d'en corriger une si elle n'a pas Ã©tÃ© pensÃ©e en profondeur, Ã©crite de maniÃ¨re adÃ©quate et qu'elle renvoie des erreurs en consÃ©quence. C'est pour cette raison qu'il est souvent recommandÃ© d'Ã©crire d'abord le code R, de s'assurer qu'il fait ce que nous voulons qu'il fasse, puis de le transformer en une fonction avec ses trois composants principaux tels que listÃ©s ci-dessus. </span>
 
 ## Exemples  
 
 ### Retourner les tableaux de proportion pour plusieurs colonnes {.unnumbered}  
 
-Oui, nous avons déjà de belles fonctions dans de nombreux paquets permettant de résumer des informations d'une manière très simple et agréable. Mais nous allons tout de même essayer de créer nos propres fonctions, lors de nos premiers pas dans l'écriture de fonctions.
+Oui, nous avons dÃ©jÃ  de belles fonctions dans de nombreux paquets permettant de rÃ©sumer des informations d'une maniÃ¨re trÃ¨s simple et agrÃ©able. Mais nous allons tout de mÃªme essayer de crÃ©er nos propres fonctions, lors de nos premiers pas dans l'Ã©criture de fonctions.
 
-Dans cet exemple, nous voulons montrer comment l'écriture d'une simple fonction vous évitera de copier-coller le même code plusieurs fois.
+Dans cet exemple, nous voulons montrer comment l'Ã©criture d'une simple fonction vous Ã©vitera de copier-coller le mÃªme code plusieurs fois.
 
 ```{r}
 
 proptab_multiple <- function(my_data, var_to_tab){
   
-  #imprimez le nom de chaque variable d'intérêt avant de faire la tabulation
+  #imprimez le nom de chaque variable d'intÃ©rÃªt avant de faire la tabulation
   print(var_to_tab)
 
-  with(mes_données,
-       rbind( #liez les résultats des deux fonctions suivantes par ligne
-        #tabuler la variable d'intérêt : ne donne que des nombres
-          table(mes_données[[var_to_tab]], useNA = "no"),
-          #calculer les proportions pour chaque variable d'intérêt et arrondir la valeur à 2 décimales
+  with(my_data,
+       rbind( #liez les rÃ©sultats des deux fonctions suivantes par ligne
+        #tabuler la variable d'intÃ©rÃªt: ne donne que des nombres
+          table(my_data[[var_to_tab]], useNA = "no"),
+          #calculer les proportions pour chaque variable d'intÃ©rÃªt et arrondir la valeur Ã  2 dÃ©cimales
          round(prop.table(table(my_data[[var_to_tab]]))*100,2)
          )
        )
@@ -261,10 +261,10 @@ proptab_multiple(linelist, "outcome")
 
 ```
 
-<span style="color : darkgreen ;">**_TIP:_** Comme indiqué ci-dessus, il est très important de commenter vos fonctions comme vous le feriez pour la programmation générale. Gardez à l'esprit que le but d'une fonction est de rendre un code facile à lire, plus court et plus efficace. Alors on devrait être capable de comprendre ce que fait la fonction juste en lisant son nom et avoir plus de détails en lisant les commentaires.</span>
+<span style="color : darkgreen ;">**_TIP:_** Comme indiquÃ© ci-dessus, il est trÃ¨s important de commenter vos fonctions comme vous le feriez pour la programmation gÃ©nÃ©rale. Gardez Ã  l'esprit que le but d'une fonction est de rendre un code facile Ã  lire, plus court et plus efficace. Alors on devrait Ãªtre capable de comprendre ce que fait la fonction juste en lisant son nom et avoir plus de dÃ©tails en lisant les commentaires.</span>
 
 
-Une deuxième option est d'utiliser cette fonction dans une autre via une boucle pour faire le processus en une fois :
+Une deuxiÃ¨me option est d'utiliser cette fonction dans une autre via une boucle pour faire le processus en une fois :
 
 ```{r}
 
@@ -277,28 +277,28 @@ for(var_to_tab in c("gender", "age_cat", "outcome")){
 
 ```
 
-Une manière plus simple serait d'utiliser la base R "apply" au lieu d'une "boucle for" comme exprimé ci-dessous :
+Une maniÃ¨re plus simple serait d'utiliser la base R "appliquer" au lieu d'une "boucle for" comme exprimÃ© ci-dessous :
 
-``{r, include=FALSE, eval=FALSE}
+```{r, include=FALSE, eval=FALSE}
 
 base::lapply(linelist[,c("gender", "age_cat", "outcome")], table)
 
 ```
 
 
-<span style="color : darkgreen ;">**_TIP:_** R est souvent défini comme un langage de programmation fonctionnel et presque chaque fois que vous exécutez une ligne de code, vous utilisez certaines fonctions intégrées. Une bonne habitude pour être plus à l'aise avec l'écriture de fonctions est d'avoir souvent un regard interne sur la façon dont les fonctions de base que vous utilisez quotidiennement sont construites. Le raccourci pour le faire est de sélectionner le nom de la fonction puis de cliquer sur `Ctrl+F2` ou `fn+F2` ou `Cmd+F2` (selon votre ordinateur) .</span>
+<span style="color : darkgreen ;">**_TIP:_** R est souvent dÃ©fini comme un langage de programmation fonctionnel et presque chaque fois que vous exÃ©cutez une ligne de code, vous utilisez certaines fonctions intÃ©grÃ©es. Une bonne habitude pour Ãªtre plus Ã  l'aise avec l'Ã©criture de fonctions est d'avoir souvent un regard interne sur la faÃ§on dont les fonctions de base que vous utilisez quotidiennement sont construites. Le raccourci pour le faire est de sÃ©lectionner le nom de la fonction puis de cliquer sur `Ctrl+F2` ou `fn+F2` ou `Cmd+F2` (selon votre ordinateur) .</span>
 
-### Utilisation de **purrr** : écrire des fonctions qui peuvent être appliquées de manière itérative.
+### Utilisation de **purrr** : Ã©crire des fonctions qui peuvent Ãªtre appliquÃ©es de maniÃ¨re itÃ©rative.
 
-### Modifier la classe de plusieurs colonnes dans un ensemble de données {.unnumbered}  
+### Modifier la classe de plusieurs colonnes dans un ensemble de donnÃ©es {.unnumbered}  
 
-Disons que de nombreuses variables de caractère dans les données originales `linelist` doivent être changées en "factor" pour des raisons d'analyse et de traçage. Au lieu de répéter l'étape plusieurs fois, nous pouvons juste utiliser `lapply()` pour faire la transformation de toutes les variables concernées sur une seule ligne de code.
-
-
-<span style="color : orange ;">**_CAUTION:_** `lapply()` renvoie une liste, donc son utilisation peut nécessiter une modification supplémentaire en dernière étape.</span>
+Disons que de nombreuses variables de caractÃ¨re dans les donnÃ©es originales `linelist` doivent Ãªtre changÃ©es en "factor" pour des raisons d'analyse et de traÃ§age. Au lieu de rÃ©pÃ©ter l'Ã©tape plusieurs fois, nous pouvons juste utiliser `lapply()` pour faire la transformation de toutes les variables concernÃ©es sur une seule ligne de code.
 
 
-``{r, include=FALSE}
+<span style="color : orange ;">**_CAUTION:_** `lapply()` renvoie une liste, donc son utilisation peut nÃ©cessiter une modification supplÃ©mentaire en derniÃ¨re Ã©tape.</span>
+
+
+```{r, include=FALSE}
 
 linelist_factor1 <- linelist %>%
       lapply(
@@ -309,7 +309,7 @@ linelist_factor1 <- linelist %>%
 ```
 
 
-La même étape peut être effectuée en utilisant la fonction `map_if()` du paquet **purrr**.
+La mÃªme Ã©tape peut Ãªtre effectuÃ©e en utilisant la fonction `map_if()` du paquet **purrr**.
 
 ```{r}
 
@@ -318,29 +318,29 @@ linelist_factor2 <- linelist %>%
 
 
 facteur_ligne2 %>%
-        aperçu()
+        glimpse()
 
 ```
 
 
-### Produire itérativement des graphiques pour différents niveaux d'une variable {.unnumbered}
+### Produire itÃ©rativement des graphiques pour diffÃ©rents niveaux d'une variable {.unnumbered}
 
-Nous allons produire ici un graphique circulaire pour examiner la distribution des résultats des patients en Chine pendant l'épidémie de H7N9 pour chaque province. Au lieu de répéter le code pour chacun d'entre eux, nous allons simplement appliquer une fonction que nous allons créer.
+Nous allons produire ici un graphique circulaire pour examiner la distribution des rÃ©sultats des patients en Chine pendant l'Ã©pidÃ©mie de H7N9 pour chaque province. Au lieu de rÃ©pÃ©ter le code pour chacun d'entre eux, nous allons simplement appliquer une fonction que nous allons crÃ©er.
 
 ```{r}
 
-#Préciser les options pour l'utilisation de highchart
-options(highcharter.theme = highcharter::hc_theme_smpl(tooltip = list(valueDecimals = 2))))
+#PrÃ©ciser les options pour l'utilisation de highchart
+options(highcharter.theme =  highcharter::hc_theme_smpl(tooltip = list(valueDecimals = 2)))
 
 
-#créer une fonction appelée "chart_outcome_province" qui prend comme argument l'ensemble de données et le nom de la province pour laquelle on veut tracer la distribution du résultat.
+#crÃ©er une fonction appelÃ©e "chart_outcome_province" qui prend comme argument l'ensemble de donnÃ©es et le nom de la province pour laquelle on veut tracer la distribution du rÃ©sultat.
 
 chart_outcome_province <- function(data_used, prov){
   
-  tab_prov <- données_utilisées %>% 
+  tab_prov <- data_used %>% 
     filter(province == prov,
            !is.na(outcome))%>% 
-    group_by(résultat) %>% 
+    group_by(outcome) %>% 
     count() %>%
     adorn_totals(where = "row") %>% 
     adorn_percentages(denominateur = "col", )%>%
@@ -349,10 +349,10 @@ chart_outcome_province <- function(data_used, prov){
   
   
   tab_prov %>%
-    filter(resultat != "Total") %>% 
+    filter(outcome != "Total") %>% 
   highcharter::hchart(
     "pie", hcaes(x = outcome, y = perc_outcome),
-    name = paste0("Répartition du résultat en :", prov)
+    name = paste0("Distribution du rÃ©sultat en :", prov)
     )
   
 }
@@ -366,9 +366,9 @@ chart_outcome_province(flu_china, "Jiangsu")
 
 
 
-### Produire itérativement des tableaux pour différents niveaux d'une variable {.unnumbered}
+### Produire itÃ©rativement des tableaux pour diffÃ©rents niveaux d'une variable {.unnumbered}
 
-Ici, nous allons créer trois indicateurs à résumer dans un tableau et nous voudrions produire ce tableau pour chacune des provinces. Nos indicateurs sont le délai entre l'apparition et l'hospitalisation, le pourcentage de guérison et l'âge médian des cas.
+Ici, nous allons crÃ©er trois indicateurs Ã  rÃ©sumer dans un tableau et nous voudrions produire ce tableau pour chacune des provinces. Nos indicateurs sont le dÃ©lai entre l'apparition et l'hospitalisation, le pourcentage de guÃ©rison et l'Ã¢ge mÃ©dian des cas.
 
 ```{r}
 
@@ -391,7 +391,7 @@ indic_2 <- flu_china %>%
             pivot_wider(names_from = outcome, values_from = n) %>% 
     adorn_totals(where = "col") %>% 
     mutate(
-        perc_recovery= round((Recover/Total)*100,2))%>%% 
+        perc_recovery= round((Recover/Total)*100,2))%>% 
   select(province, perc_recovery)
     
     
@@ -401,10 +401,10 @@ indic_3 <- flu_china %>%
             mutate(
                     median_age_cases = median(as.numeric(age), na.rm = TRUE)
             ) %>% 
-  select(province, age_médian_cas) %>% 
+  select(province, median_age_cases) %>% 
   distinct()
 
-#Joindre les trois ensembles de données d'indicateurs
+#Joindre les trois ensembles de donnÃ©es d'indicateurs
 
 table_indic_all <- indic_1 %>% 
   dplyr::left_join(indic_2, by = "province") %>% 
@@ -461,30 +461,30 @@ print_indic_prov(table_indic_all, "Jiangsu")
 ```
 
 
-## Conseils et meilleures pratiques pour des fonctions bien rodées
+## Conseils et meilleures pratiques pour des fonctions bien rodÃ©es
 
-La programmation fonctionnelle a pour but d'alléger le code et d'en faciliter la lecture. Elle devrait produire le contraire. Les conseils ci-dessous vous aideront à avoir un code propre et facile à lire. 
+La programmation fonctionnelle a pour but d'allÃ©ger le code et d'en faciliter la lecture. Elle devrait produire le contraire. Les conseils ci-dessous vous aideront Ã  avoir un code propre et facile Ã  lire. 
 
 
 ### Nommage et syntaxe {.unnumbered}
 
-- Evitez d'utiliser des caractères qui auraient pu être facilement pris par d'autres fonctions déjà existantes dans votre environnement.
+- Evitez d'utiliser des caractÃ¨res qui auraient pu Ãªtre facilement pris par d'autres fonctions dÃ©jÃ  existantes dans votre environnement.
 
-- Il est recommandé que le nom de la fonction soit court et facile à comprendre pour un autre lecteur.
+- Il est recommandÃ© que le nom de la fonction soit court et facile Ã  comprendre pour un autre lecteur.
 
-- Il est préférable d'utiliser des verbes pour le nom de la fonction et des noms pour les noms des arguments.
+- Il est prÃ©fÃ©rable d'utiliser des verbes pour le nom de la fonction et des noms pour les noms des arguments.
 
 
-### Noms de colonnes et évaluation ordonnée {.unnumbered}  
+### Noms de colonnes et Ã©valuation ordonnÃ©e {.unnumbered}  
 
-Si vous voulez savoir comment référencer les *noms de colonnes* qui sont fournis à votre code en tant qu'arguments, lisez ce [guide de programmation tidyverse] (https://dplyr.tidyverse.org/articles/programming.html). Parmi les sujets abordés figurent l'évaluation *tidée* et l'utilisation de l'accolade double `{{ }}`.
+Si vous voulez savoir comment rÃ©fÃ©rencer les *noms de colonnes* qui sont fournis Ã  votre code en tant qu'arguments, lisez ce [guide de programmation tidyverse](https://dplyr.tidyverse.org/articles/programming.html). Parmi les sujets abordÃ©s figurent *l'Ã©valuation tidÃ©e* et l'utilisation de l'accolade double `{{ }}`.
 
-Par exemple, voici un squelette de code rapide tiré du tutoriel de la page mentionnée juste au-dessus :  
+Par exemple, voici un squelette de code rapide tirÃ© du tutoriel de la page mentionnÃ©e juste au-dessus :  
 
-``{r, eval=F}
+```{r, eval=F}
 
 var_summary <- function(data, var) {
-  données %>%
+  data %>%
     summarise(n = n(), min = min({{ var }}), max = max({{ var }})))
 }
 mtcars %>% 
@@ -496,24 +496,24 @@ mtcars %>%
 
 ### Test et gestion des erreurs {.unnumbered}
 
-Plus la tâche d'une fonction est compliquée, plus la possibilité d'erreurs est élevée. Il est donc parfois nécessaire d'ajouter une vérification dans la fonction pour aider à comprendre rapidement d'où vient l'erreur et trouver un moyen de la corriger.
+Plus la tÃ¢che d'une fonction est compliquÃ©e, plus la possibilitÃ© d'erreurs est Ã©levÃ©e. Il est donc parfois nÃ©cessaire d'ajouter une vÃ©rification dans la fonction pour aider Ã  comprendre rapidement d'oÃ¹ vient l'erreur et trouver un moyen de la corriger.
 
-- Il peut être plus que recommandé d'introduire une vérification de l'absence d'un argument en utilisant `missing(argument)`. Cette simple vérification peut retourner la valeur "VRAI" ou "FAUX".
+- Il peut Ãªtre plus que recommandÃ© d'introduire une vÃ©rification de l'absence d'un argument en utilisant `missing(argument)`. Cette simple vÃ©rification peut retourner la valeur "VRAI" ou "FAUX".
 
-``{r , error=TRUE}
+```{r , error=TRUE}
 
 contain_covid19_missing <- function(barrier_gest, wear_mask, get_vaccine){
   
   if (missing(barrier_gest)) (print("please provide arg1"))
   if (missing(wear_mask)) print("please provide arg2")
-  if (missing(get_vaccine)) print("veuillez fournir arg3")
+  if (missing(get_vaccine)) print("please provide arg3")
 
 
   if (!barrier_gest == "yes" | wear_mask == "yes" | get_vaccine == "yes" ) 
        
-       return ("vous pouvez faire mieux")
+       return ("you can do better")
   
-  else("veuillez vous assurer que toutes les réponses sont oui, cette pandémie doit cesser !")
+  else("please make sure all are yes, this pandemic has to end!")
 }
 
 
@@ -522,19 +522,19 @@ contain_covid19_missing(get_vaccine = "yes")
 ```
 
 
-- Utilisez `stop()` pour les erreurs plus faciles à détecter.
+- Utilisez `stop()` pour les erreurs plus faciles Ã  dÃ©tecter.
 
-``{r, error=TRUE}
+```{r, error=TRUE}
 
 contain_covid19_stop <- function(barrier_gest, wear_mask, get_vaccine){
   
-  if(!is.character(barrier_gest)) (stop("arg1 devrait être un caractère, veuillez entrer la valeur avec `yes`, `no` ou `sometimes"))
+  if(!is.character(barrier_gest)) (stop("arg1 should be a character, please enter the value with `yes`, `no` or `sometimes`"))
   
-  si (barrier_gest == "yes" & wear_mask == "yes" & get_vaccine == "yes" ) 
+  if(barrier_gest == "yes" & wear_mask == "yes" & get_vaccine == "yes" ) 
        
        return ("success")
   
-  else("veuillez vous assurer que toutes les réponses sont "oui", cette pandémie doit prendre fin !")
+  else("please make sure all are yes, this pandemic has to end!")
 }
 
 
@@ -542,14 +542,14 @@ contain_covid19_stop(barrier_gest=1, wear_mask="yes", get_vaccine = "no")
 
 ```
 
-- Comme nous le voyons lorsque nous exécutons la plupart des fonctions intégrées, des messages et des avertissements peuvent apparaître dans certaines conditions. Nous pouvons les intégrer dans nos fonctions écrites en utilisant les fonctions `message()` et `warning()`.
+- Comme nous le voyons lorsque nous exÃ©cutons la plupart des fonctions intÃ©grÃ©es, des messages et des avertissements peuvent apparaÃ®tre dans certaines conditions. Nous pouvons les intÃ©grer dans nos fonctions Ã©crites en utilisant les fonctions `message()` et `warning()`.
 
-- Nous pouvons également gérer les erreurs en utilisant la fonction `safely()` qui prend une fonction en argument et l'exécute de manière sûre. En fait, la fonction s'exécutera sans s'arrêter si elle rencontre une erreur. `safely()` retourne en sortie une **liste** avec deux objets qui sont les résultats et l'erreur qu'elle a "sautée".
+- Nous pouvons Ã©galement gÃ©rer les erreurs en utilisant la fonction `safely()` qui prend une fonction en argument et l'exÃ©cute de maniÃ¨re sÃ»re. En fait, la fonction s'exÃ©cutera sans s'arrÃªter si elle rencontre une erreur. `safely()` retourne en sortie une **liste** avec deux objets qui sont les rÃ©sultats et l'erreur qu'elle a "sautÃ©e".
 
-Nous pouvons vérifier en exécutant d'abord la fonction `mean()`, puis en l'exécutant avec `safely()`.
+Nous pouvons vÃ©rifier en exÃ©cutant d'abord la fonction `mean()`, puis en l'exÃ©cutant avec `safely()`.
 
 
-``{r, warning=FALSE}
+```{r, warning=FALSE}
 
 map(linelist, mean)
 ```
@@ -563,17 +563,17 @@ linelist %>%
 ```
 
 
-Comme dit précédemment, bien commenter nos codes est déjà un bon moyen d'avoir de la documentation dans notre travail.  
+Comme dit prÃ©cÃ©demment, bien commenter nos codes est dÃ©jÃ  un bon moyen d'avoir de la documentation dans notre travail.  
 
 
 <!-- ======================================================= -->
 ## Ressources
 
 
-[Lien vers R pour la science des données] (https://r4ds.had.co.nz/functions.html)   
+[Lien vers R pour la science des donnÃ©es](https://r4ds.had.co.nz/functions.html)   
 
-[Cheatsheet advance R programming] (https://www.rstudio.com/wp-content/uploads/2016/02/advancedR.pdf)
+[Cheatsheet advance R programming](https://www.rstudio.com/wp-content/uploads/2016/02/advancedR.pdf)
 
 [Cheatsheet purr Package](https://purrr.tidyverse.org/)
 
-[Video-ACM talk by Hadley Wickham : The joy of functional programming (how does map_dbl work)](https://youtube.videoken.com/embed/bzUmK0Y07ck)
+[Video-ACM talk by Hadley Wickham : Les joies de la programmation fonctionnelle (comment fonctionne map_dbl)](https://youtube.videoken.com/embed/bzUmK0Y07ck)

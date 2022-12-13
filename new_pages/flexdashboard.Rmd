@@ -9,8 +9,8 @@ Cette page couvre l'utilisation base du paquet **flexdashboard**. Ce paquet vous
 
 Avantages de **flexdashboard** :  
 
-* Il nécessite un codage R non standard minimal - avec très peu de pratique, vous pouvez rapidement créer un tableau de bord.  
-* Le tableau de bord peut généralement être envoyé par e-mail à des collègues sous forme de fichier HTML autonome - aucun serveur n'est nécessaire.  
+* Il nécessite un codage R non standard minimal. Avec très peu de pratique, vous pouvez rapidement créer un tableau de bord.  
+* Le tableau de bord peut généralement être envoyé par e-mail à des collègues sous forme de fichier HTML autonome, aucun serveur n'est nécessaire.  
 * Vous pouvez combiner **flexdashboard** avec **shiny**, **ggplotly** et d'autres *"widgets html"* pour ajouter de l'interactivité.  
 
 Inconvénients de **flexdashboard** :  
@@ -18,14 +18,14 @@ Inconvénients de **flexdashboard** :
 * Moins de personnalisation par rapport à l'utilisation de **shiny** seul pour créer un tableau de bord.  
 
 
-Des tutoriels très complets sur l'utilisation de **flexdashboard** qui ont informé cette page se trouvent dans la section Ressources. Nous décrivons ci-dessous les fonctionnalités de base et donnons un exemple de construction d'un tableau de bord pour explorer une épidémie, en utilisant les données du cas `linelist`.  
+Des tutoriels assez complets sur l'utilisation de **flexdashboard** qui ont informé cette page se trouvent dans la section Ressources (fin de la page). Nous décrivons ci-dessous les fonctionnalités de base et donnons un exemple de construction d'un tableau de bord pour explorer une épidémie, en utilisant les données du cas `linelist`.  
 
 
 ## Préparation
 
 ### Charger les paquets {.unnumbered}  
 
-Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez aussi charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
+Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez aussi charger les paquets installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets R.  
 
 ```{r}
 pacman::p_load(
@@ -56,7 +56,7 @@ Les 50 premières lignes de la linelist sont affichées ci-dessous.
 
 ```{r, message=FALSE, echo=F}
 # affiche les données de la liste de diffusion sous forme de tableau
-DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
 
@@ -81,32 +81,32 @@ knitr::include_graphics(here::here("images", "flexdashboard_new2.png"))
 
 ## Le script  
 
-Le script est un script R Markdown, et a donc les mêmes composants et la même organisation que ceux décrits dans la page sur les [Rapports avec R Markdown]. Nous allons brièvement les revoir et souligner les différences avec les autres formats de sortie R Markdown.  
+Le script est un script R Markdown, et a donc les mêmes composants et la même organisation que les scripts décrits dans la page sur les [Rapports avec R Markdown](#rmarkdown). Nous allons brièvement les revoir et souligner les différences avec les autres formats de sortie R Markdown.  
 
-### YAML {.unnumbered} (non numéroté)  
+### YAML {.unnumbered}
 
-En haut du script se trouve l'en-tête "YAML". Il doit commencer par trois tirets `---` et doit se terminer par trois tirets `---`. Les paramètres YAML sont présentés par paires `key:value`. **L'indentation et le placement des deux points dans YAML sont importants** : les paires `key:value` sont séparées par des deux points (et non par des signes égaux !). 
+En haut du script se trouve l'en-tête "YAML". Il doit commencer par trois tirets `---` et doit se terminer par trois tirets `---`. Les paramètres YAML sont présentés par paires `key: value`. **L'indentation et le placement des deux points dans YAML sont importants**: les paires `key:value` sont séparées par des deux points (pas par des signes égaux !). 
 
 Le fichier YAML doit commencer par les métadonnées du document. L'ordre de ces paramètres YAML primaires (non indentés) n'a pas d'importance. Par exemple :  
 
 ```{r, eval=F}
-tite : "Mon document"
-author : "Moi"
-date : "`r Sys.Date()`"
+tite: "Mon document"
+author: "Moi"
+date: "`r Sys.Date()`"
 ```
 
 Vous pouvez utiliser du code R dans des valeurs YAML en le mettant comme du code en ligne (précédé de `r` entre guillemets) mais aussi entre guillemets (voir ci-dessus pour Date).  
 
-Un paramètre YAML obligatoire est `output : `, qui spécifie le type de fichier à produire (par exemple, `html_document`, `pdf_document`, `word_document`, ou `powerpoint_presentation`). Pour **flexdashboard**, la valeur de ce paramètre est un peu confuse - elle doit être définie comme `output:flexdashboard::flex_dashboard`. Notez les deux-points simples et doubles, et le trait de soulignement. Ce paramètre de sortie YAML est souvent suivi par *un deux-points supplémentaire* et des sous-paramètres indentés (voir les paramètres `orientation:` et `vertical_layout:` ci-dessous).  
+Un paramètre YAML obligatoire est `output: `, qui spécifie le type de fichier à produire (par exemple, `html_document`, `pdf_document`, `word_document`, ou `powerpoint_presentation`). Pour **flexdashboard**, la valeur de ce paramètre est un peu confuse - elle doit être définie comme `output:flexdashboard::flex_dashboard`. Notez les deux-points simples et doubles, et le trait de soulignement. Ce paramètre de sortie YAML est souvent suivi par *un deux-points supplémentaire* et des sous-paramètres indentés (voir les paramètres `orientation:` et `vertical_layout:` ci-dessous).  
 
 ```{r, eval=F}
-title : "Mon tableau de bord"
-author : "Moi"
-date : "`r Sys.Date()`"
-output :
-  flexdashboard::flex_dashboard :
-    orientation : rows
-    vertical_layout : scroll
+title: "Mon tableau de bord"
+author: "Moi"
+date: "`r Sys.Date()`"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
 ```
 
 Comme indiqué ci-dessus, des indentations (2 espaces) sont utilisées pour les sous-paramètres. Dans ce cas, n'oubliez pas de mettre un deux-points supplémentaire après le primaire, comme `key:value:`.  
@@ -117,22 +117,22 @@ Le cas échéant, les valeurs logiques doivent être données dans YAML en minus
 
 ### Morceaux de code {.unnumbered}   
 
-Un script R Markdown peut contenir plusieurs "chunks" de code - il s'agit de zones du script dans lesquelles vous pouvez écrire du code R sur plusieurs lignes et qui fonctionnent comme des mini-scripts R. Les "chunks" de code sont créés à l'aide de trois lignes de code.  
+Un script R Markdown peut contenir plusieurs "chunks" de code - il s'agit de zones du script dans lesquelles vous pouvez écrire du code R sur plusieurs lignes et qui fonctionnent comme des mini-scripts R.  
 
 Les morceaux de code sont créés à l'aide de trois crochets arrière et de parenthèses avec un "r" minuscule à l'intérieur. Le chunk est fermé par trois crochets arrière. Vous pouvez créer un nouveau chunk en le tapant vous-même, en utilisant le raccourci clavier "Ctrl + Alt + i" (ou Cmd + Shift + r sur Mac), ou en cliquant sur l'icône verte "insérer un nouveau chunk de code" en haut de votre éditeur de script. De nombreux exemples sont donnés ci-dessous.  
 
 
 ### Texte narratif {.unnumbered}  
 
-En dehors d'un "chunk" de code R, vous pouvez écrire un texte narratif. Comme décrit dans la page [Reports with R Markdown](#rmarkdown), vous pouvez mettre du texte en italique en l'entourant d'un astérisque (*texte italique*), ou en gras en l'entourant de deux astérisques (**texte gras**). Rappelez-vous que les puces et les schémas de numérotation sont sensibles aux nouvelles lignes, à l'indentation et au fait de terminer une ligne par deux espaces.  
+En dehors d'un "chunk" de code R, vous pouvez écrire un texte narratif. Comme décrit dans la page [Rapports avec R Markdown](#rmarkdown), vous pouvez mettre du texte en italique en l'entourant d'un astérisque (*texte italique*), ou en gras en l'entourant de deux astérisques (**texte gras**). Rappelez-vous que les puces et les schémas de numérotation sont sensibles aux nouvelles lignes, à l'indentation et au fait de terminer une ligne par deux espaces.  
 
-Vous pouvez également insérer du code R en ligne dans du texte, comme décrit à la page [Reports with R Markdown](#rmarkdown), en entourant le code de barres obliques inversées et en commençant la commande par "r" : `` ` 1+1` ``(voir l'exemple avec la date ci-dessus).  
+Vous pouvez également insérer du code R en ligne dans du texte, comme décrit à la page [Rapports avec R Markdown](#rmarkdown), en entourant le code de barres obliques inversées et en commençant la commande par "r" : `r 1+1` (voir l'exemple avec la date ci-dessus).  
 
 
 
 ### Titres {.unnumbered}  
 
-Différents niveaux de titres sont établis avec différents nombres de symboles de hachage, comme décrit dans la page [Reports with R Markdown](#rmarkdown).  
+Différents niveaux de titres sont établis avec différents nombres de symboles de hachage, comme décrit dans la page [Rapports avec R Markdown](#rmarkdown).  
 
 Dans **flexdashboard**, un titre primaire (#) crée une "page" du tableau de bord. Les titres de deuxième niveau (##) créent une colonne ou une ligne en fonction de votre paramètre `orientation:` (voir les détails ci-dessous). Les titres de troisième niveau (###) créent des panneaux pour les graphiques, les tableaux, le texte, etc.   
 
@@ -275,16 +275,16 @@ Commençons à construire un tableau de bord. Notre tableau de bord simple aura 
 
 Vous pouvez facilement inclure des sorties R standard telles que du texte, des ggplots et des tableaux (voir la page [Tableaux pour la présentation](#tables_presentation)). Il suffit de les coder dans un chunk de code R comme vous le feriez pour tout autre script R Markdown.  
 
-Remarque : vous pouvez télécharger le script Rmd terminé et la sortie du tableau de bord HTML - voir la page [Télécharger le manuel et les données].  
+Remarque : vous pouvez télécharger le script Rmd terminé et la sortie du tableau de bord HTML - voir la page [Télécharger le manuel et les données](#download_book_data).  
 
 
-### Texte {.non numÃ©rique}  
+### Texte {.unnumbered}  
 
-Vous pouvez saisir du texte Markdown et inclure du code *en ligne* comme pour toute autre sortie R Markdown. Voir la page [Rapports avec R Markdown] pour plus de détails. 
+Vous pouvez saisir du texte Markdown et inclure du code *en ligne* comme pour toute autre sortie R Markdown. Voir la page [Rapports avec R Markdown](#rmarkdown) pour plus de détails. 
 
 Dans ce tableau de bord, nous incluons un panneau de texte récapitulatif qui comprend un texte dynamique indiquant la dernière date d'hospitalisation et le nombre de cas signalés dans l'épidémie. 
 
-### Tableaux {.non numérotés}  
+### Tableaux {.unnumbered}  
 
 Vous pouvez inclure des morceaux de code R qui impriment des sorties telles que des tableaux. Mais la sortie sera plus belle et s'adaptera mieux à la taille de la fenêtre si vous utilisez la fonction `kable()` de **knitr** pour afficher vos tableaux. Les fonctions **flextable** peuvent produire des tableaux qui sont raccourcis / coupés.  
 
@@ -309,12 +309,12 @@ Dans l'exemple de code ci-dessous, le cadre de données `linelist` est imprimé.
 DT::datatable(linelist, 
               rownames = FALSE, 
               options = liste(pageLength = 5, scrollX = TRUE), 
-              class = 'white-space : nowrap' )
+              class = 'white-space: nowrap' )
 ```
 
 ### Tracés {.unnumbered}  
 
-Vous pouvez imprimer les graphiques dans un tableau de bord comme vous le feriez dans un script R. Dans notre exemple, nous utilisons le paquet **incidence2** pour créer une "courbe épidémique" par groupe d'âge avec deux commandes simples (voir la page [Courbes épidémiques](#epicures)). Cependant, vous pourriez utiliser `ggplot()` et imprimer un graphique de la même manière.  
+Vous pouvez imprimer les graphiques dans un tableau de bord comme vous le feriez dans un script R. Dans notre exemple, nous utilisons le paquet **incidence2** pour créer une "courbe épidémique" par groupe d'âge avec deux commandes simples (voir la page [Courbes épidémiques](#epicurves)). Cependant, vous pourriez utiliser `ggplot()` et imprimer un graphique de la même manière.  
 
 ```{r, out.width = c('100%'), out.height = c('100%'), echo=F}
 knitr::include_graphics(here::here("images", "flexdashboard_plots_script.png"))
@@ -329,7 +329,7 @@ knitr::include_graphics(here::here("images", "flexdashboard_plots_view.png"))
 
 ### Graphiques interactifs {.unnumbered}  
 
-Vous pouvez également passer un ggplot standard ou un autre objet de tracé à `ggplotly()` du paquet **plotly** (voir la page [Interactive plots]). Cela rendra votre graphique interactif, permettra au lecteur de "zoomer" et affichera en surimpression la valeur de chaque point de données (dans ce scénario, le nombre de cas par semaine et le groupe d'âge dans la courbe).  
+Vous pouvez également passer un ggplot standard ou un autre objet de tracé à `ggplotly()` du paquet **plotly** (voir la page [Graphiques interactifs](#interactive_plots)). Cela rendra votre graphique interactif, permettra au lecteur de "zoomer" et affichera en surimpression la valeur de chaque point de données (dans ce scénario, le nombre de cas par semaine et le groupe d'âge dans la courbe).  
 
 ```{r, eval=F}
 age_outbreak <- incidence(linelist, date_onset, "week", groups = age_cat)
@@ -349,10 +349,10 @@ Les [widgets HTML pour R](http://www.htmlwidgets.org/) sont une classe spéciale
 
 Voici quelques exemples courants de ces widgets :  
 
-* Plotly (utilisé dans cette page du manuel et dans la page [Interative plots]).
-* visNetwork (utilisé dans la page [Chaînes de transmission] de ce manuel)  
-* Leaflet (utilisé dans la page [GIS Basics] de ce manuel)  
-* dygraphs (utile pour montrer de manière interactive des séries de données temporelles)  
+* Plotly (utilisé dans cette page du manuel et dans la page [Graphiques interactifs](#interactive_plots)).
+* visNetwork (utilisé dans la page [Chaînes de transmission](#transmission_chains) de ce manuel)  
+* Leaflet (utilisé dans la page [bases de GIS](#gis) de ce manuel)  
+* digraphs (utile pour montrer de manière interactive des séries de données temporelles)  
 * DT (`datatable()`) (utilisé pour afficher des tableaux dynamiques avec des filtres, des tris, etc.)  
 
 Ci-dessous, nous démontrons l'ajout d'une chaîne de transmission d'épidémie qui utilise visNetwork au tableau de bord. Le script ne montre que le nouveau code ajouté à la section "Column 2" du script R Markdown. Vous pouvez trouver le code dans la page [Chaînes de transmission](#transmission_chains) de ce manuel.  
@@ -371,14 +371,14 @@ knitr::include_graphics(here::here("images", "flexdashboard_chain.gif"))
 
 ## Organisation du code
 
-Vous pouvez choisir d'avoir tout le code dans le script R Markdown **flexdashboard**. Alternativement, pour avoir un script de tableau de bord plus propre et concis, vous pouvez choisir de faire appel à du code/figures qui sont hébergés ou créés dans des scripts R externes. Ceci est décrit plus en détail dans la page [Rapports avec R Markdown]. 
+Vous pouvez choisir d'avoir tout le code dans le script R Markdown **flexdashboard**. Alternativement, pour avoir un script de tableau de bord plus propre et concis, vous pouvez choisir de faire appel à du code/figures qui sont hébergés ou créés dans des scripts R externes. Ceci est décrit plus en détail dans la page [Rapports avec R Markdown](#rmarkdown). 
 
 
 ## Shiny  
 
 L'intégration du paquet R **shiny** peut rendre vos tableaux de bord encore plus réactifs aux entrées de l'utilisateur. Par exemple, vous pouvez demander à l'utilisateur de sélectionner une juridiction ou une plage de dates, et faire réagir les panneaux à son choix (par exemple, filtrer les données affichées). Pour intégrer la réactivité **shiny** dans **flexdashboard**, il vous suffit d'apporter quelques modifications à votre script Markdown R **flexdashboard**.  
 
-Vous pouvez également utiliser **shiny** pour produire des applications ou des tableaux de bord *sans* flexdashboard. La page du manuel sur [les tableaux de bord avec Shiny] donne un aperçu de cette approche, y compris des conseils sur la syntaxe **shiny**, la structure des fichiers d'application et les options de partage et de publication (y compris les options de serveur libre). Ces conseils syntaxiques et généraux s'appliquent également au contexte **flexdashboard**.  
+Vous pouvez également utiliser **shiny** pour produire des applications ou des tableaux de bord *sans* flexdashboard. La page du manuel sur [les tableaux de bord avec Shiny](#shiny) donne un aperçu de cette approche, y compris des conseils sur la syntaxe **shiny**, la structure des fichiers d'application et les options de partage et de publication (y compris les options de serveur libre). Ces conseils syntaxiques et généraux s'appliquent également au contexte **flexdashboard**.  
 
 L'intégration de **shiny** dans **flexdashboard** constitue cependant un changement fondamental pour votre flexdashboard. Il ne produira plus une sortie HTML que vous pouvez envoyer par courriel et que tout le monde peut ouvrir et visualiser. Il s'agira plutôt d'une "application". Le bouton "Knit" en haut du script sera remplacé par une icône "Run document", qui ouvrira une instance du tableau de bord interactif localement sur votre ordinateur.  
 
@@ -402,7 +402,7 @@ Activez **shiny** dans un **flexdashboard** en ajoutant le paramètre YAML `runt
 title: "Tableau de bord d'épidémie (Démo Shiny)".
 output: 
   flexdashboard::flex_dashboard :
-    orientation: colonnes
+    orientation: columns
     vertical_layout : fill
 runtime: shiny
 ---

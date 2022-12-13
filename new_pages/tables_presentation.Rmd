@@ -1,4 +1,4 @@
-# Présenter avec des tables {#presentation_tables}
+# Présenter avec des tables {#tables_presentation}
 
 ```{r echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
 
@@ -219,8 +219,6 @@ Vous pouvez trouver la liste complète des fonctions de formatage **flextable** 
 
 ### Largeur de la colonne {.unnumbered}
 
-We can use the `autofit()` function, which nicely stretches out the table so that each cell only has one row of text. The function `qflextable()` is a convenient shorthand for `flextable()` and `autofit()`.
-
 Nous pouvons utiliser la fonction `autofit()`, qui permet d'étirer et de réajuster la table de façon esthétique de sorte que chaque cellule ne comporte qu'une seule ligne de texte. La fonction `qflextable()` est un raccourci pratique pour `flextable()` et `autofit()`.
 
 ```{r}
@@ -228,10 +226,6 @@ Nous pouvons utiliser la fonction `autofit()`, qui permet d'étirer et de réaju
 my_table %>% autofit()
 
 ```
-
-However, this might not always be appropriate, especially if there are very long values within cells, meaning the table might not fit on the page.
-
-Instead, we can specify widths with the `width()` function. It can take some playing around to know what width value to put. In the example below, we specify different widths for column 1, column 2, and columns 4 to 8.
 
 Cependant, cela n'est pas toujours approprié, surtout si les cellules contiennent des valeurs très longues, ce qui signifie que le tableau risque de ne pas tenir sur la page.
 
@@ -505,7 +499,7 @@ Vous pouvez exporter les tableaux vers des fichiers Word, PowerPoint ou HTML ou 
 Par exemple, ci-dessous, nous enregistrons notre table comme un document Word. Notez la syntaxe du premier argument - vous pouvez simplement fournir le nom de votre objet flextable, par exemple `my_table`, ou vous pouvez lui donner un "nom" comme indiqué ci-dessous (le nom est "my table"). Si vous lui donnez un nom, celui-ci apparaîtra comme le titre de la table dans le document Word. Nous fournissons également le code pour sauvegarder la table sous format image PNG.
 
 ```{r message=FALSE, warning=FALSE, eval=F}
-# Edit the 'my table' as needed for the title of table.  
+# Modifiez le tableau "my table" en fonction des besoins pour le titre du tableau.  
 save_as_docx("my table" = my_table, path = "file.docx")
 
 save_as_image(my_table, path = "file.png")
@@ -524,7 +518,7 @@ print(my_table, preview = "pptx") # Exemple de document Powerpoint
 
 Cette table peut être intégrée dans un document automatisé, une sortie R markdown, si l'objet table est appelé dans le chunk R markdown. Cela signifie que la table peut être mise à jour dans le cadre d'un rapport où les données sont susceptibles de changer, de sorte que les chiffres peuvent être actualisés.
 
-Voir les détails dans la page [Rapports avec R Markdown]() de ce manuel.
+Voir les détails dans la page [Rapports avec R Markdown](#rmarkdown) de ce manuel.
 
 <!-- ======================================================= -->
 

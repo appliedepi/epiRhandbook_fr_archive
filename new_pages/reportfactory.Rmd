@@ -1,7 +1,7 @@
 
 # Organisation des rapports de routine {#reportfactory}
 
-Cette page couvre le "package" **reportfactory**, qui est un *complément à la page sur [l'utilisation de R Markdown pour la production de rapports](#rmarkdown) *. 
+Cette page couvre le "package" **reportfactory**, qui est un *complément à la page sur [Production de rapports avec R Markdown](#rmarkdown) *. 
 
 Ce package est adapté aux cas où on exécute des rapports régulièrement (par exemple, quotidiennement, hebdomadairement...). Il facilite la compilation de plusieurs fichiers R Markdown et l'organisation de leurs fichiers de sortie. Essentiellement, il fournit une "fabrique de rapports" ("factory") qui est une machine d'exécution à partir de laquelle vous pouvez exécuter les rapports R Markdown, obtenir des dossiers automatiquement horodatés pour les fichiers de sortie, et avoir un contrôle de version "léger".
 
@@ -10,9 +10,9 @@ Ce package est adapté aux cas où on exécute des rapports régulièrement (par
 
 ## Préparation
 
-### Charger les "packages" {.unnumbered}  
+### Charger les packages {.unnumbered}  
 
-Depuis RStudio, installez la dernière version du "package" **reportfactory** depuis Github.  
+Depuis RStudio, installez la dernière version du package **reportfactory** depuis Github.  
 
 Vous pouvez le faire via le "package" **pacman** avec `p_load_current_gh()` qui forcera l'installation de la dernière version depuis Github. Tapez la chaîne de caractères "reconverse/reportfactory", qui spécifie l'organisation Github (reconverse) et le répertoire (reportfactory). Vous pouvez également utiliser `install_github()` du "package" **remotes**, comme alternative.
 
@@ -23,11 +23,11 @@ pacman::p_load_current_gh("reconverse/reportfactory")
 #remotes::install_github("reconverse/reportfactory") # alternative
 ```
 
-## Nouvelle fabrique ("factory")  
+## Nouvelle "factory"  
 
-Pour créer une nouvelle fabrique ("factory"), exécutez la fonction `new_factory()`. Ceci créera un nouveau dossier de projet R autonome. Par défaut :  
+Pour créer une nouvelle "factory", exécutez la fonction `new_factory()`. Ceci créera un nouveau dossier de projet R autonome. Par défaut :  
 
-* La "factory" sera ajoutée à votre répertoire de travail.
+* "factory" sera ajoutée à votre répertoire de travail.
 * Le nom du projet R de la "factory" sera appelé "new_factory.Rproj".  
 * Votre session RStudio s'installera dans ce projet R.  
 
@@ -36,7 +36,7 @@ Pour créer une nouvelle fabrique ("factory"), exécutez la fonction `new_factor
 new_factory()
 ```
 
-En regardant à l'intérieur de la fabrique, vous pouvez voir que des sous-dossiers et certains fichiers ont été créés automatiquement.  
+En regardant à l'intérieur de la "factory", vous pouvez voir que des sous-dossiers et certains fichiers ont été créés automatiquement.  
 
 ```{r, warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "factory_new2.png"))
@@ -46,9 +46,9 @@ knitr::include_graphics(here::here("images", "factory_new2.png"))
 * Le dossier *outputs* contient les fichiers de sortie du rapport (par exemple, HTML, Word, PDF, etc.).  
 * Le dossier *scripts* peut être utilisé pour stocker d'autres scripts R (par exemple, ceux qui proviennent de vos scripts Rmd).  
 * Le dossier *data* peut être utilisé pour contenir vos données à partir desquelles vous travvaillez (les sous-dossiers "raw" et "clean" sont inclus).  
-* Un fichier *.here*, afin que vous puissiez utiliser le "package" **here** pour faire appel aux fichiers dans les sous-dossiers selon leur relation avec le dossier à la racine (voir la page [R projects] pour plus de détails).  
-* Un fichier *gitignore* a été créé au cas où vous lieriez ce projet R à un répertoire Github (voir [Contrôle de version et collaboration avec Github]).  
-* Un fichier *README* vide, si vous utilisez un dépôt Github.  
+* Un fichier *.here*, afin que vous puissiez utiliser le package **here** pour faire appel aux fichiers dans les sous-dossiers selon leur relation avec le dossier à la racine (voir la page [Projets R](#r_projects) pour plus de détails).  
+* Un fichier *gitignore* a été créé au cas où vous lieriez ce projet R à un répertoire Github (voir [Contrôle de version et collaboration avec Git et Github](#collaboration)).  
+* Un fichier README vide, si vous utilisez un dépôt Github.  
 
 
 <span style="color: orange;">**_CAUTION:_** selon les paramètres de votre ordinateur, des fichiers tels que ".here" peuvent exister mais restés cachés.</span>  
@@ -76,7 +76,7 @@ Maintenant vous pouvez lancer la commande `factory_overview()` pour voir la stru
 factory_overview()            #  afficher l'aperçu de la factory dans la console
 ```
 
-L'"arbre" suivant des dossiers et fichiers de la "factory" est affiché dans la console R. Notez que dans le dossier "data", il y a des sous-dossiers pour les données "brutes" et "propres", et des exemples de données CSV. Il y a aussi "example_report.Rmd" dans le dossier "report_sources".      
+L'"arbre" suivant des dossiers et fichiers de la "factory" est affiché dans la console R. Notez que dans le dossier "data", il y a des sous-dossiers pour les données "raw" et "clean", et des exemples de données CSV. Il y a aussi "example_report.Rmd" dans le dossier "report_sources".      
 
 ```{r, warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "factory_overview.png"))
@@ -96,7 +96,7 @@ Nous pouvons voir en utilisant `factory_overview()` notre R Markdown dans le dos
 knitr::include_graphics(here::here("images", "factory_overview2.png"))
 ```
 
-Voici une capture d'écran du début du fihier R Markdown "daily_sitrep.Rmd". Vous pouvez voir que le format de sortie est défini comme étant HTML, via l'en-tête YAML `output : html_document`.  
+Voici une capture d'écran du début du fihier R Markdown "daily_sitrep.Rmd". Vous pouvez voir que le format de sortie est défini comme étant HTML, via l'en-tête YAML `output: html_document`.  
 
 ```{r, warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "factory_new_rmd.png"))
@@ -105,7 +105,7 @@ knitr::include_graphics(here::here("images", "factory_new_rmd.png"))
 Dans ce script simple, il y a des commandes pour :  
 
 * Charger les "packages" nécessaires  
-* Importer les données de la liste linéaire en utilisant un chemin de fichier du "package" **here** (pour en savoir plus, consultez la page [Importation et exportation](#import_export)).
+* Importer les données de la liste linéaire en utilisant un chemin de fichier du "package" **here** (pour en savoir plus, consultez la page [Importer et exporter des données](#import_export)).
 
 ```{r, eval=F}
 linelist <- import(here("data", "clean", "linelist_cleaned.rds"))

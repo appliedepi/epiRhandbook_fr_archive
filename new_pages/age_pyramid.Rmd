@@ -32,7 +32,7 @@ pacman::p_load(rio,       # Pour importer les données
 
 ### Importer les données {.unnumbered}
 
-Pour commencer, nous importons la liste de cas nettoyée d'une épidémie d'Ebola simulée. Si vous voulez le faire en même temps, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la liste des cas "nettoyée".</a> (sous le format .rds). Importez des données à l'aide de la fonction `import()` du package **rio** (elle gère de nombreux types de fichiers tels que .xlsx, .csv, .rds - voir la page [Importation et exportation]{#importing} pour plus de détails).
+Pour commencer, nous importons la liste de cas nettoyée d'une épidémie d'Ebola simulée. Si vous voulez le faire en même temps, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la liste des cas "nettoyée".</a> (sous le format .rds). Importez des données à l'aide de la fonction `import()` du package **rio** (elle gère de nombreux types de fichiers tels que .xlsx, .csv, .rds - voir la page [Importation et exportation](#importing) pour plus de détails).
 
 ```{r, echo=F}
 # Importer la liste des cas dans R
@@ -161,7 +161,7 @@ apyramid::age_pyramid(
 
 Les exemples ci-dessus supposent que vos données sont au format de liste de cas, avec une ligne par observation. Si vos données sont déjà agrégées par catégorie d'âge, vous pouvez toujours utiliser le package **apyramid**, comme indiqué ci-dessous.
 
-Pour la démonstration, nous agrégeons les données de la liste de cas en nombre de cas par catégorie d'âge et par sexe, dans un format "large". Cela fera comme si vos données étaient aggrégées dès le départ. Pour en savoir plus sur le [Regroupement des données]{#grouping} et le [Pivotage des données]{#pivoting}, consultez leurs pages respectives.
+Pour la démonstration, nous agrégeons les données de la liste de cas en nombre de cas par catégorie d'âge et par sexe, dans un format "large". Cela fera comme si vos données étaient aggrégées dès le départ. Pour en savoir plus sur le [Regroupement des données](#grouping_data) et le [Pivotage des données](#pivoting_data), consultez leurs pages respectives.
 
 ```{r, warning=F, message=F}
 demo_agg <- linelist %>% 
@@ -207,7 +207,7 @@ apyramid::age_pyramid(data = demo_agg_long,
                       count = "counts")      # Nom de la colonne pour le nombre de cas
 ```
 
-Notez dans l'exemple ci-dessus que l'ordre des facteurs "m" et "f" est différent (pyramide inversée). Pour ajuster l'ordre, vous devez redéfinir le sexe dans les données agrégées comme un facteur et ordonner les niveaux comme vous le souhaitez. Voir la page [Facteurs]{#factors}.
+Notez dans l'exemple ci-dessus que l'ordre des facteurs "m" et "f" est différent (pyramide inversée). Pour ajuster l'ordre, vous devez redéfinir le sexe dans les données agrégées comme un facteur et ordonner les niveaux comme vous le souhaitez. Voir la page [Facteurs](#factors).
 
 <!-- ======================================================= -->
 
@@ -364,7 +364,7 @@ Enfin, nous effectuons le `ggplot()` sur les données en pourcentage. Nous spéc
 
 Grâce à la flexibilité de `ggplot()`, vous pouvez avoir une deuxième couche de barres en arrière-plan qui représente la pyramide des âges "réelle" ou "de référence". Cela peut fournir une visualisation agréable pour comparer les données observées avec les données de référence.
 
-Importez et visualisez les données de population (voir la page [Télécharger le manuel et les données]{#data-used}) :
+Importez et visualisez les données de population (voir la page [Télécharger le manuel et les données](#download_book_data)) :
 
 ```{r echo=F}
 #  Import des données démographiques d'une population
@@ -569,7 +569,7 @@ table(likert_data$status)
 rio::export(likert_data, here::here("data", "likert_data.csv"))
 ```
 
-Importez les données (voir la page [Télécharger le manuel et les données]{#data-used} si vous le souhaitez).
+Importez les données (voir la page [Télécharger le manuel et les données](#download_book_data) si vous le souhaitez).
 
 ```{r echo=F}
 # importer les données de réponse de l'enquête likert

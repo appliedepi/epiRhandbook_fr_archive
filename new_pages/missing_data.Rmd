@@ -1,5 +1,5 @@
 
-# Données manquantes { }
+# Données manquantes {#missing_data}
 
 ```{r, out.width=c("50%"), echo=F}
 knitr::include_graphics(here::here("images", "missingness.png"))
@@ -81,7 +81,7 @@ A l'inverse, lors du nettoyage des données, il peut également être pertinent 
 
 La plupart du temps, `NA` représente une valeur manquante et il n'y a pas besoin de se poser plus de questions que ça. Cependant, dans certaines circonstances, il peut y avoir besoin de *variations* de `NA` spécifiques à une classe d'objet (caractère, numérique, etc.). C'est rare, mais ça peut arriver.
 
-Parmi ces cas rares, la création d'une nouvelle colonne avec la fonction **dplyr** `case_when()` est le plus commun. Comme décrit dans la page [Nettoyage des données et fonctions de base](#clean_case_when), cette fonction évalue chaque ligne du dataframe, détermine si les lignes répondent à des critères logiques spécifiés (partie droite du code), et attribue la nouvelle valeur correcte (partie gauche du code). *Important : toutes les valeurs du côté droit doivent être de la même classe*.  
+Parmi ces cas rares, la création d'une nouvelle colonne avec la fonction **dplyr** `case_when()` est le plus commun. Comme décrit dans la page [Nettoyage des données et fonctions de base](#cleaning_data), cette fonction évalue chaque ligne du dataframe, détermine si les lignes répondent à des critères logiques spécifiés (partie droite du code), et attribue la nouvelle valeur correcte (partie gauche du code). *Important : toutes les valeurs du côté droit doivent être de la même classe*.  
 
 ```{r, eval=F}
 linelist <- linelist %>% 
@@ -204,7 +204,7 @@ na.omit(my_vector)
 
 ### `drop_na()` {.unnumbered}  
 
-Il s'agit d'une fonction de **tidyr** utile pour [nettoyer des données dans un pipeline](#cleaning_pipeline). Si elle est exécutée sans argument, elle supprime également les lignes dont *toutes* les valeurs sont manquantes. Mais si des noms de colonnes sont spécifiés comme arguments, seules les lignes avec des valeurs manquantes dans ces colonnes seront supprimées.   
+Il s'agit d'une fonction de **tidyr** utile pour [nettoyer des données dans un pipeline](#cleaning_data). Si elle est exécutée sans argument, elle supprime également les lignes dont *toutes* les valeurs sont manquantes. Mais si des noms de colonnes sont spécifiés comme arguments, seules les lignes avec des valeurs manquantes dans ces colonnes seront supprimées.   
 
 Note : on peut utiliser la syntaxe "tidyselect" pour spécifier les colonnes.  
 

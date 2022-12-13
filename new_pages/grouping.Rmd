@@ -307,8 +307,8 @@ linelist %>%
   adorn_pct_formatting() %>%                  # formate en %
   adorn_ns(position = "front") %>%            # formate en : "N (%)"
   adorn_title(                                # ajuste les titres
-    row_name = "Age Category",
-    col_name = "Gender")
+    row_name = "Catégorie d'âge",
+    col_name = "Sexe")
 ```
 
 
@@ -322,7 +322,7 @@ Pour grouper des données par date, il faut avoir, ou créer une colonne contena
 Un besoin spécifique à la gestion et l'analyse de données par date consiste à compléter les dates de la séquence qui ne sont pas présentes dans les données. Pour cela, on peut utiliser `complete()` du paquet **tidyr** pour que la série de dates agrégées comprenne *toutes les unités de dates possibles* dans la plage. Sans cette étape, une semaine où aucun cas n'a été signalé n’apparaîtrait pas dans les données...  
 
  
-La fonction `complete()`, *redéfinit* la colonne contenant les dates comme une *séquence* de dates (en passant `seq.Date()` du minimum au maximum comme argument). Par défaut, les valeurs du nombre de cas (et autres colonnes) dans les nouvelles lignes "développées" contient des "NA", mais l'on peut modifier ce comportement. Par exemple, on peut mettre le nombre de cas à 0 en utilisant l'argument `fill = ` de `complete()`, qui prend en entrée une liste nommée (si votre colonne de nombre de cas est nommée `n`, fournissez `fill = list(n = 0)`. Voir `?complete` pour plus de détails et la page [Manipuler les dates](#dates_epi_wks) pour un exemple.  
+La fonction `complete()`, *redéfinit* la colonne contenant les dates comme une *séquence* de dates (en passant `seq.Date()` du minimum au maximum comme argument). Par défaut, les valeurs du nombre de cas (et autres colonnes) dans les nouvelles lignes "développées" contient des "NA", mais l'on peut modifier ce comportement. Par exemple, on peut mettre le nombre de cas à 0 en utilisant l'argument `fill = ` de `complete()`, qui prend en entrée une liste nommée (si votre colonne de nombre de cas est nommée `n`, fournissez `fill = list(n = 0)`. Voir `?complete` pour plus de détails et la page [Manipuler les dates](#working_dates) pour un exemple.  
 
 
 

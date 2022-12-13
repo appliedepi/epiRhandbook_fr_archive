@@ -1,5 +1,5 @@
 
-# Obtenir de l'aide 
+# Obtenir de l'aide{#help}
 
 Cette page explique comment obtenir de l'aide en postant un problème sur Github ou en publiant un exemple reproductible ("reprex") sur un forum en ligne.  
 
@@ -10,7 +10,7 @@ Cette page explique comment obtenir de l'aide en postant un problème sur Github
 
 Plusieurs packages et projets en R ont leur code sur le site Github.com. Vous pouvez communiquer directement avec les auteurs sur ce site en postant un "Issue".   
 
-Pour en savoir plus sur comment sauvegarder vos travaux sur Github, consultez la page [Collaboration et Github]. 
+Pour en savoir plus sur comment sauvegarder vos travaux sur Github, consultez la page [Collaboration et Github](#collaboration). 
 
 Sur Github, chaque projet est contenu dans un *repository*. Chaque repository contient du code, des données, des résultats, la documentation d'aide, etc. Il existe également un moyen de communiquer avec les auteurs dénommé "Issues".   
 
@@ -30,7 +30,7 @@ knitr::include_graphics(here::here("images", "errors_Github_issues2.png"))
   
 Dans votre question, suivez les instructions ci-dessous pour fournir un exemple minimal et reproductible. Et soyez gentil! La plupart des personnes qui développent des packages et des projets R le font pendant leur temps libre (comme ce manuel!). 
 
-To read more advanced materials about handling issues in your own Github repository, check out the Github [documentation on Issues](https://guides.github.com/features/issues/). 
+
 Pour en savoir plus sur la gestion des questions dans votre propre repository Github, consultez la [documentation sur les issues](https://guides.github.com/features/issues/) sur Github.  
 
 

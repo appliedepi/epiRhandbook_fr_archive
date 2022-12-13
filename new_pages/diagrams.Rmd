@@ -1,43 +1,43 @@
 
-# Diagrammes et graphiques {#diagrams}  
+# Diagrammes et schÃ©mas {#diagrams}  
 
 
 
-``{r out.width = c('50%'), fig.show='hold', echo=F}
+```{r out.width = c('50%'), fig.show='hold', echo=F}
 knitr::include_graphics(ici::here("images", "flow_chart.png"))
 knitr::include_graphics(ici::ici("images", "sankey_diagram.png"))
 ```
 
 
-Cette page couvre le code pour produire :  
+Cette page passe en revue le code pour produire:
 
 * Des diagrammes de flux en utilisant **DiagrammemeR** et le langage DOT.  
-* Diagrammes Alluvial/Sankey  
-* Des chronologies d'événements  
+* Diagrammes Alluviaux/Sankey  
+* Des chronologies d'Ã©vÃ©nements  
 
-* DAGs (Directed Acyclic Graphs) -->
-<!-- * Graphiques de GANTT -->
+<!--DAGs (Directed Acyclic Graphs) -->
+<!-- Graphiques de GANTT -->
 
 
 <!-- ======================================================= -->
-## Préparation { }
+## PrÃ©paration { }
 
 ### Chargement des paquets {.unnumbered}  
 
-Ce chunk de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
+Ce chunk de code montre le chargement des paquets nÃ©cessaires pour les analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nÃ©cessaire *et* le charge pour l'utiliser. Vous pouvez Ã©galement charger les paquets installÃ©s avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets bases de R.  
 
 ```{r}
 pacman::p_load(
   DiagrammeR, # pour les diagrammes de flux
   networkD3, # pour les diagrammes alluviaux/Sankey
-  tidyverse) # gestion et visualisation des données
+  tidyverse) # gestion et visualisation des donnÃ©es
 ```
 
-### Importer des données {.unnumbered}  
+### Importer des donnÃ©es {.unnumbered}  
 
-La plupart du contenu de cette page ne nécessite pas de jeu de données. Cependant, dans la section sur le diagramme de Sankey, nous utiliserons la liste de cas d'une simulation d'épidémie d'Ebola. Si vous souhaitez suivre cette partie, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la liste de cas "propre"</a> (en tant que fichier .rds). Importez les données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation] pour plus de détails).  
+La plupart du contenu de cette page ne nÃ©cessite pas de jeu de donnÃ©es. Cependant, dans la section sur le diagramme de Sankey, nous utiliserons la liste de cas d'une simulation d'Ã©pidÃ©mie d'Ebola. Si vous souhaitez suivre cette partie, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour tÃ©lÃ©charger la liste de cas "propre"</a> (en fichier format .rds). Importez les donnÃ©es avec la fonction `import()` du paquet **rio** (elle gÃ¨re de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de dÃ©tails).  
 
-``{r, echo=F}
+```{r, echo=F}
 # Importez la liste de diffusion dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
@@ -47,10 +47,10 @@ linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.r
 linelist <- import("linelist_cleaned.rds")
 ```
 
-Les 50 premières lignes de la linelist sont affichées ci-dessous.
+Les 50 premiÃ¨res lignes de la linelist sont affichÃ©es ci-dessous.
 
-``{r, message=FALSE, echo=F}
-# affiche les données de la liste de diffusion sous forme de tableau
+```{r, message=FALSE, echo=F}
+# affiche les donnÃ©es de la liste de diffusion sous forme de tableau
 DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
@@ -59,32 +59,32 @@ DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list
 <!-- ======================================================= -->
 ## Diagrammes de flux { }
 
-On peut utiliser le paquet R **DiagrammeR** pour créer des diagrammes/diagrammes de flux. Ils peuvent être statiques, ou s'ajuster quelque peu dynamiquement en fonction des changements dans un ensemble de données.  
+On peut utiliser le paquet R **DiagrammeR** pour crÃ©er des diagrammes/schÃ©mas de flux. Ils peuvent Ãªtre statiques, ou s'ajuster  dynamiquement en fonction des changements dans un ensemble de donnÃ©es.  
 
 **Outils  
 
-La fonction `grViz()` est utilisée pour créer un diagramme "Graphviz". Cette fonction accepte une *chaîne de caractères en entrée contenant les instructions* pour réaliser le diagramme. Dans cette chaîne, les instructions sont écrites dans un langage différent, appelé [DOT](https://graphviz.org/doc/info/lang.html) - il est assez facile d'en apprendre les bases.  
+La fonction `grViz()` est utilisÃ©e pour crÃ©er un diagramme "Graphviz". Cette fonction accepte une *chaÃ®ne de caractÃ¨res en entrÃ©e contenant les instructions* pour rÃ©aliser le diagramme. Dans cette chaÃ®ne de caractÃ¨res, les instructions sont Ã©crites dans un langage diffÃ©rent, [DOT](https://graphviz.org/doc/info/lang.html); il est assez facile d'apprendre les bases de le langage DOT.
 
 **Structure de base**  
 
-1) Ouvrez les instructions `grViz("`)  
-2) Spécifiez la direction et le nom du graphe, et ouvrez les parenthèses, par exemple `digraph my_flow_chart {``
-3) Déclaration du graphique (disposition, direction du rang)  
-4) Déclaration des noeuds (crée les noeuds)
-5) Instructions sur les arêtes (donne les liens entre les noeuds)  
+1) Ouvrez les instructions `grViz("`  
+2) SpÃ©cifiez la direction et le nom du graphique, et ouvrez les parenthÃ¨ses, par exemple `digraph mon_diagramme_de_flux {``
+3) DÃ©claration du graphique (disposition, direction du rang)  
+4) DÃ©claration des noeuds (crÃ©e les noeuds)
+5) DÃ©clarations de contours/bords (donne les liens entre les noeuds)  
 6) Fermer les instructions `}")`  
 
-### Exemples simples {.non numérotés} 
+### Exemples simples {.unnumbered} 
 
 Vous trouverez ci-dessous deux exemples simples  
 
-Un exemple très minimal :  
+Un exemple trÃ¨s minimal :  
 
-``{r out.width='50%'}
-## Un tracé minimal
+```{r out.width='50%'}
+## Un tracÃ© minimal
 DiagrammeR::grViz("digraph {
   
-graphique [layout = dot, rankdir = LR]
+graph[layout = dot, rankdir = LR]
 
 a
 b
@@ -94,33 +94,37 @@ a -> b -> c
 }")
 ```
 
-Un exemple avec un contexte de santé publique peut-être un peu plus appliqué :  
+Un exemple avec un contexte de santÃ© publique un peu plus appliquÃ© :  
 
 ```{r out.width='50%'}
-grViz(" # Toutes les instructions se trouvent dans une grande chaîne de caractères
-digraph surveillance_diagram { # 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
-  
-  # déclaration du graphique
+# Toutes les instructions se trouvent dans une grande chaÃ®ne de caractÃ¨res
+# 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
+
+# dÃ©claration du graphique, dÃ©claration des noueds, forme et largeur de noueds, noms des noeuds, bords ou contours
+  #######
   #################
-  graphe [layout = dot,
+
+grViz("    
+digraph surveillance_diagram { 
+  
+  
+  graph [layout = dot,
          rankdir = TB,
          overlap = true,
          fontsize = 10]
   
-  # nouds
-  #######
-  noeud [shape = circle, # shape = circle
-       fixedsize = true
-       width = 1.3]               # largeur des cercles
   
-  Primaire # noms des noeuds
-  Secondaire
-  Tertiaire
+  nodes [shape = circle, 
+       fixedsize = true
+       width = 1.3]               
+  
+  Primary
+  Secondary
+  Tertiary
 
-  # bords
-  #######
-  Primaire -> Secondaire [label = ' case transfer']
-  Secondaire -> Tertiaire [label = ' case transfer']
+  
+  Primary -> Secondary [label = ' case transfer']
+  Secondary -> Tertiary [label = ' case transfer']
 }
 ")
 ```
@@ -129,45 +133,46 @@ digraph surveillance_diagram { # 'digraph' signifie 'graphique directionnel', pu
 
 **Syntaxe de base**  
 
-Les noms de nouds, ou les déclarations d'arêtes, peuvent être séparés par des espaces, des points-virgules ou des nouvelles lignes.  
+Les noms de nouds, ou les dÃ©clarations de bords, peuvent Ãªtre sÃ©parÃ©s par des espaces, des points-virgules ou des nouvelles lignes.  
 
 **Direction du rang**  
 
-Un graphe peut être réorienté pour se déplacer de gauche à droite en ajustant l'argument `rankdir` dans la déclaration du graphe. Le défaut est TB (top-to-bottom), mais il peut être LR (left-to-right), RL, ou BT.  
+Un graphique peut Ãªtre rÃ©orientÃ© pour se dÃ©placer de gauche Ã  droite en ajustant l'argument `rankdir` dans la dÃ©claration du graphique. Le dÃ©faut est TB (top-to-bottom; de haut en bas), mais il peut Ãªtre LR (left-to-right, gauche-Ã -droite), ou l'inverse
+ (RL,BT).  
 
 **Noms de nouds**  
 
-Les noms de noeuds peuvent être des mots simples, comme dans l'exemple simple ci-dessus. Pour utiliser des noms de plusieurs mots ou des caractères spéciaux (par exemple, parenthèses, tirets), placez le nom du noud entre guillemets simples (' '). Il peut être plus facile d'avoir un nom de noud court et d'attribuer un *label*, comme indiqué ci-dessous entre crochets [ ]. Si vous voulez avoir une nouvelle ligne dans le nom du noeud, vous devez le faire via une étiquette - utilisez `\n` dans l'étiquette du noeud entre guillemets simples, comme indiqué ci-dessous.  
+Les noms de noeuds peuvent Ãªtre des mots simples, comme dans l'exemple ci-dessus. Pour utiliser des noms de plusieurs mots ou des caractÃ¨res spÃ©ciaux (par exemple, parenthÃ¨ses, tirets), placez le nom du noud entre guillemets simples (' '). Il peut Ãªtre plus facile d'avoir un nom de nÅ“ud court et d'attribuer un *label*, comme indiquÃ© ci-dessous entre crochets [ ]. Si vous voulez avoir une nouvelle ligne dans le nom du nÅ“ud, vous devez le faire via une Ã©tiquette. Utilisez `\n` dans l'Ã©tiquette du nÅ“ud entre guillemets simples, comme indiquÃ© ci-dessous.  
 
 **Sous-groupes**  
-Dans les déclarations d'arêtes, des sous-groupes peuvent être créés de chaque côté de l'arête avec des crochets ({ }). L'arête s'applique alors à tous les nouds entre crochets - c'est un raccourci.  
+Dans les dÃ©clarations des bords/contours, des sous-groupes peuvent Ãªtre crÃ©Ã©s de chaque cÃ´tÃ© de le bords avec des crochets ({ }). Le bord s'applique alors Ã  tous les nouds entre crochets. Ceci est un raccourci.  
 
 
 **Mise en page**  
 
-* dot (définir `rankdir` sur TB, LR, RL, BT, )
+* dot (dÃ©finir `rankdir` comme soit TB, LR, RL, ou BT)
 * Neato  
 * twopi  
 * circo  
 
 
-**Nouds - attributs modifiables**  
+**Noeuds - attributs modifiables**  
 
 * `label` (texte, entre guillemets simples si plusieurs mots)  
 * `fillcolor` (plusieurs couleurs possibles)  
 * `fontcolor` (plusieurs couleurs possibles)  
 * `alpha` (transparence 0-1)  
-* `shape` (ellipse, ovale, diamant, ouf, texte en clair, point, carré, triangle)  
+* `shape` (ellipse, ovale, diamant, ouf, texte en clair, point, carrÃ©, triangle)  
 * `style`  
-* `côtés`  
-* `périphéries`  
-* Taille fixe (h x l)  
+* `sides`  
+* `peripheries`  
+* `fixedsize` (h x l)  
 * `hauteur`  
-* `largeur`  
-* `distorsion`  
+* `width`  
+* `distortion`  
 * `penwidth` (largeur de la bordure de la forme)  
-* `x` (déplacement gauche/droite)  
-* `y` (déplacement haut/bas)  
+* `x` (dÃ©placement gauche/droite)  
+* `y` (dÃ©placement haut/bas)  
 * `fontname`  
 * `fontsize`  
 * `icon`  
@@ -175,176 +180,201 @@ Dans les déclarations d'arêtes, des sous-groupes peuvent être créés de chaque cô
 
 **Bords - attributs modifiables**  
 
-* `taille de la flèche`  
+* `arrowsize`  
 * `arrowhead` (normal, box, crow, curve, diamond, dot, inv, none, tee, vee)  
 * `arrowtail`  
 * `dir` (direction, )  
-* `style` (pointillé, ...)  
+* `style` (pointillÃ©, ...)  
 * `color`  
 * `alpha`  
-* `headport` (texte devant la tête de la flèche)  
-* `tailport` (texte situé derrière la queue de flèche)  
+* `headport` (texte devant la tÃªte de la flÃ¨che)  
+* `tailport` (texte situÃ© derriÃ¨re la queue de flÃ¨che)  
 * `fontname`  
 * `fontsize`  
 * `fontcolor` (couleur de la police)  
-* `penwidth` (largeur de la flèche)  
+* `penwidth` (largeur de la flÃ¨che)  
 * `minlen` (longueur minimale)
 
-**Noms de couleurs** : valeurs hexadécimales ou noms de couleurs 'X11', voir [ici pour les détails sur X11](http://rich-iannone.github.io/DiagrammeR/graphviz_and_mermaid.html) 
+**Noms de couleurs** : valeurs hexadÃ©cimales ou noms de couleurs 'X11', voir [ici pour les dÃ©tails sur X11](http://rich-iannone.github.io/DiagrammeR/graphviz_and_mermaid.html) 
 
 
 ### Exemples complexes {.unnumbered}
 
-L'exemple ci-dessous développe le diagramme de surveillance, en ajoutant des noms de noeuds complexes, des arêtes groupées, des couleurs et un style.
+L'exemple ci-dessous dÃ©veloppe le diagramme de surveillance, en ajoutant des noms de noeuds complexes, des bords groupÃ©es, des couleurs et un style spÃ©cifique.
 
 
-```
-DiagrammeR::grViz(" # Toutes les instructions sont dans une grande chaîne de caractères
-digraph surveillance_diagram { # 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
-  
-  # déclaration du graphique
+```{r}
+
+# Toutes les instructions sont dans une grande chaÃ®ne de caractÃ¨res
+# 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
+
+# dÃ©claration du graphique
   #################
+
+# disposition de haut en bas
+# nouds (formes cercles)
+  #################
+  #bords et bord groupÃ©
+
+
+
+DiagrammeR::grViz(" 
+digraph surveillance_diagram { 
+  
+  
   graphe [layout = dot,
-         rankdir = TB, # disposition de haut en bas
-         taille de police = 10]
+         rankdir = TB, 
+         fontsize = 10]
   
 
-  # nouds (cercles)
-  #################
-  node [shape = circle, # shape = circle
+  
+  node [shape = circle, 
        fixedsize = true
        width = 1.3]                      
   
-  Primaire [label = 'Primaire'] 
-  Secondaire [label = 'Secondaire'] 
-  Tertiaire [label = 'Tertiaire'] 
-  SC [label = "Surveillance\nCoordination",
+  Primary [label = 'Site Primaire'] 
+  Secondary [label = 'Site Secondaire'] 
+  Tertiary [label = 'Site Tertiaire'] 
+  SC [label = 'Coordination de\nla Surveillance',
              fontcolor = darkgreen] 
-  
-  # bords
-  #######
-  Primaire -> Secondaire [label = 'Transfert de cas',
-                          fontcolor = rouge,
+
+
+  Primary -> Secondary [label = 'Transfert de cas',
+                          fontcolor = red,
                           color = red]
-  Secondaire -> Tertiaire [label = ' case transfer',
-                          fontcolor = rouge,
-                          couleur = rouge]
+  Secondary -> Tertiary [label = 'Transfert de cas',
+                          fontcolor = red,
+                          color = red]
   
-  # Bord groupé
-  {Primaire Secondaire Tertiaire} -> SC [label = 'case reporting',
-                                      fontcolor = vert foncé,
-                                      couleur = vert foncé,
-                                      style = pointillé]
+
+  {Primary Secondary Tertiairy} -> SC [label = 'dÃ©claration des cas',
+                                      fontcolor = darkgreen,
+                                      couleur = darkgreen,
+                                      style = dashed]
 }
 ")
 ```
 
 
 ```{r out.width='50%', echo=F}
-DiagrammeR::grViz(" # Toutes les instructions se trouvent dans une grande chaîne de caractères
-digraph surveillance_diagram { # 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
-  
-  # déclaration du graphique
+# Toutes les instructions se trouvent dans une grande chaÃ®ne de caractÃ¨res
+# 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
+# dÃ©claration du graphique
+# disposition de haut en bas
   #################
+# nouds (formes cercles)
+  #################
+  #bords et bord groupÃ©
+
+
+
+DiagrammeR::grViz(" 
+digraph surveillance_diagram { 
+  
+  
   graphe [layout = dot,
-         rankdir = TB, # disposition de haut en bas
-         taille de police = 10]
+         rankdir = TB, 
+         fontsize = 10]
   
 
-  # nouds (cercles)
-  #################
-  node [shape = circle, # shape = circle
+  
+  node [shape = circle, 
        fixedsize = true
        width = 1.3]                      
   
-  Primaire [label = 'Primaire'] 
-  Secondaire [label = 'Secondaire'] 
-  Tertiaire [label = 'Tertiaire'] 
-  SC [label = "Surveillance\nCoordination",
+  Primary [label = 'Site Primaire'] 
+  Secondary [label = 'Site Secondaire'] 
+  Tertiary [label = 'Site Tertiaire'] 
+  SC [label = 'Coordination de\nla Surveillance',
              fontcolor = darkgreen] 
-  
-  # bords
-  #######
-  Primaire -> Secondaire [label = 'transfert de cas',
-                          fontcolor = rouge,
+
+
+  Primary -> Secondary [label = 'Transfert de cas',
+                          fontcolor = red,
                           color = red]
-  Secondaire -> Tertiaire [label = 'case transfer',
-                          fontcolor = rouge,
-                          couleur = rouge]
+  Secondary -> Tertiary [label = 'Transfert de cas',
+                          fontcolor = red,
+                          color = red]
   
-  # Bord groupé
-  {Primaire Secondaire Tertiaire} -> SC [label = 'case reporting',
-                                      fontcolor = vert foncé,
-                                      couleur = vert foncé,
-                                      style = pointillé]
+
+  {Primary Secondary Tertiairy} -> SC [label = 'dÃ©claration des cas',
+                                      fontcolor = darkgreen,
+                                      couleur = darkgreen,
+                                      style = dashed]
 }
 ")
 ```
 
-**Groupements de sous-graphes  
+**Groupements de sous-graphiques  
 
-Pour regrouper les nouds dans des clusters encadrés, placez-les dans le même sous-graphe nommé (`subgraph name {}`). Pour que chaque sous-graphe soit identifié dans une boîte de délimitation, commencez le nom du sous-graphe par "cluster", comme le montrent les 4 boîtes ci-dessous.  
+Pour regrouper les noeuds dans des clusters encadrÃ©s, placez-les dans le mÃªme sous-graphique nommÃ© (`subgraph name {}`). Pour que chaque sous-graphe soit identifiÃ© dans une boÃ®te de dÃ©limitation, commencez le nom du sous-graphique par "cluster", comme le montrent les 4 boÃ®tes ci-dessous.  
 
-```
-DiagrammeR::grViz(" # Toutes les instructions sont dans une grande chaîne de caractères
-digraph surveillance_diagram { # 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
-  
-  # déclaration du graphique
+```{r }
+
+# Toutes les instructions sont dans une grande chaÃ®ne de caractÃ¨res
+# 'digraph' signifie 'graphique directionnel', puis le nom du graphique
+ # dÃ©claration du graphique
   #################
+# nouds (cercles)
+  #################
+# nouds (cases)
+  ###############
+
+DiagrammeR::grViz(" 
+digraph surveillance_diagram {  
+  
+ 
   graphe [layout = dot,
          rankdir = TB,            
          overlap = true,
          fontsize = 10]
   
 
-  # nouds (cercles)
-  #################
+  
   node [shape = circle, # shape = circle
        fixedsize = true
        width = 1.3]                      # largeur des cercles
   
-  sous-graphe cluster_passive {
-    Primaire [label = 'Primaire'] 
-    Secondaire [label = 'Secondaire\nFacility'] 
-    Tertiaire [label = 'Tertiaire'] 
-    SC [label = "Surveillance\nCoordination",
+  subgraph cluster_passive {
+    Primary [label = 'Site Primaire'] 
+    Secondary [label = 'Site Secondaire'] 
+    Tertiary [label = 'Site Tertiaire'] 
+    SC [label = 'Coordination de\nla Surveillance',
                fontcolor = darkgreen] 
   }
   
-  # nouds (cases)
-  ###############
-  node [shape = box, # node shape
-        fontname = Helvetica]            # police du texte dans le noeud
+  
+  node [shape = box, 
+        fontname = Helvetica]            
   
   sous-graphe cluster_active {
-    Active [label = 'Active\nSurveillance'] 
-    HCF_active [label = 'HCF\nRecherche active']
+    Active [label = 'Surveillance\nActive'] 
+    HCF_active [label = 'HCF\nRecherche Active']
   }
   
   sous-graphe cluster_EBD {
-    EBS [label = "Surveillance basée sur les événements (EBS)"] 
-    Médias sociaux
+    EBS [label = 'Surveillance basÃ©e sur les Ã©vÃ©nements (SBE)'] 
+    'Social Media'
     Radio
   }
   
   sous-graphe cluster_CBS {
-    CBS [label = "Community-Based-Surveillance (CBS)"]
+    CBS [label = 'Surveillance basÃ©e sur les communautÃ©s(SBC)']
     RECOs
   }
 
   
-  # edges
-  #######
-  {Primaire Secondaire Tertiaire} -> SC [label = 'déclaration des cas']
 
-  Primaire -> Secondaire [label = 'transfert de cas',
-                          fontcolor = rouge]
-  Secondaire -> Tertiaire [label = 'case transfer',
-                          fontcolor = rouge]
+  {Primary Secondary Tertiary} -> SC [label = 'dÃ©claration des cas']
+
+  Primary -> Secondary [label = 'transfert de cas',
+                          fontcolor = red]
+  Secondaire -> Tertiaire [label = 'transfert de cas',
+                          fontcolor = red]
   
   HCF_active -> Active
   
-  {Radio 'médias sociaux' -> EBS
+  {Radio 'Social Media' -> EBS
   
   RECOs -> CBS
 }
@@ -354,65 +384,70 @@ digraph surveillance_diagram { # 'digraph' signifie 'graphique directionnel', pu
 
 
 ```{r out.width='120%', echo=F}
-DiagrammeR::grViz(" # Toutes les instructions se trouvent dans une grande chaîne de caractères
-digraph surveillance_diagram { # 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
-  
-  # déclaration du graphique
+# Toutes les instructions sont dans une grande chaÃ®ne de caractÃ¨res
+# 'digraph' signifie 'graphique directionnel', puis le nom du graphique
+ # dÃ©claration du graphique
   #################
+# nouds (cercles)
+  #################
+# nouds (cases)
+  ###############
+
+DiagrammeR::grViz(" 
+digraph surveillance_diagram {  
+  
+ 
   graphe [layout = dot,
          rankdir = TB,            
          overlap = true,
          fontsize = 10]
   
 
-  # nouds (cercles)
-  #################
+  
   node [shape = circle, # shape = circle
        fixedsize = true
        width = 1.3]                      # largeur des cercles
   
-  sous-graphe cluster_passive {
-    Primaire [label = 'Primaire'] 
-    Secondaire [label = 'Secondaire\nFacility'] 
-    Tertiaire [label = 'Tertiaire'] 
-    SC [label = "Surveillance\nCoordination",
+  subgraph cluster_passive {
+    Primary [label = 'Site Primaire'] 
+    Secondary [label = 'Site Secondaire'] 
+    Tertiary [label = 'Site Tertiaire'] 
+    SC [label = 'Coordination de\nla Surveillance',
                fontcolor = darkgreen] 
   }
   
-  # nouds (cases)
-  ###############
-  node [shape = box, # node shape
-        fontname = Helvetica]            # police du texte dans le noeud
+  
+  node [shape = box, 
+        fontname = Helvetica]            
   
   sous-graphe cluster_active {
-    Active [label = 'Active\nSurveillance'] 
-    HCF_active [label = 'HCF\nRecherche active']
+    Active [label = 'Surveillance\nActive'] 
+    HCF_active [label = 'HCF\nRecherche Active']
   }
   
   sous-graphe cluster_EBD {
-    EBS [label = "Surveillance basée sur les événements (EBS)"] 
-    Médias sociaux
+    EBS [label = 'Surveillance basÃ©e sur les Ã©vÃ©nements (SBE)'] 
+    'Social Media'
     Radio
   }
   
   sous-graphe cluster_CBS {
-    CBS [label = "Community-Based-Surveillance (CBS)"]
+    CBS [label = 'Surveillance basÃ©e sur les communautÃ©s(SBC)']
     RECOs
   }
 
   
-  # edges
-  #######
-  {Primaire Secondaire Tertiaire} -> SC [label = 'déclaration des cas']
 
-  Primaire -> Secondaire [label = 'transfert de cas',
-                          fontcolor = rouge]
-  Secondaire -> Tertiaire [label = 'case transfer',
-                          fontcolor = rouge]
+  {Primary Secondary Tertiary} -> SC [label = 'dÃ©claration des cas']
+
+  Primary -> Secondary [label = 'transfert de cas',
+                          fontcolor = red]
+  Secondaire -> Tertiaire [label = 'transfert de cas',
+                          fontcolor = red]
   
   HCF_active -> Active
   
-  {Radio 'médias sociaux' -> EBS
+  {Radio 'Social Media' -> EBS
   
   RECOs -> CBS
 }
@@ -421,53 +456,56 @@ digraph surveillance_diagram { # 'digraph' signifie 'graphique directionnel', pu
 ```
 
 
-**Formes des nouds  
+**Formes des nouds** 
 
-L'exemple ci-dessous, emprunté à [ce tutoriel] (http://rich-iannone.github.io/DiagrammeR/), montre les formes de nouds appliquées et une abréviation pour les connexions de bords en série.  
+L'exemple ci-dessous, empruntÃ© Ã  [ce tutoriel](http://rich-iannone.github.io/DiagrammeR/), montre les formes de nouds appliquÃ©es et une abrÃ©viation pour les connexions de bords en sÃ©rie.  
 
 ```{r out.width='75%'}
+
+# dÃ©finir les styles globaux des noeuds. Nous pouvons les remplacer dans la boÃ®te si nous le souhaitons.
+# dÃ©finitions des bords avec les ID des nouds
 DiagrammeR::grViz("digraph {
 
 graph [layout = dot, rankdir = LR]
 
-# définir les styles globaux des noeuds. Nous pouvons les remplacer dans la boîte si nous le souhaitons.
+
 node [shape = rectangle, style = filled, fillcolor = Linen]
 
-data1 [label = 'Dataset 1', shape = folder, fillcolor = Beige]
-data2 [label = 'Dataset 2', shape = folder, fillcolor = Beige]
+data1 [label = 'Dataframe 1', shape = folder, fillcolor = Beige]
+data2 [label = 'Dataframe 2', shape = folder, fillcolor = Beige]
 process [label = 'Process \n Data']
-statistical [label = "Statistical \n Analysis"] (Analyse statistique)
-results [label= 'Results']
+statistical [label = 'Analyse\nStatistique'] 
+results [label= 'RÃ©sultats']
 
-# définitions des bords avec les ID des nouds
-{données1 données2} -> processus -> statistique -> résultats
+
+{data1 data2} -> process -> statistical -> results
 }")
 ```
 
 
-### Sorties {.non numérotées}
+### Sorties {.unnumbered}
 
-Comment gérer et sauvegarder les sorties  
+Comment gÃ©rer et sauvegarder les sorties  
 
-* Les résultats apparaîtront dans le volet de visualisation de RStudio, par défaut dans le coin inférieur droit, à côté de Files, Plots, Packages et Help.  
-* Pour exporter, vous pouvez "Enregistrer en tant qu'image" ou "Copier dans le presse-papiers" à partir de la visionneuse. Le graphique s'ajustera à la taille spécifiée.  
-
-
+* Les rÃ©sultats apparaÃ®tront dans le volet de visualisation de RStudio, par dÃ©faut dans le coin infÃ©rieur droit, Ã  cÃ´tÃ© de Files, Plots, Packages et Help.  
+* Pour exporter, vous pouvez "Enregistrer en tant qu'image" ou "Copier a le presse-papiers" Ã  partir de la Viewer. Le graphique s'ajustera Ã  la taille spÃ©cifiÃ©e.  
 
 
-### Figures paramétrées {.unnumbered} 
+
+
+### Figures paramÃ©trÃ©es {.unnumbered} 
 
 Voici une citation de ce tutoriel : https://mikeyharper.uk/flowcharts-in-r-using-diagrammer/  
 
-"Figures paramétrées : L'un des grands avantages de la conception de figures dans R est que nous sommes en mesure de connecter les figures directement à notre analyse en lisant les valeurs R directement dans nos organigrammes. Par exemple, supposons que vous ayez créé un processus de filtrage qui supprime les valeurs après chaque étape d'un processus, vous pouvez avoir une figure montrant le nombre de valeurs restantes dans l'ensemble de données après chaque étape de votre processus. Pour ce faire, vous pouvez utiliser le symbole @@X directement dans la figure, puis y faire référence dans le pied de page du graphique en utilisant [X] :, où X est un indice numérique unique."  
+"Figures paramÃ©trÃ©es : L'un des grands avantages de la conception de figures dans R est que nous sommes en mesure de connecter les figures directement Ã  notre analyse en lisant les valeurs R directement dans nos schemas de flux. Par exemple, supposons que vous ayez crÃ©Ã© un processus de filtrage qui supprime les valeurs aprÃ¨s chaque Ã©tape d'un processus, vous pouvez avoir une figure montrant le nombre de valeurs restantes dans l'ensemble de donnÃ©es aprÃ¨s chaque Ã©tape de votre processus. Pour ce faire, vous pouvez utiliser le symbole @@X directement dans la figure, puis y faire rÃ©fÃ©rence dans le pied de page du graphique en utilisant [X] :, oÃ¹ X est un indice numÃ©rique unique."  
 
-Nous vous encourageons à revoir ce tutoriel si le paramétrage est quelque chose qui vous intéresse.  
+Nous vous encourageons Ã  revoir ce tutoriel si le paramÃ©trage est quelque chose qui vous intÃ©resse.  
 
 
-<br />Et ci-dessous, vous trouverez un exemple de code tiré de ce tutoriel. -->
+<!-- />Et ci-dessous, vous trouverez un exemple de code tirÃ© de ce tutoriel. -->
 
 <!-- ``{r, eval=F} -->
-<!-- # Définir quelques exemples de données -->
+<!-- # DÃ©finir quelques exemples de donnÃ©es -->
 <!-- data <- list(a=1000, b=800, c=600, d=400) -->
 
 
@@ -476,7 +514,7 @@ Nous vous encourageons à revoir ce tutoriel si le paramétrage est quelque chose 
 
 <!-- graphe [disposition = point] -->
 
-<!-- # définitions de nouds avec texte d'étiquette substitué -->
+<!-- # dÃ©finitions de nouds avec texte d'Ã©tiquette substituÃ© -->
 <!-- noeud [forme = rectangle, largeur = 4, couleur de remplissage = Biege] -->
 <!-- a [label = '@@1'] -->
 <!-- b [label = '@@2'] -->
@@ -487,23 +525,23 @@ Nous vous encourageons à revoir ce tutoriel si le paramétrage est quelque chose 
 
 <!-- } -->
 
-<!-- [1] : paste0('Données brutes (n = ', data$a, ')') -->
+<!-- [1] : paste0('DonnÃ©es brutes (n = ', data$a, ')') -->
 <!-- [2] : paste0('Suppression des erreurs (n = ', data$b, ')') -->
 <!-- [3] : paste0('Identifier les clients potentiels (n = ', data$c, ')') -->
-<!-- [4] : paste0('Sélectionner les principales priorités (n = ', data$d, ')') -->
+<!-- [4] : paste0('SÃ©lectionner les principales prioritÃ©s (n = ', data$d, ')') -->
 <!-- ") -->
 
 <!-- ``` -->
 
 
 
-<!-- ### Diagramme CONSORT {.non numéroté} -->
+<!-- ### Diagramme CONSORT {.unnumbered} -->
 
 <!-- CETTE SECTION EST EN CONSTRUCTION -->
 
 <!-- https://scriptsandstatistics.wordpress.com/2017/12/22/how-to-draw-a-consort-flow-diagram-using-r-and-graphviz/ -->
 
-<!-- La note ci-dessus est périmée via DiagrammeR -->
+<!-- La note ci-dessus est pÃ©rimÃ©e via DiagrammeR -->
 
 
 
@@ -513,40 +551,40 @@ Nous vous encourageons à revoir ce tutoriel si le paramétrage est quelque chose 
 
 ### Chargement des paquets {.unnumbered}  
 
-Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
+Ce morceau de code montre le chargement des paquets nÃ©cessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nÃ©cessaire *et* le charge pour l'utiliser. Vous pouvez Ã©galement charger les paquets installÃ©s avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets R.  
 
-Nous chargeons le paquet **networkD3** pour produire le diagramme, et aussi **tidyverse** pour les étapes de préparation des données.  
+Nous chargeons le paquet **networkD3** pour produire le diagramme, et aussi **tidyverse** pour les Ã©tapes de prÃ©paration des donnÃ©es.  
 
 ```{r}
 pacman::p_load(
-  réseauD3,
+  networkD3,
   tidyverse)
 ```
 
-### Tracé à partir d'un ensemble de données {.unnumbered} 
+### Graphique Ã  partir d'un ensemble de donnÃ©es {.unnumbered} 
 
-Tracer les connexions dans un jeu de données. Nous démontrons ci-dessous l'utilisation de ce package sur le cas `linelist`. Voici un [tutoriel en ligne] (https://www.r-graph-gallery.com/321-introduction-to-interactive-sankey-diagram-2.html).    
+Tracer les connexions dans un jeu de donnÃ©es. Nous dÃ©montrons ci-dessous l'utilisation de le package **networkD3** sur le cas `linelist`. Voici un [tutoriel en ligne](https://www.r-graph-gallery.com/321-introduction-to-interactive-sankey-diagram-2.html).    
 
-Nous commençons par obtenir le nombre de cas pour chaque combinaison unique de catégorie d'âge et d'hôpital. Pour plus de clarté, nous avons supprimé les valeurs dont la catégorie d'âge est manquante. Nous renommons également les colonnes `hospital` et `age_cat` en `source` et `target` respectivement. Ce seront les deux côtés du diagramme alluvial.  
+Nous commenÃ§ons par obtenir le nombre de cas pour chaque combinaison unique de catÃ©gorie d'Ã¢ge et d'hÃ´pital. Pour plus de clartÃ©, nous avons supprimÃ© les valeurs dont la catÃ©gorie d'Ã¢ge est manquante. Nous renommons Ã©galement les colonnes `hospital` et `age_cat` en `source` et `target` respectivement. Ce seront les deux cÃ´tÃ©s du diagramme alluvial.  
 
 ```{r}
-# comptage par hôpital et par catégorie d'âge
-liens <- linelist %>% 
+# comptes par hÃ´pital et par catÃ©gorie d'Ã¢ge
+links <- linelist %>% 
   drop_na(age_cat) %>% 
   select(hospital, age_cat) %>%
-  count(hôpital, age_cat) %>% 
-  rename(source = hôpital,
-         cible = age_cat)
+  count(hospital, age_cat) %>% 
+  rename(source = hospital,
+         target = age_cat)
 ```
 
-L'ensemble de données ressemble maintenant à ceci :  
+L'ensemble de donnÃ©es ressemble maintenant Ã  ceci :  
 
-``{r message=FALSE, echo=F}
-DT::datatable(links, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
+```{r message=FALSE, echo=F}
+DT::datatable(links, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
 ```
 
 
-Maintenant, nous créons un cadre de données de tous les noeuds du diagramme, sous la colonne `name`. Il s'agit de toutes les valeurs de `hospital` et `age_cat`. Notez que nous nous assurons qu'elles sont toutes des caractères de classe avant de les combiner. et ajustons les colonnes ID pour qu'elles soient des nombres au lieu d'étiquettes :  
+Maintenant, nous crÃ©ons un jeu de donnÃ©es de tous les noeuds du diagramme, sous la colonne `name`. Il s'agit de toutes les valeurs de `hospital` et `age_cat`. Notez que nous nous assurons qu'elles sont toutes de classe caractÃ¨res avant de les combiner, et ajustons les colonnes `ID` pour qu'elles soient des numeros au lieu d'Ã©tiquettes :  
 
 ```{r}
 # Les noms uniques des noeuds
@@ -555,9 +593,10 @@ nodes <- data.frame(
     unique()
   )
 
-nodes # print
+nodes # imprimer
 ```
-Nous éditons le cadre de données `links`, que nous avons créé ci-dessus avec `count()`. Nous ajoutons deux colonnes numériques `IDsource` et `IDtarget` qui reflèteront/créeront réellement les liens entre les noeuds. Ces colonnes contiendront les numéros de rown (position) des noeuds source et cible. On soustrait 1 pour que ces numéros de position commencent à 0 (et non à 1).  
+
+Nous Ã©ditons le cadre de donnÃ©es `links`, que nous avons crÃ©Ã© ci-dessus avec `count()`. Nous ajoutons deux colonnes numÃ©riques, `IDsource` et `IDtarget`, qui reflÃ¨teront/crÃ©eront rÃ©ellement les liens entre les noeuds. Ces colonnes contiendront les numÃ©ros numÃ©ros de rangs (position) des noeuds de source et de target. On soustrait 1 pour que ces numÃ©ros de position commencent Ã  0 (et pas Ã  1).  
 
 ```{r}
 # correspond aux nombres, pas aux noms
@@ -565,55 +604,55 @@ links$IDsource <- match(links$source, nodes$name)-1
 links$IDtarget <- match(links$target, nodes$name)-1
 ```
 
-Le jeu de données des liens ressemble maintenant à ceci :  
+Le jeu de donnÃ©es des liens ressemble maintenant Ã  ceci :  
 
-``{r message=FALSE, echo=F}
-DT::datatable(links, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
+```{r message=FALSE, echo=F}
+DT::datatable(links, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
 ```
 
-Tracez maintenant le diagramme de Sankey avec `sankeyNetwork()`. Vous pouvez en savoir plus sur chaque argument en exécutant `?sankeyNetwork` dans la console. Notez qu'à moins que vous ne définissiez `iterations = 0`, l'ordre de vos noeuds peut ne pas être celui attendu. 
+Tracez maintenant le diagramme de Sankey avec `sankeyNetwork()`. Vous pouvez en savoir plus sur chaque argument en exÃ©cutant `?sankeyNetwork` dans la console. Notez que si vous ne dÃ©finissiez pas `iterations = 0`, l'ordre de vos noeuds ne serait pas celui attendu. 
 
 
 ```{r}
 
-# plot
+# graphique
 ######
 p <- sankeyNetwork(
-  Liens = liens,
-  Nouds = nouds,
+  Links = linkes,
+  Nodes = nodes,
   Source = "IDsource",
-  Cible = "IDtarget",
-  Valeur = "n",
-  NodeID = "nom",
-  unités = "TWh",
+  Target = "IDtarget",
+  Value = "n",
+  NodeID = "name",
+  units = "TWh",
   fontSize = 12,
   nodeWidth = 30,
-  itérations = 0) # Assurez-vous que l'ordre des noeuds est celui des données.
+  iterations = 0) # Assurez-vous que l'ordre des noeuds est celui des donnÃ©es.
 p
 ```
 
 
 
-Voici un exemple où le résultat du patient est également inclus. Notez que dans l'étape de préparation des données, nous devons calculer le nombre de cas entre l'âge et l'hôpital, et séparément entre l'hôpital et le résultat - puis lier tous ces comptes ensemble avec `bind_rows()``.  
+Voici un exemple oÃ¹ le rÃ©sultat du patient est Ã©galement inclus. Notez que dans l'Ã©tape de prÃ©paration des donnÃ©es, nous devons calculer le nombre de cas entre l'Ã¢ge et l'hÃ´pital, et sÃ©parÃ©ment entre l'hÃ´pital et le rÃ©sultat - puis lier tous ces comptes ensemble avec `bind_rows()`.  
 
 ```{r}
-# Nombre de cas par hôpital et par catégorie d'âge
+# Nombre de cas par hÃ´pital et par catÃ©gorie d'Ã¢ge
 age_hosp_links <- linelist %>% 
   drop_na(age_cat) %>% 
-  select(hôpital, age_cat) %>%
-  count(hôpital, age_cat) %>% 
-  rename(source = age_cat, # re-name
-         cible = hôpital)
+  select(hospital, age_cat) %>%
+  count(hospital, age_cat) %>% 
+  rename(source = age_cat, 
+         target = hospital)
 
 hosp_out_links <- linelist %>% 
-    drop_na(âge_cat) %>% 
-    select(hôpital, résultat) %>% 
-    count(hôpital, résultat) %>% 
-    rename(source = hospital, # re-name
-           cible = résultat)
+    drop_na(age_cat) %>% 
+    select(hospital, outcome) %>% 
+    count(hospital, outcome) %>% 
+    rename(source = hospital, 
+           target = outcome)
 
 # combiner les liens
-liens <- bind_rows(age_hosp_links, hosp_out_links)
+links <- bind_rows(age_hosp_links, hosp_out_links)
 
 # Les noms uniques des noeuds
 nodes <- data.frame(
@@ -621,22 +660,22 @@ nodes <- data.frame(
     unique()
   )
 
-# Créer des numéros d'identification
+# CrÃ©er des numÃ©ros d'identification
 links$IDsource <- match(links$source, nodes$name)-1 
 links$IDtarget <- match(links$target, nodes$name)-1
 
-# tracer
+# graphique
 ######
 p <- sankeyNetwork(Links = links,
-                   Nouds = nouds,
+                   Nodes = nodes,
                    Source = "IDsource",
-                   Cible = "IDtarget",
-                   Valeur = "n",
-                   NodeID = "nom",
-                   unités = "TWh",
+                   Target = "IDtarget",
+                   Value = "n",
+                   NodeID = "name",
+                   units = "TWh",
                    fontSize = 12,
                    nodeWidth = 30,
-                   itérations = 0)
+                   iterations = 0)
 p
 
 ```
@@ -647,44 +686,44 @@ https://www.displayr.com/sankey-diagrams-r/
 
 
 <!-- ======================================================= -->
-## Chronologie des événements { }
+## Chronologie des Ã©vÃ©nements { }
 
-Pour faire une timeline montrant des événements spécifiques, vous pouvez utiliser le paquet `vistime`.
+Pour faire une timeline montrant des Ã©vÃ©nements spÃ©cifiques, vous pouvez utiliser le paquet `vistime`.
 
 Voir cette [vignette](https://cran.r-project.org/web/packages/vistime/vignettes/vistime-vignette.html#ex.-2-project-planning)
 
 ```{r}
 # charger le paquet
-pacman::p_load(vistime, # créer la ligne de temps
+pacman::p_load(vistime, # crÃ©er la ligne de temps
                plotly # pour la visualisation interactive
                )
 ```
 
-``{r, echo=F}
-# référence : https://cran.r-project.org/web/packages/vistime/vignettes/vistime-vignette.html#ex.-2-project-planning
+```{r, echo=F}
+# rÃ©fÃ©rence : https://cran.r-project.org/web/packages/vistime/vignettes/vistime-vignette.html#ex.-2-project-planning
 
-data <- read.csv(text="événement, groupe, début, fin, couleur
-                       Événement 1, Groupe A,2020-01-22,2020-01-22, #90caf9
-                       Événement 1, Groupe B,2020-01-23,2020-01-23, #90caf9
-                       Evénement 1, Groupe C,2020-01-23,2020-01-23, #1565c0
-                       Événement 1, Groupe D,2020-01-25,2020-01-25, #f44336
-                       Manifestation 1, Groupe E,2020-01-25,2020-01-25, #90caf9
-                       Événement 1, Groupe F,2020-01-26,2020-01-26, #8d6e63
-                       Événement 1, Groupe G,2020-01-27,2020-01-27, #1565c0
-                       Manifestation 1, Groupe H,2020-01-27,2020-01-27, #90caf9
-                       Événement 1, Groupe I,2020-01-27,2020-01-27,#90a4ae
-                       Épreuve 2, Groupe A,2020-01-28,2020-01-28,#fc8d62
-                       Épreuve 2, Groupe C,2020-01-28,2020-01-28,#6a3d9a
-                       Événement 2, Groupe J,2020-01-28,2020-01-28,#90caf9
-                       Événement 2, Groupe J,2020-01-28,2020-01-28, #fc8d62
-                       Événement 2, Groupe J,2020-01-28,2020-01-28, #1565c0
+data <- read.csv(text="event, groupe, dÃ©but, fin, couleur
+                       Event 1, Group A,2020-01-22,2020-01-22, #90caf9
+                       Event 1, Group B,2020-01-23,2020-01-23, #90caf9
+                       Event 1, Group C,2020-01-23,2020-01-23, #1565c0
+                       Event 1, Group D,2020-01-25,2020-01-25, #f44336
+                       Event 1, Group E,2020-01-25,2020-01-25, #90caf9
+                       Event 1, Group F,2020-01-26,2020-01-26, #8d6e63
+                       Event 1, Group G,2020-01-27,2020-01-27, #1565c0
+                       Event 1, Group H,2020-01-27,2020-01-27, #90caf9
+                       Event 1, Group I,2020-01-27,2020-01-27, #90a4ae
+                       Event 2, Group A,2020-01-28,2020-01-28, #fc8d62
+                       Event 2, Group C,2020-01-28,2020-01-28, #6a3d9a
+                       Event 2, Group J,2020-01-28,2020-01-28, #90caf9
+                       Event 2, Group J,2020-01-28,2020-01-28, #fc8d62
+                       Event 2, Group J,2020-01-28,2020-01-28, #1565c0
 ")
 ```
 
-Voici l'ensemble de données d'événements avec lequel nous commençons :  
+Voici l'ensemble de donnÃ©es d'Ã©vÃ©nements avec lequel nous commenÃ§ons :  
 
-``{r message=FALSE, echo=F}
-DT::datatable(data, rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
+```{r message=FALSE, echo=F}
+DT::datatable(data, rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap')
 ```
 
 
@@ -694,26 +733,26 @@ p <- vistime(data) # appliquer vistime
 
 library(plotly)
 
-# étape 1 : transformation en liste
+# Ã©tape 1 : transformation en liste
 pp <- plotly_build(p)
 
-# étape 2 : taille des marqueurs
+# Ã©tape 2 : taille des marqueurs
 for(i in 1:length(pp$x$data)){
   if(pp$x$data[[i]]$mode == "markers") pp$x$data[[i]]$marker$size <- 10
 }
 
-# étape 3 : taille du texte
+# Ã©tape 3 : taille du texte
 for(i in 1:length(pp$x$data)){
   if(pp$x$data[[i]]$mode == "text") pp$x$data[[i]]$textfont$size <- 10
 }
 
 
-# étape 4 : position du texte
+# Ã©tape 4 : position du texte
 for(i in 1:length(pp$x$data)){
   si(pp$x$data[[i]]$mode == "text") pp$x$data[[i]]$textposition <- "right"
 }
 
-#print
+#imprimer
 pp
 
 ```
@@ -723,13 +762,13 @@ pp
 <!-- ======================================================= -->
 ## DAGs { }
 
-Vous pouvez construire un DAG manuellement en utilisant le paquet **DiagammeR** et le langage DOT comme décrit ci-dessus.  
+Vous pouvez construire un DAG manuellement en utilisant le paquet **DiagammeR** et le langage DOT comme dÃ©crit ci-dessus.  
 
 Alternativement, il existe des paquets comme **ggdag** et **daggity**.
 
 [Introduction aux DAGs - vignette ggdag](https://cran.r-project.org/web/packages/ggdag/vignettes/intro-to-dags.html)   
 
-[Inférence causale avec les dags dans R](https://www.r-bloggers.com/2019/08/causal-inference-with-dags-in-r/#:~:text=En%20a%20DAG%20tout%20le,pour%20 dessiner%20et%20analyser%20DAGs.)  
+[InfÃ©rence causale avec les dags dans R](https://www.r-bloggers.com/2019/08/causal-inference-with-dags-in-r/#:~:text=En%20a%20DAG%20tout%20le,pour%20 dessiner%20et%20analyser%20DAGs.)  
 
 
 
@@ -740,10 +779,10 @@ Alternativement, il existe des paquets comme **ggdag** et **daggity**.
 
 
 
-Une grande partie de ce qui précède concernant le langage DOT est adaptée du tutoriel [sur ce site](https://mikeyharper.uk/flowcharts-in-r-using-diagrammer/).  
+Une grande partie de ce qui prÃ©cÃ¨de concernant le langage DOT est adaptÃ©e du tutoriel [sur ce site](https://mikeyharper.uk/flowcharts-in-r-using-diagrammer/).  
 
-Un autre [tutoriel sur DiagammeR] (http://rich-iannone.github.io/DiagrammeR/) plus approfondi.
+Un autre [tutoriel sur DiagammeR](http://rich-iannone.github.io/DiagrammeR/) plus approfondi.
 
-Cette page sur les [diagrammes de Sankey] (https://www.displayr.com/sankey-diagrams-r/)
-)  
+Ici, un page sur les [diagrammes de Sankey](https://www.displayr.com/sankey-diagrams-r/).
+  
 

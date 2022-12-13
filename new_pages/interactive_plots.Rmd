@@ -1,5 +1,5 @@
 
-# Graphiques interactifs { }  
+# Graphiques interactifs {#interactive_plots}  
 
 La visualisation de données est de plus en plus demandée d'être interactive par le public. Il est donc de plus en plus nécessaire de créer des graphiques interactifs. Il existe plusieurs méthodes pour les concevoir, mais les deux methodes plus utilisées sont **plotly** et **shiny**. 
 
@@ -23,7 +23,7 @@ p <- linelist %>%
   count(week_earliest, outcome) %>% 
   ggplot()+
   geom_col(aes(week_earliest, n, fill = outcome))+
-  xlab("Week of infection/onset") + ylab("Cases per week")+
+  xlab("Semaine de l'infection/de l'apparition") + ylab("Cas par semaine")+
   theme_minimal()
 
 p %>% 
@@ -62,12 +62,12 @@ Dans cette page, nous supposons que vous commencez avec un graphique `ggplot()` 
 Pour commencer, nous allons importer une base de données appelée linelist_cleaned contenant les cas d'une épidémie d'Ebola simulée. Pour suivre, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>click to download the "clean" linelist</a> (as .rds file). Importez les données avec la fonction `import()` du package **rio** (cette fonction supporte de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Import and Export] pour plus de détails). 
 
 ```{r, echo=F}
-# importez linelist 
+# importer la liste de lignes dans R
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
 
 ```{r, eval=F}
-# importez les cas linelist_cleaned
+# importer le cas de la liste de lignes
 linelist <- import("linelist_cleaned.rds")
 ```
 
@@ -112,7 +112,7 @@ Ensuite, nous créons le graphique avec **ggplot2**, en utilisant `geom_line()`.
 
 ```{r, warning=F, message=F}
 deaths_plot <- ggplot(data = weekly_deaths)+            # commencer par les données hebdomadaires des décès 
-  geom_line(mapping = aes(x = epiweek, y = pct_death))  # faire la courbe  
+  geom_line(mapping = aes(x = epiweek, y = pct_death))  # faire la ligne  
 
 deaths_plot   # imprimer
 ```
@@ -188,7 +188,7 @@ p <- p %>%          # re-définir le graphique interactif sans ces boutons
 <!-- ======================================================= -->
 ## Heat tiles {  }
 
-Vous pouvez rendre presque tous les graphiques `ggplot()` interactifs, y compris les heat tiles. Dans la page sur les [Heat plots], vous pouvez lire comment créer le graphique ci-dessous, qui affiche la proportion de jours par semaine pendant lesquels certains facilités ont rapporté des données à leur province. 
+Vous pouvez rendre presque tous les graphiques `ggplot()` interactifs, y compris les heat tiles. Dans la page sur les [Graphiques thermiques](#heatmaps), vous pouvez lire comment créer le graphique ci-dessous, qui affiche la proportion de jours par semaine pendant lesquels certains facilités ont rapporté des données à leur province. 
 
 Voici le code, bien que nous ne le décriions pas en détails ici.  
 
@@ -238,12 +238,12 @@ metrics_plot <- ggplot(agg_weeks,
     plot.title = element_text(hjust=0,size=14,face="bold"),
     plot.caption = element_text(hjust = 0, face = "italic")
     )+
-  labs(x = "Week",
-       y = "Facility name",
-       fill = "Reporting\nperformance (%)",
-       title = "Percent of days per week that facility reported data",
-       subtitle = "District health facilities, April-May 2019",
-       caption = "7-day weeks beginning on Mondays.")
+  labs(x = "Semaine",
+       y = "Nom de l'établissement",
+       fill = "Rapport de\nperformance (%)",
+       title = "Pourcentage de jours par semaine où l'établissement a déclaré des données",
+       subtitle = " Les établissements de santé de district, Avril-Mai 2019 ",
+       caption = "Semaines de 7 jours commençant le lundi.")
 
 metrics_plot # imprimer
 ```

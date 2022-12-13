@@ -127,7 +127,7 @@ Remarque : L'objectif principal de cette page SIG est basé sur le contexte de l
 
 ### Chargement packages {.unnumbered}  
 
-Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
+Ce morceau de code montre le chargement des paquets nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez également charger les paquets installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les paquets R.  
 
 ```{r}
 pacman::p_load(
@@ -143,7 +143,7 @@ pacman::p_load(
                   
 ```
 
-Vous pouvez consulter une vue d'ensemble de tous les paquets R qui traitent des données spatiales sur le site [CRAN "Spatial Task View"] (https://cran.r-project.org/web/views/Spatial.html).  
+Vous pouvez consulter une vue d'ensemble de tous les paquets R qui traitent des données spatiales sur le site [CRAN "Spatial Task View"](https://cran.r-project.org/web/views/Spatial.html).  
 
 
 ### Exemple de données de cas {.unnumbered}
@@ -152,7 +152,7 @@ Vous pouvez consulter une vue d'ensemble de tous les paquets R qui traitent des 
 
 Comme nous prenons un échantillon aléatoire de cas, vos résultats peuvent être légèrement différents de ce qui est démontré ici lorsque vous exécutez les codes par vous-même.
 
-Importez les données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#importing) pour plus de détails).  
+Importez les données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de détails).  
 
 ```{r, echo=F}
 # importer  le jeu de données linelist nettoyé
@@ -175,7 +175,7 @@ linelist <- linelist[sample_rows,]
 ```
 Maintenant nous voulons convertir cette `linelist` qui est de classe dataframe, en un objet de classe "sf" (caractéristiques spatiales). Étant donné que la linelist a deux colonnes "lon" et "lat" représentant la longitude et la latitude de la résidence de chaque cas, cela sera facile.  
 
-Nous utilisons le package **sf** (caractéristiques spatiales) et sa fonction `st_as_sf()` pour créer le nouvel objet que nous appelons `linelist_sf`. Ce nouvel objet ressemble essentiellement à la linelist, mais les colonnes `lon` et `lat` ont été désignées comme des colonnes de coordonnées, et un système de référence de coordonnées (CRS) a été attribué pour l'affichage des points. 4326 identifie nos coordonnées comme étant basées sur le [Système géodésique mondial 1984 (WGS84)] (https://gisgeography.com/wgs84-world-geodetic-system/) - qui est la norme pour les coordonnées GPS.  
+Nous utilisons le package **sf** (caractéristiques spatiales) et sa fonction `st_as_sf()` pour créer le nouvel objet que nous appelons `linelist_sf`. Ce nouvel objet ressemble essentiellement à la linelist, mais les colonnes `lon` et `lat` ont été désignées comme des colonnes de coordonnées, et un système de référence de coordonnées (CRS) a été attribué pour l'affichage des points. 4326 identifie nos coordonnées comme étant basées sur le [Système géodésique mondial 1984 (WGS84)](https://gisgeography.com/wgs84-world-geodetic-system/) - qui est la norme pour les coordonnées GPS.  
 
 
 ```{r}
@@ -195,7 +195,7 @@ DT::datatable(head(linelist_sf, 10), rownames = FALSE, options = list(pageLength
 **Sierra Leone: shapefiles des limites administratives**  
 
 
-Par avance, nous avons téléchargé toutes les limites administratives de la Sierra Leone à partir du Humanitarian Data Exchange (HDX) [site Web ici](https://data.humdata.org/dataset/sierra-leone-all-ad-min-level-boundaries). Alternativement, vous pouvez télécharger ces données et toutes les autres données d'exemple pour ce manuel via notre package R, comme expliqué dans la page [Télécharger le manuel et les données](#data_used).  
+Par avance, nous avons téléchargé toutes les limites administratives de la Sierra Leone à partir du Humanitarian Data Exchange (HDX) [site Web ici](https://data.humdata.org/dataset/sierra-leone-all-ad-min-level-boundaries). Alternativement, vous pouvez télécharger ces données et toutes les autres données d'exemple pour ce manuel via notre package R, comme expliqué dans la page [Télécharger le manuel et les données](#download_book_data).  
 
 Nous allons maintenant procéder comme suit pour enregistrer le shapefile Admin Level 3 dans R :  
 
@@ -203,7 +203,7 @@ Nous allons maintenant procéder comme suit pour enregistrer le shapefile Admin 
 2) Nettoyer les noms des colonnes  
 3) Filtrer les lignes pour ne garder que les zones d'intérêt.  
 
-Pour importer un fichier shapefile, nous utilisons la fonction `read_sf()` de **sf**. Le chemin du fichier est fourni via `here()`. - Dans notre cas, le fichier se trouve dans notre projet R dans les sous-dossiers "data", "gis" et "shp", avec le nom de fichier "sle_adm3.shp" (voir les pages sur [Importation et exportation](#importing) et [Projets R](#r_projects) pour plus d'informations). Vous devrez fournir votre propre chemin de fichier.  
+Pour importer un fichier shapefile, nous utilisons la fonction `read_sf()` de **sf**. Le chemin du fichier est fourni via `here()`. - Dans notre cas, le fichier se trouve dans notre projet R dans les sous-dossiers "data", "gis" et "shp", avec le nom de fichier "sle_adm3.shp" (voir les pages sur [Importation et exportation](#import_export) et [Projets R](#r_projects) pour plus d'informations). Vous devrez fournir votre propre chemin de fichier.  
 ```{r, echo=F}
 sle_adm3_raw <- sf::read_sf(here("data", "gis", "shp", "sle_adm3.shp"))
 ```
@@ -231,7 +231,7 @@ DT::datatable(head(sle_adm3, 50), rownames = FALSE, options = list(pageLength = 
 
 **Sierra Leone : Population par ADM3**  
 
-Ces données peuvent être téléchargées sur HDX (lien [ici](https://data.humdata.org/dataset/sierra-leone-population)) ou via notre package R **epirhandbook** comme expliqué [dans cette page][Télécharger le manuel et les données](#data_used). Nous utilisons `import()` pour charger le fichier .csv. Nous passons également le fichier importé à `clean_names()` pour standardiser la syntaxe des noms de colonnes.   
+Ces données peuvent être téléchargées sur HDX (lien [ici](https://data.humdata.org/dataset/sierra-leone-population)) ou via notre package R **epirhandbook** comme expliqué [dans la page Télécharger le manuel et les données](#download_book_data). Nous utilisons `import()` pour charger le fichier .csv. Nous passons également le fichier importé à `clean_names()` pour standardiser la syntaxe des noms de colonnes.   
 
 
 
@@ -253,7 +253,7 @@ DT::datatable(head(sle_adm3_pop, 50), rownames = FALSE, options = list(pageLengt
 
 **Sierra Leone : Données sur les établissements de santé provenant d'OpenStreetMap**.  
 
-Encore une fois, nous avons téléchargé les emplacements des établissements de santé à partir de HDX [ici](https://data.humdata.org/dataset/hotosm_sierra_leone_health_facilities) ou via les instructions dans la page [Télécharger le manuel et les données].   
+Encore une fois, nous avons téléchargé les emplacements des établissements de santé à partir de HDX [ici](https://data.humdata.org/dataset/hotosm_sierra_leone_health_facilities) ou via les instructions dans la page [Télécharger le manuel et les données](#download_book_data.   
 
 Nous importons le shapefile des points des établissements avec `read_sf()`, nettoyons à nouveau les noms des colonnes, et filtrons ensuite pour ne garder que les points étiquetés comme "hôpital", "clinique", ou "médecins".  
 
@@ -296,7 +296,7 @@ Ci-dessous, seulement les points sont affichés. `tm_shape()` prend comme argume
 
 
 ```{r, warning = F, message=F}
-# Just the cases (points)
+# Juste les cas (points)
 tm_shape(linelist_sf) + tm_dots(size=0.08, col='blue')
 ```
 
@@ -349,10 +349,10 @@ Pour lire une bonne comparaison des options de mappage dans R, consultez cet [ar
 <!-- ======================================================= -->
 ## Jointures spatiales {}
 
-Vous êtes peut-être familier avec la *jonction* de données d'un jeu de données à un autre. Plusieurs méthodes sont présentées à la page [Joindre des données] de ce manuel. Une jointure spatiale a un objectif similaire mais exploite les relations spatiales. Au lieu de compter sur des valeurs communes dans les colonnes pour faire correspondre correctement les observations, vous pouvez utiliser leurs relations spatiales, comme le fait qu'une observation soit *dans* une autre, ou *le plus proche voisin* d'une autre, ou dans un *buffer* d'un certain rayon d'une autre, etc.  
+Vous êtes peut-être familier avec la *jonction* de données d'un jeu de données à un autre. Plusieurs méthodes sont présentées à la page [Joindre des données](#joining_matching) de ce manuel. Une jointure spatiale a un objectif similaire mais exploite les relations spatiales. Au lieu de compter sur des valeurs communes dans les colonnes pour faire correspondre correctement les observations, vous pouvez utiliser leurs relations spatiales, comme le fait qu'une observation soit *dans* une autre, ou *le plus proche voisin* d'une autre, ou dans un *buffer* d'un certain rayon d'une autre, etc.  
 
 
-Le package **sf** offre diverses méthodes de jointures spatiales. Vous trouverez plus de documentation sur la méthode st_join et les types de jointures spatiales dans cette [référence] (https://r-spatial.github.io/sf/reference/geos_binary_pred.html).  
+Le package **sf** offre diverses méthodes de jointures spatiales. Vous trouverez plus de documentation sur la méthode st_join et les types de jointures spatiales dans cette [référence](https://r-spatial.github.io/sf/reference/geos_binary_pred.html).  
 
 
 ### Points dans le polygone {.unnumbered}
@@ -407,7 +407,7 @@ case_adm3
 
 Nous pouvons également créer un diagramme en barres du nombre de cas par unité administrative.  
 
-Dans cet exemple, nous commençons le `ggplot()` avec la `linelist_adm`, afin de pouvoir appliquer des fonctions de facteurs comme `fct_infreq()` qui ordonne les barres par fréquence (voir la page sur les [Factors] pour des conseils).  
+Dans cet exemple, nous commençons le `ggplot()` avec la `linelist_adm`, afin de pouvoir appliquer des fonctions de facteurs comme `fct_infreq()` qui ordonne les barres par fréquence (voir la page sur les [Facteurs](#factors) pour des conseils).  
 
 ```{r, warning=F, message=F}
 ggplot(
@@ -427,7 +427,7 @@ ggplot(
 
 
 <!-- ======================================================= -->
-### Le voisin le plus proche {.non numéroté}
+### Le voisin le plus proche {.unnumbered}
 
 **Trouver l'établissement de santé le plus proche / la zone de captage**  
 
@@ -484,7 +484,7 @@ tm_layout(title = "Cas, colorés par la clinique la plus proche")
 ```
 
 
-### Buffer {.non numérotés} 
+### Buffer {.unnumbered} 
 
 Nous pouvons également explorer combien de cas sont situés à moins de 2,5 km (~30 minutes) de distance de marche de l'établissement de santé le plus proche.
 
@@ -500,7 +500,7 @@ sle_hf_2k <- sle_hf %>%
   st_buffer(dist=0.02)       # degrés décimaux se traduisant par environ 2,5 km 
 ```
 
-Below we plot the buffer zones themselves, with the :  
+Ci-dessous, nous traçons les zones tampons elles-mêmes, avec les valeurs de :  
 
 ```{r, warning=F, message=F}
 tmap_mode("plot")
@@ -593,7 +593,7 @@ Puisque nous disposons également des données de population par ADM3, nous pouv
 
 Nous commençons avec le cadre de données créé à l'étape précédente `case_adm3`, qui est un tableau récapitulatif de chaque unité administrative et de son nombre de cas.  
 
-1) Les données de population `sle_adm3_pop` sont jointes à l'aide d'un `left_join()` de **dplyr** sur la base des valeurs communes à la colonne `admin3pcod` dans le dataframe `case_adm3`, et à la colonne `adm_pcode` dans le dataframe `sle_adm3_pop`. Voir la page [Joindre des données]).  
+1) Les données de population `sle_adm3_pop` sont jointes à l'aide d'un `left_join()` de **dplyr** sur la base des valeurs communes à la colonne `admin3pcod` dans le dataframe `case_adm3`, et à la colonne `adm_pcode` dans le dataframe `sle_adm3_pop`. Voir la page [Joindre des données](#joining_matching)).  
 2) `select()` est appliqué au nouveau dataframe, pour ne garder que les colonnes utiles - `total` est la population totale.  
 3) Les cas pour 10.000 habitants sont calculés comme une nouvelle colonne avec `mutate()`.  
 
@@ -602,7 +602,7 @@ Nous commençons avec le cadre de données créé à l'étape précédente `case
 # Ajouter les données de la population et calculer les cas pour 10K de population
 case_adm3 <- case_adm3 %>% 
      left_join(sle_adm3_pop,                             #ajouter des colonnes à partir du jeu données pop
-               by = c("admin3pcod" = "adm3_pcode")) %>%  # join based on common values across these two columns
+               by = c("admin3pcod" = "adm3_pcode")) %>%  # jointure basee sur les valeurs communes à ces deux colonnes
      select(names(case_adm3), total) %>%                 # ne conserver que les colonnes importantes, notamment la population totale
      mutate(case_10kpop = round(cases/total * 10000, 3)) # créer une nouvelle colonne avec le taux de cas pour 10000, arrondi à 3 décimales
 
@@ -673,15 +673,15 @@ Pour réaliser un graphique en colonnes du nombre de cas par région, en utilisa
 
 ```{r, fig.align = "center"}
 ggplot(data=sle_adm3_dat) +
-  geom_col(aes(x=fct_reorder(admin3name.x, cases, .desc=T),   # reorder x axis by descending 'cases'
-               y=cases)) +                                  # y axis is number of cases by region
+  geom_col(aes(x=fct_reorder(admin3name.x, cases, .desc=T),   # réorganiser l'axe des x par ordre décroissant 'cases'
+               y=cases)) +                                  # l'axe des y est le nombre de cas par région
   theme_bw() +
-  labs(                                                     # set figure text
+  labs(                                                     # définir le texte de la figure
     title="Number of cases, by administrative unit",
     x="Admin level 3",
     y="Number of cases"
   ) + 
-  guides(x=guide_axis(angle=45))                            # angle x-axis labels 45 degrees to fit better
+  guides(x=guide_axis(angle=45))                            # angle des étiquettes de l'axe des x de 45 degrés pour un meilleur ajustement
 
 ```
 
@@ -761,7 +761,7 @@ Maintenant, lorsque nous créons le tracé, nous voyons que les axes contiennent
 autoplot.OpenStreetMap(map_latlon)
 ```
 
-Consultez les tutoriels [ici](http://data-analytics.net/cep/Schedule_files/geospatial.html) et [ici] (https://www.rdocumentation.org/packages/OpenStreetMap/versions/0.3.4/topics/autoplot.OpenStreetMap) pour plus d'informations.  
+Consultez les tutoriels [ici](http://data-analytics.net/cep/Schedule_files/geospatial.html) et [ici](https://www.rdocumentation.org/packages/OpenStreetMap/versions/0.3.4/topics/autoplot.OpenStreetMap) pour plus d'informations.  
 
 
 
@@ -1023,7 +1023,7 @@ Le résultat ci-dessus montre que la statistique L de Lee pour nos deux variable
 
 La statistique de Lee L peut être utile pour faire ce genre d'inférences sur la relation entre des variables distribuées dans l'espace ; cependant, pour décrire la nature de la relation entre deux variables de manière plus détaillée, ou pour ajuster les facteurs de confusion, des techniques de régression *spatiale* seront nécessaires. Celles-ci sont décrites brièvement dans la section suivante.
 
-### Régression spatiale {.non numéroté}  
+### Régression spatiale {.unnumbered}  
 
 Vous pouvez souhaiter faire des inférences statistiques sur les relations entre les variables de vos données spatiales. Dans ce cas, il est utile d'envisager des techniques de régression *spatiale*, c'est-à-dire des approches de la régression qui prennent explicitement en compte l'organisation spatiale des unités dans vos données. Voici quelques raisons pour lesquelles vous pouvez avoir besoin d'envisager des modèles de régression spatiale, plutôt que des modèles de régression standard tels que les GLM :
 
@@ -1043,7 +1043,7 @@ Le paquet **spdep** contient plusieurs tests de diagnostic utiles pour décider 
 knitr::include_graphics(here::here("images", "gis_lmflowchart.jpg"))
 ```
 
-**Modèles hiérarchiques bayésiens** - Les approches bayésiennes sont couramment utilisées pour certaines applications de l'analyse spatiale, le plus souvent pour la [cartographie des maladies] (https://pubmed.ncbi.nlm.nih.gov/15690999/). Elles sont préférables dans les cas où les données de cas sont peu distribuées (par exemple, dans le cas d'un résultat rare) ou statistiquement "bruyantes", car elles peuvent être utilisées pour générer des estimations "lissées" du risque de maladie en tenant compte du processus spatial latent sous-jacent. Cela peut améliorer la qualité des estimations. Elles permettent également à l'enquêteur de préspécifier (via le choix de l'antériorité) les modèles de corrélation spatiale complexes qui peuvent exister dans les données, ce qui peut rendre compte de la variation spatialement dépendante et indépendante des variables indépendantes et dépendantes. Dans R, les modèles hiérarchiques bayésiens peuvent être ajustés à l'aide du paquet **CARbayes** (voir [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf)) ou de R-INLA (voir [site web](https://www.r-inla.org/home) et [manuel](https://becarioprecario.bitbucket.io/inla-gitbook/)). R peut également être utilisé pour appeler un logiciel externe qui effectue des estimations bayésiennes, comme JAGS ou WinBUGS.
+**Modèles hiérarchiques bayésiens** - Les approches bayésiennes sont couramment utilisées pour certaines applications de l'analyse spatiale, le plus souvent pour la [cartographie des maladies](https://pubmed.ncbi.nlm.nih.gov/15690999/). Elles sont préférables dans les cas où les données de cas sont peu distribuées (par exemple, dans le cas d'un résultat rare) ou statistiquement "bruyantes", car elles peuvent être utilisées pour générer des estimations "lissées" du risque de maladie en tenant compte du processus spatial latent sous-jacent. Cela peut améliorer la qualité des estimations. Elles permettent également à l'enquêteur de préspécifier (via le choix de l'antériorité) les modèles de corrélation spatiale complexes qui peuvent exister dans les données, ce qui peut rendre compte de la variation spatialement dépendante et indépendante des variables indépendantes et dépendantes. Dans R, les modèles hiérarchiques bayésiens peuvent être ajustés à l'aide du paquet **CARbayes** (voir [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf)) ou de R-INLA (voir [site web](https://www.r-inla.org/home) et [manuel](https://becarioprecario.bitbucket.io/inla-gitbook/)). R peut également être utilisé pour appeler un logiciel externe qui effectue des estimations bayésiennes, comme JAGS ou WinBUGS.
 
 <!-- ======================================================= -->
 ## Resources {  }

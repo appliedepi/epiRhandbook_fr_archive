@@ -1,171 +1,172 @@
 
-# R sur les lecteurs réseau {#network_drives}  
+# R sur les lecteurs rÃ©seau {#network_drives}  
 
  
 
 
 <!-- ======================================================= -->
-## Aperçu { }
+## AperÃ§u { }
 
-L'utilisation de R sur des lecteurs partagés du réseau ou de "l'entreprise" peut présenter des défis supplémentaires. Cette page contient des approches, des erreurs courantes et des suggestions de dépannage tirées de notre expérience de travail sur ces questions. Cela inclut des conseils pour les situations particulièrement délicates impliquant R Markdown.  
+L'utilisation de R sur des lecteurs partagÃ©s du rÃ©seau ou de "l'entreprise" peut prÃ©senter des dÃ©fis supplÃ©mentaires. Cette page contient des approches, des erreurs courantes et des suggestions de dÃ©pannage tirÃ©es de notre expÃ©rience de travail sur ces questions. Cela inclut des conseils pour les situations particuliÃ¨rement dÃ©licates impliquant R Markdown.  
 
 
-**Utilisation de R sur des lecteurs réseau : Principes généraux**  
+**Utilisation de R sur des lecteurs rÃ©seau : Principes gÃ©nÃ©raux**  
 
-1) Vous devez obtenir un accès administrateur pour votre ordinateur. Configurez RStudio spécifiquement pour qu'il s'exécute en tant qu'administrateur.  
-2) Enregistrez les paquets dans une bibliothèque située sur un lecteur portant une lettre (par exemple "C :") lorsque cela est possible. Utilisez le moins possible une bibliothèque de paquets dont le chemin commence par "\\".  
-3) Le paquet **rmarkdown** ne doit **pas** être dans une bibliothèque de paquets "\\\\", car alors il ne peut pas se connecter à TinyTex ou Pandoc.  
+1) Vous devez obtenir un accÃ¨s administrateur pour votre ordinateur. Configurez RStudio spÃ©cifiquement pour qu'il s'exÃ©cute en tant qu'administrateur.  
+2) Enregistrez les paquets dans une bibliothÃ¨que situÃ©e sur un lecteur portant une lettre (par exemple, "C :") lorsque cela est possible. Utilisez le moins possible une bibliothÃ¨que de paquets dont le chemin commence par "\\\".  
+3) Le paquet **rmarkdown** ne doit **pas** Ãªtre dans une bibliothÃ¨que de paquets "\\\", car alors il ne peut pas se connecter Ã  TinyTex ou Pandoc.  
 
 
 
 
 ## RStudio en tant qu'administrateur  
 
-Lorsque vous cliquez sur l'icône RStudio pour ouvrir RStudio, faites-le avec un clic droit. Selon votre machine, vous verrez peut-être une option "Exécuter en tant qu'administrateur". Sinon, vous verrez peut-être une option permettant de sélectionner Propriétés (une fenêtre devrait alors apparaître avec l'option "Compatibilité", et vous pourrez cocher la case "Exécuter en tant qu'administrateur").  
+Lorsque vous cliquez sur l'icÃ´ne RStudio pour ouvrir RStudio, faites-le avec un clic droit. Selon votre machine, vous verrez peut-Ãªtre une option "ExÃ©cuter en tant qu'administrateur". Sinon, vous verrez peut-Ãªtre une option permettant de sÃ©lectionner PropriÃ©tÃ©s (une fenÃªtre devrait alors apparaÃ®tre avec l'option "CompatibilitÃ©", et vous pourrez cocher la case "ExÃ©cuter en tant qu'administrateur").  
 
 
 
 
 ### Commandes utiles 
 
-Vous trouverez ci-dessous quelques commandes utiles lorsque vous essayez de résoudre des problèmes en utilisant R sur des lecteurs réseau.  
+Vous trouverez ci-dessous quelques commandes utiles lorsque vous essayez de rÃ©soudre des problÃ¨mes en utilisant R sur des lecteurs rÃ©seau.  
 
-Vous pouvez renvoyer le(s) chemin(s) des bibliothèques de paquets que R utilise. Ils seront listés dans l'ordre que R utilise pour installer/charger/rechercher les paquets. Ainsi, si vous voulez que R utilise une autre bibliothèque par défaut, vous pouvez changer l'ordre de ces chemins (voir ci-dessous).  
+Vous pouvez renvoyer le(s) chemin(s) des bibliothÃ¨ques de paquets que R utilise. Ils seront listÃ©s dans l'ordre que R utilise pour installer/charger/rechercher les paquets. Ainsi, si vous voulez que R utilise une autre bibliothÃ¨que par dÃ©faut, vous pouvez changer l'ordre de ces chemins (voir ci-dessous).  
 
-``{r, eval=F}
-# Recherche de bibliothèques
-.libPaths() # Vos chemins de bibliothèques, listés dans l'ordre d'installation/de recherche de R. 
-                              # Note : toutes les bibliothèques seront listées, mais pour en installer certaines (par exemple C :), vous devrez peut-être exécuter RStock. 
-                              # devrez peut-être exécuter RStudio en tant qu'administrateur (cela n'apparaîtra pas dans le menu déroulant 
-                              # menu déroulant des bibliothèques d'installation de paquets) 
+```{r, eval=F}
+# Recherche de bibliothÃ¨ques
+.libPaths() # Vos chemins de bibliothÃ¨ques, listÃ©s dans l'ordre d'installation/de recherche de R. 
+                              # Note : toutes les bibliothÃ¨ques seront listÃ©es, mais pour en installer certaines (par exemple C :), vous devrez peut-Ãªtre exÃ©cuter RStock. 
+                              # devrez peut-Ãªtre exÃ©cuter RStudio en tant qu'administrateur (cela n'apparaÃ®tra pas dans le menu dÃ©roulant 
+                              # menu dÃ©roulant des bibliothÃ¨ques d'installation des paquets) 
 ```
 
-Vous pouvez vouloir changer l'ordre des bibliothèques de paquets utilisées par R. Par exemple, si R récupère un emplacement de bibliothèque qui commence par "\\" et un autre qui commence par une lettre, par exemple "D :". Vous pouvez ajuster l'ordre de `.libPaths()` avec le code suivant.  
+Vous pouvez vouloir changer l'ordre des bibliothÃ¨ques de paquets utilisÃ©es par R. Par exemple, si R rÃ©cupÃ¨re un emplacement de bibliothÃ¨que qui commence par "\\\" et un autre qui commence par une lettre, par exemple "D :". Vous pouvez ajuster l'ordre de `.libPaths()` avec le code suivant.  
 
 ````{r, eval=F}
-# Changer l'ordre des bibliothèques
-# Ceci peut affecter la priorité de R à trouver un paquet. Par exemple, vous pouvez vouloir que votre bibliothèque C : soit listée en premier.
-myPaths <- .libPaths() # récupérer les chemins d'accès
+# Changer l'ordre des bibliothÃ¨ques
+# Ceci peut affecter la prioritÃ© de R Ã  trouver un paquet. Par exemple, vous pouvez vouloir que votre bibliothÃ¨que C : soit listÃ©e en premier.
+myPaths <- .libPaths() # obtenir les chemins d'accÃ¨s
 myPaths <- c(myPaths[2], myPaths[1]) # les commuter
-.libPaths(myPaths) # les réaffecter
+.libPaths(myPaths) # les rÃ©affecter
 ```
 
-Si vous avez des difficultés à connecter R Markdown à Pandoc, commencez par ce code pour savoir où RStudio pense que votre installation de Pandoc se trouve.  
+Si vous avez des difficultÃ©s Ã  connecter R Markdown Ã  Pandoc, commencez par ce code pour savoir oÃ¹ RStudio pense que votre installation Pandoc se trouve.
 
-``{r, eval=F}
+```{r, eval=F}
 # Trouver Pandoc
-Sys.getenv("RSTUDIO_PANDOC") # Trouver où RStudio pense que votre installation Pandoc se trouve
+Sys.getenv("RSTUDIO_PANDOC") # Trouver oÃ¹ RStudio pense que votre installation Pandoc se trouve
 ```
 
-Si vous voulez voir à partir de quelle bibliothèque un paquet est chargé, essayez le code suivant :  
+Si vous voulez voir Ã  partir de quelle bibliothÃ¨que un paquet est chargÃ©, essayez le code suivant :  
 
-``{r, eval=F}
+```{r, eval=F}
 # Trouver un paquetage
-# donne le premier emplacement du paquet (notez l'ordre de vos bibliothèques)
+# donne le premier emplacement du paquet (notez l'ordre de vos bibliothÃ¨ques)
 find.package("rmarkdown", lib.loc = NULL, quiet = FALSE, verbose = getOption("verbose")) 
 ```
 
 
 
 <!-- ======================================================= -->
-## Dépannage des erreurs courantes { }
+## DÃ©pannage des erreurs courantes { }
+
 
 
 **"Failed to compile...tex in rmarkdown "**  
+* VÃ©rifiez l'installation de TinyTex, ou installez TinyTex Ã  l'emplacement C :. Voir la page [R - les bases](#rbasics)pour savoir comment installer TinyTex.  
 
-* Vérifiez l'installation de TinyTex, ou installez TinyTex à l'emplacement C :. Voir la page [R basics] pour savoir comment installer TinyTex.  
-
-``{r, eval=F}
-# vérifiez/installez tinytex, à l'emplacement C :.
+```{r, eval=F}
+# vÃ©rifiez/installez tinytex, Ã  l'emplacement C :.
 tinytex::install_tinytex()
 tinytex:::is_tinytex() # devrait retourner VRAI (notez les trois deux points)
 ```
 
 
-**Les routines Internet ne peuvent pas être chargées**.  
+**Les routines Internet ne peuvent pas Ãªtre chargÃ©es**.  
 
-Par exemple, `Error in tools::startDynamicHelp() : internet routines cannot be loaded`.  
+Par exemple, `Erreur dans tools::startDynamicHelp() : les routines internet ne peuvent pas Ãªtre chargÃ©es`.  
 
-* Essayez de sélectionner la version 32 bits de RStudio via Tools/Global Options.  
-  * Note : si la version 32 bits n'apparaît pas dans le menu, assurez-vous que vous n'utilisez pas RStudio v1.2.  
-* Alternativement, essayez de désinstaller R et de le réinstaller avec une version différente (32 au lieu de 64).
+* Essayez de sÃ©lectionner la version 32 bits de RStudio via Tools/Global Options.  
+  * Note : si la version 32 bits n'apparaÃ®t pas dans le menu, assurez-vous que vous n'utilisez pas RStudio v1.2.  
+* Alternativement, essayez de dÃ©sinstaller R et de le rÃ©installer avec une version diffÃ©rente (32 au lieu de 64).
 
 
-**C : la bibliothèque n'apparaît pas comme une option lorsque j'essaie d'installer les paquets manuellement**.
+**C : la bibliothÃ¨que n'apparaÃ®t pas comme une option lorsque j'essaie d'installer les paquets manuellement**.
 
-* Lancez RStudio en tant qu'administrateur, cette option apparaîtra alors.  
-* Pour configurer RStudio pour qu'il soit toujours exécuté en tant qu'administrateur (avantageux lorsque vous utilisez un projet R où vous ne cliquez pas sur l'icône RStudio pour l'ouvrir)... cliquez avec le bouton droit de la souris sur l'icône Rstudio. 
+* Lancez RStudio en tant qu'administrateur, cette option apparaÃ®tra alors.  
+* Pour configurer RStudio pour qu'il soit toujours exÃ©cutÃ© en tant qu'administrateur (avantageux lorsque vous utilisez un projet R oÃ¹ vous ne cliquez pas sur l'icÃ´ne RStudio pour l'ouvrir)... cliquez avec le bouton droit de la souris sur l'icÃ´ne Rstudio. 
 
-L'image ci-dessous montre comment vous pouvez sélectionner manuellement la bibliothèque dans laquelle installer un paquet. Cette fenêtre apparaît lorsque vous ouvrez le volet Packages RStudio et cliquez sur "Installer".  
+L'image ci-dessous montre comment vous pouvez sÃ©lectionner manuellement la bibliothÃ¨que dans laquelle installer un paquet. Cette fenÃªtre apparaÃ®t lorsque vous ouvrez le volet Packages RStudio et cliquez sur "Installer". 
 
-``{r, warning=F, message=F, echo=F}
+```{r, warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "network_install.png"))
 ```
 
 **Pandoc 1 erreur**  
 
-Si vous obtenez "pandoc error 1" lorsque vous tricotez des scripts R Markdowns sur des lecteurs réseau :  
+Si vous obtenez "pandoc error 1" lorsque vous tricotez des scripts R Markdowns sur des lecteurs rÃ©seau :  
 
-* Sur plusieurs emplacements de bibliothèque, faites en sorte que celui qui a un lecteur avec une lettre soit listé en premier (voir les codes ci-dessus).  
-* La solution ci-dessus a fonctionné lors du tricotage sur le lecteur local mais lors d'une connexion internet en réseau.  
+* Sur plusieurs emplacements de bibliothÃ¨que, faites en sorte que celui qui a un lecteur avec une lettre soit listÃ© en premier (voir les codes ci-dessus).  
+* La solution ci-dessus a fonctionnÃ© lors du tricotage sur le lecteur local, mais lors d'une connexion Internet en rÃ©seau.  
 * Voir plus de conseils ici : https://ciser.cornell.edu/rmarkdown-knit-to-html-word-pdf/  
 
 **Erreur Pandoc 83**  
 
-L'erreur ressemblera à quelque chose comme ceci : `can't find file...rmarkdown...lua...`. Cela signifie qu'il n'a pas pu trouver ce fichier.  
+L'erreur ressemblera Ã  quelque chose comme ceci : `Impossible de trouver le fichier...rmarkdown...lua...`. Cela signifie qu'il n'a pas pu trouver ce fichier.  
 
 Voir https://stackoverflow.com/questions/58830927/rmarkdown-unable-to-locate-lua-filter-when-knitting-to-word  
 
-Possibilités :  
+PossibilitÃ©s :  
 
-1) Le paquet Rmarkdown n'est pas installé  
+1) Le paquet Rmarkdown n'est pas installÃ©  
 2) Le paquet Rmarkdown n'est pas trouvable  
-3) Un problème de droits d'administration.  
+3) Un problÃ¨me de droits d'administration.  
 
-Il est possible que R ne soit pas capable de trouver le fichier du paquet **rmarkdown**, donc vérifiez dans quelle bibliothèque se trouve le paquet **rmarkdown** (voir le code ci-dessus). Si le paquet est installé dans une bibliothèque inaccessible (par exemple, commençant par "\\\"), pensez à le déplacer manuellement vers C : ou une autre bibliothèque de lecteur nommée. Soyez conscient que le paquet **rmarkdown** doit pouvoir se connecter à l'installation de TinyTex, et ne peut donc pas être installé dans une bibliothèque sur un lecteur réseau.
+Il est possible que R ne soit pas capable de trouver le fichier du paquet **rmarkdown**, donc vÃ©rifiez dans quelle bibliothÃ¨que se trouve le paquet **rmarkdown** (voir le code ci-dessus). Si le paquet est installÃ© dans une bibliothÃ¨que inaccessible (par exemple, commenÃ§ant par "\\\"), pensez Ã  le dÃ©placer manuellement vers C : ou une autre bibliothÃ¨que de lecteur nommÃ©e. Soyez conscient que le paquet **rmarkdown** doit pouvoir se connecter Ã  l'installation de TinyTex, et ne peut donc pas Ãªtre installÃ© dans une bibliothÃ¨que sur un lecteur rÃ©seau.
 
 
 **Erreur Pandoc 61**  
 
-Par exemple : `Error : pandoc document conversion failed with error 61` ou `Could not fetch...`.  
+Par exemple : `Erreur : la conversion du document pandoc a Ã©chouÃ© avec l'erreur 61` ou `Impossible d'aller chercher...`.  
 
-* Essayez d'exécuter RStudio en tant qu'administrateur (cliquez avec le bouton droit de la souris sur l'icône, sélectionnez exécuter en tant qu'administrateur, voir les instructions ci-dessus).  
-* Voir également si le paquet spécifique qui n'a pas pu être atteint peut être déplacé vers la bibliothèque C :.
+* Essayez d'exÃ©cuter RStudio en tant qu'administrateur (cliquez avec le bouton droit de la souris sur l'icÃ´ne, sÃ©lectionnez exÃ©cuter en tant qu'administrateur, voir les instructions ci-dessus).  
+* Voir Ã©galement si le paquet spÃ©cifique qui n'a pas pu Ãªtre atteint peut Ãªtre dÃ©placÃ© vers la bibliothÃ¨que C :.
 
 **Erreur LaTex (voir ci-dessous)**.
 
-Une erreur du type : ` ! Paquet pdftex.def Erreur : File 'cict_qm2_2020-06-29_files/figure-latex/unnamed-chunk-5-1.png' not found : using draft setting.` ou `Error : LaTeX n'a pas réussi à compiler nom_fichier.tex.`.  
+Une erreur du type : ` ! Paquet pdftex.def Erreur : File 'cict_qm2_2020-06-29_files/figure-latex/unnamed-chunk-5-1.png' non trouvÃ© : utilisation de la fonction brouillon.` ou `Erreur : LaTeX n'a pas rÃ©ussi Ã  compiler file_name.tex.`.  
 
-* Voir https://yihui.org/tinytex/r/#debugging pour des conseils de débogage.  
+* Voir https://yihui.org/tinytex/r/#debugging pour des conseils de dÃ©bogage.  
 * Voir file_name.log pour plus d'informations.
 
 
 **Erreur Pandoc 127**  
 
-Cela peut être un problème de RAM (espace). Redémarrez votre session R et réessayez. 
+Cela peut Ãªtre un problÃ¨me de RAM (espace). RedÃ©marrez votre session R et rÃ©essayez. 
 
 
-**Mappage de lecteurs réseau**
+**Mappage de lecteurs rÃ©seau**
 
-Le mappage d'un lecteur réseau peut être risqué. Consultez votre service informatique avant d'essayer.  
+Le mappage d'un lecteur rÃ©seau peut Ãªtre risquÃ©. Consultez votre service informatique avant d'essayer.  
 
-Un conseil emprunté à cette [discussion du forum] (https://stackoverflow.com/questions/48161177/r-markdown-openbinaryfile-does-not-exist-no-such-file-or-directory/55616529?noredirect=1#comment97966859_55616529) : 
+Un conseil empruntÃ© Ã  cette [discussion du forum](https://stackoverflow.com/questions/48161177/r-markdown-openbinaryfile-does-not-exist-no-such-file-or-directory/55616529?noredirect=1#comment97966859_55616529) : 
 
-Comment ouvrir un fichier "via un lecteur réseau mappé" ?  
+Comment ouvrir un fichier "via un lecteur rÃ©seau mappÃ©" ?  
 
-* Tout d'abord, vous devez connaître l'emplacement réseau auquel vous essayez d'accéder.  
-* Ensuite, dans le gestionnaire de fichiers de Windows, vous devez cliquer avec le bouton droit de la souris sur "Ce PC" dans le volet de droite, et sélectionner "Mapper un lecteur réseau".  
-* Passez par la boîte de dialogue pour définir l'emplacement réseau de tout à l'heure comme un lecteur de lettres.  
-* Maintenant, vous avez deux façons d'accéder au fichier que vous ouvrez. L'utilisation du chemin de la lettre du lecteur devrait fonctionner.  
+* Tout d'abord, vous devez connaÃ®tre l'emplacement rÃ©seau auquel vous essayez d'accÃ©der.  
+* Ensuite, dans le gestionnaire de fichiers de Windows, vous devez cliquer avec le bouton droit de la souris sur "Ce PC" dans le volet de droite, et sÃ©lectionner "Mapper un lecteur rÃ©seau".  
+* Passez par la boÃ®te de dialogue pour dÃ©finir l'emplacement rÃ©seau de tout Ã  l'heure comme un lecteur de lettres.  
+* Maintenant, vous avez deux faÃ§ons d'accÃ©der au fichier que vous ouvrez. L'utilisation du chemin d'accÃ¨s par lettre du lecteur devrait fonctionner.  
 
 
 **Erreur dans install.packages()**  
 
-Si vous obtenez une erreur qui inclut la mention d'un répertoire "verrouillé", par exemple : `Error in install.packages : ERROR : failed to lock directory...``
+Si vous obtenez une erreur qui inclut la mention d'un rÃ©pertoire "verrouillÃ©", par exemple : `Erreur dans install.packages : ERROR : Ã©chec du verrouillage du rÃ©pertoire...``
 
-Regardez dans votre bibliothèque de paquets et vous verrez un répertoire dont le nom commence par "00LOCK". Essayez les astuces suivantes :  
+Regardez dans votre bibliothÃ¨que de paquets et vous verrez un rÃ©pertoire dont le nom commence par "00LOCK". Essayez les astuces suivantes :  
 
-* Supprimez manuellement le répertoire du dossier "00LOCK" de votre bibliothèque de paquets. Essayez d'installer à nouveau le paquetage.  
-* Vous pouvez aussi essayer la commande `pacman::p_unlock()` (vous pouvez aussi mettre cette commande dans le Rprofile pour qu'elle s'exécute à chaque fois que le projet s'ouvre). Ensuite, essayez à nouveau d'installer le paquet. Cela peut prendre plusieurs essais.  
-* Essayez d'exécuter RStudio en mode Administrateur, et essayez d'installer les paquets un par un.  
-* Si tout le reste échoue, installez le paquet dans une autre bibliothèque ou un autre dossier (par exemple Temp), puis copiez manuellement le dossier du paquet dans la bibliothèque souhaitée.  
+* Supprimez manuellement le rÃ©pertoire du dossier "00LOCK" de votre bibliothÃ¨que de paquets. Essayez d'installer Ã  nouveau le paquetage.  
+* Vous pouvez aussi essayer la commande `pacman::p_unlock()` (vous pouvez aussi mettre cette commande dans le Rprofile pour qu'elle s'exÃ©cute Ã  chaque fois que le projet s'ouvre). Ensuite, essayez Ã  nouveau d'installer le paquet. Cela peut prendre plusieurs essais.  
+* Essayez d'exÃ©cuter RStudio en mode Administrateur, et essayez d'installer les paquets un par un.  
+* Si tout le reste Ã©choue, installez le paquet dans une autre bibliothÃ¨que ou un autre dossier (par exemple Temp), puis copiez manuellement le dossier du paquet dans la bibliothÃ¨que souhaitÃ©e.  
+
