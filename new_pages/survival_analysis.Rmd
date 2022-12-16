@@ -285,11 +285,11 @@ print(linelistsurv_fit, print.rmean = TRUE)
 <span style="color : darkgreen ;">**_ASTUCE:_** Nous pouvons créer l'objet *surv* directement dans la fonction `survfit()` et sauvegarder une ligne de code. Cela ressemblera alors à : `linelistsurv_quick <- survfit(Surv(futime, event) ~ 1, data=linelist_surv)`.</span>
 
 
-### Aléa cumulé {.unnumbered}  
+### Risque cumulé {.unnumbered}  
 
 Outre la fonction `summary()`, nous pouvons également utiliser la fonction `str()` qui donne plus de détails sur la structure de l'objet `survfit()`. Il s'agit d'une liste de 16 éléments.  
 
-Parmi ces éléments, il y en a un important : `cumhaz`, qui est un vecteur numérique. Il pourrait être tracé pour permettre de montrer l'**_aléa cumulatif_**, l'**_aléa_** étant le **_taux instantané d'occurrence de l'événement_** (voir références).
+Parmi ces éléments, il y en a un important : `cumhaz`, qui est un vecteur numérique. Il pourrait être tracé pour permettre de montrer l'**_risque cumulatif_**, l'**_risque_** étant le **_taux instantané d'occurrence de l'événement_** (voir références).
 
 ```{r fit_struct}
 
@@ -360,7 +360,7 @@ Pour comparer la survie au sein de différents groupes de nos participants ou pa
 
 ### Test du log rank {.unnumbered}
 
-Le test du log rank est un test populaire qui compare l'ensemble de l'expérience de survie entre deux ou plusieurs groupes *indépendants* et peut être considéré comme un test permettant de savoir si les courbes de survie sont identiques (se chevauchent) ou non (hypothèse nulle d'aucune différence de survie entre les groupes). La fonction `survdiff()` du **paquet survie** permet d'exécuter le test log-rank lorsque l'on spécifie `rho = 0` (ce qui est le cas par défaut). Le résultat du test donne une statistique de chi-deux ainsi qu'une valeur p puisque la statistique de log-rang est approximativement distribuée comme une statistique de test de chi-deux.
+Le test du log rank est un test populaire qui compare l'ensemble de l'expérience de survie entre deux ou plusieurs groupes *indépendants* et peut être considéré comme un test permettant de savoir si les courbes de survie sont identiques (se chevauchent) ou non (hypothèse nulle d'aucune différence de survie entre les groupes). La fonction `survdiff()` du paquet **survival** permet d'exécuter le test log-rank lorsque l'on spécifie `rho = 0` (ce qui est le cas par défaut). Le résultat du test donne une statistique du khi carré ainsi qu'une valeur p puisque la statistique de log-rank est approximativement distribuée comme une statistique de test de khi-carré.
 
 Nous essayons d'abord de comparer les courbes de survie par groupe de sexe. Pour cela, nous essayons d'abord de les visualiser (vérifier si les deux courbes de survie se chevauchent). Un nouvel objet *survfit* sera créé avec une formule légèrement différente. Ensuite, l'objet *survdiff* sera créé.
 
@@ -369,17 +369,17 @@ En fournissant ` ~ gender` comme partie droite de la formule, nous ne traçons p
 
 ```{r comp_surv, warning=FALSE}
 
-# créez le nouvel objet survfit basé sur le sexe
+# créer le nouvel objet survfit par sexe
 linelistsurv_fit_sex <- survfit(Surv(futime, event) ~ gender, data = linelist_surv)
 ```
 
 Maintenant, nous pouvons tracer les courbes de survie par sexe. Jetez un oeil à l'*ordre* des niveaux de strates dans la colonne sexe avant de définir vos couleurs et votre légende.  
 
 ```{r}
-# définissez les couleurs
-col_sex <- c("vert clair", "vert foncé")
+# définisser les couleurs
+col_sex <- c("lightgreen", "darkgreen")
 
-# Créez le graphique
+# Créer le graphique
 plot(
   linelistsurv_fit_sex,
   col = col_sex,
@@ -411,27 +411,27 @@ Nous constatons que la courbe de survie des femmes et celle des hommes se chevau
 
 Certains autres packages R permettent d'illustrer les courbes de survie de différents groupes et de tester la différence en une seule fois. En utilisant la fonction `ggsurvplot()` du paquet **survminer**, nous pouvons également inclure dans notre courbe les tableaux de risque imprimés pour chaque groupe, ainsi que la p-value du test log-rank. 
 
-<span style="color : orange ;">**_CAUTION:_** Les fonctions **survminer** exigent que vous spécifiiez l'objet de survie *et* que vous spécifiiez à nouveau les données utilisées pour ajuster l'objet de survie. N'oubliez pas de le faire pour éviter les messages d'erreur non spécifiques. </span>
+<span style="color : orange ;">**_ATTENTION:_** Les fonctions **survminer** exigent que vous spécifiiez l'objet de survie *et* que vous spécifiiez à nouveau les données utilisées pour ajuster l'objet de survie. N'oubliez pas de le faire pour éviter les messages d'erreur non spécifiques. </span>
 
 ```{r, warning=F, message=F}
 
 survminer::ggsurvplot(
     linelistsurv_fit_sex, 
-    data = linelist_surv, # spécifiez à nouveau les données utilisées pour ajuster linelistsurv_fit_sex 
+    data = linelist_surv, # spécifier à nouveau les données utilisées pour ajuster linelistsurv_fit_sex 
     conf.int = FALSE, # ne pas montrer l'intervalle de confiance des estimations KM
-    surv.scale = "percent", # présente les probabilités sur l'axe des ordonnées en %.
-    break.time.by = 10, # présente l'axe du temps avec un incrément de 10 jours
+    surv.scale = "percent", # présenter les probabilités sur l'axe des ordonnées en %.
+    break.time.by = 10, # présenter l'axe du temps avec un incrément de 10 jours
     xlab = "Jours de suivi",
     ylab = "Probabilité de survie",
-    pval = T, # imprimer la valeur p du test de Log-rank 
-    pval.coord = c(40,.91), # imprimer la valeur p à ces coordonnées de tracé
-    risk.table = T, # imprime le tableau des risques en bas de page 
+    pval = T, # imprimer la valeur p du test de log-rank 
+    pval.coord = c(40,.91), # imprimer la valeur p à ces coordonnées du graphique
+    risk.table = T, # imprimer le tableau des risques en bas de page 
     legend.title = "Gender", # légende des caractéristiques
     legend.labs = c("Female", "Male"),
     font.legend = 10, 
     palette = "Dark2", # spécifier la palette de couleurs 
-    surv.median.line = "hv", # dessine des lignes horizontales et verticales sur les médianes de survie
-    ggtheme = theme_light() # simplifie le fond du graphique
+    surv.median.line = "hv", # dessiner des lignes horizontales et verticales sur les médianes de survie
+    ggtheme = theme_light() # simplifier le fond du graphique
 )
 
 ```
@@ -439,7 +439,7 @@ survminer::ggsurvplot(
 
 Nous pouvons également vouloir tester les différences de survie en fonction de la source d'infection (source de contamination).  
 
-Dans ce cas, le test Log rank donne suffisamment de preuves d'une différence dans les probabilités de survie à `alpha= 0.005`. Les probabilités de survie des patients qui ont été infectés lors de funérailles sont plus élevées que les probabilités de survie des patients qui ont été infectés dans d'autres lieux, ce qui suggère un bénéfice de survie.
+Dans ce cas, le test log-rank donne suffisamment de preuves d'une différence dans les probabilités de survie à `alpha= 0.005`. Les probabilités de survie des patients qui ont été infectés lors de funérailles sont plus élevées que les probabilités de survie des patients qui ont été infectés dans d'autres lieux, ce qui suggère un bénéfice de survie.
 
 ```{r}
 
@@ -454,7 +454,7 @@ ggsurvplot(
   data = linelist_surv,
   size = 1, linetype = "strata", # types de lignes
   conf.int = T,
-  surv.scale = "pourcentage",  
+  surv.scale = "percentage",  
   break.time.by = 10, 
   xlab = "Jours de suivi",
   ylab= "Probabilité de survie",
@@ -476,7 +476,7 @@ ggsurvplot(
 
 La régression des risques proportionnels de Cox est l'une des techniques de régression les plus populaires pour l'analyse de survie. D'autres modèles peuvent également être utilisés puisque le modèle de Cox requiert des *hypothèses importantes* qui doivent être vérifiées pour une utilisation appropriée, comme l'hypothèse des risques proportionnels : voir les références. 
 
-Dans un modèle de régression à risques proportionnels de Cox, la mesure de l'effet est le **_taux de risque_** (HR), qui est le risque d'échec (ou le risque de décès dans notre exemple), étant donné que le participant a survécu jusqu'à un moment spécifique.  Habituellement, nous sommes intéressés par la comparaison de groupes *indépendants* en ce qui concerne leurs risques, et nous utilisons un rapport de risque, qui est analogue à un rapport de cotes dans le cadre d'une analyse de régression logistique multiple. La fonction `cox.ph()` du paquet **survival** est utilisée pour ajuster le modèle. La fonction `cox.zph()` du paquet **survival** peut être utilisée pour tester l'hypothèse de risques proportionnels pour un ajustement du modèle de régression de Cox. 
+Dans un modèle de régression à risques proportionnels de Cox, la mesure de l'effet est le **_taux de risque_** (hazard risk, HR), qui est le risque d'échec (ou le risque de décès dans notre exemple), étant donné que le participant a survécu jusqu'à un moment spécifique. Habituellement, nous sommes intéressés par la comparaison de groupes *indépendants* en ce qui concerne leurs risques, et nous utilisons un rapport de risque, qui est analogue à un rapport de cotes (odds ratio, OR) dans le cadre d'une analyse de régression logistique multiple. La fonction `cox.ph()` du paquet **survival** est utilisée pour ajuster le modèle. La fonction `cox.zph()` du paquet **survival** peut être utilisée pour tester l'hypothèse de risques proportionnels pour un ajustement du modèle de régression de Cox. 
 
 <span style="color : black ;">**_NOTE:_** Une probabilité doit être comprise entre 0 et 1. Cependant, le hasard représente le nombre attendu d'événements par unité de temps. 
 
