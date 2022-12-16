@@ -1032,7 +1032,7 @@ ggplot(linelist %>% drop_na(outcome)) +
        y = "Hospital")
 
 
-# B)  finales pour les cas par hôpital
+# B) Issues finales pour les cas par hôpital
 ggplot(linelist %>% drop_na(outcome)) + 
   geom_bar(aes(y = fct_rev(hospital), fill = outcome), width = 0.7) +
   theme_minimal()+

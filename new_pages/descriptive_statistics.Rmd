@@ -209,7 +209,7 @@ linelist %>%
 Vous pouvez utiliser les fonctions `adorn_*()` de **janitor** sur d'autres tables, comme celles créées par `summarise()`, `count()`, ou `table()`.  
 
 
-#### Enregistrement du tableau {.unnumbered}  
+#### Enregistrement du tabyl {.unnumbered}  
 
 Si vous convertissez le tableau en HTML avec un paquetage comme **flextable**, vous pouvez le sauvegarder avec les fonctions `save_as_html()`, `save_as_word()`, `save_as_ppt`, et `save_as_image()`, comme discuté plus en détail dans la page [Tableaux pour la présentation]. Ci-dessous, le tableau est enregistré comme un document Word dans lequel il peut être édité manuellement.  
 
@@ -223,7 +223,7 @@ linelist %>%
   adorn_title(
     row_name = "Catégorie d'âge",
     col_name = "Sexe",
-    placement = "combiné") %>% 
+    placement = "combined") %>% 
   flextable::flextable() %>% # convertit en flextable HTML
   flextable::autofit() %>% # garantit une seule ligne par ligne
   flextable::save_as_docx(path = "tabyl.docx") # Enregistrer comme document Word
@@ -272,7 +272,7 @@ linelist %>%
   count(age_cat, gender)
 ```
 
-Pour afficher cette sortie de comptage par groupe avec `ggplot()`, c'est relativement simple. Voir d'autres exemples dans les pages [Tracer des données catégorielles] et [Trucs et Astuces avec ggplot](#ggplot_tips).  
+Pour afficher cette sortie de comptage par groupe avec `ggplot()`, c'est relativement simple. Voir d'autres exemples dans les pages [Tracer des données discrètes](#plot_discrete) et [Trucs et Astuces avec ggplot](#ggplot_tips).  
 
 ```{r, warning=F, message=F}
 linelist %>% 
@@ -671,16 +671,11 @@ chisq.test(linelist$gender, linelist$outcome)
 
 ### Paquet `gtsummary` {.unnumbered}
 
-Utilisez **gtsummary** si vous cherchez à ajouter les résultats d'un test statistique à un joli tableau (décrit dans la section ci-dessus). 
-L'exécution de tests statistiques de comparaison avec `tbl_summary` se fait en ajoutant la fonction 
-`add_p` à une table et en spécifiant le test à utiliser. Il est possible d'obtenir des p-values corrigées pour les tests multiples en utilisant la fonction
-`add_q`. Exécutez `?tbl_summary` pour plus de détails.  
+Utilisez **gtsummary** si vous cherchez à ajouter les résultats d'un test statistique à un joli tableau (décrit dans la section ci-dessus). L'exécution de tests statistiques de comparaison avec `tbl_summary` se fait en ajoutant la fonction `add_p` à une table et en spécifiant le test à utiliser. Il est possible d'obtenir des p-values corrigées pour les tests multiples en utilisant la fonction `add_q`. Exécutez `?tbl_summary` pour plus de détails.  
 
 #### Test du chi-carré 
 
-Comparez les proportions d'une variable catégorielle dans deux groupes. Le test statistique par défaut pour 
-`add_p()` est d'effectuer un test d'indépendance du chi carré avec correction de continuité, mais si le nombre d'appels prévu est inférieur à 5, alors le test sera effectué. 
-si le nombre d'appels attendus est inférieur à 5, un test exact de Fisher est utilisé. 
+Comparez les proportions d'une variable catégorielle dans deux groupes. Le test statistique par défaut pour `add_p()` est d'effectuer un test d'indépendance du chi carré avec correction de continuité, mais si le nombre d'appels prévu est inférieur à 5, un test exact de Fisher est utilisé. 
 
 ```{r chi_gt}
 linelist %>% 
@@ -709,10 +704,7 @@ linelist %>%
 
 #### Test de la somme des rangs de Wilcoxon{.unnumbered}
 
-Comparez la distribution d'une variable continue dans deux groupes. La valeur par défaut 
-par défaut est d'utiliser le test de la somme des rangs de Wilcoxon et la médiane (IQR) pour comparer deux groupes. 
-groupes. Cependant, pour les données à distribution non normale ou la comparaison de plusieurs groupes, 
-le test de Kruskal-wallis est plus approprié. 
+Comparez la distribution d'une variable continue dans deux groupes. La valeur par défaut est d'utiliser le test de la somme des rangs de Wilcoxon et la médiane (IQR) pour comparer deux groupes. Cependant, pour les données à distribution non normale ou la comparaison de plusieurs groupes, le test de Kruskal-wallis est plus approprié. 
 
 ```{r wilcox_gt}
 
