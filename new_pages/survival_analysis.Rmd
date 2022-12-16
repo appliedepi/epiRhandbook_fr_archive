@@ -10,10 +10,9 @@ knitr::include_graphics(here::here("images", "survival_analysis.png"))
 ## Aperçu {}
 
 
-*L'analyse de survie* s'attache à décrire pour un individu ou un groupe d'individus donné, un point d'événement défini appelé **_l'échec_** (apparition d'une maladie, guérison d'une maladie, décès, rechute après réponse à un traitement...) qui survient après une période de temps appelée **_le temps d'échec_** (ou **_le temps de suivi_** dans les études de cohorte/population) pendant laquelle les individus sont observés. Pour déterminer le temps d'échec, il est alors nécessaire de définir un temps d'origine (qui peut être la date d'inclusion, la date du diagnostic...). 
+*L'analyse de survie* s'attache à décrire pour un individu ou un groupe d'individus donnés, un point d'événement défini appelé **_l'échec_** (apparition d'une maladie, guérison d'une maladie, décès, rechute après réponse à un traitement...) qui survient après une période de temps appelée **_le temps d'échec_** (ou **_le temps de suivi_** dans les études de cohorte/population) pendant laquelle les individus sont observés. Pour déterminer le temps d'échec, il est alors nécessaire de définir un temps d'origine (qui peut être la date d'inclusion, la date du diagnostic...). 
 
-La cible d'inférence de l'analyse de survie est alors le temps entre une origine et un événement.
-Dans la recherche médicale actuelle, elle est largement utilisée dans les études cliniques pour évaluer l'effet d'un traitement par exemple, ou en épidémiologie du cancer pour évaluer une grande variété de mesures de survie au cancer. 
+La cible d'inférence de l'analyse de survie est alors le temps entre une origine et un événement. Dans la recherche médicale actuelle, l'analyse de survie est largement utilisée dans les études cliniques pour évaluer l'effet d'un traitement par exemple, ou en épidémiologie du cancer pour évaluer une grande variété de mesures de survie au cancer. 
 
 
 Elle s'exprime généralement par la **_probabilité de survie_** qui est la probabilité que l'événement d'intérêt ne se soit pas produit avant une durée t.
@@ -39,8 +38,7 @@ Pour effectuer des analyses de survie dans R, un des paquets les plus utilisés 
 
 Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le paquet si nécessaire *et* le charge pour l'utiliser. Vous pouvez aussi charger les paquets installés avec `library()` de **base** R. Voir la page sur [R basics] pour plus d'informations sur les paquets R.  
 
-```{r, echo=F, message=FALSE, warning=FALSE}
-
+```{r, message=FALSE, warning=FALSE}
 # installer/charger les différents paquets nécessaires à cette page
 pacman::p_load(
   survival, # analyse de survie 
@@ -54,8 +52,6 @@ pacman::p_load(
   survival, # analyse de survie
   survminer # analyse de survie : courbes KM avancées
 )
-
-
 ```
 
 
@@ -67,12 +63,12 @@ Cette page explore les analyses de survie en utilisant la linelist utilisée dan
 Nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre le mouvement, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (en tant que fichier .rds). Importez des données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation] pour plus de détails).  
 
 ```{r echo=F}
-# import linelist
+# importer la liste linéaire
 linelist_case_data <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 ```
 
 ```{r eval=F}
-# import linelist
+# importer la liste linéaire
 linelist_case_data <- rio::import("linelist_cleaned.rds")
 ```
 
@@ -86,21 +82,21 @@ En bref, les données de survie peuvent être décrites comme ayant les trois ca
 
 Ainsi, nous allons créer les différentes variables nécessaires pour respecter cette structure et effectuer l'analyse de survie.
 
-Nous définissons
+Nous définissons:
 
 - un nouveau cadre de données `linelist_surv` pour cette analyse  
 - notre événement d'intérêt comme étant le "décès" (donc notre probabilité de survie sera la probabilité d'être en vie après un certain temps après le moment d'origine),
 - le temps de suivi (`futime`) comme le temps entre le moment de l'apparition et le moment du résultat *en jours*,
 - les patients censurés comme ceux qui se sont rétablis ou pour lesquels le résultat final n'est pas connu, c'est-à-dire que l'événement "décès" n'a pas été observé (`event=0`).
 
-<span style="color : orange ;">**_CAUTION:_** Puisque dans une étude de cohorte réelle, l'information sur le moment de l'origine et la fin du suivi est connue étant donné que les individus sont observés, nous éliminerons les observations où la date d'apparition ou la date de l'issue est inconnue. De même, les cas où la date d'apparition est postérieure à la date de l'issue seront supprimés car ils sont considérés comme erronés.</span>
+<span style="color : orange ;">**_CAUTION:_** Puisque dans une étude de cohorte réelle, l'information sur le moment de l'origine et la fin du suivi est connue étant donné que les individus sont observés, nous éliminerons les observations où la date d'apparition ou la date de l'issue est inconnue. De même, les cas où la date d'apparition est postérieure à la date de l'issue finale seront supprimés car ils sont considérés comme erronés.</span>
 
-<span style="color : darkgreen ;">**_TIP:_** Étant donné que le filtrage sur une date supérieure à (>) ou inférieure à (<) peut supprimer les lignes avec des valeurs manquantes, l'application du filtre sur les mauvaises dates supprimera également les lignes avec des dates manquantes.</span>
+<span style="color : darkgreen ;">**_ASTUCE:_** Étant donné que le filtrage sur une date supérieure à (>) ou inférieure à (<) peut supprimer les lignes avec des valeurs manquantes, l'application du filtre sur les mauvaises dates supprimera également les lignes avec des dates manquantes.</span>
 
 Nous utilisons ensuite `case_when()` pour créer une colonne `age_cat_small` dans laquelle il n'y a que 3 catégories d'âge.
 
 ```{r }
-#Créer une nouvelle donnée appelée linelist_surv à partir de la donnée linelist_case_data.
+#Créer un nouveau jeu de données appelé linelist_surv à partir du jeu de données linelist_case_data.
 
 linelist_surv <- linelist_case_data %>% 
      
@@ -109,10 +105,10 @@ linelist_surv <- linelist_case_data %>%
        date_outcome > date_onset) %>% 
   
   dplyr::mutate(
-       # créer la var événement qui vaut 1 si le patient est décédé et 0 s'il a été censuré à droite
+       # créer une variable qui s'appelle événement et qui vaut 1 si le patient est décédé et 0 s'il a été censuré à droite
        event = ifelse(is.na(outcome) | outcome == "Recover", 0, 1), 
     
-       # créer la var sur le temps de suivi en jours
+       # créer une variable sur le temps de suivi en jours
        futime = as.double(date_outcome - date_onset), 
     
        # créer une nouvelle variable de catégorie d'âge avec seulement 3 niveaux de strates
@@ -121,7 +117,7 @@ linelist_surv <- linelist_case_data %>%
             age_years >= 5 & age_years < 20 ~ "5-19",
             age_years >= 20 ~ "20+"),
        
-       # l'étape précédente a créé la var age_cat_small en tant que caractère.
+       # l'étape précédente a créé la variable age_cat_small en tant que caractère.
        # maintenant le convertir en facteur et spécifier les niveaux.
        # Notez que les valeurs NA restent des NA et ne sont pas mises dans un niveau "inconnu" par exemple,
        # puisque dans les prochaines analyses, elles devront être supprimées.
@@ -130,19 +126,19 @@ linelist_surv <- linelist_case_data %>%
 ```
 
 
-<span style="color : darkgreen ;">**_TIP:_** Nous pouvons vérifier les nouvelles colonnes que nous avons créées en faisant un résumé sur le `futime` et un tableau croisé entre `event` et `outcome` à partir duquel il a été créé. Outre cette vérification, c'est une bonne habitude de communiquer la durée médiane de suivi lors de l'interprétation des résultats de l'analyse de survie.</span>
+<span style="color : darkgreen ;">**_ASTUCE:_** Nous pouvons vérifier les nouvelles colonnes que nous avons créées en faisant un résumé sur le `futime` et un tableau croisé entre `event` et `outcome` à partir duquel la variable `futime` a été créée. Outre cette vérification, c'est une bonne habitude de communiquer la durée médiane de suivi lors de l'interprétation des résultats de l'analyse de survie.</span>
 
 ```{r }
 
 summary(linelist_surv$futime)
 
-# croiser les tableaux de la nouvelle var événement et de la var résultat à partir de laquelle elle a été créée.
+# croiser la nouvelle variable événement et la variable résultat à partir de laquelle elle a été créée.
 # pour s'assurer que le code a fait ce qu'il était censé faire.
 linelist_surv %>% 
   tabyl(outcome, event)
 ```
 
-Maintenant, nous croisons la nouvelle var age_cat_small et l'ancienne col age_cat pour nous assurer que les affectations sont correctes.  
+Maintenant, nous croisons la nouvelle variable `age_cat_small` et l'ancienne colonne `age_cat` pour nous assurer que les affectations ont été bien faites.  
 
 ```{r}
 linelist_surv %>% 
@@ -242,29 +238,29 @@ head(survobj, 10)
 
 Nous commençons ensuite notre analyse en utilisant la fonction `survfit()` pour produire un objet *survfit*, qui s'adapte aux calculs par défaut pour les estimations **_Kaplan Meier_** (KM) de la courbe de survie globale (marginale), qui sont en fait une fonction échelon avec des sauts aux moments des événements observés. L'objet final *survfit* contient une ou plusieurs courbes de survie et est créé en utilisant l'objet *Surv* comme variable de réponse dans la formule du modèle.  
 
-<span style="color : black ;">**_NOTE:_** L'estimation de Kaplan-Meier est une estimation non paramétrique du maximum de vraisemblance (MLE) de la fonction de survie. (voir les ressources pour plus d'informations).</span>
+<span style="color : black ;">**_NOTE:_** L'estimation de Kaplan-Meier est une estimation non-paramétrique du maximum de vraisemblance (MLE) de la fonction de survie. (voir les ressources pour plus d'informations).</span>
 
 Le résumé de cet objet *survfit* donnera ce que l'on appelle une *table de survie*. Pour chaque pas de temps du suivi (`temps`) où un événement s'est produit (par ordre croissant) :  
 
-* le nombre de personnes qui étaient à risque de développer l'événement (les personnes qui n'ont pas encore eu l'événement ou qui ont été censurées : `n.risk`)  
+* le nombre de personnes qui étaient à risque de développer l'événement (les personnes qui n'ont pas encore eu l'événement ou qui n'ont pas été censurées : `n.risk`)  
 * ceux qui ont développé l'événement (`n.event`)  
 * et à partir de ce qui précède : la probabilité de *ne pas* développer l'événement (probabilité de ne pas mourir, ou de survivre au-delà de ce moment spécifique).  
-* enfin, l'erreur standard et l'intervalle de confiance pour cette probabilité sont dérivés et affichés.  
+* finalement, l'erreur type et l'intervalle de confiance pour cette probabilité sont dérivés et affichés.  
 
-Nous ajustons les estimations de la GC en utilisant la formule où l'objet "survobj" précédemment survécu est la variable de réponse. "~ 1" précise que nous exécutons le modèle pour la survie globale.  
+Nous ajustons les estimations de la KM en utilisant la formule où l'objet "survobj", qui était un objet `Surv`, est la variable de réponse. "~ 1" précise que nous exécutons le modèle pour la survie globale.  
 
 ```{r fit}
 # ajuster les estimations KM en utilisant une formule où l'objet Surv "survobj" est la variable de réponse.
 # "~ 1" signifie que nous exécutons le modèle pour la survie globale.  
 linelistsurv_fit <- survival::survfit(survobj ~ 1)
 
-#imprimez son résumé pour plus de détails
+# imprimer son résumé pour plus de détails
 summary(linelistsurv_fit)
 
 ```
 
 
-En utilisant `summary()`, nous pouvons ajouter l'option `times` et spécifier certaines heures auxquelles nous voulons voir les informations de survie. 
+En utilisant `summary()`, nous pouvons ajouter l'option `times` pour spécifier certaines heures auxquelles nous voulons voir les informations de survie. 
 
 ```{r print_spec_times}
 
@@ -274,26 +270,26 @@ summary(linelistsurv_fit, times = c(5,10,20,30,60))
 ```
 
 
-Nous pouvons également utiliser la fonction `print()`. L'argument `print.rmean = TRUE` permet d'obtenir le temps de survie moyen et son erreur standard (se).
+Nous pouvons également utiliser la fonction `print()`. L'argument `print.rmean = TRUE` permet d'obtenir le temps de survie moyen et son erreur type (SE).
 
 <span style="color : black ;">**_NOTE:_** La durée moyenne de survie restreinte (RMST) est une mesure de survie spécifique de plus en plus utilisée dans l'analyse de survie des cancers et qui est souvent définie comme l'aire sous la courbe de survie, étant donné que nous observons les patients jusqu'au temps restreint T (plus de détails dans la section Ressources).
 
 
 ```{r, mean_survtime}
-# Imprimez l'objet linelistsurv_fit avec le temps de survie moyen et son se. 
+# Imprimer l'objet linelistsurv_fit avec le temps de survie moyen et son SE. 
 print(linelistsurv_fit, print.rmean = TRUE)
 
 ```
 
 
-<span style="color : darkgreen ;">**_TIP:_** Nous pouvons créer l'objet *surv* directement dans la fonction `survfit()` et économiser une ligne de code. Cela ressemblera alors à : `linelistsurv_quick <- survfit(Surv(futime, event) ~ 1, data=linelist_surv)`.</span>
+<span style="color : darkgreen ;">**_ASTUCE:_** Nous pouvons créer l'objet *surv* directement dans la fonction `survfit()` et sauvegarder une ligne de code. Cela ressemblera alors à : `linelistsurv_quick <- survfit(Surv(futime, event) ~ 1, data=linelist_surv)`.</span>
 
 
-### Risque cumulé {.unnumbered}  
+### Aléa cumulé {.unnumbered}  
 
 Outre la fonction `summary()`, nous pouvons également utiliser la fonction `str()` qui donne plus de détails sur la structure de l'objet `survfit()`. Il s'agit d'une liste de 16 éléments.  
 
-Parmi ces éléments, il y en a un important : `cumhaz`, qui est un vecteur numérique. Il pourrait être tracé pour permettre de montrer le **_danger cumulatif_**, le **_danger_** étant le **_taux instantané d'occurrence de l'événement_** (voir références).
+Parmi ces éléments, il y en a un important : `cumhaz`, qui est un vecteur numérique. Il pourrait être tracé pour permettre de montrer l'**_aléa cumulatif_**, l'**_aléa_** étant le **_taux instantané d'occurrence de l'événement_** (voir références).
 
 ```{r fit_struct}
 
@@ -306,7 +302,7 @@ str(linelistsurv_fit)
 
 Une fois les estimations KM ajustées, nous pouvons visualiser la probabilité d'être en vie à un moment donné en utilisant la fonction de base `plot()` qui dessine la "courbe de Kaplan-Meier". En d'autres termes, la courbe ci-dessous est une illustration classique de l'expérience de survie dans l'ensemble du groupe de patients.
 
-Nous pouvons rapidement vérifier le temps de suivi min et max sur la courbe.  
+Nous pouvons rapidement vérifier le temps de suivi minimum et maximum sur la courbe.  
 
 Une manière simple d'interpréter est de dire qu'au temps zéro, tous les participants sont encore en vie et que la probabilité de survie est alors de 100%. Cette probabilité diminue au fil du temps, à mesure que les patients meurent. La proportion de participants survivant après 60 jours de suivi est d'environ 40 %.
 
@@ -320,14 +316,14 @@ plot(linelistsurv_fit,
 
 ```
 
-L'intervalle de confiance des estimations de survie KM est également tracé par défaut et peut être écarté en ajoutant l'option `conf.int = FALSE` à la commande `plot()`.
+L'intervalle de confiance des estimations de survie KM est également tracée par défaut et peut être éliminée en ajoutant l'option `conf.int = FALSE` à la commande `plot()`.
 
-Puisque l'événement d'intérêt est la "mort", dessiner une courbe décrivant les compléments des proportions de survie conduira à dessiner les proportions de mortalité cumulées. Ceci peut être fait avec `lines()`, qui ajoute des informations à un graphique existant.  
+Puisque l'événement d'intérêt est la mort, dessiner une courbe décrivant les compléments des proportions de survie conduira à dessiner les proportions de mortalité cumulées. Ceci peut être fait avec `lines()`, qui ajoute des informations à un graphique existant.  
 
 
 ```{r}
 
-# tracé original
+# graphique original
 plot(
   linelistsurv_fit,
   xlab = "Jours de suivi",       
@@ -337,11 +333,11 @@ plot(
   main = "Courbe de survie globale et mortalité cumulée"
   )
 
-# Dessinez une courbe supplémentaire au tracé précédent
+# Dessinez une courbe supplémentaire au graphique précédent
 lines(
   linelistsurv_fit,
   lty = 3, # utiliser un type de ligne différent pour plus de clarté
-  fun = "event", # dessine les événements cumulés au lieu de la survie 
+  fun = "event", # dessiner les événements cumulés au lieu de la survie 
   mark.time = FALSE,
   conf.int = FALSE
   )
