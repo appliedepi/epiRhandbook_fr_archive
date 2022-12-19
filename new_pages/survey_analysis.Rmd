@@ -552,7 +552,7 @@ left_join(ag, propcount, by = "age_group", suffix = c("", "_pop")) %>%
 
 ### Pyramides démographiques 
 
-Les pyramides démographiques (ou âge-sexe) sont un moyen facile de visualiser la distribution dans la population de votre enquête. Il est également intéressant de créer des [tableaux descriptifs](#descriptive_tables) et le sexe par strates d'enquête. Nous allons démontrer l'utilisation du paquet **apyramide** car il permet de pondérées en utilisant notre objet de conception d'enquête créé ci-dessus. Autres options pour créer [pyramides démographiques](#age_pyramid) sont traitées en détail dans ce chapitre du manuel. Nous utiliserons également une fonction wrapper de **sitrep** appelée `plot_age_pyramid()` qui permet de gagner quelque lignes de code pour produire un graphique avec des proportions. 
+Les pyramides démographiques (ou âge-sexe) sont un moyen facile de visualiser la distribution dans la population de votre enquête. Il est également intéressant de créer des [tableaux descriptifs](#descriptive_tables) et le sexe par strates d'enquête. Nous allons démontrer l'utilisation du paquet **apyramide** car il permet de pondérées en utilisant notre objet de conception d'enquête créé ci-dessus. Autres options pour créer [pyramides démographiques](#age_pyramid) sont traitées en détail dans ce chapitre du manuel. Nous utiliserons également une fonction wrapper de **apyramid** appelée `age_pyramid()` qui permet de gagner quelque lignes de code pour produire un graphique avec des proportions. 
 
 Comme pour le test binomial formel de différence, vu plus haut dans la section sur le biais d'échantillonnage, nous sommes intéressés ici à visualiser si notre population échantillonnée 
 est sensiblement différente de la population source et si la pondération corrige cette différence. Pour ce faire, nous allons utiliser le paquet **patchwork** pour montrer nos visualisations **ggplot** côte à côte ; pour plus de détails, voir la section sur la combinaison de tracés dans le chapitre du manuel [Astuces de ggplot](#ggplot_tips) du manuel. Nous allons visualiser notre population source, notre population d'enquête non pondérée et notre population d'enquête pondérée. Vous pouvez également envisager de visualiser chaque strate de votre enquête, pars exemple ici, en utilisant l'argument `stack_by = "health_district"` (voir `?plot_age_pyramid` pour plus de détails). 
@@ -620,7 +620,7 @@ source_population <- population %>%.
   
   
 ## Tracez l'échantillon de population non pondéré 
-sample_population <- plot_age_pyramid(survey_data, 
+sample_population <- age_pyramid(survey_data, 
                  age_group = "age_group", 
                  split_by = "sex",
                  proportion = TRUE) + 
@@ -639,7 +639,7 @@ weighted_population <- survey_design %>%
   ## S'assurer que les variables sont des facteurs
   mutate(age_group = factor(age_group), 
          sex = facteur(sex)) %>%
-  plot_age_pyramid(
+  age_pyramid(
     age_group = "age_group",
     split_by = "sex", 
     proportion = TRUE) +
@@ -680,12 +680,8 @@ noms différents, y compris alluvial, sankey et ensembles parallèles - les dét
 ## résumer les données
 flow_table <- survey_data %>%
   count(startcause, endcause, sex) %>% # obtenir des comptages 
-  gather_set_data(x = c("startcause", "endcause")) %>% # changer de format pour le tracé
-  mutate(x = fct_relevel(x, c("startcause", "endcause")), # définit startcause comme premier niveau
-         x = fct_recode(x, 
-                        "Start \n cause" = "startcause", # ajouter un saut de ligne (\n) après le début
-                        "End \n cause" = "endcause")
-        )
+  gather_set_data(x = c("startcause", "endcause")) # changer de format pour le tracé
+
 
 
 ## Tracez votre ensemble de données 
@@ -700,19 +696,9 @@ ggplot(flow_table, aes(x, id = id, split = y, value = n)) +
   geom_parallel_sets_axes(axis.width = 0.15, fill = "grey80", color = "grey80") + ## changer la couleur du texte et l'angle de l'étiquette.
   ## changer la couleur et l'angle du texte (doit être ajusté)
   geom_parallel_sets_labels(color = "black", angle = 0, size = 5) + ## ajuster la couleur et l'angle du texte (doit être ajusté)
-  ## ajustement des axes y et x (il faut probablement plus d'espace vertical)
-  scale_x_discrete(name = NULL, expand = c(0, 0.2)) + 
   ## suppression des étiquettes d'axe
-  theme(
-    title = element_text(size = 26),
-    text = element_text(size = 26),
-    axis.line = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text.y = element_blank(),
-    panel.background = element_blank(),
-    legend.position = "bottom", # déplace la légende vers le bas
-    legend.title = element_blank(), # supprimer le titre
-  )
+  theme_void()+
+  theme(legend.position = "bottom")
 
 ```
 

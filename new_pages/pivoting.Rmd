@@ -540,7 +540,7 @@ Mais ce jeu de données est peu lisible si présenté tel quel dans un rapport. 
 ```{r}
 df_combined %>% 
   pivot_wider(
-    id_cols     = c(Facility, Year, Cases),
+    id_cols     = c(Measurement, Facility),
     names_from  = "Year",
     values_from = "Cases"
   ) %>% 

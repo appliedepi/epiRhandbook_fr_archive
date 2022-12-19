@@ -279,7 +279,7 @@ agg_weeks <- facility_count_data %>%
     data_date < as.Date("2020-08-01")) 
 ```
 
-Maintenant, le jeu de données a `nrow(agg_weeks)` lignes, alors qu'il avait précédemment `nrow(facility_count_data)`.  
+Maintenant, le jeu de données a `r nrow(agg_weeks)` lignes, alors qu'il avait précédemment `r nrow(facility_count_data)`.  
 
 Ensuite, nous créons une colonne `week` reflétant la date de début de la semaine pour chaque enregistrement. Ceci est réalisé avec le package **lubridate** et la fonction `floor_date()`, qui est définie sur "week" et pour que les semaines commencent le lundi (jour 1 de la semaine - le dimanche serait le 7). Les lignes du haut sont présentées ci-dessous.  
 
@@ -315,7 +315,8 @@ agg_weeks <- agg_weeks %>%
     n_reports = dplyr::n(), # nombre de rapports reçus par semaine (peut être >7)
     malaria_tot = sum(malaria_tot, na.rm = T), # nombre total de cas de paludisme signalés
     n_days_reported = length(unique(data_date)), # nombre de jours uniques de déclaration par semaine
-    p_days_reported = round(100*(n_days_reported / n_days)))      # pourcentage de jours de déclaration
+    p_days_reported = round(100*(n_days_reported / n_days))) %>%      # pourcentage de jours de déclaration
+  ungroup(location_name, week)    #ungroup() alors expand() marche dans les prochaines etapes
 ```
 
 ```{r, echo=F}
@@ -324,24 +325,22 @@ DT::datatable(head(agg_weeks,30), rownames = FALSE, options = list(pageLength = 
 
 Enfin, nous exécutons la commande ci-dessous pour nous assurer que TOUTES les semaines d'installation possibles sont présentes dans les données, même si elles étaient absentes auparavant.  
 
-Nous utilisons un `right_join()` sur lui-même (l'ensemble de données est représenté par ".") mais il a été étendu pour inclure toutes les combinaisons possibles des colonnes `week` et `location_name`. Voir la documentation sur la fonction `expand()` dans la page sur [Pivoter les donnees](#pivoting_data). Avant d'exécuter ce code, l'ensemble de données contient `nrow(agg_weeks)` lignes.   
+Nous utilisons un `right_join()` sur lui-même (l'ensemble de données est représenté par ".") mais il a été étendu pour inclure toutes les combinaisons possibles des colonnes `week` et `location_name`. Voir la documentation sur la fonction `expand()` dans la page sur [Pivoter les donnees](#pivoting_data). Avant d'exécuter ce code, l'ensemble de données contient `r nrow(agg_weeks)` lignes.   
 
 ```{r, message=F, warning=F}
 # Créez un cadre de données pour chaque semaine d'installation possible.
 expanded_weeks <- agg_weeks %>% 
-  mutate(week = as.factor(week)) %>% # Convertit la date en un facteur pour que expand() fonctionne correctement
-  tidyr::expand(., week, location_name) %>% # étendre le cadre de données pour inclure toutes les combinaisons possibles établissement-semaine
-                                             # Note : "." représente l'ensemble de données à ce moment de la chaîne de production.
-  mutate(week = as.Date(week))               # reconvertir la semaine en classe Date pour que le right_join suivant fonctionne
+  tidyr::expand(location_name, week) # étendre le cadre de données pour inclure toutes les combinaisons possibles établissement-semaine
+                                          
 ```
 
-Voici `expanded_weeks` :  
+Voici `expanded_weeks`, avec `r nrow(expanded_weeks)` lignes:  
 
 ```{r, echo=F}
 DT::datatable(expanded_weeks, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap')
 ```
 
-Avant d'exécuter ce code, `agg_weeks` contient ` nrow(agg_weeks)` lignes.   
+Avant d'exécuter ce code, `agg_weeks` contient `r nrow(agg_weeks)` lignes.   
 
 ```{r}
 # Utilisez une jointure à droite avec la liste étendue des semaines d'installation pour combler les lacunes dans les données.
@@ -350,7 +349,7 @@ agg_weeks <- agg_weeks %>%
   mutate(p_days_reported = replace_na(p_days_reported, 0))  # Convertir les valeurs manquantes en 0                           
 ```
 
-Après avoir exécuté ce code, `agg_weeks` contient ` nrow(agg_weeks)` lignes.   
+Après avoir exécuté ce code, `agg_weeks` contient `r nrow(agg_weeks)` lignes.   
 
 
 <!-- ======================================================= -->
