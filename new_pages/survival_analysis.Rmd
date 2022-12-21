@@ -478,11 +478,11 @@ La régression des risques proportionnels de Cox est l'une des techniques de ré
 
 Dans un modèle de régression à risques proportionnels de Cox, la mesure de l'effet est le **_taux de risque_** (hazard risk, HR), qui est le risque d'échec (ou le risque de décès dans notre exemple), étant donné que le participant a survécu jusqu'à un moment spécifique. Habituellement, nous sommes intéressés par la comparaison de groupes *indépendants* en ce qui concerne leurs risques, et nous utilisons un rapport de risque, qui est analogue à un rapport de cotes (odds ratio, OR) dans le cadre d'une analyse de régression logistique multiple. La fonction `cox.ph()` du paquet **survival** est utilisée pour ajuster le modèle. La fonction `cox.zph()` du paquet **survival** peut être utilisée pour tester l'hypothèse de risques proportionnels pour un ajustement du modèle de régression de Cox. 
 
-<span style="color : black ;">**_NOTE:_** Une probabilité doit être comprise entre 0 et 1. Cependant, le hasard représente le nombre attendu d'événements par unité de temps. 
+<span style="color : black ;">**_NOTE:_** Une probabilité doit être comprise entre 0 et 1. Cependant, le risque représente le nombre attendu d'événements par unité de temps. 
 
-* Si le rapport de risque d'un prédicteur est proche de 1, alors ce prédicteur n'affecte pas la survie,
+* Si le rapport de risque (HR) d'un prédicteur est proche de 1, alors ce prédicteur n'affecte pas la survie,
 * si le HR est inférieur à 1, alors le prédicteur est protecteur (c'est-à-dire associé à une meilleure survie),
-* et si le HR est supérieur à 1, alors le prédicteur est associé à un risque accru (ou à une diminution de la survie).</span> 
+* et si le HR est supérieur à 1, alors le prédicteur est associé à un risque plus élevé (ou une diminution de la survie).</span> 
 
 ### Ajustement d'un modèle de Cox {.unnumbered}
 
@@ -490,19 +490,19 @@ Nous pouvons d'abord ajuster un modèle pour évaluer l'effet de l'âge et du se
 
   + les coefficients de régression estimés `coef` qui quantifient l'association entre les prédicteurs et le résultat,
   + leur exponentielle (pour faciliter l'interprétation, `exp(coef)`) qui produit le *rapport de risque*,
-  + leur erreur standard `se(coef)`,
-  + le z-score : combien d'erreurs standard le coefficient estimé est-il éloigné de 0,
+  + leur erreur type `se(coef)`,
+  + la cote z : combien d'erreurs type le coefficient estimé est-il éloigné de 0,
   + et la valeur p : la probabilité que le coefficient estimé puisse être 0.
   
 La fonction `summary()` appliquée à l'objet modèle de cox donne plus d'informations, comme l'intervalle de confiance du HR estimé et les différents résultats du test.
 
-L'effet de la première covariable `gender` est présenté dans la première ligne. `genderm` (masculin) est imprimé, ce qui implique que le premier niveau de strate ("f"), c'est-à-dire le groupe féminin, est le groupe de référence pour le sexe. Ainsi, l'interprétation du paramètre de test est celle des hommes par rapport aux femmes. La valeur p indique qu'il n'y a pas suffisamment de preuves d'un effet du sexe sur le risque attendu ou d'une association entre le sexe et la mortalité toutes causes confondues.
+L'effet de la première covariable `gender` est présenté dans la première ligne. `genderm` (masculin) est imprimé, ce qui implique que le premier niveau de strate ("f"), c'est-à-dire le groupe féminin, est le groupe de référence pour le sexe. Ainsi, l'interprétation du paramètre de test est celle des hommes par rapport aux femmes. La valeur p indique qu'il n'y a pas suffisamment de preuves d'un effet du sexe sur le risque attendu ou d'une association entre le sexe et la mortalité.
 
 Le même manque de preuves est noté concernant le groupe d'âge.
 
 ```{r coxmodel_agesex}
 
-#fitting the cox model
+#ajustement du modèle de cox
 linelistsurv_cox_sexage <- survival::coxph(
               Surv(futime, event) ~ gender + age_cat_small, 
               data = linelist_surv
@@ -513,7 +513,7 @@ linelistsurv_cox_sexage <- survival::coxph(
 linelistsurv_cox_sexage
 
 
-#sommaire du modèle
+#resumé du modèle
 summary(linelistsurv_cox_sexage)
 
 ```
@@ -529,7 +529,7 @@ test_ph_sexage
 ```
 
 
-<span style="color : black ;">**_NOTE:_** Un deuxième argument appelé *méthode* peut être spécifié lors du calcul du modèle de cox, qui détermine comment les liens sont traités. Le *défaut* est "efron", et les autres options sont "breslow" et "exact".</span>
+<span style="color : black ;">**_NOTE:_** Un deuxième argument appelé *method* peut être spécifié lors du calcul du modèle de cox, qui détermine comment les liens sont traités. Le *défaut* est "efron", et les autres options sont "breslow" et "exact".</span>
 
 Dans un autre modèle, nous ajoutons d'autres facteurs de risque tels que la source de l'infection et le nombre de jours entre la date d'apparition et l'admission. Cette fois, nous vérifions d'abord l'hypothèse des risques proportionnels avant de poursuivre.
 
@@ -537,7 +537,7 @@ Dans ce modèle, nous avons inclus un prédicteur continu (`days_onset_hosp`). D
 
 ```{r coxmodel_fit_ph, message=FALSE}
 
-#fit le modèle
+#ajuster le modèle
 linelistsurv_cox <- coxph(
                         Surv(futime, event) ~ gender + age_years+ source + days_onset_hosp,
                         data = linelist_surv
@@ -557,14 +557,14 @@ survminer::ggcoxzph(linelistsurv_ph_test)
 ```
 
 
-Les résultats du modèle indiquent qu'il existe une association négative entre la durée entre le début de la maladie et l'admission et la mortalité toutes causes confondues. Le risque attendu est 0,9 fois plus faible chez une personne qui est admise un jour plus tard qu'une autre, le sexe restant constant. Ou, de manière plus directe, une augmentation d'une unité de la durée entre le début de la maladie et l'admission est associée à une diminution de 10,7 % (`coef *100`) du risque de décès.
+Les résultats du modèle indiquent qu'il existe une association négative entre la durée entre le début de la maladie et l'admission et la mortalité. Le risque attendu est 0,9 fois plus faible chez une personne qui est admise un jour plus tard qu'une autre, le sexe restant constant. Ou, de manière plus directe, une augmentation d'une unité de la durée entre le début de la maladie et l'admission est associée à une diminution de 10,7 % (`coef *100`) du risque de décès.
 
 Les résultats montrent également une association positive entre la source d'infection et la mortalité toutes causes confondues. C'est-à-dire qu'il y a un risque accru de décès (1,21x) pour les patients qui ont eu une source d'infection autre que les funérailles.
 
 
 ```{r coxmodel_summary, message=FALSE}
 
-#imprimez le résumé du modèle
+#imprimer le résumé du modèle
 summary(linelistsurv_cox)
 
 ```
@@ -587,9 +587,9 @@ Nous devrions examiner et étudier pourquoi cette association existe dans les do
 
 <!-- ======================================================= -->
 
-### Forest plots {.unnumbered}
+### Graphiques en forêt {.unnumbered}
 
-Nous pouvons ensuite visualiser les résultats du modèle de cox en utilisant les parcelles forestières pratiques avec la fonction `ggforest()` du paquet **survminer**.
+Nous pouvons ensuite visualiser les résultats du modèle de cox en utilisant les graphiques en forêt pratiques avec la fonction `ggforest()` du paquet **survminer**.
 
 ```{r forestp}
 
@@ -610,12 +610,12 @@ Par exemple, vous travaillez peut-être avec des données cliniques où vous ave
 
 ### Configuration des covariables dépendantes du temps {.unnumbered} 
 
-L'analyse des covariables dépendantes du temps dans R nécessite la configuration d'un ensemble de données spécial. Si cela vous intéresse, consultez l'article plus détaillé de l'auteur du paquet **survival** [Using Time Dependent Covariates and Time Dependent Coefficients in the Cox Model](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf).
+L'analyse des covariables dépendantes du temps dans R nécessite la configuration d'un jeu de données spécial. Si cela vous intéresse, consultez l'article plus détaillé de l'auteur du paquet **survival** [Using Time Dependent Covariates and Time Dependent Coefficients in the Cox Model](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf).
 
 Pour cela, nous allons utiliser un nouvel ensemble de données du package `SemiCompRisks` nommé `BMT`, qui comprend des données sur 137 patients ayant subi une greffe de moelle osseuse. Les variables sur lesquelles nous allons nous concentrer sont :  
 
 * `T1` - temps (en jours) jusqu'au décès ou au dernier suivi.  
-* `delta1` - indicateur de décès ; 1-Dead, 0-Alive  
+* `delta1` - indicateur de décès ; 1-Mort, 0-Vivant  
 * `TA` - temps (en jours) jusqu'à la maladie aiguë du greffon contre l'hôte.  
 * `deltaA` - indicateur de la maladie aiguë du greffon contre l'hôte ;  
   * 1 - Développement d'une réaction aiguë du greffon contre l'hôte.  
@@ -629,7 +629,7 @@ data(BMT, package = "SemiCompRisks")
 
 #### Ajouter l'identifiant unique du patient {.unnumbered}  
 
-Il n'y a pas de colonne d'identifiant unique dans les données `BMT`, ce qui est nécessaire pour créer le type de jeu de données que nous voulons. Nous utilisons donc la fonction `rowid_to_column()` du paquet **tidyverse** **tibble** pour créer une nouvelle colonne d'identification appelée `my_id` (ajoute une colonne au début du cadre de données avec des identifiants de ligne séquentiels, en commençant par 1). Nous nommons le cadre de données `bmt`.  
+Il n'y a pas de colonne d'identifiant unique dans les données `BMT`, ce qui est nécessaire pour créer le type de jeu de données que nous voulons. Nous utilisons donc la fonction `rowid_to_column()` du paquet **tidyverse** **tibble** pour créer une nouvelle colonne d'identification appelée `my_id` (ça ajoute une colonne au début du cadre de données avec des identifiants de ligne séquentiels, en commençant par 1). Nous nommons le cadre de données `bmt`.  
 
 ```{r}
 bmt <- rowid_to_column(BMT, "my_id")
@@ -641,7 +641,7 @@ L'ensemble de données ressemble maintenant à ceci :
 DT::datatable(bmt, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
 ```
 
-#### Développer les lignes de patients {.unnumbered} 
+#### Élargir les lignes de patients {.unnumbered} 
 
 Ensuite, nous allons utiliser la fonction `tmerge()` avec les fonctions d'aide `event()` et `tdc()` pour créer le jeu de données restructuré. Notre but est de restructurer l'ensemble de données pour créer une ligne séparée pour chaque patient pour chaque intervalle de temps où ils ont une valeur différente pour `deltaA`. Dans ce cas, chaque patient peut avoir au maximum deux lignes selon qu'il a développé ou non une maladie aiguë du greffon contre l'hôte pendant la période de collecte des données. Nous appellerons notre nouvel indicateur de développement de la maladie aiguë du greffon contre l'hôte `agvhd`.
 
@@ -681,7 +681,7 @@ Maintenant, certains de nos patients ont deux lignes dans l'ensemble de données
 
 ### Régression de Cox avec covariables dépendantes du temps {.unnumbered} 
 
-Maintenant que nous avons remodelé nos données et ajouté la nouvelle variable `aghvd` dépendante du temps, ajustons un simple modèle de régression de Cox à variable unique. Nous pouvons utiliser la même fonction `coxph()` que précédemment, nous devons juste changer notre fonction `Surv()` pour spécifier à la fois le temps de début et de fin pour chaque intervalle en utilisant les arguments `time1 = ` et `time2 = `. 
+Maintenant que nous avons remodelé nos données et ajouté la nouvelle variable `aghvd` dépendante du temps, ajustons un simple modèle de régression de Cox à variable unique. Nous pouvons utiliser la même fonction `coxph()` que précédemment, nous devons juste changer notre fonction `Surv()` pour spécifier le temps de début et de fin pour chaque intervalle en utilisant les arguments `time1 = ` et `time2 = `. 
 
 
 ```{r}
@@ -701,7 +701,7 @@ ggforest(bmt_td_model, data = td_dat)
 
 ```
 
-Comme vous pouvez le constater à partir du diagramme forestier, de l'intervalle de confiance et de la valeur p, il ne semble pas y avoir de forte association entre le décès et la maladie aiguë du greffon contre l'hôte dans le contexte de notre modèle simple. 
+Comme vous pouvez le constater à partir du graphique en forêt, de l'intervalle de confiance et de la valeur p, il ne semble pas y avoir de forte association entre le décès et la maladie aiguë du greffon contre l'hôte dans le contexte de notre modèle simple. 
 
 <!-- ======================================================= -->
 ## Ressources { }
