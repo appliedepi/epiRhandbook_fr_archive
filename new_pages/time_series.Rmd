@@ -577,7 +577,7 @@ model <- glm_nb_model(
     fourier)
 
 ## ajustez votre modèle en utilisant le jeu de données de comptage
-fitted_model <- trending::fit(model, counts)
+fitted_model <- trending::fit(model, data.frame(counts))
 
 ### calculer les intervalles de confiance et les intervalles de prédiction 
 observed <- predict(fitted_model, simulate_pi = FALSE)
@@ -711,7 +711,7 @@ model <- glm_nb_model(
     )
 
 ## ajustez votre modèle en utilisant l'ensemble de données de comptage
-fitted_model <- trending::fit(model, counts)
+fitted_model <- trending::fit(model, data.frame(counts))
 
 ### calculer les intervalles de confiance et les intervalles de prédiction 
 observed <- predict(fitted_model, simulate_pi = FALSE)
@@ -979,7 +979,7 @@ pred_data <- pluck(dat, 1) %>%
   select(case_int, epiweek, fourier)
 
 # ajustement du modèle 
-fitted_model <- trending::fit(model, fitting_data)
+fitted_model <- trending::fit(model, data.frame(fitting_data))
 
 # obtenir le confint et les estimations pour les données ajustées
 observed <- fitted_model %>% 
@@ -987,7 +987,7 @@ observed <- fitted_model %>%
 
 # prévoir avec les données que l'on veut prévoir avec 
 forecast <- fitted_model %>% 
-  predict(pred_data, simulate_pi = FALSE)
+  predict(data.frame(pred_data), simulate_pi = FALSE)
 
 ## combiner les ensembles de données de base et prédits
 observed <- bind_rows(observed, forecast)
@@ -1189,11 +1189,11 @@ forecasts <- purrr::map(unique(case_roll$.id),
   pred_data <- pluck(dat, 1)
   
   # ajuster le modèle 
-  fitted_model <- trending::fit(model, fitting_data)
+  fitted_model <- trending::fit(model, data.frame(fitting_data))
   
   # prévoir avec les données que l'on veut prédire avec 
   forecasts <- fitted_model %>% 
-    predict(pred_data, simulate_pi = FALSE) %>% 
+    predict(data.frame(pred_data), simulate_pi = FALSE) %>% 
     ## garder seulement la semaine et l'estimation de la prévision
     select(epiweek, estimate)
     
@@ -1487,7 +1487,7 @@ model <- glm_nb_model(
     )
 
 ## ajustez votre modèle en utilisant l'ensemble de données de comptage
-fitted_model <- trending::fit(model, counts)
+fitted_model <- trending::fit(model, data.frame(counts))
 
 ### calculer les intervalles de confiance et les intervalles de prédiction 
 observed <- predict(fitted_model, simulate_pi = FALSE)

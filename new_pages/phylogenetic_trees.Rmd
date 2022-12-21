@@ -376,7 +376,7 @@ p1 # imprime
 Maintenant nous pouvons faire tourner le noeud 37 dans l'objet `p1` de sorte que les échantillons sur le noeud 38 se déplacent vers le haut. Nous enregistrons l'arbre pivoté dans un nouvel objet `p2`.
 
 ```{r}
-p2 <- rotate(p1, 37) + 
+p2 <- ggtree::rotate(p1, 37) + 
       ggtitle("Rotated Node 37")
 
 

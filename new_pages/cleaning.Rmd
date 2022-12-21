@@ -39,7 +39,7 @@ Fonctions **tidyselect**|utiliser la logique pour sélectionner des colonnes|**t
 `case_when()`|re-coder les valeurs d'une colonne en utilisant des critères logiques plus complexes|**dplyr** 
 `replace_na()`, `na_if()`, `coalesce()`|des fonctions spéciales pour le recodage|**tidyr**  
 `age_categories()` et `cut()`|créer des groupes catégoriels à partir d'une colonne numérique|**epikit** et **base** R
-`clean_variable_spelling()`|re-coder/nettoyer des valeurs en utilisant un dictionnaire de données|**linelist**
+`match_df()`|re-coder/nettoyer des valeurs en utilisant un dictionnaire de données|**matchmaker**
 `which()`|application de critères logiques ; retourne des indices|**base** R
 
 Si vous souhaitez comparer ces fonctions aux commandes de Stata ou de SAS, consultez la page [Transition vers R](#transition_to_r).  
@@ -97,6 +97,7 @@ pacman::p_load(
   janitor,    # nettoyage des données et tables
   lubridate,  # manipuler les dates
   epikit,     # age_categories() fonction
+  matchmaker, # nettoyage basé sur un dictionnaire
   tidyverse   # manipulation et visualisation  des donnees 
 )
 ```
@@ -982,15 +983,36 @@ Par exemple, ici nous utilisons les colonnes `age` et `age_unit` pour créer une
 linelist <- linelist %>% 
   mutate(age_years = case_when(
             age_unit == "years"  ~ age,       # Si l'age est donné en années
-            age_unit == "months" ~ age/12,    # si age est donnée en mois
-            is.na(age_unit)      ~ age,       # Si age unit est à une valeur maquante remplacons par l'age
-            TRUE                 ~ NA_real_)) # toute valeur non prise en compte par ces conditions seront consideres commme valeur manquante 
+            age_unit == "months" ~ age/12,    # si l'age est donnée en mois, divise par 12
+            is.na(age_unit)      ~ age))      # Si l'unite d'age est une valeur maquante, garde comme années
+                                              # toute valeur non prise en compte par ces conditions seront consideres commme valeur NA (manquante)
 ```
 
 
-Lorsque chaque ligne des données est évaluée, les critères sont appliqués/évalués dans l'ordre où les instructions "case_when()`" sont écrites - de haut en bas. Si le premier critère est évalué à `TRUE` pour une ligne donnée, la valeur CD est attribuée, et les autres critères ne sont même pas testés pour cette ligne. Il est donc préférable d'écrire les critères les plus restrictifs en premier, et les plus généraux en dernier.  
+Lorsque chaque ligne des données est évaluée, les critères sont appliqués/évalués dans l'ordre où les instructions `case_when()` sont écrites - de haut en bas. Si le premier critère est évalué à `TRUE` pour une ligne donnée, la valeur CD est attribuée, et les autres critères ne sont même pas testés pour cette ligne. Il est donc préférable d'écrire les critères les plus restrictifs en premier, et les plus généraux en dernier. Une ligne de données qui ne répond à aucun des critères de droite se verra attribuer la valeur "NA" (manquante).   
 
-Dans le même ordre d'idées, dans votre dernière ligne de code, placez `TRUE` sur le côté gauche, ce qui permettra de capturer toute ligne qui ne répond à aucun des critères précédents. Le côté droit de cette déclaration pourrait se voir attribuer une valeur comme "vérifiez-moi !" ou manquante.  
+Parfois, vous pouvez écrire une instruction finale qui attribue une valeur pour tous les autres scénarios non décrits par l'une des lignes précédentes. Pour faire cela, placez `TRUE` sur le côté gauche, ce qui permettra de capturer toute ligne qui ne répond à aucun des critères précédents. Le côté droit de cette déclaration pourrait se voir attribuer une valeur comme "vérifiez-moi !" ou manquante.  
+
+Voici un autre exemple de `case_when()` utilisé pour créer une nouvelle colonne avec la classification du patient, selon une définition de cas pour les cas confirmés et suspectés :  
+
+
+```{r, eval=F}
+linelist <- linelist %>% 
+     mutate(case_status = case_when(
+          
+          # si le patient a fait un test de laboratoire et le test est positif,
+          # il est marqué comme un cas confirmé 
+          ct_blood < 20                   ~ "Confirmed",
+          
+          # étant donné qu'un patient n'a pas de résultat de laboratoire positif,
+          # si le patient a une "source" (lien épidémiologique) ET a de la fièvre, 
+          # alors il est considéré comme un cas suspect
+          !is.na(source) & fever == "yes" ~ "Suspect",
+          
+          # tout autre patient non traité ci-dessus 
+          # est marqué pour un suivi
+          TRUE                            ~ "To investigate"))
+```
 
 
 <span style="color: red;">**_DANGER:_** **Les valeurs du côté droit doivent toutes être de la même classe** - soit numérique, caractère, date, logique, etc. Pour attribuer des valeurs manquantes (`NA`), Il est dnas certaine situation important d'utiliser  des variantes spéciales de `NA` telles que `NA_caracter_`, `NA_real_` (pour les numériques ou POSIX), et `as.Date(NA)`. Pour en savoir plus, lisez [Manipuler les dates](#working_dates).</span>  
@@ -1057,7 +1079,7 @@ linelist <- linelist %>%
 
 ### Dictionnaire contenant les parametres de nettoyage {.unnumbered}
 
-Utilisez le package **linelist** et sa fonction `clean_variable_spelling()` pour nettoyer un dataframe avec un *dictionnaire de nettoyage*. **linelist** est un package développé par [RECON](https://github.com/reconhub/linelist) - le R Epidemics Consortium.  
+Utilisez le package **matchmaker** et sa fonction `match_df()` pour nettoyer un dataframe avec un *dictionnaire de nettoyage*. 
 
 1) Créez un dictionnaire de nettoyage avec 3 colonnes :  
     * Une colonne "from" (la valeur incorrecte)  
@@ -1066,7 +1088,7 @@ Utilisez le package **linelist** et sa fonction `clean_variable_spelling()` pour
 
 Remarque : les entrées du dictionnaire .global seront remplacées par les entrées du dictionnaire spécifiques à la colonne.  
 
-```{r, fig.align = "center", out.width = "100%", echo=F}
+```{r, fig.align = "center", out.width = "75%", echo=F}
 knitr::include_graphics(here::here("images", "cleaning_dict.png"))
 ```
 
@@ -1081,14 +1103,19 @@ cleaning_dict <- rio::import(here("data", "case_linelists", "cleaning_dict.csv")
 cleaning_dict <- rio::import("cleaning_dict.csv")
 ```
 
-3) Passez le jeu de donnée brute linelist  à `clean_variable_spelling()`, en spécifiant à `wordlists = ` le dataframe du dictionnaire de nettoyage. L'argument `spelling_vars = ` peut être utilisé pour spécifier quelle colonne du dictionnaire fait référence aux colonnes (3ème par défaut), ou peut être defini comme `NULL` pour que le dictionnaire s'applique à toutes les colonnes de caractères et de facteurs. Notez que cette fonction peut prendre beaucoup de temps à s'exécuter.  
+3) Pipez le jeu de donnée brute linelist à `match_df()`, en spécifiant à `dictionary = ` le dataframe du dictionnaire de nettoyage.L'argument `from = ` doit être le nom de la colonne du dictionnaire qui contient les "anciennes" valeurs, l'argument `by = ` doit être la colonne du dictionnaire qui contient les "nouvelles" valeurs correspondantes, et la troisième colonne indique la colonne dans laquelle effectuer le changement. Utilisez `.global` dans la colonne `by = ` pour appliquer un changement à toutes les colonnes. Une quatrième colonne de dictionnaire `order` peut être utilisée pour spécifier l'ordre des facteurs des nouvelles valeurs.  
+Vous trouverez plus de détails dans la [documentation du package](https://cran.r-project.org/web/packages/matchmaker/vignettes/intro.html) en exécutant `?match_df`. Notez que l'exécution de cette fonction peut prendre beaucoup de temps pour un grand jeu de données.  
 
 ```{r}
-linelist <- linelist %>% 
-  linelist::clean_variable_spelling(
-    wordlists = cleaning_dict,
-    spelling_vars = "col",        # dict colonne contenant les noms de colonnes , par defaut  à la 3éme dans  dict
+
+linelist <- linelist %>% # fournissez ou pipez votre jeu de données
+     matchmaker::match_df(
+          dictionary = cleaning_dict, # nom de votre dictionnaire
+          from = "from", # colonne avec les valeurs à remplacer (par défaut, col 1)
+          to = "to", # colonne avec les valeurs finales (par défaut col 2)
+          by = "col", # colonne avec les noms de colonnes (par défaut col 3)
   )
+
 ```
 
 Maintenant, faites défiler vers la droite pour voir comment les valeurs ont changé - en particulier le `genre`(de minuscule à majuscule), et toutes les colonnes de symptômes ont été transformées de oui/non à 1/0.  
@@ -1107,7 +1134,7 @@ Notez que les noms de vos colonnes dans le dictionnaire de nettoyage doivent cor
 
 #### Ajouter à la chaine de commande pipé{.unnumbered}  
 
-**Ci dessous quelques nouveaux colonneset des transformations operes sur les colonnes existantes sont implementés dans la chaine pipé.**  
+**Ci dessous quelques nouveaux colonnes et des transformations operes sur les colonnes existantes sont implementés dans la chaine pipé.**  
 
 ```{r}
 # NETTOYAGE: enchainement de commandes  'PIPE'  (debute avec la donnée brute  et le  pipe avec les commandes pour le nettoyage)
@@ -1527,8 +1554,7 @@ linelist <- linelist_raw %>%
     mutate(age_years = case_when(
           age_unit == "years" ~ age,
           age_unit == "months" ~ age/12,
-          is.na(age_unit) ~ age,
-          TRUE ~ NA_real_)) %>% 
+          is.na(age_unit) ~ age)) %>% 
   
     # CI DESSUS LES ETAPES DU NETTOYAGE DEJA ABORDEES EN AMONT
     ###################################################   
@@ -1834,8 +1860,7 @@ linelist <- linelist_raw %>%
     mutate(age_years = case_when(
           age_unit == "years" ~ age,
           age_unit == "months" ~ age/12,
-          is.na(age_unit) ~ age,
-          TRUE ~ NA_real_)) %>% 
+          is.na(age_unit) ~ age)) %>% 
   
     mutate(
           # age classe: definition

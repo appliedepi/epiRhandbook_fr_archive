@@ -214,7 +214,7 @@ Ensuite, nous utilisons `clean_names()` du package **janitor** pour normaliser l
 ```{r}
 # ADM3 level clean
 sle_adm3 <- sle_adm3_raw %>%
-  clean_names() %>% # normaliser les noms de colonnes
+  janitor::clean_names() %>% # normaliser les noms de colonnes
   filter(admin2name %in% c("Western Area Urban", "Western Area Rural")) # filtre pour garder certaines zones
 ```
 
@@ -238,7 +238,7 @@ Ces données peuvent être téléchargées sur HDX (lien [ici](https://data.humd
 ```{r}
 # Population par ADM3
 sle_adm3_pop <- import(here("data", "gis", "population", "sle_admpop_adm3_2020.csv")) %>%
-  clean_names()
+  janitor::clean_names()
 ```
 
 Voici à quoi ressemble le fichier de la population. Faites défiler vers la droite pour voir comment chaque juridiction a des colonnes avec la population "masculine", la population "féminine", la population "totale", et la répartition de la population en colonnes par groupe d'âge.  
@@ -261,7 +261,7 @@ Nous importons le shapefile des points des établissements avec `read_sf()`, net
 ```{r}
 #  Les donnees shapefiles de OSM sur  les infractuctures sanitaires 
 sle_hf <- sf::read_sf(here("data", "gis", "shp", "sle_hf.shp")) %>% 
-  clean_names() %>%
+  janitor::clean_names() %>%
   filter(amenity %in% c("hospital", "clinic", "doctors"))
 ```
 

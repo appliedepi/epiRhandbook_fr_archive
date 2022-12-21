@@ -69,6 +69,7 @@ linelist_case_data <- rio::import(here::here("data", "case_linelists", "linelist
 
 ```{r eval=F}
 # importer la liste linéaire
+
 linelist_case_data <- rio::import("linelist_cleaned.rds")
 ```
 
@@ -285,6 +286,7 @@ print(linelistsurv_fit, print.rmean = TRUE)
 <span style="color : darkgreen ;">**_ASTUCE:_** Nous pouvons créer l'objet *surv* directement dans la fonction `survfit()` et sauvegarder une ligne de code. Cela ressemblera alors à : `linelistsurv_quick <- survfit(Surv(futime, event) ~ 1, data=linelist_surv)`.</span>
 
 
+
 ### Risque cumulé {.unnumbered}  
 
 Outre la fonction `summary()`, nous pouvons également utiliser la fonction `str()` qui donne plus de détails sur la structure de l'objet `survfit()`. Il s'agit d'une liste de 16 éléments.  
@@ -454,7 +456,7 @@ ggsurvplot(
   data = linelist_surv,
   size = 1, linetype = "strata", # types de lignes
   conf.int = T,
-  surv.scale = "percentage",  
+  surv.scale = "percent",  
   break.time.by = 10, 
   xlab = "Jours de suivi",
   ylab= "Probabilité de survie",
@@ -606,7 +608,7 @@ Dans la dernière section, nous avons abordé l'utilisation de la régression de
 
 Que se passe-t-il si vous vous intéressez à une covariable qui est mesurée **après** le début du suivi ? Ou, que se passe-t-il si vous avez une covariable qui peut changer dans le temps ?
 
-Par exemple, vous travaillez peut-être avec des données cliniques où vous avez répété les mesures des valeurs de laboratoire de l'hôpital qui peuvent changer dans le temps. C'est un exemple de **covariable dépendante du temps**. Pour résoudre ce problème, vous avez besoin d'une configuration spéciale, mais heureusement, le modèle cox est très flexible et ce type de données peut également être modélisé avec les outils du paquet **survival**. 
+Par exemple, vous travaillez peut-être avec des données cliniques où vous avez répété les mesures des valeurs de laboratoire de l'hôpital qui peuvent changer dans le temps. C'est un exemple de **Covariable Dépendante du Temps**. Pour résoudre ce problème, vous avez besoin d'une configuration spéciale, mais heureusement, le modèle cox est très flexible et ce type de données peut également être modélisé avec les outils du paquet **survival**. 
 
 ### Configuration des covariables dépendantes du temps {.unnumbered} 
 
@@ -638,7 +640,7 @@ bmt <- rowid_to_column(BMT, "my_id")
 L'ensemble de données ressemble maintenant à ceci :  
 
 ```{r message=FALSE, echo=F}
-DT::datatable(bmt, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+DT::datatable(bmt, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
 #### Élargir les lignes de patients {.unnumbered} 

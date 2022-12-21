@@ -7,8 +7,10 @@
 Cette page démontre l'utilisation de plusieurs packages pour l'analyse d'enquêtes. 
 
 
+
 La plupart des paquets R d'enquête reposent sur le paquet [**survey**](https://cran.r-project.org/web/packages/survey/index.html) pour effectuer des analyses pondérées. 
 Nous utiliserons **survey** ainsi que [**srvyr**](https://cran.r-project.org/web/packages/srvyr/index.html) (une enveloppe pour **survey** permettant un codage de type tidyverse) et [**gtsummary**](https://cran.r-project.org/web/packages/gtsummary/index.html) (une enveloppe pour **survey** permettant de créer des tableaux prêts à être publiés).Bien que le paquet original **survey** ne permette pas le codage de style tidyverse, tidyverse, il présente l'avantage supplémentaire d'autoriser les modèles linéaires généralisés pondérés par les pondérés par les enquêtes (qui seront ajoutés à cette page à une date ultérieure). Nous allons également démontrer l'utilisation d'une fonction du paquet [**sitrep**](https://github.com/R4EPI/sitrep) pour créer des poids d'échantillonnage (*n.b* ce paquet n'est pas encore sur CRAN, mais peut être installé à partir de github).
+
 
 La plupart de cette page est basée sur le travail effectué pour le projet ["R4Epis"](https://r4epis.netlify.app/) ; pour le code détaillé et les modèles R-markdown, voir la page github ["R4Epis"] (https://github.com/R4EPI/sitrep). Une partie du code basé sur le paquet **survey** est basé sur les premières versions de [Études de cas EPIET](https://github.com/EPIET/RapidAssessmentSurveys).
 
@@ -61,6 +63,7 @@ L'ensemble de données d'exemple utilisé dans cette section :
 - comptes de population fictifs pour la zone d'enquête. 
 - Dictionnaire de données pour les données fictives de l'enquête sur la mortalité. 
 
+
 Ceci est basé sur l'enquête pré-approuvée par le comité d'examen éthique de MSF OCA. Le site données fictives ont été produites dans le cadre du projet ["R4Epis"](https://r4epis.netlify.app/). 
 Tout ceci est basé sur les données collectées à l'aide de [KoboToolbox](https://www.kobotoolbox.org/), qui est un logiciel de collecte de données basé sur [Open Data Kit](https://opendatakit.org/).
 
@@ -73,7 +76,7 @@ Kobo vous permet d'exporter à la fois les données collectées et le dictionnai
 - voir la section sur les données d'enquête ci-dessous pour fusionner les différents niveaux.</span>
 
 
-Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. Consultez la page [Importation et exportation](https://epirhandbook.com/import-and-export.html) pour connaître les différentes façons d'importer des données.
+Le jeu de données est importé à l'aide de la fonction `import()` du paquet **rio**. Consultez la page [Importation et exportation](#import_export) pour connaître les différentes façons d'importer des données.
 
 ```{r echo = FALSE}
 # Importez l'enquête dans R
@@ -549,7 +552,7 @@ left_join(ag, propcount, by = "age_group", suffix = c("", "_pop")) %>%
 
 ### Pyramides démographiques 
 
-Les pyramides démographiques (ou âge-sexe) sont un moyen facile de visualiser la distribution dans la population de votre enquête. Il est également intéressant de créer des [tableaux descriptifs](#descriptive_tables) et le sexe par strates d'enquête. Nous allons démontrer l'utilisation du paquet **apyramide** car il permet de pondérées en utilisant notre objet de conception d'enquête créé ci-dessus. Autres options pour créer [pyramides démographiques](#age_pyramid) sont traitées en détail dans ce chapitre du manuel. Nous utiliserons également une fonction wrapper de **sitrep** appelée `plot_age_pyramid()` qui permet de gagner quelque lignes de code pour produire un graphique avec des proportions. 
+Les pyramides démographiques (ou âge-sexe) sont un moyen facile de visualiser la distribution dans la population de votre enquête. Il est également intéressant de créer des [tableaux descriptifs](#descriptive_tables) et le sexe par strates d'enquête. Nous allons démontrer l'utilisation du paquet **apyramide** car il permet de pondérées en utilisant notre objet de conception d'enquête créé ci-dessus. Autres options pour créer [pyramides démographiques](#age_pyramid) sont traitées en détail dans ce chapitre du manuel. Nous utiliserons également une fonction wrapper de **apyramid** appelée `age_pyramid()` qui permet de gagner quelque lignes de code pour produire un graphique avec des proportions. 
 
 Comme pour le test binomial formel de différence, vu plus haut dans la section sur le biais d'échantillonnage, nous sommes intéressés ici à visualiser si notre population échantillonnée 
 est sensiblement différente de la population source et si la pondération corrige cette différence. Pour ce faire, nous allons utiliser le paquet **patchwork** pour montrer nos visualisations **ggplot** côte à côte ; pour plus de détails, voir la section sur la combinaison de tracés dans le chapitre du manuel [Astuces de ggplot](#ggplot_tips) du manuel. Nous allons visualiser notre population source, notre population d'enquête non pondérée et notre population d'enquête pondérée. Vous pouvez également envisager de visualiser chaque strate de votre enquête, pars exemple ici, en utilisant l'argument `stack_by = "health_district"` (voir `?plot_age_pyramid` pour plus de détails). 
@@ -617,7 +620,7 @@ source_population <- population %>%.
   
   
 ## Tracez l'échantillon de population non pondéré 
-sample_population <- plot_age_pyramid(survey_data, 
+sample_population <- age_pyramid(survey_data, 
                  age_group = "age_group", 
                  split_by = "sex",
                  proportion = TRUE) + 
@@ -636,7 +639,7 @@ weighted_population <- survey_design %>%
   ## S'assurer que les variables sont des facteurs
   mutate(age_group = factor(age_group), 
          sex = facteur(sex)) %>%
-  plot_age_pyramid(
+  age_pyramid(
     age_group = "age_group",
     split_by = "sex", 
     proportion = TRUE) +
@@ -677,12 +680,8 @@ noms différents, y compris alluvial, sankey et ensembles parallèles - les dét
 ## résumer les données
 flow_table <- survey_data %>%
   count(startcause, endcause, sex) %>% # obtenir des comptages 
-  gather_set_data(x = c("startcause", "endcause")) %>% # changer de format pour le tracé
-  mutate(x = fct_relevel(x, c("startcause", "endcause")), # définit startcause comme premier niveau
-         x = fct_recode(x, 
-                        "Start \n cause" = "startcause", # ajouter un saut de ligne (\n) après le début
-                        "End \n cause" = "endcause")
-        )
+  gather_set_data(x = c("startcause", "endcause")) # changer de format pour le tracé
+
 
 
 ## Tracez votre ensemble de données 
@@ -697,19 +696,9 @@ ggplot(flow_table, aes(x, id = id, split = y, value = n)) +
   geom_parallel_sets_axes(axis.width = 0.15, fill = "grey80", color = "grey80") + ## changer la couleur du texte et l'angle de l'étiquette.
   ## changer la couleur et l'angle du texte (doit être ajusté)
   geom_parallel_sets_labels(color = "black", angle = 0, size = 5) + ## ajuster la couleur et l'angle du texte (doit être ajusté)
-  ## ajustement des axes y et x (il faut probablement plus d'espace vertical)
-  scale_x_discrete(name = NULL, expand = c(0, 0.2)) + 
   ## suppression des étiquettes d'axe
-  theme(
-    title = element_text(size = 26),
-    text = element_text(size = 26),
-    axis.line = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text.y = element_blank(),
-    panel.background = element_blank(),
-    legend.position = "bottom", # déplace la légende vers le bas
-    legend.title = element_blank(), # supprimer le titre
-  )
+  theme_void()+
+  theme(legend.position = "bottom")
 
 ```
 

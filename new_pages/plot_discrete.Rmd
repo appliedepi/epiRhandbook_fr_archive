@@ -16,10 +16,10 @@ linelist <- linelist %>%
   mutate(hospital = fct_relevel(hospital, 
                                 c("St. Mark's Maternity Hospital (SMMH)", 
                                   "Port Hospital", 
-                                  "Hôpital central",
-                                  "Hôpital militaire",
-                                  "Autre",
-                                  "Manquant")))
+                                  "Central Hospital",
+                                  "Military Hospital",
+                                  "Other",
+                                  "Missing")))
 
 
 ggplot(linelist %>% drop_na(outcome)) + 
@@ -89,7 +89,7 @@ class(linelist$hospital)
 
 # Regardez les valeurs contenues dans la colonne hospital
 linelist %>% 
-  tabyl(hôpital)
+  tabyl(hospital)
 
 ```
 
@@ -97,7 +97,7 @@ Nous pouvons voir que les valeurs contenues dans la colonne sont des caractères
 
 
 ```{r}
-# Convertir en facteur et définir l'ordre des niveaux pour que "Autre" et "Manquant" soient les derniers.
+# Convertir en facteur et définir l'ordre des niveaux pour que "Other" et "Missing" soient les derniers.
 linelist <- linelist %>% 
   mutate(
     hospital = fct_relevel(hospital, 
@@ -132,7 +132,7 @@ Ou en utilisant d'autres paquets de gestion de données tels que dplyr. Dans cet
 ```{r}
 #Méthode Dplyr
   outcome_n <- linelist %>% 
-    group_by(résultat) %>% 
+    group_by(outcome) %>% 
     count %>% 
     ungroup() %>% # Dégroupement pour que la proportion soit sur le total
     mutate(proportion = n/sum(n)*100) # Calculer le pourcentage
@@ -159,7 +159,7 @@ outcome_n <- outcome_n %>%
 <!-- ======================================================= -->
 ## Tracer avec ggplot2 { }
 
-Voir la page [ggplot basics] pour les principes fondamentaux, et la page [ggplot tips] pour les techniques plus avancées.  
+Voir la page [Les bases de ggplot](#ggplot_basics) pour les principes fondamentaux, et la page [Trucs et Astuces avec ggplot](#ggplot_tips) pour les techniques plus avancées.  
 
 
 
@@ -211,8 +211,8 @@ head(outcome_n2) #Examen des données
 
 Nous créons ensuite le ggplot avec quelques mises en forme supplémentaires :
 
-  * **Axis flip** : Nous avons inversé les axes avec `coord_flip()` pour pouvoir lire les noms des hôpitaux.
-  * **Columns side-by-side** : Ajout d'un argument `position = "dodge"` pour que les barres pour la mort et la récupération soient présentées côte à côte plutôt qu'empilées. Notez que les barres empilées sont la valeur par défaut.
+  * **Retournement de l'axe** : Nous avons inversé les axes avec `coord_flip()` pour pouvoir lire les noms des hôpitaux.
+  * **Colonnes côte à côte** : Ajout d'un argument `position = "dodge"` pour que les barres pour la mort et la récupération soient présentées côte à côte plutôt qu'empilées. Notez que les barres empilées sont la valeur par défaut.
   * **Largeur de colonne** : Spécifié 'width', donc les colonnes sont deux fois moins larges que la largeur maximale possible.
   * **Ordre des colonnes** : Inversez l'ordre des catégories sur l'axe des ordonnées pour que 'Autre' et 'Manquant' soient en bas, avec `scale_x_discrete(limits=rev)`. Notez que nous avons utilisé cette méthode plutôt que `scale_y_discrete` parce que l'hôpital est indiqué dans l'argument `x` de `aes()`, même si visuellement il est sur l'axe des ordonnées. Nous faisons cela parce que Ggplot semble présenter les catégories à l'envers, sauf si nous lui disons de ne pas le faire.  
   * **Autres détails** : Étiquettes/titres et couleurs ajoutés dans `labs` et `scale_fill_color` respectivement.

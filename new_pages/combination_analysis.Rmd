@@ -17,20 +17,10 @@ linelist_sym <- linelist %>%
 linelist_sym_2 <- linelist_sym %>% 
   
   # convertir les valeurs "oui" et "non" en le nom du symptôme lui-même
-  mutate(fever = case_when(fever == "yes" ~ 1, # si l'ancienne valeur est "oui", la nouvelle valeur est "fever"
-                           TRUE ~ 0), # si l'ancienne valeur est autre que "yes", la nouvelle valeur est NA
-         
-         chills = case_when(chills == "yes" ~ 1,
-                           TRUE ~ 0),
-         
-         cough = case_when(cough == "yes" ~ 1,
-                           TRUE ~ 0),
-         
-         aches = case_when(aches == "yes" ~ 1,
-                           TRUE ~ 0),
-         
-         vomit = case_when(vomit == "yes" ~ 1,
-                           TRUE ~ 0))
+   mutate(across(.cols = c(fever, chills, cough, aches, vomit),
+                 .fns = ~+(.x == "yes")))   
+     
+  #mutate(across(c("fever", "chills", "cough", "aches", "vomit"), ~ifelse(.x = "yes", colnames(.)[which(colnames(.) == "fever")], 0)))  
 
 # Créer le graphique
 UpSetR::upset(
@@ -122,27 +112,11 @@ Pour s'aligner sur le format attendu par **ggupset**, nous convertissons les "ye
 linelist_sym_1 <- linelist_sym %>% 
   
   # convertissez les valeurs "oui" et "non" dans le nom du symptôme lui-même
-  mutate(
-    fever = case_when(
-      fever == "yes" ~ "fever", # si l'ancienne valeur est "oui", la nouvelle valeur est "fever".
-      TRUE           ~ NA_character_), # si l'ancienne valeur est autre que "oui", la nouvelle valeur est NA
-         
-    chills = case_when(
-       chills == "yes" ~ "chills",
-       TRUE           ~ NA_character_),
-    
-    cough = case_when(
-      cough == "yes" ~ "cough",
-      TRUE           ~ NA_character_),
-         
-    aches = case_when(
-      aches == "yes" ~ "aches",
-      TRUE           ~ NA_character_),
-         
-    vomit = case_when(
-      vomit == "yes" ~ "vomit",
-      TRUE           ~ NA_character_)
-    )
+  mutate(fever = ifelse(fever == "yes", "fever", NA), 
+       chills = ifelse(chills == "yes", "chills", NA),
+       cough = ifelse(cough == "yes", "cough", NA),
+       aches = ifelse(aches == "yes", "aches", NA),
+       vomit = ifelse(vomit == "yes", "vomit", NA))
 ```
 
 Maintenant, nous faisons deux dernières colonnes :  
@@ -154,7 +128,7 @@ Voir la page sur [Caractères et chaînes de caractères] pour en savoir plus su
 
 ```{r, warning=F, message=F}
 linelist_sym_1 <- linelist_sym_1 %>% 
-  unite(col = "all_symptoms",
+  unit(col = "all_symptoms",
         c(fever, chills, cough, aches, vomits), 
         sep = " ; ",
         remove = TRUE,
@@ -193,7 +167,7 @@ scale_x_upset(
   reverse = FALSE,
   n_intersections = 10,
   sets = c("fever", "chills", "cough", "aches", "vomits"))+
-labos(
+labs(
   title = "Signes et symptômes",
   subtitle = "Les 10 combinaisons les plus fréquentes de signes et de symptômes",
   caption = "Caption here.",
@@ -222,39 +196,32 @@ pacman::p_load(UpSetR)
 Nous devons convertir les valeurs des symptômes de la `linelist` en 1 / 0. 
 
 ```{r}
-# Faire en utilisant upSetR
-
 linelist_sym_2 <- linelist_sym %>% 
   
   # convertissez les valeurs "oui" et "non" dans le nom du symptôme lui-même
-  mutate(
-    fever = case_when(
-      fever == "yes" ~ 1, # si l'ancienne valeur est "oui", la nouvelle valeur est 1
-      TRUE           ~ 0), # si l'ancienne valeur est autre que "oui", la nouvelle valeur est 0
-         
-    chills = case_when(
-      chills == "yes" ~ 1,
-      TRUE           ~ 0),
-         
-    cough = case_when(
-      cough == "yes" ~ 1,
-      TRUE           ~ 0),
-         
-    aches = case_when(
-      aches == "yes" ~ 1,
-      TRUE           ~ 0),
-         
-    vomit = case_when(
-      vomit == "yes" ~ 1,
-      TRUE           ~ 0)
-    )
+     mutate(fever = ifelse(fever == "yes", 1, 0), 
+            chills = ifelse(chills == "yes", 1, 0),
+            cough = ifelse(cough == "yes", 1, 0),
+            aches = ifelse(aches == "yes", 1, 0),
+            vomit = ifelse(vomit == "yes", 1, 0))
+
+```
+
+Si vous êtes intéressé par une commande plus efficace, vous pouvez profiter de la fonction `+()`, qui convertit les 1 et les 0 en fonction d'une déclaration logique. Cette commande utilise la fonction `across()` pour modifier plusieurs colonnes à la fois (pour en savoir plus, lisez la section [Nettoyage des données et des fonctions de base](#clean_across)).  
+
+```{r, eval=F, echo=T}
+# convertissez "oui" et "non" a 1 et 0
+linelist_sym_2 <- linelist_sym %>% 
+  
+  mutate(across(c(fever, chills, cough, aches, vomit), .fns = ~+(.x == "yes")))
+
 ```
 
 Maintenant, faites le graphique en utilisant la fonction personnalisée `upset()` - en utilisant seulement les colonnes de symptômes. Vous devez désigner les "ensembles" à comparer (les noms des colonnes de symptômes). Vous pouvez aussi utiliser `nsets = ` et `order.by = "freq"` pour n'afficher que les X combinaisons les plus importantes.  
 
 ```{r, warning=F, message=F}
 
-# Créer le graphe
+# Créer le graphique
 UpSetR::upset(
   select(linelist_sym_2, fever, chills, cough, aches, vomits),
   sets = c("fever", "chills", "cough", "aches", "vomit"),

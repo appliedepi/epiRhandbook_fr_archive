@@ -31,7 +31,7 @@ Ces lignes de code chargent les paquets nécessaires aux analyses. Dans ce guide
 
 pacman::p_load(
   lubridate,  # paquet général pour la manipulation et la conversion des dates 
-  linelist,   # a une fonction pour "deviner" les dates désordonnées
+  parsedate,   # a une fonction pour "deviner" les dates désordonnées
   aweek,      # une autre option pour convertir les dates en semaines, et les semaines en dates
   zoo,        # fonctions supplémentaires de date et d'heure
   tidyverse,  # gestion et visualisation des données  
@@ -96,7 +96,7 @@ Nous présentons ci-dessous deux approches pour convertir une colonne de valeurs
 L'utilisation de `as.Date()` nécessite que :
 
 * Vous *spécifiez le format **existant** de la date brute en caractères* ou la date d'origine si vous fournissez des dates en forme de nombres (voir la section sur les dates Excel).  
-* Si vous l'utilisez sur une colonne de caractères, toutes les valeurs de date doivent avoir le même format exact (si ce n'est pas le cas, essayez `guess_dates()` du paquet **linelist**)  
+* Si vous l'utilisez sur une colonne de caractères, toutes les valeurs de date doivent avoir le même format exact (si ce n'est pas le cas, essayez `parse_date()` du paquet **parsedate**)  
 
 Processus d'utilisation de as.Date() :
 
@@ -248,32 +248,24 @@ data_cleaned <- data %>%
 <!-- ======================================================= -->
 ## Dates désordonnées 
 
-Vous pouvez utiliser la fonction `guess_dates()` du paquet **linelist** pour lire une colonne de date "désordonnée" qui contient des dates dans de nombreux formats différents et convertir les dates dans un format standard. Vous pouvez [en savoir plus en ligne sur `guess_dates()`](https://www.repidemicsconsortium.org/linelist/reference/guess_dates.html). Si `guess_dates()` n'est pas encore disponible sur CRAN pour R 4.0.2, essayez de l'installer via `pacman::p_load_gh("reconhub/linelist")`.
+Vous pouvez utiliser la fonction `parse_date()` du paquet **parsedate** pour lire une colonne de date "désordonnée" qui contient des dates dans de nombreux formats différents et convertir les dates dans un format standard. Vous pouvez [en savoir plus en ligne sur `parse_date()`](https://readr.tidyverse.org/reference/parse_datetime.html). 
 
-Par exemple, `guess_dates` lira un vecteur des dates en caractères suivantes : "03 Jan 2018", "07/03/1982", et "08/20/85" et les convertira en classe Date sous la forme de : `2018-01-03`, `1982-03-07`, et `1985-08-20`.  
+Par exemple, `parse_date` lira un vecteur des dates en caractères suivantes : "03 Jan 2018", "07/03/1982", et "08/20/85" et les convertira en classe Date sous la forme de : `2018-01-03`, `1982-03-07`, et `1985-08-20`.  
 
 ```{r, }
-linelist::guess_dates(c("03 Jan 2018",
+parsedate::parse_date(c("03 January 2018",
                         "07/03/1982",
                         "08/20/85"))
 ```
 
-Les arguments optionnels supplémentaires pour `guess_dates()` que vous pouvez inclure dans la fonction sont :  
-
-* `error_tolerance` - La proportion d'entrées qui ne peuvent pas être identifiées comme des dates correctes (la valeur par défaut est 0.1 ou 10%)
-* `last_date` - la derniére date valide (la valeur par défaut est la date du jour)  
-* `first_date` - la premiére date valide. La valeur par défaut est de cinquante ans avant la derniére date. 
 
 
 ```{r eval = FALSE}
-# Un exemple d'utilisation de guess_dates() sur la colonne dater_onset
+# Un exemple d'utilisation de parse_date() sur la colonne date_onset
 linelist <- linelist %>%                 # le dataframe s'appelle linelist, à ne pas confondre avec le paquet "linelist"
   mutate(
-    date_onset = linelist::guess_dates(  # la fonction guess_dates() fait partie du paquet "linelist".
-      date_onset,
-      error_tolerance = 0.1,
-      first_date = "2016-01-01"
-    )
+    date_onset = parse_date(date_onset))
+    
 ```
 
 

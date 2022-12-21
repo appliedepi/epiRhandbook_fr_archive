@@ -1,152 +1,143 @@
 
-# Tableau de données {#data_table}  
+# Tableau de donnÃ©es {#data_table}  
      
-Le manuel se concentre sur les fonctions verbales **dplyr** et l'opérateur pipe **magrittr** `%>%` comme méthode pour nettoyer et regrouper les données, mais le paquet **data.table** offre une méthode alternative que vous pourriez rencontrer dans votre carrière R.  
+Le manuel se concentre sur les fonctions verbales **dplyr** et l'opÃ©rateur pipe **magrittr** `%>%` comme mÃ©thode pour nettoyer et regrouper les donnÃ©es, mais le paquet **data.table** offre une mÃ©thode alternative que vous pourriez rencontrer dans votre carriÃ¨re R.  
 
 
 <!-- ======================================================= -->
-## Intro aux tableaux de données { }
+## Intro aux tableaux de donnÃ©es { }
 
-Une table de données est une structure de données bidimensionnelle comme un cadre de données qui permet d'effectuer des opérations de regroupement complexes. La syntaxe data.table est structurée de manière à ce que les opérations puissent être effectuées sur les lignes, les colonnes et les groupes. 
+Une table de donnÃ©es est une structure de donnÃ©es bidimensionnelle comme un cadre de donnÃ©es qui permet d'effectuer des opÃ©rations de regroupement complexes. La syntaxe data.table est structurÃ©e de maniÃ¨re Ã  ce que les opÃ©rations puissent Ãªtre effectuÃ©es sur les lignes, les colonnes et les groupes. 
 
-La structure est **DT[i, j, by]**, séparée par 3 parties : les arguments **i, j** et **by**. L'argument **i** permet de sous-dimensionner les lignes requises, l'argument **j** permet d'opérer sur les colonnes et l'argument **by** permet d'opérer sur les colonnes par groupes.
+La structure est **DT[i, j, by]**, sÃ©parÃ©e par 3 parties : les arguments **i, j** et **by**. L'argument **i** permet de sous-dimensionner les lignes requises, l'argument **j** permet d'opÃ©rer sur les colonnes et l'argument **by** permet d'opÃ©rer sur les colonnes par groupes.
   
 Cette page abordera les sujets suivants :  
 
-* Importation de données et utilisation de `fread()` et `fwrite()`.
-* Sélection et filtrage des lignes en utilisant l'argument **i**.
-* Utilisation des fonctions d'aide `%like%', `%chin%', `%between%'. 
-* Sélection et calcul sur les colonnes à l'aide de l'argument **j**.
+* Importation de donnÃ©es et utilisation de `fread()` et `fwrite()`.
+* SÃ©lection et filtrage des lignes en utilisant l'argument **i**.
+* Utilisation des fonctions d'aide `%like%`, `%chin%`, `%between%`. 
+* SÃ©lection et calcul sur les colonnes Ã  l'aide de l'argument **j**.
 * Calculer par groupes avec l'argument **by**
-* Ajouter et mettre à jour des données dans des tableaux de données en utilisant `:=`
+* Ajouter et mettre Ã  jour des donnÃ©es dans des tableaux de donnÃ©es en utilisant `:=`
 
 
 <!-- ======================================================= -->
 ## Load packages and import data { }
 
 
-## Chargement des paquets et importation des données { }
+## Chargement des paquets et importation des donnÃ©es { }
 
 ### Charger des paquets {.unnumbered}  
 
-En utilisant la fonction `p_load()` de **pacman**, nous chargeons (et installons si nécessaire) les paquets nécessaires à cette analyse.
+En utilisant la fonction `p_load()` de **pacman**, nous chargeons (et installons si nÃ©cessaire) les paquets nÃ©cessaires Ã  cette analyse.
      
      
      
      
 ```{r}
 pacman::p_load(
-  rio, # pour importer les données
-  data.table, # pour regrouper et nettoyer les données
+  rio, # pour importer les donnÃ©es
+  data.table, # pour regrouper et nettoyer les donnÃ©es
   tidyverse, # permet d'utiliser la fonction pipe (%>%) dans ce chapitre
   here 
   ) 
 ```
 
 
-```{r}
-pacman::p_load(
-  rio, # pour importer les données
-  data.table, # pour regrouper et nettoyer les données
-  tidyverse, # permet d'utiliser la fonction pipe (%>%) dans ce chapitre
-  ici 
-  ) 
-```
 
+### Importer les donnÃ©es {.unnumbered}
 
-### Importer des données {.unnumbered}
+Cette page va explorer certaines des fonctions principales de **data.table** en utilisant la liste de cas rÃ©fÃ©rencÃ©e tout au long du manuel.
 
-Cette page va explorer certaines des fonctions principales de **data.table** en utilisant la liste de cas référencée tout au long du manuel.
-
-Nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous souhaitez télécharger les données pour les suivre pas à pas, consultez les instructions de la page [Donwload book and data]. L'ensemble de données est importé à l'aide de la fonction `import()` du paquet **rio**. Voir la page [Import and export] pour les différentes manières d'importer des données. A partir de là, nous utilisons `data.table()` pour convertir le cadre de données en un tableau de données.
+Nous importons le jeu de donnÃ©es des cas d'une Ã©pidÃ©mie d'Ebola simulÃ©e. Si vous souhaitez tÃ©lÃ©charger les donnÃ©es pour les suivre pas Ã  pas, consultez les instructions de la page [Donwload book and data]. L'ensemble de donnÃ©es est importÃ© Ã  l'aide de la fonction `import()` du paquet **rio**. Voir la page [Import and export] pour les diffÃ©rentes maniÃ¨res d'importer des donnÃ©es. A partir de lÃ , nous utilisons `data.table()` pour convertir le cadre de donnÃ©es en un tableau de donnÃ©es.
 
 ```{r}
 linelist <- rio::import(here("data", "linelist_cleaned.xlsx")) %>% data.table()
 ```
 
-La fonction `fread()` est utilisée pour importer directement des fichiers délimités réguliers, tels que les fichiers .csv, vers un format de table de données. Cette fonction, et sa contrepartie, `fwrite()`, utilisée pour écrire les tables de données comme des fichiers délimités réguliers, sont des options très rapides et efficaces en termes de calcul pour les grandes bases de données.
+La fonction `fread()` est utilisÃ©e pour importer directement des fichiers dÃ©limitÃ©s rÃ©guliers, tels que les fichiers .csv, vers un format de table de donnÃ©es. Cette fonction, et sa contrepartie, `fwrite()`, utilisÃ©e pour Ã©crire les tables de donnÃ©es comme des fichiers dÃ©limitÃ©s rÃ©guliers, sont des options trÃ¨s rapides et efficaces en termes de calcul pour les grandes bases de donnÃ©es.
 
 
-Les 20 premières lignes de `linelist` :  
+Les 20 premiÃ¨res lignes de `linelist` :  
 
 ```{r message=FALSE, echo=F, eval=FALSE}
-DT::datatable(head(linelist,20), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space : nowrap' )
+DT::datatable(head(linelist,20), rownames = FALSE, filter="top", options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-Les commandes de base de R, telles que `dim()`, utilisées pour les cadres de données, peuvent également être utilisées pour les tableaux de données.
+Les commandes de base de R, telles que `dim()`, utilisÃ©es pour les cadres de donnÃ©es, peuvent Ã©galement Ãªtre utilisÃ©es pour les tableaux de donnÃ©es.
 
 ```{r}
-dim(linelist) #donne le nombre de lignes et de colonnes du tableau de données
+dim(linelist) #donne le nombre de lignes et de colonnes du tableau de donnÃ©es
 ```
 
 
 
 <!-- ======================================================= -->
-## L'argument i: sélection et filtrage des lignes{ }
+## L'argument i: sÃ©lection et filtrage des lignes{ }
      
-En rappelant la structure **DT[i, j, by]**, nous pouvons filtrer les lignes en utilisant soit des numéros de ligne, soit des expressions logiques. L'argument i est le premier ; par conséquent, la syntaxe **DT[i]** ou **DT[i,]** peut être utilisée. 
+En rappelant la structure **DT[i, j, by]**, nous pouvons filtrer les lignes en utilisant soit des numÃ©ros de ligne, soit des expressions logiques. L'argument i est le premier ; par consÃ©quent, la syntaxe **DT[i]** ou **DT[i,]** peut Ãªtre utilisÃ©e. 
 
-Le premier exemple récupère les 5 premières lignes de la table de données, le deuxième exemple sous-entend que les cas sont âgés de 18 ans ou plus, et le troisième exemple sous-entend que les cas âgés de 18 ans ou plus mais non diagnostiqués à l'hôpital central :
+Le premier exemple rÃ©cupÃ¨re les 5 premiÃ¨res lignes de la table de donnÃ©es, le deuxiÃ¨me exemple sous-entend que les cas sont Ã¢gÃ©s de 18 ans ou plus, et le troisiÃ¨me exemple sous-entend que les cas Ã¢gÃ©s de 18 ans ou plus mais non diagnostiquÃ©s Ã  l'hÃ´pital central :
 
 
-``{r, eval=F}
-linelist[1:5] #renvoie la 1ère à la 5ème ligne
-linelist[age >= 18] #sous-entend les cas égaux ou supérieurs à 18 ans
-linelist[age >= 18 & hospital != "Central Hospital"] #subset les cas égaux ou supérieurs à 18 ans mais non diagnostiqués à l'hôpital central
+```{r, eval=F}
+linelist[1:5] #renvoie la 1Ã¨re Ã  la 5Ã¨me ligne
+linelist[age >= 18] #sous-entend les cas Ã©gaux ou supÃ©rieurs Ã  18 ans
+linelist[age >= 18 & hospital != "Central Hospital"] #subset les cas Ã©gaux ou supÃ©rieurs Ã  18 ans mais non diagnostiquÃ©s Ã  Central Hospital
 
 ```
 
-L'utilisation de .N dans l'argument i représente le nombre total de lignes dans la table de données. Cela peut être utilisé pour effectuer un sous-ensemble sur le nombre de lignes : 
+L'utilisation de .N dans l'argument i reprÃ©sente le nombre total de lignes dans la table de donnÃ©es. Cela peut Ãªtre utilisÃ© pour effectuer un sous-ensemble sur le nombre de lignes : 
 
 ```{r, eval=F}
-linelist[.N] #renvoie la dernière ligne
-linelist[15 :.N] #renvoie la 15ème à la dernière ligne
+linelist[.N] #renvoie la derniÃ¨re ligne
+linelist[15 :.N] #renvoie la 15Ã¨me Ã  la derniÃ¨re ligne
 ```
 
 
 ### Utilisation de fonctions d'aide pour le filtrage {.unnumbered}  
 
-Le tableau de données utilise des fonctions d'aide qui facilitent le sous-ensemble des lignes. La fonction `%like%` est utilisée pour faire correspondre un motif dans une colonne, `%chin%` est utilisée pour faire correspondre un caractère spécifique, et la fonction d'aide `%between%` est utilisée pour faire correspondre des colonnes numériques dans une plage prédéfinie.
+Le tableau de donnÃ©es utilise des fonctions d'aide qui facilitent le sous-ensemble des lignes. La fonction `%like%` est utilisÃ©e pour faire correspondre un motif dans une colonne, `%chin%` est utilisÃ©e pour faire correspondre un caractÃ¨re spÃ©cifique, et la fonction d'aide `%between%` est utilisÃ©e pour faire correspondre des colonnes numÃ©riques dans une plage prÃ©dÃ©finie.
 
 Dans les exemples suivants, nous :
-* filtrons les lignes où la variable hospital contient "Hospital".
-* filtrons les lignes où le résultat est "Récupération" ou "Décès".
-* filtrons les lignes dans la tranche d'âge 40-60 ans
+* filtrons les lignes oÃ¹ la variable hospital contient "Hospital".
+* filtrons les lignes oÃ¹ le rÃ©sultat est "Recover" ou "Death".
+* filtrons les lignes dans la tranche d'Ã¢ge 40-60 ans
 
-``{r, eval=F}
-linelist[hospital %like% "Hospital"] #filtre les lignes où la variable hospital contient âHospitalâ
-linelist[outcome %chin% c("Recover", "Death")] #filtre les lignes où l'issue est "Recover" ou "Death".
-linelist[age %between% c(40, 60)] #filtre les lignes dans la tranche d'âge 40-60
+```{r, eval=F}
+linelist[hospital %like% "Hospital"] #filtre les lignes oÃ¹ la variable hospital contient "Hospital"
+linelist[outcome %chin% c("Recover", "Death")] #filtre les lignes oÃ¹ l'issue est "Recover" ou "Death".
+linelist[age %between% c(40, 60)] #filtre les lignes dans la tranche d'Ã¢ge 40-60
 
 #%between% doit prendre un vecteur de longueur 2, tandis que %chin% peut prendre des vecteurs de longueur >= 1
 
 ```
 
-## L'argument j: sélection et calcul sur les colonnes{ }
+## L'argument j: sÃ©lection et calcul sur les colonnes{ }
 
-En utilisant la structure **DT[i, j, by]**, nous pouvons sélectionner des colonnes en utilisant des nombres ou des noms. L'argument **j** est le second ; on utilise donc la syntaxe **DT[, j]**. Pour faciliter les calculs sur l'argument **j**, la colonne est enveloppée en utilisant soit `list()` soit `.()`. 
-
-
-### Sélection de colonnes {.unnumbered} 
-
-Le premier exemple récupère les première, troisième et cinquième colonnes de la table de données, le deuxième exemple sélectionne toutes les colonnes à l'exception des colonnes taille, poids et sexe. Le troisième exemple utilise la terminaison `.()` pour sélectionner les colonnes **identification du cas** et **résultat**.
+En utilisant la structure **DT[i, j, by]**, nous pouvons sÃ©lectionner des colonnes en utilisant des nombres ou des noms. L'argument **j** est le second ; on utilise donc la syntaxe **DT[, j]**. Pour faciliter les calculs sur l'argument **j**, la colonne est enveloppÃ©e en utilisant soit `list()` soit `.()`. 
 
 
-``{r, eval=F}
+### SÃ©lection de colonnes {.unnumbered} 
+
+Le premier exemple rÃ©cupÃ¨re les premiÃ¨re, troisiÃ¨me et cinquiÃ¨me colonnes de la table de donnÃ©es, le deuxiÃ¨me exemple sÃ©lectionne toutes les colonnes Ã  l'exception des colonnes taille, poids et sexe. Le troisiÃ¨me exemple utilise la terminaison `.()` pour sÃ©lectionner les colonnes **identification du cas** et **rÃ©sultat**.
+
+
+```{r, eval=F}
 linelist[ , c(1,3,5)]
 linelist[ , -c("gender", "age", "wt_kg", "ht_cm")]
 linelist[ , list(case_id, outcome)] #linelist[ , .(case_id, outcome)] fonctionne tout aussi bien
 
 ```
 
-### Calcul sur les colonnes {.unnumbered} (non numérotées) 
+### Calcul sur les colonnes {.unnumbered} 
 
-En combinant les arguments **i** et **j**, il est possible de filtrer les lignes et de calculer sur les colonnes. L'utilisation de **.N** dans l'argument **j** représente également le nombre total de lignes dans le tableau de données et peut être utile pour retourner le nombre de lignes après le filtrage des lignes.
+En combinant les arguments **i** et **j**, il est possible de filtrer les lignes et de calculer sur les colonnes. L'utilisation de **.N** dans l'argument **j** reprÃ©sente Ã©galement le nombre total de lignes dans le tableau de donnÃ©es et peut Ãªtre utile pour retourner le nombre de lignes aprÃ¨s le filtrage des lignes.
 
 Dans les exemples suivants, nous :
-* Comptons le nombre de cas qui sont restés plus de 7 jours à l'hôpital.
-* Calculer l'âge moyen des cas qui sont décédés à l'hôpital militaire.
-* Calculer l'écart-type, la médiane et l'âge moyen des cas qui se sont rétablis à l'hôpital central.
+* Comptons le nombre de cas qui sont restÃ©s plus de 7 jours Ã  l'hÃ´pital.
+* Calculer l'Ã¢ge moyen des cas qui sont dÃ©cÃ©dÃ©s Ã  l'hÃ´pital militaire.
+* Calculer l'Ã©cart-type, la mÃ©diane et l'Ã¢ge moyen des cas qui se sont rÃ©tablis Ã  l'hÃ´pital central.
 
 ```{r}
 linelist[days_onset_hosp > 7 , .N]
@@ -158,51 +149,51 @@ linelist[hospital == "Central Hospital" & outcome == "Recover",
 
 ```
 
-N'oubliez pas que l'utilisation de la terminaison .() dans l'argument j facilite le calcul, renvoie un tableau de données et permet de nommer les colonnes.
+N'oubliez pas que l'utilisation de la terminaison .() dans l'argument j facilite le calcul, renvoie un tableau de donnÃ©es et permet de nommer les colonnes.
 
 ## L'argument by : calcul par groupes{ }
 
-L'argument **by** est le troisième argument de la structure **DT[i, j, by]**. L'argument **by** accepte à la fois un vecteur de caractères et la syntaxe `list()` ou `.()`. L'utilisation de la syntaxe `.()` dans l'argument **by** permet de renommer les colonnes à la volée.
+L'argument **by** est le troisiÃ¨me argument de la structure **DT[i, j, by]**. L'argument **by** accepte Ã  la fois un vecteur de caractÃ¨res et la syntaxe `list()` ou `.()`. L'utilisation de la syntaxe `.()` dans l'argument **by** permet de renommer les colonnes Ã  la volÃ©e.
 
 Dans les exemples suivants, nous :	
-* regroupons le nombre de cas par hôpital
-* dans les cas de 18 ans ou plus, calculer la taille et le poids moyens des cas selon le sexe et selon qu'ils sont guéris ou décédés
-* dans les admissions qui ont duré plus de 7 jours, compter le nombre de cas selon le mois d'admission et l'hôpital où ils ont été admis.
+* regroupons le nombre de cas par hÃ´pital
+* dans les cas de 18 ans ou plus, calculer la taille et le poids moyens des cas selon le sexe et selon qu'ils sont guÃ©ris ou dÃ©cÃ©dÃ©s
+* dans les admissions qui ont durÃ© plus de 7 jours, compter le nombre de cas selon le mois d'admission et l'hÃ´pital oÃ¹ ils ont Ã©tÃ© admis.
 
 
 ````{r}
-linelist[, .N, .(hôpital)] #le nombre de cas par hôpital
+linelist[, .N, .(hÃ´pital)] #le nombre de cas par hÃ´pital
 linelist[age > 18, .(mean_wt = mean(wt_kg, na.rm = T),
-                             mean_ht = mean(ht_cm, na.rm = T)), .(gender, outcome)] #Les na.rm représentent les catégories où les données sont manquantes
+                             mean_ht = mean(ht_cm, na.rm = T)), .(gender, outcome)] #NAs reprÃ©sentent les catÃ©gories pour lesquelles les donnÃ©es sont manquantes
 linelist[days_onset_hosp > 7, .N, .(month = month(date_hospitalisation), hospital)]
 
 ```
 
-Data.table permet également d'enchaîner les expressions comme suit :
+Data.table permet Ã©galement d'enchaÃ®ner les expressions comme suit :
 
 ````{r}
 
-linelist[, .N, .(hospital)][order(-N)][1:3] La première sélectionne tous les cas par hôpital, la deuxième ordonne les cas par ordre décroissant, la troisième sous-ensemble les 3 hôpitaux ayant le plus grand nombre de cas.
+linelist[, .N, .(hospital)][order(-N)][1:3] #La premiÃ¨re sÃ©lectionne tous les cas par hÃ´pital, la deuxiÃ¨me ordonne les cas par ordre dÃ©croissant, la troisiÃ¨me sous-ensemble les 3 hÃ´pitaux ayant le plus grand nombre de cas.
 
 
 ```
 
-Dans ces exemples, nous partons du principe qu'une ligne du tableau de données correspond à un nouveau cas, et nous pouvons donc utiliser la fonction **.N** pour représenter le nombre de lignes du tableau de données. Une autre fonction utile pour représenter le nombre de cas uniques est `uniqueN()`, qui retourne le nombre de valeurs uniques dans une entrée donnée. Ceci est illustré ici :
+Dans ces exemples, nous partons du principe qu'une ligne du tableau de donnÃ©es correspond Ã  un nouveau cas, et nous pouvons donc utiliser la fonction **.N** pour reprÃ©senter le nombre de lignes du tableau de donnÃ©es. Une autre fonction utile pour reprÃ©senter le nombre de cas uniques est `uniqueN()`, qui retourne le nombre de valeurs uniques dans une entrÃ©e donnÃ©e. Ceci est illustrÃ© ici :
 
 ````{r}
 
-linelist[, .(uniqueN(gender))] #souvenez-vous que .() dans l'argument j renvoie un tableau de données
+linelist[, .(uniqueN(gender))] #souvenez-vous que .() dans l'argument j renvoie un tableau de donnÃ©es
 
 ```
 
-La réponse est 3, car les valeurs uniques de la colonne sexe sont m, f et N/A. Comparez avec la fonction R de base `unique()`, qui renvoie toutes les valeurs uniques dans une entrée donnée :
+La rÃ©ponse est 3, car les valeurs uniques de la colonne sexe sont m, f et N/A. Comparez avec la fonction R de base `unique()`, qui renvoie toutes les valeurs uniques dans une entrÃ©e donnÃ©e :
 
 ````{r}
 
 linelist[, .(unique(gender))]
 ```
 
-Pour trouver le nombre de cas uniques dans un mois donné, nous écririons ce qui suit :
+Pour trouver le nombre de cas uniques dans un mois donnÃ©, nous Ã©cririons ce qui suit :
 
 ````{r}
 
@@ -210,22 +201,22 @@ linelist[, .(uniqueN(case_id)), .(month = month(date_hospitalisation))]
 
 ```
 
-## Ajout et mise à jour des tables de données { }
+## Ajout et mise Ã  jour des tables de donnÃ©es { }
 
-L'opérateur `:=` est utilisé pour ajouter ou mettre à jour des données dans une table de données. L'ajout de colonnes à votre table de données peut se faire de la manière suivante :
+L'opÃ©rateur `:=` est utilisÃ© pour ajouter ou mettre Ã  jour des donnÃ©es dans une table de donnÃ©es. L'ajout de colonnes Ã  votre table de donnÃ©es peut se faire de la maniÃ¨re suivante :
 
 ````{r}
 
-linelist[, adult := âge >= 18] #ajoute une colonne
+linelist[, adult := Ã¢ge >= 18] #ajoute une colonne
 linelist[, c("child", "wt_lbs") := .(age < 18, wt_kg*2.204)] #pour ajouter plusieurs colonnes, il faut utiliser la syntaxe c("") et list() ou .()
 linelist[, `:=` (bmi_in_range = (bmi > 16 & bmi < 40),
-                         no_infector_source_data = is.na(infector) | is.na(source))] #Cette méthode utilise := comme un opérateur fonctionnel `:=`.
+                         no_infector_source_data = is.na(infector) | is.na(source))] #Cette mÃ©thode utilise := comme un opÃ©rateur fonctionnel `:=`.
 linelist[, adult := NULL] #supprime la colonne
 
 ```
 
 
-Des agrégations plus complexes dépassent le cadre de ce chapitre d'introduction, mais l'idée est de fournir une alternative populaire et viable à **dplyr** pour regrouper et nettoyer les données. Le package **data.table** est un excellent package qui permet d'obtenir un code soigné et lisible.
+Des agrÃ©gations plus complexes dÃ©passent le cadre de ce chapitre d'introduction, mais l'idÃ©e est de fournir une alternative populaire et viable Ã  **dplyr** pour regrouper et nettoyer les donnÃ©es. Le package **data.table** est un excellent package qui permet d'obtenir un code soignÃ© et lisible.
 
 
 ## Ressources { }
@@ -237,7 +228,6 @@ Voici quelques ressources utiles pour plus d'informations :
 * https://www.machinelearningplus.com/data-manipulation/datatable-in-r-complete-guide/
 * https://www.datacamp.com/community/tutorials/data-table-r-tutorial
 
-Vous pouvez exécuter n'importe quelle fonction de synthèse sur des données groupées ; voir la Cheat Sheet ici pour plus d'informations :
+Vous pouvez exÃ©cuter n'importe quelle fonction de synthÃ¨se sur des donnÃ©es groupÃ©es ; voir la Cheat Sheet ici pour plus d'informations :
 https://s3.amazonaws.com/assets.datacamp.com/blog_assets/datatable_Cheat_Sheet_R.pdf
-
 

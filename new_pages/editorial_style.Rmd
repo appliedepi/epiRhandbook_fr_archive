@@ -117,7 +117,7 @@ Importation des paquets|`library()`,`install.packages()`, `require()`, **pacman*
 Import et export de données|**rio**, de nombreux paquets spécialisés|**rio**|Gère un grand nombre de format de jeux de données
 Résumer des données agrégées|**dplyr** `group_by()`, **stats** `aggregate()`|**dplyr** `group_by()`|Reste cohérent avec nos choix d'utiliser le **tidyverse**
 Transformation long-large|**tidyr** (fonctions `pivot_XXX`), **reshape2** (melt/cast), **tidyr** (spread/gather)|**tidyr** (fonctions `pivot_XXX`)|**reshape2** est en fin de vie (recommandations officielles d'utiliser **tidyr**), **tidyr** utilise les fonctions `pivot_XXX` dès la versions v1.0.0
-Nettoyer les noms des colonnes|**linelist**, **janitor**|**janitor**|Janitor est utilisé pour plusieus tâches dans le guide (optimisation des paquets)
+Nettoyer les noms des colonnes|**matchmaker**, **janitor**|**janitor**|Janitor est utilisé pour plusieus tâches dans le guide (optimisation des paquets)
 Semaines epi |**lubridate**, **aweek**, **tsibble**, **zoo**|**lubridate** en général, avec utilisation ponctuelle d'autres paquets pour des cas spécifiques|La grande flexibilité de **lubridate**, la cohérence avec le **tidyverse**, une meilleure maintenance future (?)  
 Labels ggplot |`labs()`, `ggtitle()`/`ylab()`/`xlab()` |`labs()` |Simplicité, tous les labels dans la même commande  
 Conversion en facteur |`factor()`, **forcats**|**forcats**|différentes fonctions pour transformer les facteurs dans la même commande
@@ -130,7 +130,21 @@ Concaténation|`paste()`, `paste0()`, `str_glue()`, `glue()`|`str_glue()`|syntax
 
 Date           |Changements majeurs     
 ---------------| ------------------------------------------    
-10 Mai 2021    |Publication de la version 1.0.0    
+10 Mai 2021    |Publication de la version 1.0.0 
+20 Nov 2022    |Publication de la version 1.0.1
+
+**NEWS**
+Avec la version 1.0.1, les changements suivants ont été mis en œuvre :  
+
+* Mise à jour vers la version 4.2 de R  
+* Nettoyage des données : remplacement de {linelist} par {matchmaker}, suppression d'une ligne inutile dans l'exemple `case_when()`.  
+* Dates : remplacement de {linelist} `guess_date()` par {parsedate} `parse_date()`.
+* Pivot : légère mise à jour de `pivot_wider()`id_cols=`.  
+* Analyse d'enquête : remplacement de `plot_age_pyramid()` par `age_pyramid()`, légère modification du code du tracé alluvial.  
+* Graphiques de chaleur : ajout de `ungroup()` au chunk `agg_weeks`.  
+* Graphiques interactifs : ajout de `ungroup()` au chunk qui fait `agg_weeks` pour que `expand()` fonctionne comme prévu.  
+* Séries temporelles : ajout de `data.frame()` autour des objets dans toutes les commandes `trending::fit()` et `predict()`.  
+* Analyse des combinaisons : Remplacer `case_when()` par `ifelse()` et ajouter le code optionnel `across()` pour préparer les données. 
 
 
 ## Information de session (R, RStudio, paquets)  
