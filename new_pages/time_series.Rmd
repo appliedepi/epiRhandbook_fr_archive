@@ -383,7 +383,7 @@ Tout d'abord, la fonction est définie. Ses arguments incluent un jeu de donnée
 
 # Définissez la fonction
 periodogram <- function(x, 
-                        compte, 
+                        counts, 
                         start_week = c(2002, 1), 
                         period = 52, 
                         output = "weeks") {
@@ -585,7 +585,7 @@ observed <- predict(fitted_model, simulate_pi = FALSE)
 ## Tracez votre régression 
 ggplot(data = observed, aes(x = epiweek)) + 
   ## ajouter une ligne pour l'estimation du modèle
-  geom_line(aes(y = estimation),
+  geom_line(aes(y = estimate),
             col = "red") + 
   ## ajouter une bande pour les intervalles de prédiction 
   geom_ribbon(aes(ymin = lower_pi, 
@@ -614,6 +614,71 @@ et s'attaquer à l'amplitude. Cependant, pour cet exemple, nous allons laisser l
 Les graphiques montrent que notre modèle est moins bon dans les pics et les creux (lorsque les comptages sont
 les plus élevés et les plus bas) et qu'il est plus susceptible de sous-estimer les comptes 
 les comptages observés. 
+
+
+```{r, warning=F, message=F}
+
+## calculate the residuals 
+observed <- observed %>% 
+  mutate(resid = residuals(fitted_model$fitted_model, type = "response"))
+
+## are the residuals fairly constant over time (if not: outbreaks? change in practice?)
+observed %>%
+  ggplot(aes(x = epiweek, y = resid)) +
+  geom_line() +
+  geom_point() + 
+  labs(x = "epiweek", y = "Residuals")
+
+## is there autocorelation in the residuals (is there a pattern to the error?)  
+observed %>% 
+  as_tsibble(index = epiweek) %>% 
+  ACF(resid, lag_max = 52) %>% 
+  autoplot()
+
+## are residuals normally distributed (are under or over estimating?)  
+observed %>%
+  ggplot(aes(x = resid)) +
+  geom_histogram(binwidth = 100) +
+  geom_rug() +
+  labs(y = "count") 
+  
+## compare observed counts to their residuals 
+  ## should also be no pattern 
+observed %>%
+  ggplot(aes(x = estimate, y = resid)) +
+  geom_point() +
+  labs(x = "Fitted", y = "Residuals")
+
+## formally test autocorrelation of the residuals
+## H0 is that residuals are from a white-noise series (i.e. random)
+## test for independence 
+## if p value significant then non-random
+Box.test(observed$resid, type = "Ljung-Box")
+
+```
+
+
+<!-- ======================================================= -->
+## Relation of two time series {  }
+
+Here we look at using weather data (specifically the temperature) to explain 
+campylobacter case counts. 
+
+<!-- ======================================================= -->
+### Merging datasets {.unnumbered}
+
+We can join our datasets using the week variable. For more on merging see the 
+handbook section on [joining](https://epirhandbook.com/joining-data.html).
+
+```{r join}
+
+## left join so that we only have the rows already existing in counts
+## drop the date variable from temp_data (otherwise is duplicated)
+counts <- left_join(counts, 
+                    select(temp_data, -date),
+                    by = "epiweek")
+
+```
 
 ```{r basic_plot_bivar}
 
@@ -747,7 +812,7 @@ d'estimer le nombre de cas observés.
 ## Tracez votre régression 
 ggplot(data = observed, aes(x = epiweek)) + 
   ## ajouter une ligne pour l'estimation du modèle
-  geom_line(aes(y = estimation),
+  geom_line(aes(y = estimate),
             col = "red") + 
   ## ajouter une bande pour les intervalles de prédiction 
   geom_ribbon(aes(ymin = lower_pi, 
@@ -791,7 +856,7 @@ observed %>%
 ## les résidus sont-ils normalement distribués (y a-t-il sous-estimation ou surestimation ?)  
 observed %>%
   ggplot(aes(x = resid)) +
-  geom_histogramme(binwidth = 100) +
+  geom_histogram(binwidth = 100) +
   geom_rug() +
   labs(y = "count") 
   
@@ -1003,7 +1068,7 @@ Cette fois, nous ajoutons également une ligne verticale pour indiquer quand la 
 ## Tracez votre régression 
 ggplot(data = observed, aes(x = epiweek)) + 
   ## ajoutez une ligne pour l'estimation du modèle
-  geom_line(aes(y = estimation),
+  geom_line(aes(y = estimate),
             col = "grey") + 
   ## ajouter une bande pour les intervalles de prédiction 
   geom_ribbon(aes(ymin = lower_pi, 
@@ -1150,7 +1215,7 @@ forecasts <- purrr::map(unique(case_roll$.id),
       ## obtenir les termes de fourier pour les années précédentes
       forecast::fourier(
         ### ne conserve que les lignes avant la date butoir
-        filtre(mini_data, 
+        filter(mini_data, 
                epiweek <= cv_cut_off), 
         ## inclure un ensemble de termes sin cos 
         K = 1
@@ -1158,7 +1223,7 @@ forecasts <- purrr::map(unique(case_roll$.id),
       ## prédire les termes de fourier pour l'année suivante (en utilisant les données de base)
       fourier(
         ## conserver uniquement les lignes avant la coupure
-        filtre(mini_data, 
+        filter(mini_data, 
                epiweek <= cv_cut_off),
         ## inclure un ensemble de termes sin cos 
         K = 1, 
@@ -1215,10 +1280,10 @@ forecasts <- left_join(forecasts,
   ## MAPE : Erreur absolue moyenne en pourcentage
 model_metrics <- bind_rows(
   ## dans votre ensemble de données forcées, comparez les données observées aux données prédites.
-  rmse(forecasts, case_int, estimation), 
-  mae( forecasts, case_int, estimation),
-  mase(forecasts, case_int, estimation),
-  mape(forecasts, case_int, estimation),
+  rmse(forecasts, case_int, estimate), 
+  mae( forecasts, case_int, estimate),
+  mase(forecasts, case_int, estimate),
+  mape(forecasts, case_int, estimate),
   ) %>% 
   ### ne conserve que le type de métrique et sa sortie
   select(Metric = .metric, 
@@ -1437,7 +1502,7 @@ les termes supplémentaires nécessaires à la régression.
 
 ## ajouter les termes de fourier en utilisant les variabless epiweek et case_int
 counts$fourier <- select(counts, epiweek, case_int) %>% 
-  as_tsibble(indice = epiweek) %>% 
+  as_tsibble(index = epiweek) %>% 
   fourier(K = 1)
 
 ## définir la semaine d'intervention 
@@ -1507,7 +1572,7 @@ fitted_model %>%
   mutate(
     ## pour chacune des colonnes d'intérêt - créer une nouvelle colonne
     across(
-      all_of(c("estimation", "conf.low", "conf.high")), 
+      all_of(c("estimate", "conf.low", "conf.high")), 
       ## appliquer la formule pour calculer le pourcentage de changement
             .f = function(i) 100 * (i - 1), 
       ## ajouter un suffixe aux nouveaux noms de colonnes avec "_perc".
@@ -1549,7 +1614,7 @@ ggplot(observed, aes(x = epiweek)) +
            ) + 
   ## définir les couleurs
   scale_colour_manual(values = c("Observed" = "black", 
-                                 "Estimation" = "red")) + 
+                                 "Estimate" = "red")) + 
   ## faire un graphique traditionnel (avec des axes noirs et un fond blanc)
   theme_classic()
 
