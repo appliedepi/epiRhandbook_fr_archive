@@ -43,7 +43,7 @@ scale_color_brewer(name = "Continent",  # nom de la palette de couleurs (qui app
 
 Ces lignes de code importe les packages necessaire pour l'analyse. Dans ce guide, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le package si nécessaire *puis* l'importe pour l'utiliser dans la session de Rstudio. Vous pouvez également charger les packages installés avec `library()` de **base** R. Voir la page sur [bases de R](#rbasics) pour plus d'informations sur les packages en R.
 
-```{r, phylogenetic_trees_loading_packages}
+```{r, phylogenetic_trees_loading_packages, warning=FALSE, message=FALSE}
 pacman::p_load(
   rio,             # import/export
   here,            # gestion des chemins d'accès

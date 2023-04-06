@@ -127,8 +127,8 @@ Nous pouvons ensuite vérifier les composants de notre fonction nouvellement cr�
 ```{r}
 
 formals(contain_covid19)
-corps(contain_covid19)
-environnement(contain_covid19)
+body(contain_covid19)
+environment(contain_covid19)
 
 ```
 
@@ -145,7 +145,7 @@ Par précaution, nous pouvons réécrire le nom de chaque argument. Mais sans le
 
 ```{r}
 
-contenir_covid19("yes", "yes", "yes")
+contain_covid19("yes", "yes", "yes")
 
 ```
 
@@ -316,8 +316,7 @@ La même étape peut être effectuée en utilisant la fonction `map_if()` du paq
 linelist_factor2 <- linelist %>%
   purrr::map_if(is.character, as.factor)
 
-
-facteur_ligne2 %>%
+linelist_factor2 %>%
         glimpse()
 
 ```
@@ -343,7 +342,7 @@ chart_outcome_province <- function(data_used, prov){
     group_by(outcome) %>% 
     count() %>%
     adorn_totals(where = "row") %>% 
-    adorn_percentages(denominateur = "col", )%>%
+    adorn_percentages(denominator = "col", )%>%
     mutate(
         perc_outcome= round(n*100,2))
   
@@ -386,7 +385,7 @@ indic_1 <- flu_china %>%
 
 indic_2 <- flu_china %>% 
             filter(!is.na(outcome)) %>% 
-            group_by(province, issue) %>% 
+            group_by(province, outcome) %>% 
             count() %>%
             pivot_wider(names_from = outcome, values_from = n) %>% 
     adorn_totals(where = "col") %>% 
@@ -422,7 +421,7 @@ print_indic_prov <- function(table_used, prov){
     pivot_longer(names_to = "Indicateurs", cols = 2:4) %>% 
    mutate( indic_label = factor(Indicateurs,
    levels= c("mean_delay_onset_hosp", "perc_recovery", "median_age_cases"),
-   labels=c("Mean delay onset-hosp", "Percentage of recovery", "Median age of the cases"))
+   labels=c("Délai moyen d'apparition hôpital", "Pourcentage de récupération", "Âge médian des cas"))
    ) %>% 
     ungroup(province) %>% 
     select(indic_label, value)

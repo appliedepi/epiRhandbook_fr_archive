@@ -11,7 +11,7 @@ Les diagrammes de chaleur, également connus sous le nom de "cartes de chaleur" 
 ```{r, out.width = c('50%', '50%'), fig.show='hold', warning=F, message=F, echo=F}
 knitr::include_graphics(here::here("images", "transmission_matrix.png"))
 
-knitr::include_graphics(ici::ici("images", "heat_tile.png"))
+knitr::include_graphics(here::here("images", "heat_tile.png"))
 
 ```
 
@@ -178,7 +178,7 @@ Maintenant, nous faisons la même chose, mais nous appliquons `prop.table()` de 
 
 ```{r}
 long_prop <- data.frame(prop.table(table(
-    cas = ages_complete$case_age_cat,
+    cases = ages_complete$case_age_cat,
     infectors = ages_complete$infector_age_cat)))
 ```
 
@@ -307,7 +307,7 @@ Les lignes du haut sont présentées ci-dessous. Notez comment les colonnes ont 
 agg_weeks <- agg_weeks %>%   
 
   # Regroupement en semaines d'installation
-  group_by(nom_lieu, week) %>%
+  group_by(location_name, week) %>%
   
   # Créez des colonnes de statistiques récapitulatives sur les données groupées
   summarize(
@@ -545,7 +545,7 @@ ggplot(data = agg_weeks)+
   
   # affiche les données sous forme de tuiles
   geom_tile(
-    aes(x = semaine,
+    aes(x = week,
         y = location_name,
         fill = p_days_reported),      
     color = "white")+ # lignes de grille blanches

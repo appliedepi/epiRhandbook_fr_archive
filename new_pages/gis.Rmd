@@ -619,6 +619,7 @@ case_adm3_sf <- case_adm3 %>%                 # Commencer par les cas et classer
          admin2name, admin1name,
          cases, total, case_10kpop,
          geometry) %>%                        # conserver la géométrie pour que les polygones puissent être cartographier
+  drop_na(objectid) %>%                       # supprimer les lignes vides
   st_as_sf()                                  # convertir en  shapefile
 
 ```

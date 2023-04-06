@@ -42,7 +42,7 @@ Vous pouvez renvoyer le(s) chemin(s) des bibliothèques de paquets que R utilise
 
 Vous pouvez vouloir changer l'ordre des bibliothèques de paquets utilisées par R. Par exemple, si R récupère un emplacement de bibliothèque qui commence par "\\\" et un autre qui commence par une lettre, par exemple "D :". Vous pouvez ajuster l'ordre de `.libPaths()` avec le code suivant.  
 
-````{r, eval=F}
+```{r, eval=F}
 # Changer l'ordre des bibliothèques
 # Ceci peut affecter la priorité de R à trouver un paquet. Par exemple, vous pouvez vouloir que votre bibliothèque C : soit listée en premier.
 myPaths <- .libPaths() # obtenir les chemins d'accès

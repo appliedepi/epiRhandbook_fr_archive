@@ -85,7 +85,7 @@ Le script est un script R Markdown, et a donc les mêmes composants et la même 
 
 ### YAML {.unnumbered}
 
-En haut du script se trouve l'en-tête "YAML". Il doit commencer par trois tirets `---` et doit se terminer par trois tirets `---`. Les paramètres YAML sont présentés par paires `key: value`. **L'indentation et le placement des deux points dans YAML sont importants**: les paires `key:value` sont séparées par des deux points (pas par des signes égaux !). 
+En haut du script se trouve l'en-tête "YAML". Il doit commencer par trois tirets `---` et doit se terminer par trois tirets `---`. Les paramètres YAML sont présentés par paires `key: value`. **L'indentation et le placement des deux points dans YAML sont importants**: les paires `key: value` sont séparées par des deux points (pas par des signes égaux !). 
 
 Le fichier YAML doit commencer par les métadonnées du document. L'ordre de ces paramètres YAML primaires (non indentés) n'a pas d'importance. Par exemple :  
 
@@ -291,7 +291,7 @@ Vous pouvez inclure des morceaux de code R qui impriment des sorties telles que 
 Par exemple, ci-dessous, nous faisons passer la fonction `linelist()` par une commande `count()` pour produire un tableau récapitulatif des cas par hôpital. Finalement, le tableau est envoyé à `knitr::kable()` et le résultat a une barre de défilement sur la droite. Vous pouvez en savoir plus sur la personnalisation de votre tableau avec `kable()` et **kableExtra** [ici](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html).  
 
 ```{r, out.width = c('100%'), out.height = c('100%'), echo=F}
-knitr::include_graphics(ici::here("images", "flexdashboard_tables_script.png"))
+knitr::include_graphics(here::here("images", "flexdashboard_tables_script.png"))
 ```
 
 Voici ce que produit le script :  
@@ -443,7 +443,7 @@ knitr::include_graphics(here::here("images", "flexdashboard_shiny_script2.png"))
 Et voici le tableau de bord :  
 
 ```{r, out.width = c('100%'), out.height = c('100%'), echo=F}
-knitr::include_graphics(ici::here("images", "flexdashboard_shiny_view.gif"))
+knitr::include_graphics(here::here("images", "flexdashboard_shiny_view.gif"))
 ```
 
 

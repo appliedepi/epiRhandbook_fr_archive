@@ -1,4 +1,4 @@
-# Traçage de données continues {plot_continuous}  
+# Traçage de données continues {#plot_continuous}  
 
 ```{r echo=F, fig.show='hold', message=FALSE, warning=FALSE, out.width=c('50%', '50%')}
 pacman::p_load(ggplot2,
@@ -74,7 +74,7 @@ Note : Le méga-paquet **tidyverse** comprend les paquets **ggplot2** et **dplyr
 ```{r}
 pacman::p_load(
   rio, # importation et exportation de données
-  ici, # chemins de fichiers relatifs
+  here, # chemins de fichiers relatifs
   tidyverse # inclut ggplot2 et dplyr
   )
 ```

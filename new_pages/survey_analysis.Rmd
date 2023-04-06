@@ -83,7 +83,7 @@ Le jeu de données est importé à l'aide de la fonction `import()` du paquet **
 survey_data <- rio::import(here::here("data", "surveys", "survey_data.xlsx"))
 
 # Importez le dictionnaire dans R
-survey_dict <- rio::import(ici::ici("data", "surveys", "survey_dict.xlsx")) 
+survey_dict <- rio::import(here::here("data", "surveys", "survey_dict.xlsx")) 
 
 # Importez la population dans R 
 population <- rio::import(here::here("data", "surveys", "population.xlsx"))
@@ -196,8 +196,7 @@ survey_data <- survey_data %>%
 <!-- ======================================================= -->
 ## Données d'enquête { }
 
-Il existe de nombreux plans d'échantillonnage différents qui peuvent être utilisés pour les enquêtes. Ici, 
-nous allons démontrer le code pour : 
+Il existe de nombreux plans d'échantillonnage différents qui peuvent être utilisés pour les enquêtes. Ici, nous allons démontrer le code pour : 
 - Stratifié 
 - en grappes 
 - Stratifié et grappe 
@@ -225,11 +224,9 @@ survey_data <- survey_data %>%
 <!-- ======================================================= -->
 ## Temps d'observation { }
 
-Pour les enquêtes de mortalité, nous voulons maintenant savoir combien de temps chaque individu a été présent dans l'emplacement afin de pouvoir calculer un taux de mortalité approprié pour notre période 
-d'intérêt. Ceci n'est pas pertinent pour toutes les enquêtes, mais particulièrement pour les enquêtes de mortalité, car elles sont fréquemment menées auprès de populations mobiles ou déplacées.
+Pour les enquêtes de mortalité, nous voulons maintenant savoir combien de temps chaque individu a été présent dans l'emplacement afin de pouvoir calculer un taux de mortalité approprié pour notre période d'intérêt. Ceci n'est pas pertinent pour toutes les enquêtes, mais particulièrement pour les enquêtes de mortalité, car elles sont fréquemment menées auprès de populations mobiles ou déplacées.
 
-Pour ce faire, nous définissons d'abord notre période d'intérêt, également connue sous le nom de période de rappel (c'est-à-dire le moment où l'enquête est menée). 
-Nous pouvons ensuite utiliser cette période pour définir des dates inappropriées comme manquantes, c'est-à-dire que si des décès sont signalés en dehors de la période d'intérêt. 
+Pour ce faire, nous définissons d'abord notre période d'intérêt, également connue sous le nom de période de rappel (c'est-à-dire le moment où l'enquête est menée). Nous pouvons ensuite utiliser cette période pour définir des dates inappropriées comme manquantes, c'est-à-dire que si des décès sont signalés en dehors de la période d'intérêt. 
 
 ```{r recall_period}
 
@@ -322,11 +319,9 @@ survey_data <- survey_data %>%
 <!-- ======================================================= -->
 ## Pondération { }
 
-Il est important d'éliminer les observations erronées avant d'ajouter les poids de l'enquête. Par exemple, si vous avez des observations avec un temps d'observation négatif, vous devrez les vérifier (vous pouvez le faire avec la fonction `assert_positive_timespan()` de **sitrep**. 
-Une autre chose est si vous voulez supprimer les lignes vides (par exemple avec `drop_na(uid)`) ou supprimer les doublons (voir la section du manuel sur la [déduplication](#deduplication) pour plus de détails). Ceux qui n'ont pas de consentement doivent aussi être supprimés. 
+Il est important d'éliminer les observations erronées avant d'ajouter les poids de l'enquête. Par exemple, si vous avez des observations avec un temps d'observation négatif, vous devrez les vérifier (vous pouvez le faire avec la fonction `assert_positive_timespan()` de **sitrep**. Une autre chose est si vous voulez supprimer les lignes vides (par exemple avec `drop_na(uid)`) ou supprimer les doublons (voir la section du manuel sur la [déduplication](#deduplication) pour plus de détails). Ceux qui n'ont pas de consentement doivent aussi être supprimés. 
 
-Dans cet exemple, nous filtrons les cas que nous voulons supprimer et les stockons dans un cadre de données séparé - de cette façon, nous pouvons décrire ceux qui ont été exclus de l'enquête. 
-Nous utilisons ensuite la fonction `anti_join()` de **dplyr** pour supprimer ces cas exclus de nos données d'enquête. 
+Dans cet exemple, nous filtrons les cas que nous voulons supprimer et les stockons dans un cadre de données séparé - de cette façon, nous pouvons décrire ceux qui ont été exclus de l'enquête. Nous utilisons ensuite la fonction `anti_join()` de **dplyr** pour supprimer ces cas exclus de nos données d'enquête. 
 
 <span style="color : red ;">**_DANGER:_** Vous ne pouvez pas avoir de valeurs manquantes dans votre variable de poids, ni dans aucune des variables pertinentes pour le plan de sondage (par exemple, les variables d'âge, de sexe, de strates ou de grappes).</span>  
 
@@ -342,11 +337,8 @@ survey_data <- anti_join(survey_data, dropped, by = names(dropped))
 
 ```
 
-Comme mentionné ci-dessus, nous montrons comment ajouter des poids pour trois plans d'étude différents (stratifié, en grappes et stratifié). 
-d'étude (stratifié, en grappe et en grappe stratifié). Ceux-ci nécessitent des informations 
-sur la population source et/ou les grappes enquêtées. 
-Nous utiliserons le code de la grappe stratifiée pour cet exemple, mais utilisez celui qui est le plus approprié à votre plan d'étude.
-mais utilisez celui qui convient le mieux à votre modèle d'étude. 
+Comme mentionné ci-dessus, nous montrons comment ajouter des poids pour trois plans d'étude différents (stratifié, en grappe et en grappe stratifié). Ceux-ci nécessitent des informations sur la population source et/ou les grappes enquêtées. Nous utiliserons le code de la grappe stratifiée pour cet exemple, mais utilisez celui qui est le plus approprié à votre plan d'étude.
+
 
 ```{r survey_weights}
 
@@ -403,12 +395,11 @@ Il y a quatre options, commentez celles que vous n'utilisez pas :
 
 Pour ce modèle, nous supposerons que nous regroupons les enquêtes dans deux strates distinctes (districts sanitaires A et B). Pour obtenir des estimations globales, nous devons donc combiner les poids des grappes et des strates. 
 
-Comme nous l'avons mentionné précédemment, il existe deux paquets disponibles pour ce faire. Le classique est **survey** et il existe un paquetage appelé **srvyr** qui crée des objets adaptés à tidyverse. qui crée des objets et des fonctions adaptés à tidyverse. Nous ferons la démonstration des deux, mais notez que la plupart du code de ce chapitre utilisera des objets basés sur **srvyr**. La seule exception est que le paquet **gtsummary** n'accepte que les objets **survey**. 
+Comme nous l'avons mentionné précédemment, il existe deux paquets disponibles pour ce faire. Le classique est **survey** et il existe un paquetage appelé **srvyr** qui crée des objets et des fonctions adaptés à tidyverse. Nous ferons la démonstration des deux, mais notez que la plupart du code de ce chapitre utilisera des objets basés sur **srvyr**. La seule exception est que le paquet **gtsummary** n'accepte que les objets **survey**. 
 
 ### Paquet **Survey  
 
-Le paquet **survey** utilise effectivement le codage **base** *R*, et il n'est donc pas possible d'utiliser les pipes (`%>%`) ou d'autres syntaxes **dplyr**. 
-Avec le paquetage **survey**, nous utilisons la fonction `svydesign()` pour définir un objet d'enquête avec les clusters, les poids et les strates appropriés. 
+Le paquet **survey** utilise effectivement le codage **base** *R*, et il n'est donc pas possible d'utiliser les pipes (`%>%`) ou d'autres syntaxes **dplyr**. Avec le paquetage **survey**, nous utilisons la fonction `svydesign()` pour définir un objet d'enquête avec les clusters, les poids et les strates appropriés. 
 
 <span style="color : black ;">**_NOTE:_** nous devons utiliser le tilde (`~`) devant les variables, ceci parce que le package utilise la syntaxe **base** *R* d'affectation des variables basée sur des formules. </span>
 
@@ -480,8 +471,7 @@ survey_design <- survey_data %>%
 <!-- ======================================================= -->
 ## Analyse descriptive { }
 
-L'analyse descriptive et la visualisation de base sont traitées en détail dans d'autres chapitres du manuel, nous ne nous y attarderons donc pas ici. 
-Pour plus de détails, voir les chapitres sur les [tableaux descriptifs](#descriptive_tables), [les tests statistiques](#stats_test), [les tableaux de présentation](#tables_presentation), [les bases du ggplot] (#ggplot_basics) et [rapports R markdown](#rmarkdown). 
+L'analyse descriptive et la visualisation de base sont traitées en détail dans d'autres chapitres du manuel, nous ne nous y attarderons donc pas ici. Pour plus de détails, voir les chapitres sur les [tableaux descriptifs](#descriptive_tables), [les tests statistiques](#stats_test), [les tableaux de présentation](#tables_presentation), [les bases du ggplot] (#ggplot_basics) et [rapports R markdown](#rmarkdown). 
 
 Dans cette section, nous allons nous concentrer sur la manière d'étudier le biais dans votre échantillon et de le visualiser. Nous nous pencherons également sur la visualisation du flux de population dans le cadre d'une enquête à l'aide de diagrammes alluviaux/sankey.  
 
@@ -554,8 +544,7 @@ left_join(ag, propcount, by = "age_group", suffix = c("", "_pop")) %>%
 
 Les pyramides démographiques (ou âge-sexe) sont un moyen facile de visualiser la distribution dans la population de votre enquête. Il est également intéressant de créer des [tableaux descriptifs](#descriptive_tables) et le sexe par strates d'enquête. Nous allons démontrer l'utilisation du paquet **apyramide** car il permet de pondérées en utilisant notre objet de conception d'enquête créé ci-dessus. Autres options pour créer [pyramides démographiques](#age_pyramid) sont traitées en détail dans ce chapitre du manuel. Nous utiliserons également une fonction wrapper de **apyramid** appelée `age_pyramid()` qui permet de gagner quelque lignes de code pour produire un graphique avec des proportions. 
 
-Comme pour le test binomial formel de différence, vu plus haut dans la section sur le biais d'échantillonnage, nous sommes intéressés ici à visualiser si notre population échantillonnée 
-est sensiblement différente de la population source et si la pondération corrige cette différence. Pour ce faire, nous allons utiliser le paquet **patchwork** pour montrer nos visualisations **ggplot** côte à côte ; pour plus de détails, voir la section sur la combinaison de tracés dans le chapitre du manuel [Astuces de ggplot](#ggplot_tips) du manuel. Nous allons visualiser notre population source, notre population d'enquête non pondérée et notre population d'enquête pondérée. Vous pouvez également envisager de visualiser chaque strate de votre enquête, pars exemple ici, en utilisant l'argument `stack_by = "health_district"` (voir `?plot_age_pyramid` pour plus de détails). 
+Comme pour le test binomial formel de différence, vu plus haut dans la section sur le biais d'échantillonnage, nous sommes intéressés ici à visualiser si notre population échantillonnée est sensiblement différente de la population source et si la pondération corrige cette différence. Pour ce faire, nous allons utiliser le paquet **patchwork** pour montrer nos visualisations **ggplot** côte à côte ; pour plus de détails, voir la section sur la combinaison de tracés dans le chapitre du manuel [Astuces de ggplot](#ggplot_tips) du manuel. Nous allons visualiser notre population source, notre population d'enquête non pondérée et notre population d'enquête pondérée. Vous pouvez également envisager de visualiser chaque strate de votre enquête, pars exemple ici, en utilisant l'argument `stack_by = "health_district"` (voir `?plot_age_pyramid` pour plus de détails). 
 
 <span style="color : black ;">**_NOTE:_** Les axes x et y sont inversés dans les pyramides </span>.
 
@@ -668,11 +657,8 @@ source_population + sample_population + weighted_population +
 
 ### Diagramme alluvial/sankey
 
-La visualisation des points de départ et des résultats pour les individus peut être très utile pour 
-obtenir une vue d'ensemble. L'application est évidente pour les populations mobiles, 
-mais il existe de nombreuses autres applications telles que les cohortes ou toute autre situation
-où il y a des transitions d'états pour les individus. Ces diagrammes ont plusieurs
-noms différents, y compris alluvial, sankey et ensembles parallèles - les détails sont dans le chapitre du manuel consacré aux [diagrammes et graphiques](#diagrams). 
+La visualisation des points de départ et des résultats pour les individus peut être très utile pour obtenir une vue d'ensemble. L'application est évidente pour les populations mobiles, mais il existe de nombreuses autres applications telles que les cohortes ou toute autre situation
+où il y a des transitions d'états pour les individus. Ces diagrammes ont plusieurs noms différents, y compris alluvial, sankey et ensembles parallèles - les détails sont dans le chapitre du manuel consacré aux [diagrammes et graphiques](#diagrams). 
 
 
 ```{r visualise_population_flow}

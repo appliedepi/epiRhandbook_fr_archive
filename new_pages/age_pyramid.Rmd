@@ -11,7 +11,7 @@ Les pyramides démographiques sont utiles pour montrer les distributions d'âge 
 -   Des pyramides rapides et faciles à réaliser grâce au package **apyramid**\
 -   Des pyramides plus personnalisables grâce à `ggplot()`\
 -   Affichage de données démographiques "de référence" à l'arrière-plan de la pyramide\
--   Utilisation de graphiques de type pyramide pour afficher d'autres types de données (par exemple, les réponses à des questions d'enquête de type Likert).
+-   Utilisation de graphiques de type pyramide pour afficher d'autres types de données (par exemple, les réponses à des questions d'enquête de type **Likert**).
 
 <!-- ======================================================= -->
 
@@ -19,7 +19,7 @@ Les pyramides démographiques sont utiles pour montrer les distributions d'âge 
 
 ### Charger les packages {.unnumbered}
 
-Ce morceau de code montre le chargement des packages nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le package si nécessaire et le charge pour l'utiliser. Vous pouvez également charger les packages installés avec `library()` à partir de la base R. Voir la page sur [les bases de R]{#basics} pour plus d'informations sur les packages R.
+Ce morceau de code montre le chargement des packages nécessaires aux analyses. Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe le package si nécessaire et le charge pour l'utiliser. Vous pouvez également charger les packages installés avec `library()` à partir de la **base** R. Voir la page sur [les bases de R](#basics) pour plus d'informations sur les packages R.
 
 ```{r}
 pacman::p_load(rio,       # Pour importer les données
@@ -76,9 +76,9 @@ hist(linelist$age)
 
 <!-- ======================================================= -->
 
-## **Le package apyramid**
+## Le package **apyramid**
 
-Le package **apyramid** est un produit du projet [R4Epis](https://r4epis.netlify.com/). Vous pouvez en savoir plus sur ce paquet [ici](https://cran.r-project.org/web/packages/apyramid/vignettes/intro.html). Il vous permet de réaliser rapidement une pyramide des âges. Pour des situations plus nuancées, voir la section ci-dessous [utilisez ggplot()](#demo_pyr_gg) Vous pouvez en savoir plus sur le package **apyramid** dans sa page d'aide en entrant `?age_pyramid` dans votre console R.
+Le package **apyramid** est un produit du projet [R4Epis](https://r4epis.netlify.com/). Vous pouvez en savoir plus sur ce paquet [ici](https://cran.r-project.org/web/packages/apyramid/vignettes/intro.html). Il vous permet de réaliser rapidement une pyramide des âges. Pour des situations plus nuancées, voir la section ci-dessous [utilisez `ggplot()`](#demo_pyr_gg). Vous pouvez en savoir plus sur le package **apyramid** dans sa page d'aide en entrant `?age_pyramid` dans votre console R.
 
 ### Données sous forme de liste des cas {.unnumbered}
 
@@ -105,7 +105,7 @@ apyramid::age_pyramid(data = linelist,
                       proportional = TRUE)
 ```
 
-Lors de l'utilisation du package **agepyramid**, si la colonne `split_by` est binaire (par exemple homme/femme, ou oui/non), le résultat apparaîtra comme une pyramide. Cependant, s'il y a plus de deux valeurs dans la colonne `split_by` (sans compter NA), la pyramide apparaîtra comme un diagramme à barres à facettes avec des barres grises dans le "fond" indiquant la plage des données non facettées pour ce groupe d'âge. Dans ce cas, les valeurs de `split_by =` apparaîtront comme des libellés en haut de chaque panneau de facettes. Par exemple, voici ce qui se passe si la colonne `hospital` est attribuée à `split_by =`.
+Lors de l'utilisation du package **apyramid**, si la colonne `split_by` est binaire (par exemple homme/femme, ou oui/non), le résultat apparaîtra comme une pyramide. Cependant, s'il y a plus de deux valeurs dans la colonne `split_by` (sans compter `NA`), la pyramide apparaîtra comme un diagramme à barres à facettes avec des barres grises dans le "fond" indiquant la plage des données non facettées pour ce groupe d'âge. Dans ce cas, les valeurs de `split_by =` apparaîtront comme des libellés en haut de chaque panneau de facettes. Par exemple, voici ce qui se passe si la colonne `hospital` est attribuée à `split_by =`.
 
 ```{r, warning=F, message=F}
 apyramid::age_pyramid(data = linelist,
@@ -126,7 +126,7 @@ apyramid::age_pyramid(data = linelist,
 
 #### Proportions, couleurs et attributs graphiques {.unnumbered}
 
-Par défaut, les barres affichent les nombres (et non les pourcentages), une ligne en pointillés au milieu de chaque groupe est affichée, et les couleurs sont vertes/violettes. Chacun de ces paramètres peut être ajusté, comme indiqué ci-dessous :
+Par défaut, les barres affichent les nombres (pas les pourcentages), une ligne en pointillés au milieu de chaque groupe est affichée, et les couleurs sont vertes/violettes. Chacun de ces paramètres peut être ajusté, comme indiqué ci-dessous :
 
 Vous pouvez également ajouter des commandes ggplot() supplémentaires au graphique en utilisant la syntaxe standard de `ggplot()` "+", comme des attributs graphiques et des ajustements de libellés :
 
@@ -269,7 +269,7 @@ Une version **simple** de cette méthode, utilisant `geom_histogram()`, est pré
 
 [***DANGER:*** Si les **limites** de votre axe de nombre de cas sont trop basses, et qu'une barre de compte les dépasse, la barre disparaîtra entièrement ou sera artificiellement raccourcie ! Faites attention à ce phénomène si vous analysez des données qui sont régulièrement mises à jour. Pour éviter cela, les limites de votre axe de comptage doivent s'ajuster automatiquement à vos données, comme ci-dessous]{style="color: red;"}
 
-Il y a beaucoup de choses que vous pouvez changer/ajoutez à cette version simple, y compris :
+Il y a beaucoup de choses que vous pouvez changer/ajoutez à cette version simple :
 
 -   Ajuster automatiquement l'échelle de l'axe des comptes à vos données (éviter les erreurs discutées dans l'avertissement ci-dessous).\
 -   Spécifier manuellement les couleurs et les étiquettes de légende
@@ -393,7 +393,7 @@ age_levels <- c("0-4","5-9", "10-14", "15-19", "20-24",
                 "75-79", "80-84", "85+")
 ```
 
-Combinez les données de population et de cas à l'aide de la fonction **dplyr** `bind_rows()` :
+Combinez les données de population et de cas à l'aide de la fonction du paquet **dplyr**,  `bind_rows()` :
 
 -   Tout d'abord, assurez-vous qu'elles ont *exactement les mêmes* noms de colonnes, valeurs de catégories d'âge et valeurs de sexe.\
 -   Faites en sorte qu'ils aient la même structure de données : colonnes de catégorie d'âge, de sexe, de nombre et de pourcentage du total.\
@@ -423,7 +423,7 @@ Examiner les données de population modifiées
 DT::datatable(pop_data, rownames = FALSE, options = list(pageLength = 5, scrollX=T), class = 'white-space: nowrap' )
 ```
 
-On peut maintenant faire la même chose pour les données des cas. Now implement the same for the case linelist. C'est légèrement différent car elle commence par les lignes de cas et non par des totaux.
+On peut maintenant faire la même chose pour les données des cas.  C'est légèrement différent car elle commence par les lignes de cas et non par des totaux.
 
 ```{r, warning=F, message=F}
 # créer des données sur les cas par âge/sexe, avec le pourcentage du total
@@ -622,7 +622,7 @@ melted_max <- melted %>%
 
 Maintenant, créez le graphique. Comme dans les pyramides des âges ci-dessus, nous créons deux graphes à barres et inversons les valeurs de l'un d'entre eux en négatif.
 
-On utilise `geom_bar()` parce que nos données sont une ligne par observation, et non pas des comptes agrégés. Nous utilisons le terme spécial de **ggplot2** `..count..` dans l'un des graphiques en barres pour inverser les valeurs négatives (\*-1), et nous définissons `position = "stack"` pour que les valeurs s'empilent les unes sur les autres.
+On utilise `geom_bar()` parce que nos données sont une ligne par observation, et non pas des comptes agrégés. Nous utilisons le terme spécial de **ggplot2** `..count..` dans l'un des graphiques en barres pour inverser les valeurs négatives (*-1*), et nous définissons `position = "stack"` pour que les valeurs s'empilent les unes sur les autres.
 
 ```{r, warning=F, message=F}
 # Créer le graphe

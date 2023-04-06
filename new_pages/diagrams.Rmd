@@ -4,8 +4,8 @@
 
 
 ```{r out.width = c('50%'), fig.show='hold', echo=F}
-knitr::include_graphics(ici::here("images", "flow_chart.png"))
-knitr::include_graphics(ici::ici("images", "sankey_diagram.png"))
+knitr::include_graphics(here::here("images", "flow_chart.png"))
+knitr::include_graphics(here::here("images", "sankey_diagram.png"))
 ```
 
 
@@ -61,14 +61,14 @@ DT::datatable(head(linelist, 50), rownames = FALSE, filter="top", options = list
 
 On peut utiliser le paquet R **DiagrammeR** pour créer des diagrammes/schémas de flux. Ils peuvent être statiques, ou s'ajuster  dynamiquement en fonction des changements dans un ensemble de données.  
 
-**Outils  
+**Outils**  
 
 La fonction `grViz()` est utilisée pour créer un diagramme "Graphviz". Cette fonction accepte une *chaîne de caractères en entrée contenant les instructions* pour réaliser le diagramme. Dans cette chaîne de caractères, les instructions sont écrites dans un langage différent, [DOT](https://graphviz.org/doc/info/lang.html); il est assez facile d'apprendre les bases de le langage DOT.
 
 **Structure de base**  
 
 1) Ouvrez les instructions `grViz("`  
-2) Spécifiez la direction et le nom du graphique, et ouvrez les parenthèses, par exemple `digraph mon_diagramme_de_flux {``
+2) Spécifiez la direction et le nom du graphique, et ouvrez les parenthèses, par exemple `digraph mon_diagramme_de_flux {`
 3) Déclaration du graphique (disposition, direction du rang)  
 4) Déclaration des noeuds (crée les noeuds)
 5) Déclarations de contours/bords (donne les liens entre les noeuds)  
@@ -114,7 +114,7 @@ digraph surveillance_diagram {
          fontsize = 10]
   
   
-  nodes [shape = circle, 
+  node [shape = circle, 
        fixedsize = true
        width = 1.3]               
   
@@ -123,8 +123,8 @@ digraph surveillance_diagram {
   Tertiary
 
   
-  Primary -> Secondary [label = ' case transfer']
-  Secondary -> Tertiary [label = ' case transfer']
+  Primary -> Secondary [label = ' transfert de cas']
+  Secondary -> Tertiary [label = ' transfert de cas']
 }
 ")
 ```
@@ -151,7 +151,7 @@ Dans les déclarations des bords/contours, des sous-groupes peuvent être créé
 **Mise en page**  
 
 * dot (définir `rankdir` comme soit TB, LR, RL, ou BT)
-* Neato  
+* neato  
 * twopi  
 * circo  
 
@@ -160,14 +160,14 @@ Dans les déclarations des bords/contours, des sous-groupes peuvent être créé
 
 * `label` (texte, entre guillemets simples si plusieurs mots)  
 * `fillcolor` (plusieurs couleurs possibles)  
-* `fontcolor` (plusieurs couleurs possibles)  
+* `fontcolor`  
 * `alpha` (transparence 0-1)  
 * `shape` (ellipse, ovale, diamant, ouf, texte en clair, point, carré, triangle)  
 * `style`  
 * `sides`  
 * `peripheries`  
 * `fixedsize` (h x l)  
-* `hauteur`  
+* `height`  
 * `width`  
 * `distortion`  
 * `penwidth` (largeur de la bordure de la forme)  
@@ -203,60 +203,9 @@ Dans les déclarations des bords/contours, des sous-groupes peuvent être créé
 L'exemple ci-dessous développe le diagramme de surveillance, en ajoutant des noms de noeuds complexes, des bords groupées, des couleurs et un style spécifique.
 
 
-```{r}
-
-# Toutes les instructions sont dans une grande chaîne de caractères
-# 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
-
-# déclaration du graphique
-  #################
-
-# disposition de haut en bas
-# nouds (formes cercles)
-  #################
-  #bords et bord groupé
 
 
-
-DiagrammeR::grViz(" 
-digraph surveillance_diagram { 
-  
-  
-  graphe [layout = dot,
-         rankdir = TB, 
-         fontsize = 10]
-  
-
-  
-  node [shape = circle, 
-       fixedsize = true
-       width = 1.3]                      
-  
-  Primary [label = 'Site Primaire'] 
-  Secondary [label = 'Site Secondaire'] 
-  Tertiary [label = 'Site Tertiaire'] 
-  SC [label = 'Coordination de\nla Surveillance',
-             fontcolor = darkgreen] 
-
-
-  Primary -> Secondary [label = 'Transfert de cas',
-                          fontcolor = red,
-                          color = red]
-  Secondary -> Tertiary [label = 'Transfert de cas',
-                          fontcolor = red,
-                          color = red]
-  
-
-  {Primary Secondary Tertiairy} -> SC [label = 'déclaration des cas',
-                                      fontcolor = darkgreen,
-                                      couleur = darkgreen,
-                                      style = dashed]
-}
-")
-```
-
-
-```{r out.width='50%', echo=F}
+```{r out.width='50%'}
 # Toutes les instructions se trouvent dans une grande chaîne de caractères
 # 'digraph' signifie 'graphique directionnel', puis le nom du graphique 
 # déclaration du graphique
@@ -272,7 +221,7 @@ DiagrammeR::grViz("
 digraph surveillance_diagram { 
   
   
-  graphe [layout = dot,
+  graph [layout = dot,
          rankdir = TB, 
          fontsize = 10]
   
@@ -297,7 +246,7 @@ digraph surveillance_diagram {
                           color = red]
   
 
-  {Primary Secondary Tertiairy} -> SC [label = 'déclaration des cas',
+  {Primary Secondary Tertiary} -> SC [label = 'déclaration des cas',
                                       fontcolor = darkgreen,
                                       couleur = darkgreen,
                                       style = dashed]
@@ -305,155 +254,74 @@ digraph surveillance_diagram {
 ")
 ```
 
-**Groupements de sous-graphiques  
+**Groupements de sous-graphiques**  
 
 Pour regrouper les noeuds dans des clusters encadrés, placez-les dans le même sous-graphique nommé (`subgraph name {}`). Pour que chaque sous-graphe soit identifié dans une boîte de délimitation, commencez le nom du sous-graphique par "cluster", comme le montrent les 4 boîtes ci-dessous.  
 
-```{r }
 
-# Toutes les instructions sont dans une grande chaîne de caractères
-# 'digraph' signifie 'graphique directionnel', puis le nom du graphique
- # déclaration du graphique
-  #################
-# nouds (cercles)
-  #################
-# nouds (cases)
-  ###############
-
-DiagrammeR::grViz(" 
-digraph surveillance_diagram {  
+```{r out.width='120%'}
+DiagrammeR::grViz("             # All instructions are within a large character string
+digraph surveillance_diagram {  # 'digraph' means 'directional graph', then the graph name 
   
- 
-  graphe [layout = dot,
+  # graph statement
+  #################
+  graph [layout = dot,
          rankdir = TB,            
          overlap = true,
          fontsize = 10]
   
-
-  
-  node [shape = circle, # shape = circle
+  # nodes (circles)
+  #################
+  node [shape = circle,                  # shape = circle
        fixedsize = true
-       width = 1.3]                      # largeur des cercles
+       width = 1.3]                      # width of circles
   
   subgraph cluster_passive {
-    Primary [label = 'Site Primaire'] 
+    Primary   [label = 'Site Primaire'] 
     Secondary [label = 'Site Secondaire'] 
-    Tertiary [label = 'Site Tertiaire'] 
-    SC [label = 'Coordination de\nla Surveillance',
+    Tertiary  [label = 'Site Tertiaire'] 
+    SC        [label = 'Coordination de\nla Surveillance',
                fontcolor = darkgreen] 
   }
   
-  
-  node [shape = box, 
-        fontname = Helvetica]            
-  
-  sous-graphe cluster_active {
-    Active [label = 'Surveillance\nActive'] 
-    HCF_active [label = 'HCF\nRecherche Active']
-  }
-  
-  sous-graphe cluster_EBD {
-    EBS [label = 'Surveillance basée sur les événements (SBE)'] 
-    'Social Media'
-    Radio
-  }
-  
-  sous-graphe cluster_CBS {
-    CBS [label = 'Surveillance basée sur les communautés(SBC)']
-    RECOs
-  }
-
-  
-
-  {Primary Secondary Tertiary} -> SC [label = 'déclaration des cas']
-
-  Primary -> Secondary [label = 'transfert de cas',
-                          fontcolor = red]
-  Secondaire -> Tertiaire [label = 'transfert de cas',
-                          fontcolor = red]
-  
-  HCF_active -> Active
-  
-  {Radio 'Social Media' -> EBS
-  
-  RECOs -> CBS
-}
-")
-
-```
-
-
-```{r out.width='120%', echo=F}
-# Toutes les instructions sont dans une grande chaîne de caractères
-# 'digraph' signifie 'graphique directionnel', puis le nom du graphique
- # déclaration du graphique
-  #################
-# nouds (cercles)
-  #################
-# nouds (cases)
+  # nodes (boxes)
   ###############
-
-DiagrammeR::grViz(" 
-digraph surveillance_diagram {  
+  node [shape = box,                     # node shape
+        fontname = Helvetica]            # text font in node
   
- 
-  graphe [layout = dot,
-         rankdir = TB,            
-         overlap = true,
-         fontsize = 10]
-  
-
-  
-  node [shape = circle, # shape = circle
-       fixedsize = true
-       width = 1.3]                      # largeur des cercles
-  
-  subgraph cluster_passive {
-    Primary [label = 'Site Primaire'] 
-    Secondary [label = 'Site Secondaire'] 
-    Tertiary [label = 'Site Tertiaire'] 
-    SC [label = 'Coordination de\nla Surveillance',
-               fontcolor = darkgreen] 
-  }
-  
-  
-  node [shape = box, 
-        fontname = Helvetica]            
-  
-  sous-graphe cluster_active {
+  subgraph cluster_active {
     Active [label = 'Surveillance\nActive'] 
     HCF_active [label = 'HCF\nRecherche Active']
   }
   
-  sous-graphe cluster_EBD {
-    EBS [label = 'Surveillance basée sur les événements (SBE)'] 
+  subgraph cluster_EBD {
+    EBS [label = 'Surveillance basée sur\n les événements (SBE)'] 
     'Social Media'
     Radio
   }
   
-  sous-graphe cluster_CBS {
-    CBS [label = 'Surveillance basée sur les communautés(SBC)']
+  subgraph cluster_CBS {
+    CBS [label = 'Surveillance basée sur\n les communautés(SBC)']
     RECOs
   }
-
   
-
+  # edges
+  #######
   {Primary Secondary Tertiary} -> SC [label = 'déclaration des cas']
-
-  Primary -> Secondary [label = 'transfert de cas',
+  Primary   -> Secondary [label = 'transfert de cas',
                           fontcolor = red]
-  Secondaire -> Tertiaire [label = 'transfert de cas',
+  Secondary -> Tertiary [label = 'transfert de cas',
                           fontcolor = red]
   
   HCF_active -> Active
   
-  {Radio 'Social Media' -> EBS
+  {'Social Media' Radio} -> EBS
   
   RECOs -> CBS
 }
 ")
-
 ```
+
 
 
 **Formes des nouds** 
@@ -618,7 +486,7 @@ Tracez maintenant le diagramme de Sankey avec `sankeyNetwork()`. Vous pouvez en 
 # graphique
 ######
 p <- sankeyNetwork(
-  Links = linkes,
+  Links = links,
   Nodes = nodes,
   Source = "IDsource",
   Target = "IDtarget",
@@ -702,7 +570,7 @@ pacman::p_load(vistime, # créer la ligne de temps
 ```{r, echo=F}
 # référence : https://cran.r-project.org/web/packages/vistime/vignettes/vistime-vignette.html#ex.-2-project-planning
 
-data <- read.csv(text="event, groupe, début, fin, couleur
+data <- read.csv(text="event, group, start, end, color
                        Event 1, Group A,2020-01-22,2020-01-22, #90caf9
                        Event 1, Group B,2020-01-23,2020-01-23, #90caf9
                        Event 1, Group C,2020-01-23,2020-01-23, #1565c0
@@ -749,7 +617,7 @@ for(i in 1:length(pp$x$data)){
 
 # étape 4 : position du texte
 for(i in 1:length(pp$x$data)){
-  si(pp$x$data[[i]]$mode == "text") pp$x$data[[i]]$textposition <- "right"
+  if(pp$x$data[[i]]$mode == "text") pp$x$data[[i]]$textposition <- "right"
 }
 
 #imprimer

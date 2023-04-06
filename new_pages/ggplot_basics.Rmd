@@ -24,10 +24,12 @@ Ce chunk de code montre le chargement des "packages" nécessaires aux analyses. 
 
 ```{r}
 pacman::p_load(
-  tidyverse,      # inclut ggplot2 et d'autres extensions de data management
   rio,            # importer/exporter 
   here,           # localiser des fichiers
-  stringr         # travailler avec des caractères   
+  stringr,         # travailler avec des caractères 
+  janitor,
+  tidyverse,      # inclut ggplot2 et d'autres extensions de data management
+  ggforce
 )
 ```
 
@@ -987,7 +989,7 @@ class(linelist$hospital)
 
 # Regardez les valeurs et les proportions dans la variable hospital
 linelist %>% 
-  tabyl(hospitalé)
+  tabyl(hospital)
 ```
 
 

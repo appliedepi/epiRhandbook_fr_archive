@@ -158,7 +158,7 @@ compile_reports(reports = c(2, 4))
 
 
 
-### Compiler le tout {.unnumbered}
+### Compiler tous les rapports {.unnumbered}
 
 Vous pouvez compiler *tous* les rapports R Markdown dans le dossier "report_sources" en mettant l'argument `reports = ` à TRUE.  
 

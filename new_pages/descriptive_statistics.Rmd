@@ -66,7 +66,7 @@ skim(linelist)
 
 ```{r echo=F}
 # Les histogrammes sparkline ne s'affichent pas correctement, il faut donc les éviter.
-skim_without_charts(linelist)
+#skim_without_charts(linelist)
 ```
 
 Vous pouvez également utiliser la fonction `summary()`, de **base** R, pour obtenir des informations sur un jeu de données entier, mais cette sortie peut être plus difficile à lire qu'en utilisant **skimr**.  
@@ -217,7 +217,7 @@ Si vous convertissez le tableau en HTML avec un paquetage comme **flextable**, v
 linelist %>%
   tabyl(age_cat, gender) %>% 
   adorn_totals(where = "col") %>% 
-  adorn_percentages(dénominateur = "col") %>% 
+  adorn_percentages(denominator = "col") %>% 
   adorn_pct_formatting() %>% 
   adorn_ns(position = "front") %>% 
   adorn_title(
@@ -879,17 +879,17 @@ linelist %>%
 <!-- mutate(pourcentage = n / somme(n) * 100) %>% -->
 <!-- pivot_wider(names_from = outcome, values_from = c(n, percentage)) %>% -->
 <!-- filter(!is.na(gender)) %>% -->
-<!-- mutate(pval = chisq.test(linelist$gender, linelist$outcome)$p.value) -->% -->
+<!-- mutate(pval = chisq.test(linelist$gender, linelist$outcome)$p.value) -->
 
 
 
-<!-- <!-- ======================================================= --> -->
+<!-- <!-- ======================================================= --> 
 
 <!-- ## Corrélations -->
 
 <!-- La corrélation entre les variables numériques peut être étudiée à l'aide de tidyverse -->
-<!-- `corrr`. Il vous permet de calculer les corrélations en utilisant les coefficients de Pearson, de Kendall --> <"-- tau ou de Spec.
-<!-- tau ou Spearman rho. Le package crée un tableau et dispose également d'une fonction pour --> <i>.
+<!-- `corrr`. Il vous permet de calculer les corrélations en utilisant les coefficients de Pearson, de Kendall --> 
+<!-- tau ou Spearman rho. Le package crée un tableau et dispose également d'une fonction pour -->
 <!-- tracer automatiquement les valeurs.  -->
 
 <!-- ``{r, warning=F, message=F} -->

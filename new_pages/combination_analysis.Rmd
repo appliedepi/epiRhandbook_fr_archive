@@ -124,12 +124,12 @@ Maintenant, nous faisons deux dernières colonnes :
 1. Concaténation (collage) de tous les symptômes du patient (une colonne de caractères)  
 2. Convertir la colonne ci-dessus en classe *list*, afin qu'elle puisse être acceptée par **ggupset** pour faire le graphe.  
 
-Voir la page sur [Caractères et chaînes de caractères] pour en savoir plus sur la fonction `unite()` de **stringr**.
+Voir la page sur [Caractères et chaînes de caractères](#character_strings) pour en savoir plus sur la fonction `unite()` de **stringr**.
 
 ```{r, warning=F, message=F}
 linelist_sym_1 <- linelist_sym_1 %>% 
-  unit(col = "all_symptoms",
-        c(fever, chills, cough, aches, vomits), 
+  unite(col = "all_symptoms",
+        c(fever, chills, cough, aches, vomit), 
         sep = " ; ",
         remove = TRUE,
         na.rm = TRUE) %>% 
@@ -166,11 +166,11 @@ geom_bar() +
 scale_x_upset(
   reverse = FALSE,
   n_intersections = 10,
-  sets = c("fever", "chills", "cough", "aches", "vomits"))+
+  sets = c("fever", "chills", "cough", "aches", "vomit"))+
 labs(
   title = "Signes et symptômes",
   subtitle = "Les 10 combinaisons les plus fréquentes de signes et de symptômes",
-  caption = "Caption here.",
+  caption = "Caption ici",
   x = "Combinaison de symptômes",
   y = "Fréquence dans l'ensemble de données")
 
@@ -223,7 +223,7 @@ Maintenant, faites le graphique en utilisant la fonction personnalisée `upset()
 
 # Créer le graphique
 UpSetR::upset(
-  select(linelist_sym_2, fever, chills, cough, aches, vomits),
+  select(linelist_sym_2, fever, chills, cough, aches, vomit),
   sets = c("fever", "chills", "cough", "aches", "vomit"),
   order.by = "freq",
   sets.bar.color = c("blue", "red", "yellow", "darkgreen", "orange"), # couleurs optionnelles

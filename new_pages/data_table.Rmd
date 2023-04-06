@@ -161,8 +161,8 @@ Dans les exemples suivants, nous :
 * dans les admissions qui ont duré plus de 7 jours, compter le nombre de cas selon le mois d'admission et l'hôpital où ils ont été admis.
 
 
-````{r}
-linelist[, .N, .(hôpital)] #le nombre de cas par hôpital
+```{r}
+linelist[, .N, .(hospital)] #le nombre de cas par hôpital
 linelist[age > 18, .(mean_wt = mean(wt_kg, na.rm = T),
                              mean_ht = mean(ht_cm, na.rm = T)), .(gender, outcome)] #NAs représentent les catégories pour lesquelles les données sont manquantes
 linelist[days_onset_hosp > 7, .N, .(month = month(date_hospitalisation), hospital)]
@@ -171,7 +171,7 @@ linelist[days_onset_hosp > 7, .N, .(month = month(date_hospitalisation), hospita
 
 Data.table permet également d'enchaîner les expressions comme suit :
 
-````{r}
+```{r}
 
 linelist[, .N, .(hospital)][order(-N)][1:3] #La première sélectionne tous les cas par hôpital, la deuxième ordonne les cas par ordre décroissant, la troisième sous-ensemble les 3 hôpitaux ayant le plus grand nombre de cas.
 
@@ -180,7 +180,7 @@ linelist[, .N, .(hospital)][order(-N)][1:3] #La première sélectionne tous les 
 
 Dans ces exemples, nous partons du principe qu'une ligne du tableau de données correspond à un nouveau cas, et nous pouvons donc utiliser la fonction **.N** pour représenter le nombre de lignes du tableau de données. Une autre fonction utile pour représenter le nombre de cas uniques est `uniqueN()`, qui retourne le nombre de valeurs uniques dans une entrée donnée. Ceci est illustré ici :
 
-````{r}
+```{r}
 
 linelist[, .(uniqueN(gender))] #souvenez-vous que .() dans l'argument j renvoie un tableau de données
 
@@ -188,14 +188,14 @@ linelist[, .(uniqueN(gender))] #souvenez-vous que .() dans l'argument j renvoie 
 
 La réponse est 3, car les valeurs uniques de la colonne sexe sont m, f et N/A. Comparez avec la fonction R de base `unique()`, qui renvoie toutes les valeurs uniques dans une entrée donnée :
 
-````{r}
+```{r}
 
 linelist[, .(unique(gender))]
 ```
 
 Pour trouver le nombre de cas uniques dans un mois donné, nous écririons ce qui suit :
 
-````{r}
+```{r}
 
 linelist[, .(uniqueN(case_id)), .(month = month(date_hospitalisation))]
 
@@ -205,9 +205,9 @@ linelist[, .(uniqueN(case_id)), .(month = month(date_hospitalisation))]
 
 L'opérateur `:=` est utilisé pour ajouter ou mettre à jour des données dans une table de données. L'ajout de colonnes à votre table de données peut se faire de la manière suivante :
 
-````{r}
+```{r}
 
-linelist[, adult := âge >= 18] #ajoute une colonne
+linelist[, adult := age >= 18] #ajoute une colonne
 linelist[, c("child", "wt_lbs") := .(age < 18, wt_kg*2.204)] #pour ajouter plusieurs colonnes, il faut utiliser la syntaxe c("") et list() ou .()
 linelist[, `:=` (bmi_in_range = (bmi > 16 & bmi < 40),
                          no_infector_source_data = is.na(infector) | is.na(source))] #Cette méthode utilise := comme un opérateur fonctionnel `:=`.

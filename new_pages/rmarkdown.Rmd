@@ -168,7 +168,7 @@ Il n'existe pas de mécanisme simple pour modifier la couleur du texte dans R Ma
 
 
 ``` {.md}
-<span style="color: red;">**_DANGER:_** This is a warning.</span>  
+<span style="color: red;">**_DANGER:_** Ceci est un avertissement.</span>  
 ```
 
 [**_DANGER:_** Ceci est un avertissement.]{style="color: red;"}
@@ -215,7 +215,7 @@ knitr::include_graphics(here::here("images", "markdown/rmarkdown_hide_text.png")
 
 ### Morceaux de code {.unnumbered}
 
-Les sections du script qui sont dédiées à l'exécution du code R sont appelées "chunks". C'est là que vous pouvez charger des "packages", importer des données et effectuer la gestion et la visualisation des données. Il peut y avoir de nombreux "chunks" de code (mettez  en autant qu'il en faut pour un code plus lisible et comprehensible), ils peuvent donc vous aider à organiser votre code R en parties, éventuellement entrecoupées de texte. Remarque : ces "chunks" auront une couleur de fond légèrement différente de celle de la partie narrative du document.
+Les sections du script qui sont dédiées à l'exécution du code R sont appelées "chunks". C'est là que vous pouvez charger des "packages", importer des données et effectuer la gestion et la visualisation des données. Il peut y avoir de nombreux "chunks" de code (mettez  en autant qu'il en faut pour un code plus lisible et comprehensible), ils peuvent donc vous aider à organiser votre code R en parties, éventuellement entrecoupées de texte. **Remarque** : ces "chunks" auront une couleur de fond légèrement différente de celle de la partie narrative du document.
 
 
 Chaque chunk s'ouvre sur une ligne qui commence par trois "quotes" inversés et des crochets qui contiennent les paramètres du chunk (`{ }`). Le chunk se termine par trois autres "quotes" inversés.
@@ -373,7 +373,7 @@ source("your-script.R", local = knitr::knit_global())
 
 Notez que lorsque vous utilisez `source()` *dans* le R Markdown, les fichiers externes seront toujours exécutés *pendant le rendu de votre fichier Rmd*. Par conséquent, chaque script est exécuté à chaque fois que vous rendez le rapport. Ainsi, le fait d'avoir ces commandes `source()` *dans* le R Markdown n'accélère pas votre temps d'exécution, et ne vous aide pas beaucoup à débloquer, puisque les erreurs produites seront toujours affichées lors de l'exécution du R Markdown.
 
-Une alternative est d'utiliser l'option `child =` **knitr**. EXPLIQUER PLUS À FAIRE
+Une alternative est d'utiliser l'option `child =` **knitr**.
 
 
 Vous devez être conscient des différents *environnements* de R. Les objets créés dans un environnement ne seront pas nécessairement disponibles dans l'environnement utilisé par le Markdown R.
