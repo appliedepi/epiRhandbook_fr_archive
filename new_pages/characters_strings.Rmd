@@ -1,5 +1,5 @@
 
-# caractères et chaînes de caractères {#character_strings}  
+# Caractères et chaînes de caractères {#character_strings}  
 
 ```{r, out.width=c('100%'), echo=F, message=F}
 knitr::include_graphics(here::here("images", "Characters_Strings_1500x500.png"))
