@@ -49,9 +49,8 @@ pacman::p_load(rio, # Importation du fichier
                ) 
 
 ## charger les paquets depuis github
-pacman::p_load_gh(
-     "R4EPI/sitrep" # pour le temps d'observation / fonctions de pondération
-)
+pacman::p_load_gh(  "R4EPI/sitrep" )# pour le temps d'observation / fonctions de pondération
+
 
 ``` 
 
@@ -179,7 +178,7 @@ survey_data <- survey_data %>%
 ## sélectionner les noms de variables oui/non dans le dictionnaire 
 YNVARS <- survey_dict %>% 
   filter(type == "yn") %>% 
-  filter(nom %in% noms(survey_data)) %>% 
+  filter(name %in% names(survey_data)) %>% 
   ## filtre pour correspondre aux noms des colonnes de vos données
   pull(name) # select yn vars
   
@@ -251,7 +250,7 @@ survey_data <- survey_data %>%
                                   birthday_date),
            left_date = if_else(left_date > recall_end,
                               as.Date(NA),
-                               date_gauche),
+                               left_date),
            death_date = if_else(death_date > recall_end,
                                as.Date(NA),
                                death_date)
@@ -455,14 +454,14 @@ survey_design_strata <- survey_data %>%
                   )
 ## cluster ---------------------------------------------------------------------
 survey_design_cluster <- survey_data %>%
-  as_survey_design(ids = nom_du_village, # ids de la grappe
+  as_survey_design(ids = village_name, # ids de la grappe
                    weights = surv_weight_cluster, # variable de poids créée ci-dessus
                    strata = NULL # l'échantillonnage était simple (pas de strates)
                   )
 
 ## cluster stratifié ----------------------------------------------------------
 survey_design <- survey_data %>%
-  as_survey_design(ids = nom_du_village, # ids de la grappe
+  as_survey_design(ids = village_name, # ids de la grappe
                    weights = surv_weight_cluster_strata, # variable de poids créée ci-dessus
                    strata = health_district # l'échantillonnage a été stratifié par district
                   )
@@ -577,7 +576,7 @@ labels <- c(
 
 ## tracer la population source 
 ## nb : cette population doit être réduite à la population globale (c'est-à-dire en enlevant les districts de santé).
-source_population <- population %>%.
+source_population <- population %>%
   ## s'assurer que l'âge et le sexe sont des facteurs
   mutate(age_group = factor(age_group, 
                             levels = c("0-2", 
@@ -585,7 +584,7 @@ source_population <- population %>%.
                                        "15-29",
                                        "30-44", 
                                        "45+")), 
-         sex = facteur(sex)) %>% 
+         sex = factor(sex)) %>% 
   group_by(age_group, sex) %>% 
   ## additionner les comptes pour chaque district de santé 
   summarise(population = sum(population)) %>% 
@@ -595,9 +594,9 @@ source_population <- population %>%.
   ## tracer la pyramide 
   age_pyramid(
             age_group = age_group, 
-            split_by = sexe, 
+            split_by = sex, 
             count = proportion, 
-            proportionnel = TRUE) +
+            proportional = TRUE) +
   ## Afficher uniquement le libellé de l'axe des y (sinon répété dans les trois graphiques)
   labs(title = "Population source", 
        y = "", 
@@ -627,7 +626,7 @@ sample_population <- age_pyramid(survey_data,
 weighted_population <- survey_design %>% 
   ## S'assurer que les variables sont des facteurs
   mutate(age_group = factor(age_group), 
-         sex = facteur(sex)) %>%
+         sex = factor(sex)) %>%
   age_pyramid(
     age_group = "age_group",
     split_by = "sex", 
@@ -891,7 +890,7 @@ tbl_svysummary(base_survey_design,
   add_stat(fns = everything() ~ confidence_intervals) %>% ## ajouter les ICs
   ## modifier les en-têtes de colonnes
   modify_header(
-    liste(
+    list(
       n ~ "**Total pondéré (N)**",
       stat_0 ~ "**Compte pondéré**",
       add_stat_1 ~ "**95%CI**"

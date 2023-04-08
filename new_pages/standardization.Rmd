@@ -102,7 +102,7 @@ Tout d'abord, nous chargeons les données démographiques (comptage des hommes e
 A_demo <- rio::import(here::here("data", "standardization", "country_demographics.csv")) %>% 
      mutate(Country = "A") %>% 
      select(Country, everything()) %>% # re-arrangement
-     mutate(age_cat5 = str_replace_all(age_cat5, "\+", "")) # supprimer les symboles +
+     mutate(age_cat5 = str_replace_all(age_cat5, "\\+", "")) # supprimer les symboles +
 ```
 
 ```{r, eval=F}
@@ -433,7 +433,7 @@ Ci-dessous, nous regroupons d'abord les données par Pays, puis nous les passons
 
 A noter - la population de référence (standard) peut être fournie comme une **colonne dans le cadre de données spécifique au pays** ou comme un **vecteur séparé**. Si elle est fournie dans le cadre de données spécifique au pays, vous devez définir `stdpoptype = "field"`. Si elle est fournie sous forme de vecteur, définissez `stdpoptype = "vector"`. Dans ce dernier cas, vous devez vous assurer que l'ordre des rangées par strate est similaire dans le cadre de données spécifique au pays et dans la population de référence, car les enregistrements seront appariés par position. Dans notre exemple ci-dessous, nous avons fourni la population de référence sous forme de colonne dans le cadre de données spécifique au pays.
 
-Consultez l'aide de `?phr_dsr` ou les liens dans la section Références pour plus d'informations.  
+Consultez l'aide de `?phe_dsr` ou les liens dans la section Références pour plus d'informations.  
 
 ```{r}
 # Calculez les taux par pays directement normalisés pour l'âge et le sexe.
@@ -458,17 +458,17 @@ Ci-dessous, nous créons d'abord la population de référence du pays B. Ensuite
 
 A noter - dans notre exemple ci-dessous, la population de référence est fournie comme un cadre de données séparé. Dans ce cas, nous nous assurons que les vecteurs `x = `, `n = `, `x_ref = ` et `n_ref = ` sont tous ordonnés par les mêmes valeurs de catégorie de standardisation (strate) que celles de notre cadre de données spécifique au pays, puisque les enregistrements seront appariés par position.
 
-Consultez l'aide de `?phr_isr` ou les liens dans la section Références pour plus d'informations.  
+Consultez l'aide de `?phe_isr` (maintenant `calculate_ISRate` depuis dec 2022) ou les liens dans la section Références pour plus d'informations.  
 
 ```{r}
 # Créez la population de référence
 refpopCountryB <- country_data %>% 
-  filter(Pays == "B") 
+  filter(Country == "B") 
 
 # Calculer les taux pour le pays A indirectement standardisés par âge et sexe
 mortality_is_rate_phe_A <- country_data %>%
-     filtre(Country == "A") %>%
-     PHEindicatormethods::phe_isr(
+     filter(Country == "A") %>%
+     PHEindicatormethods::calculate_ISRate( #avant c'etait phe_isr()
           x = Deaths, # colonne avec le nombre d'événements observés
           n = Population, # colonne avec les pops non standard pour chaque strate
           x_ref = refpopCountryB$Deaths, # nombre de décès de référence pour chaque strate

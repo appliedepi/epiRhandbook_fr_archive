@@ -135,7 +135,7 @@ linelist %>%
 
 Par défaut, si vous exécutez `group_by()` sur des données déjà groupées, les anciens groupes seront supprimés et le ou les nouveaux groupes s'appliqueront. Si vous voulez ajouter de nouveaux groupes à ceux qui existent déjà, incluez l'argument `.add = TRUE`.  
 
-````{r, eval=F}
+```{r, eval=F}
 # Grouper par  outcome
 by_outcome <- linelist %>% 
   group_by(outcome)

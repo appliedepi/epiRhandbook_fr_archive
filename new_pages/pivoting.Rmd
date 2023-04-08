@@ -39,6 +39,7 @@ Ces lignes de code chargent les paquets nécessaires aux analyses. Dans ce guide
 pacman::p_load(
   rio,          # import des fichiers
   here,         # gestion des chemins d'accès
+  kableExtra,
   tidyverse)    # gestion des données + graphiques (ggplot2)
 ```
 

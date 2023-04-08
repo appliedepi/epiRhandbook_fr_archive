@@ -272,17 +272,29 @@ Nous pouvons faire une belle épicurve de *tous* les cas par sexe en utilisant l
 # créer un objet 'incidence
 outbreak <- incidence2::incidence(   
      x = linelist, # dataframe - linelist complet
-     date_index = date_onset, # colonne de date
+     date_index = "date_onset", # colonne de date
      interval = "week", # aggregate counts weekly
-     groups = gender, # regroupe les valeurs par sexe
-     na_as_group = TRUE) # le sexe manquant est son propre groupe
+     groups = "gender") # regroupe les valeurs par sexe
+     #na_as_group = TRUE , deprecated incidence version 2.0.0
 
 # tracer la courbe d'épidémie
-plot(outbreak, # nom de l'objet d'incidence
-     fill = "gender", # couleur des barres par sexe
-     color = "black", # couleur de contour des barres
-     title = "Outbreak of all cases" # titre
-     )
+ggplot(outbreak, # nom de l'objet d'incidence
+        aes(x = date_index, #aesthetiques et axes
+            y = count, 
+            fill = gender), # couleur des barres par sexe
+       color = "black"      # couleur de contour des barres
+       ) +  
+     geom_col() + 
+     facet_wrap(~gender) +
+     theme_bw() + 
+     labs(title = "Outbreak of all cases", #titre
+          x = "Counts", 
+          y = "Date", 
+          fill = "Gender", 
+          color = "Gender")
+
+
+
 ```
 
 Pour produire un graphique distinct pour les cas de chaque hôpital, nous pouvons placer ce code épicurve dans une *boucle for*. 
@@ -307,19 +319,37 @@ for (hosp in hospital_names) {
      # créer un objet d'incidence spécifique à l'hôpital actuel
      outbreak_hosp <- incidence2::incidence(
           x = linelist %>% filter(hospital == hosp), # linelist est filtré sur l'hôpital actuel
-          date_index = date_onset,
-          intervalle = "week", 
-          groupes = gender,
-          na_as_group = TRUE
+          date_index = "date_onset",
+          interval = "week", 
+          groups = "gender",
+          #na_as_group = TRUE , deprecated incidence version 2.0.0
      )
      
+     
+     # tracer la courbe d'épidémie
+
+     plot_hosp <- ggplot(outbreak_hosp, # nom de l'objet d'incidence
+                         aes(x = date_index, #aesthetiques et axes
+                             y = count, 
+                             fill = gender), # couleur des barres par sexe
+                         color = "black"      # couleur de contour des barres
+                         ) +  
+          geom_col() + 
+          facet_wrap(~gender) +
+          theme_bw() + 
+          labs(title = stringr::str_glue("Epidemic of cases admitted to {hosp}"), #titre
+               x = "Counts", 
+               y = "Date", 
+               fill = "Gender", 
+               color = "Gender")
+     
      # Créez et enregistrez le graphique. Le titre s'ajuste automatiquement à l'hôpital actuel
-     plot_hosp <- plot(
-       outbreak_hosp,
-       fill = "gender",
-       color = "black",
-       title = stringr::str_glue("Epidemic of cases admitted to {hosp}")
-     )
+    # plot_hosp <- plot(
+#       outbreak_hosp,
+#       fill = "gender",
+#       color = "black",
+#       title = stringr::str_glue("Epidemic of cases admitted to {hosp}")
+#     )
      
      # imprimer le graphique pour l'hôpital actuel
      print(plot_hosp)
@@ -490,7 +520,7 @@ Prenons un exemple où nous ne voulons pas lire la première feuille de données
 ```{r, echo=F}
 sheet_names <- readxl::excel_sheets(here::here("data", "example", "hospital_linelists.xlsx"))
 
-combined <- nom_de_feuille %>% 
+combined <- sheet_names %>% 
      purrr::set_names() %>% 
      # exclure la première feuille
      map_at(.f = ~import(here::here("data", "example", "hospital_linelists.xlsx"), which = .x),

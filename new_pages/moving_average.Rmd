@@ -228,7 +228,7 @@ grouped_roll <- linelist %>%
 
   count(hospital, date_hospitalisation, name = "new_cases") %>% 
 
-  arranger(hospital, date_hospitalisation) %>% # arranger les lignes par hôpital puis par date
+  arrange(hospital, date_hospitalisation) %>% # arranger les lignes par hôpital puis par date
   
   group_by(hospital) %>% # groupage par hôpital 
     

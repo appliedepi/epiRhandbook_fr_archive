@@ -12,8 +12,7 @@ knitr::include_graphics(here::here("images", "survival_analysis.png"))
 
 *L'analyse de survie* s'attache à décrire pour un individu ou un groupe d'individus donné, un point d'événement défini appelé **_l'échec_** (apparition d'une maladie, guérison d'une maladie, décès, rechute après réponse à un traitement...) qui survient après une période de temps appelée **_le temps d'échec_** (ou **_le temps de suivi_** dans les études de cohorte/population) pendant laquelle les individus sont observés. Pour déterminer le temps d'échec, il est alors nécessaire de définir un temps d'origine (qui peut être la date d'inclusion, la date du diagnostic...). 
 
-La cible d'inférence de l'analyse de survie est alors le temps entre une origine et un événement.
-Dans la recherche médicale actuelle, elle est largement utilisée dans les études cliniques pour évaluer l'effet d'un traitement par exemple, ou en épidémiologie du cancer pour évaluer une grande variété de mesures de survie au cancer. 
+La cible d'inférence de l'analyse de survie est alors le temps entre une origine et un événement. Dans la recherche médicale actuelle, elle est largement utilisée dans les études cliniques pour évaluer l'effet d'un traitement par exemple, ou en épidémiologie du cancer pour évaluer une grande variété de mesures de survie au cancer. 
 
 
 Elle s'exprime généralement par la **_probabilité de survie_** qui est la probabilité que l'événement d'intérêt ne se soit pas produit avant une durée t.
@@ -43,8 +42,6 @@ Dans ce manuel, nous mettons l'accent sur `p_load()` de **pacman**, qui installe
 
 # installer/charger les différents paquets nécessaires à cette page
 pacman::p_load(
-  survival, # analyse de survie 
-  survminer, # analyse de survie
   rio, # importation de données  
   here, # chemins d'accès aux fichiers relatifs  
   janitor, # tabulations
@@ -64,7 +61,7 @@ Cette page explore les analyses de survie en utilisant la linelist utilisée dan
 
 ### Importation du jeu de données {.unnumbered}  
 
-Nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre le mouvement, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (en tant que fichier .rds). Importez des données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation] pour plus de détails).  
+Nous importons le jeu de données des cas d'une épidémie d'Ebola simulée. Si vous voulez suivre le mouvement, <a href='https://github.com/epirhandbook/Epi_R_handbook/raw/master/data/case_linelists/linelist_cleaned.rds' class='download-button'>cliquez pour télécharger la linelist "propre"</a> (en tant que fichier .rds). Importez des données avec la fonction `import()` du paquet **rio** (elle gère de nombreux types de fichiers comme .xlsx, .csv, .rds - voir la page [Importation et exportation](#import_export) pour plus de détails).  
 
 ```{r echo=F}
 # import linelist
@@ -381,7 +378,7 @@ Maintenant, nous pouvons tracer les courbes de survie par sexe. Jetez un oeil à
 
 ```{r}
 # définissez les couleurs
-col_sex <- c("vert clair", "vert foncé")
+col_sex <- c("light green", "dark green")
 
 # Créez le graphique
 plot(
@@ -658,7 +655,7 @@ td_dat <-
   tmerge(
     data1 = bmt %>% select(my_id, T1, delta1), 
     data2 = bmt %>% select(my_id, T1, delta1, TA, deltaA), 
-    id = mon_identifiant, 
+    id = my_id, 
     death = event(T1, delta1),
     agvhd = tdc(TA)
     )
@@ -670,7 +667,7 @@ Les variables d'intérêt dans les données originales ressemblaient à ceci :
 
 ```{r}
 bmt %>% 
-  select(mon_id, T1, delta1, TA, deltaA) %>% 
+  select(my_id, T1, delta1, TA, deltaA) %>% 
   filter(my_id %in% seq(1, 5))
 ```
 

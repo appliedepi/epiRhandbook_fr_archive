@@ -52,7 +52,7 @@ knitr::include_graphics(here::here("images", "Epi R Handbook banner beige 1500x5
 
 ## R pour l'épidémiologie appliquée et la santé publique {-}  
 
-**Ce manuel a pour objectifs :**  
+**Ce manuel a les objectifs suivants :**  
 
 * Établir une base de code de référence
 * Illustrer comment utiliser R pour effectuer des tâches classiques et récurrentes en épidémiologie
