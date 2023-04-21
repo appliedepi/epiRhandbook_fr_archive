@@ -154,17 +154,18 @@ Nous démontrons ci-dessous comment faire des épicurves en utilisant le paquet 
     + Spécifier les étiquettes, les couleurs, les titres, etc.  
 
 
-Ci-dessous, nous chargeons le paquet **incidence2**, créons l'objet incidence à partir de la `linelist` sur la colonne `date_onset` et agrégeons les cas par jour. Nous imprimons ensuite un résumé de l'objet d'incidence. 
+Ci-dessous, nous chargeons le paquet **incidence2**, créons l'objet incidence à partir de la `linelist` sur la colonne `date_onset` et agrégeons les cas par semaine. Nous imprimons ensuite un résumé de l'objet d'incidence. 
 
 ```{r, warning=F, message=F}
 # Chargement du paquet incidence2
 pacman::p_load(incidence2)
 
+
 # crée l'objet incidence, en agrégeant les cas par jour
 epi_day <- incidence( # create incidence object
   x = linelist, # dataset
-  date_index = date_onset, # colonne de date
-  interval = "day" # intervalle de regroupement par date
+  date_index = "date_onset", # colonne de date
+  interval = "week" # intervalle de regroupement par semaine
   )
 ```
 
@@ -225,22 +226,22 @@ Vous trouverez ci-dessous des exemples de l'aspect des différents intervalles l
 # Créez les objets d'incidence (avec différents intervalles)
 ##############################
 # Hebdomadaire (semaine du lundi par défaut)
-epi_wk <- incidence(linelist, date_onset, interval = "Monday week")
+epi_wk <- incidence(linelist, "date_onset", interval = "weeks")
 
 # Semaine du dimanche
-epi_Sun_wk <- incidence(linelist, date_onset, interval = "Sunday week")
+epi_Sun_wk <- incidence(linelist, "date_onset", interval = "epiweeks")
 
 # Trois semaines (semaines de lundi par défaut)
-epi_2wk <- incidence(linelist, date_onset, interval = "2 weeks")
+epi_2wk <- incidence(linelist, "date_onset", interval = "weekly")
 
 # Mensuel
-epi_month <- incidence(linelist, date_onset, interval = "month")
+epi_month <- incidence(linelist, "date_onset", interval = "month")
 
 # Trimestrielle
-epi_quarter <- incidence(linelist, date_onset, interval = "quarter")
+epi_quarter <- incidence(linelist, "date_onset", interval = "quarter")
 
 # Années
-epi_year <- incidence(linelist, date_onset, interval = "year")
+epi_year <- incidence(linelist, "date_onset", interval = "year")
 
 
 # Tracez les objets d'incidence (+ titres pour plus de clarté)
@@ -282,15 +283,15 @@ Dans l'exemple ci-dessous, les cas de l'ensemble de l'épidémie sont groupés p
 # Créez un objet incidence, avec des données groupées par catégorie d'âge
 age_outbreak <- incidence(
   linelist, # jeu de données
-  date_index = date_onset, # colonne de date
+  date_index = "date_onset", # colonne de date
   interval = "week", # agrégation hebdomadaire des cas du lundi
-  groups = age_cat, # age_cat est défini comme un groupe
-  na_as_group = TRUE) # les valeurs manquantes se voient attribuer leur propre groupe
+  groups = "age_cat") #, # age_cat est défini comme un groupe
+  #na_as_group = TRUE) # les valeurs manquantes se voient attribuer leur propre groupe
 
 # Tracez l'objet d'incidence groupée
 plot(
   age_outbreak, # objet d'incidence avec age_cat comme groupe
-  fill = age_cat)+ # age_cat est utilisé pour la couleur de remplissage des barres (doit avoir été défini comme une colonne de groupes ci-dessus)
+  fill = age_outbreak$age_cat)+ # age_cat est utilisé pour la couleur de remplissage des barres (doit avoir été défini comme une colonne de groupes ci-dessus)
 labs(fill = "Age Category") # change le titre de la légende de "age_cat" par défaut (c'est une modification de ggplot2)
 ```
 <span style="color : darkgreen ;">**_ATTENTION:_** Changez le titre de la légende en ajoutant `+` la commande **ggplot2** `labs(fill = "your title")` à votre graphe **incidence2**.</span>  
@@ -301,14 +302,14 @@ Vous pouvez également afficher les barres groupées côte à côte en définiss
 # Créez un objet d'incidence pour les comptes mensuels. 
 monthly_gender <- incidence(
  linelist,
- date_index = date_onset,
+ date_index = "date_onset",
  interval = "month",
- groups = gender # définit le genre comme colonne de regroupement
+ groups = "gender" # définit le genre comme colonne de regroupement
 )
 
 plot(
   monthly_gender, # objet d'incidence
-  fill = gender, # affichage de barres colorées par sexe
+  fill = monthly_gender$gender, # affichage de barres colorées par sexe
   stack = FALSE) # côte à côte (non empilées)
 ``` 
 
@@ -333,7 +334,7 @@ central_data <- linelist %>%
   filter(hospital == "Central Hospital")
 
 # créez un objet d'incidence en utilisant les données filtrées
-central_outbreak <- incidence(central_data, date_index = date_onset, interval = "week")
+central_outbreak <- incidence(central_data, date_index = "date_onset", interval = "week")
 
 # tracer l'objet d'incidence
 plot(central_outbreak, title = "Incidence hebdomadaire des cas à l'hôpital central")

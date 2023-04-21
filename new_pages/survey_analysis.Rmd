@@ -48,8 +48,13 @@ pacman::p_load(rio, # Importation du fichier
                ggforce # pour les tracés alluviaux/sankey
                ) 
 
-## charger les paquets depuis github
-pacman::p_load_gh(  "R4EPI/sitrep" )# pour le temps d'observation / fonctions de pondération
+## charger les paquets de github pour le temps d'observation / fonctions de pondération
+if(!require(sitrep)){
+   remotes::install_github("r4epi/sitrep")
+   library(sitrep)
+}
+
+
 
 
 ``` 

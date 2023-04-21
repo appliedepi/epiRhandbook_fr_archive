@@ -8,7 +8,7 @@ Dans cette page, nous allons nous concentrer sur la conversion d'un graphique de
 Ci-dessous, nous présentons un épicurve de base qui a été transformé pour être interactif en utilisant l'intégration de **ggplot2** et **plotly** (survolez votre souris sur le graphique, faites un zoom in ou cliquez sur les éléments de la légende). 
 
 ```{r plotly_demo, out.width=c('75%'), out.height=c('500px'), echo=F, warning=F, message=F}
-pacman::p_load(plotly, rio, here, ggplot2, dplyr, lubridate)
+pacman::p_load(plotly, rio, here, ggplot2, dplyr, lubridate, aweek)
 linelist <- rio::import(here::here("data", "case_linelists", "linelist_cleaned.rds"))
 
 ## ces boutons ne sont pas nécessaires 

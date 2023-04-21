@@ -48,10 +48,10 @@ epic %<>% subset(
 ## Graphique avec la date d'apparition en axe x
 plot(
   epic,
-  #x_axis = "date_onset",
+  x_axis = "date_onset",
   label = FALSE,
   node_color = "outcome",
-  #col_pal = c(Death = "firebrick", Recover = "green"),
+  col_pal = c(Death = "firebrick", Recover = "green"),
   node_shape = "gender",
   shapes = c(f = "female", m = "male"),
   unlinked_pos = "bottom",
@@ -274,7 +274,7 @@ plot(
   node_color = "outcome",
   node_shape = "gender",
   node_size = "age",
-  #col_pal = c(Death = "firebrick", Recover = "green"),
+  col_pal = c(Death = "firebrick", Recover = "green"),
   shapes = c(f = "female", m = "male"),
   size_range = c(40, 60),
   height = 700,
@@ -299,7 +299,7 @@ plot(
   node_color = "outcome",
   node_shape = "gender",
   node_size = "age",
-  #col_pal = c(Death = "firebrick", Recover = "green"),
+  col_pal = c(Death = "firebrick", Recover = "green"),
   shapes = c(f = "female", m = "male"),
   size_range = c(40, 60),
   edge_color = 'location',
@@ -320,9 +320,9 @@ Nous pouvons également visualiser le réseau selon un axe temporel en faisant c
 ```{r transmission_chains_x_axis,}
 plot(
   sub,
-  #x_axis = "date_onset",
+  x_axis = "date_onset",
   node_color = "outcome",
-  #col_pal = c(Death = "firebrick", Recover = "green"),
+  col_pal = c(Death = "firebrick", Recover = "green"),
   arrow_size = 0.5,
   node_size = 13,
   label = FALSE,
@@ -340,10 +340,10 @@ Il y a deux formes principales que l'arbre de transmission peut prendre, spécif
 ```{r transmission_chains_rectangle,}
 plot(
   sub,
-  #x_axis = "date_onset",
+  x_axis = "date_onset",
   network_shape = "rectangle",
   node_color = "outcome",
-  #col_pal = c(Death = "firebrick", Recover = "green"),
+  col_pal = c(Death = "firebrick", Recover = "green"),
   arrow_size = 0.5,
   node_size = 13,
   label = FALSE,
@@ -357,10 +357,10 @@ On peut assigner à chaque noud de cas une position verticale unique en modifian
 ```{r transmission_chains_dodge,}
 plot(
   sub,
-  #x_axis = "date_onset",
+  x_axis = "date_onset",
   network_shape = "rectangle",
   node_color = "outcome",
-  #col_pal = c(Death = "firebrick", Recover = "green"),
+  col_pal = c(Death = "firebrick", Recover = "green"),
   position_dodge = TRUE,
   unlinked_pos = "bottom",
   arrow_size = 0.5,
@@ -376,10 +376,10 @@ La position du noeud parent par rapport aux noeuds enfants peut être spécifié
 ```{r transmission_chains_parent_pos,}
 plot(
   sub,
-  #x_axis = "date_onset",
+  x_axis = "date_onset",
   network_shape = "rectangle",
   node_color = "outcome",
-  #col_pal = c(Death = "firebrick", Recover = "green"),
+  col_pal = c(Death = "firebrick", Recover = "green"),
   parent_pos = "top",
   arrow_size = 0.5,
   node_size = 13,
@@ -397,10 +397,10 @@ Vous pouvez enregistrer un graphique sous forme de fichier html interactif et au
 
 plot(
   sub,
-  #x_axis = "date_onset",
+  x_axis = "date_onset",
   network_shape = "rectangle",
   node_color = "outcome",
-  #col_pal = c(Death = "firebrick", Recover = "green"),
+  col_pal = c(Death = "firebrick", Recover = "green"),
   parent_pos = "top",
   arrow_size = 0.5,
   node_size = 13,
@@ -453,7 +453,7 @@ shapes <- c(
 
 ## définir les couleurs
 colours <- c(
-  Death = "firered",
+  Death = "firebrick",
   Recover = "green",
   "NA" = "grey"
 )
@@ -462,7 +462,7 @@ colours <- c(
 plot(
   sub,
   ## coordonnée x maximale de la date d'apparition de la maladie
-  #x_axis = "date_onset",
+  x_axis = "date_onset",
   ## utiliser une forme de réseau rectangulaire
   network_shape = "rectangle",
   ## mappe les formes de noeuds de cas à la colonne de sexe
@@ -488,7 +488,7 @@ plot(
   ## spécifier la forme pour chaque attribut de noeud (défini ci-dessus)
   shapes = shapes,
   ## spécifier la palette de couleurs (définie ci-dessus)
-  #col_pal = colours,
+  col_pal = colours,
   ## définir la taille de la flèche à 0.5
   arrow_size = 0.5,
   ## utiliser deux colonnes dans la légende
